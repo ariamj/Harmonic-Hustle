@@ -89,9 +89,9 @@ GLFWwindow* WorldSystem::create_window() {
 
 	background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
 
-	if (background_music == nullptr) {
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-			audio_path("music.wav").c_str();
+	if (background_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path("music.wav").c_str());
 		return nullptr;
 	}
 
@@ -111,7 +111,6 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	// handle next step of game
-    float elapsed_ms_since_last_update; // avoid warning
 	return true;
 }
 
@@ -133,9 +132,6 @@ bool WorldSystem::is_over() const {
 // On key callback
 void WorldSystem::on_key(int key, int, int action, int mod) {
     // handle key inputs
-    int key;     // avoid warning
-    int action;
-    int mod;
 }
 
 void WorldSystem::on_mouse_move(vec2 mouse_position) {

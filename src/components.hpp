@@ -5,6 +5,12 @@
 #include "../ext/stb_image/stb_image.h"
 
 
+// Sets the brightness of the screen
+struct ScreenState
+{
+	float darken_screen_factor = -1;
+};
+
 // Single Vertex Buffer element for non-textured meshes
 struct ColoredVertex
 {

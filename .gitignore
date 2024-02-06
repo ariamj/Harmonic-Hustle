@@ -7,6 +7,9 @@ cmake_install.cmake
 CMakeCache.txt
 Makefile
 
+# make build files
+harmonic-hustle
+
 # Mac created files
 .DS_Store
 data/.DS_Store
