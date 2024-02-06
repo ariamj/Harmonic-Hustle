@@ -10,3 +10,6 @@ Makefile
 # Mac created files
 .DS_Store
 data/.DS_Store
+
+# Other files/folders
+ext/project_path.hpp
