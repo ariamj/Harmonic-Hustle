@@ -34,6 +34,52 @@ struct Mesh
 	std::vector<uint16_t> vertex_indices;
 };
 
+// All data relevant to the shape and motion of entities
+struct Motion {
+	vec2 position = { 0, 0 };
+	float angle = 0;
+	vec2 velocity = { 0, 0 };
+	vec2 scale = { 10, 10 };
+};
+
+// for notes
+struct Note
+{
+
+};
+
+struct Player
+{
+
+};
+
+struct Enemy
+{
+
+};
+
+// for keeping beat
+// https://fizzd.notion.site/How-To-Make-A-Rhythm-Game-Technical-Guide-ed09f5e09752451f97501ebddf68cf8a
+struct Conductor
+{
+	float bpm;
+	float crotchet;
+	float offset;
+	float song_position;
+};
+
+// the area in which we gotta hit the notes
+struct JudgementLine
+{
+
+};
+
+// used to manage the different screens (????)
+struct Scenes
+{
+
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
