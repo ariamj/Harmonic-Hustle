@@ -5,7 +5,7 @@
 // stlib
 #include <cassert>
 #include <sstream>
-
+#include <iostream>
 #include "physics_system.hpp"
 
 // Game configuration
@@ -129,9 +129,64 @@ bool WorldSystem::is_over() const {
 	return bool(glfwWindowShouldClose(window));
 }
 
+// exit game or go back depending on game state
+void handleEscInput(int action) {
+	if (action == GLFW_PRESS) {
+
+	}
+}
+
+// confirmation key
+void handleEnterInput(int action) {
+	if (action == GLFW_PRESS) {
+
+	}
+}
+
+void handleMovementInput(int action, int key) {
+	if (action == GLFW_PRESS) {
+		std::cout << key << " PRESSED" << '\n';
+	}
+	else if (action == GLFW_RELEASE) {
+		std::cout << key << " RELEASED" << '\n';
+	}
+}
+
+void handleRhythmInput(int action, int key) {
+	if (action == GLFW_PRESS) {
+
+	}
+}
+
 // On key callback
 void WorldSystem::on_key(int key, int, int action, int mod) {
     // handle key inputs
+	switch (key) {
+		case GLFW_KEY_ESCAPE:
+			handleEscInput(action);
+			break;
+		case GLFW_KEY_ENTER:
+			handleEnterInput(action);
+			break;
+		case GLFW_KEY_W:
+		case GLFW_KEY_A:
+		case GLFW_KEY_S:
+			handleMovementInput(action, key);
+			break;
+		case GLFW_KEY_D:
+			//if were in the overworld then
+			handleMovementInput(action, key);
+			//else 
+			//handleRhythmInput(action, key);
+			break;
+		case GLFW_KEY_F:
+		case GLFW_KEY_J:
+		case GLFW_KEY_K:
+			handleRhythmInput(action, key);
+			break;
+		default:
+			break;
+	}
 }
 
 void WorldSystem::on_mouse_move(vec2 mouse_position) {
