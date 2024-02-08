@@ -6,13 +6,16 @@
 
 // internal
 #include "world_system.hpp"
+#include <audio_system.hpp>
 
 using Clock = std::chrono::high_resolution_clock;
 
 int main() {
-
+    
     // Global systems
     WorldSystem world;
+    RenderSystem renderSystem;
+    AudioSystem audioSystem;
 
     // Initialize window
     GLFWwindow* window = world.create_window();
@@ -24,6 +27,12 @@ int main() {
     }
 
     // Initialize main systems
+    
+    renderSystem.init(window);
+    world.init(&renderSystem);
+    audioSystem.init();
+
+    audioSystem.playBGM();
 
     // variable timestep loop
     auto t = Clock::now();
