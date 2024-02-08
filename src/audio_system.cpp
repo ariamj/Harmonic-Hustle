@@ -1,4 +1,3 @@
-#define WITH_MINIAUDIO
 #include <common.hpp>
 #include <audio_system.hpp>
 #include <iostream>
