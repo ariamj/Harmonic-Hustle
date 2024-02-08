@@ -32,8 +32,6 @@ int main() {
     world.init(&renderSystem);
     audioSystem.init();
 
-    audioSystem.playBGM();
-
     // variable timestep loop
     auto t = Clock::now();
     while (!world.is_over()) {

@@ -1,6 +1,10 @@
 #pragma once
 // Container for loading and playing sound files
 
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 class AudioSystem 
 {
 public:
@@ -14,4 +18,8 @@ public:
 	bool playBGM();
 private:
 	bool LoadFiles();
+
+	// music references
+	Mix_Music* background_music;
+
 };
