@@ -108,14 +108,10 @@ elseif (IS_OS_WINDOWS)
 
     set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
     set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/include/SDL")
-    # Label SoLoud include directory
-    set(SOLOUD_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/soloud/include")
 
     if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
         set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x64.lib")
         set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x64.lib")
-        # Label SoLoud library file
-        set(SOLOUD_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/soloud/lib/soloud_static_x64_d.lib")
 	set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x64.lib")
 
 	set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x64.dll")
@@ -124,8 +120,6 @@ elseif (IS_OS_WINDOWS)
     else()
         set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x86.lib")
         set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x86.lib")
-         # Label SoLoud library file
-        set(SOLOUD_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/soloud/lib/soloud_static_x64_d.lib")
 	set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x86.lib")
 
 	set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x86.dll")
@@ -176,13 +170,8 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
-# Include SoLoud header files
-target_include_directories(${PROJECT_NAME} PUBLIC ${SOLOUD_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)
-# Link SoLoud libraries
-target_link_libraries(${PROJECT_NAME} PUBLIC ${SOLOUD_LIBRARIES} glm::glm)
-
 # Needed to add this
 if(IS_OS_LINUX)
   target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${CMAKE_DL_LIBS})

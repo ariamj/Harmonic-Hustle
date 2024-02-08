@@ -8,10 +8,6 @@
 #include <iostream>
 #include "physics_system.hpp"
 
-// SoLoud
-#include <soloud.h>
-#include <soloud_wav.h>
-
 // Game configuration
 
 
@@ -105,7 +101,7 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 	// Playing background music indefinitely using SDL
-	// Mix_PlayMusic(background_music, -1);
+	Mix_PlayMusic(background_music, -1);
 	fprintf(stderr, "Loaded music\n");
 
 	// Set all states to default
