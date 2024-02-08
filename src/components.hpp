@@ -105,8 +105,9 @@ struct Scenes
  */
 
 enum class TEXTURE_ASSET_ID {
-	// set asset IDs
-	TEXTURE_COUNT = 0 // keep as last variable
+	PLAYER = 0,
+	ENEMY = PLAYER + 1,
+	TEXTURE_COUNT = ENEMY + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
