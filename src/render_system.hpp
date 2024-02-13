@@ -31,13 +31,17 @@ class RenderSystem {
 	// Make sure these paths remain in sync with the associated enumerators.
 	const std::array<std::string, texture_count> texture_paths =  {
 		textures_path("Player.png"),
-		textures_path("Enemy.png")};
+		textures_path("Enemy.png"),
+		textures_path("Player-Portrait-Neutral.png"),
+		textures_path("Enemy-Portrait-Neutral.png")};
 
 	std::array<GLuint, effect_count> effects;
 	// Make sure these paths remain in sync with the associated enumerators.
 	const std::array<std::string, effect_count> effect_paths = {
 		shader_path("playerSprite"),
 		shader_path("enemySprite"),
+		shader_path("battlePlayerSprite"),
+		shader_path("battleEnemySprite"),
 		shader_path("coloured"),
 		shader_path("textured"),
 		shader_path("environment")

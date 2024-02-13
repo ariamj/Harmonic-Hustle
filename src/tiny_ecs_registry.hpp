@@ -19,6 +19,7 @@ public:
 	ComponentContainer<Player> players;
 	ComponentContainer<Enemy> enemies;
 	ComponentContainer<Conductor> conductors;
+	ComponentContainer<Screen> screens;
 
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -32,6 +33,7 @@ public:
 		registry_list.push_back(&players);
 		registry_list.push_back(&enemies);
 		registry_list.push_back(&conductors);
+		registry_list.push_back(&screens);
 	}
 
 	void clear_all_components() {

@@ -6,6 +6,8 @@
 
 // internal
 #include "world_system.hpp"
+#include "overworld_screen.hpp"
+#include "battle_screen.hpp"
 #include <audio_system.hpp>
 #include "physics_system.hpp"
 
