@@ -54,6 +54,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update) {
 
 bool Battle::set_visible(bool isVisible) {
     this->is_visible = isVisible;
+    // TODO add more checks
+    if (is_visible) {
+        if (registry.screens.has(registry.screenStates.entities[0])) registry.screens.remove(registry.screenStates.entities[0]);
+        registry.screens.insert(registry.screenStates.entities[0], Screen::BATTLE);
+    } else {
+        registry.screens.remove(registry.screenStates.entities[0]);
+    }
     return is_visible;
 };
 

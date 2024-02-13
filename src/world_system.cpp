@@ -95,6 +95,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
+	// overworld.set_visible(true);
+	battle.set_visible(true);
 
 	// Set all states to default
     restart_game();
@@ -176,6 +178,7 @@ void WorldSystem::restart_game() {
 
     battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - 200.f, window_height_px - 200.f });
 
+
 }
 
 // Compute collisions between entities
@@ -235,6 +238,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					std::cout << "current screen: overworld" << std::endl;
 				}
 			}
+			
 			break;
 		case GLFW_KEY_ESCAPE:
 			handleEscInput(action);

@@ -55,6 +55,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update) {
 		// reset timer
 		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
 		// create an enemy
+
 		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
 	}
 
@@ -69,6 +70,13 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update) {
 
 bool Overworld::set_visible(bool isVisible) {
     this->is_visible = isVisible;
+    // TODO add more checks
+    if (is_visible) {
+        if (registry.screens.has(registry.screenStates.entities[0])) registry.screens.remove(registry.screenStates.entities[0]);
+        registry.screens.insert(registry.screenStates.entities[0], Screen::OVERWORLD);
+    } else {
+        registry.screens.remove(registry.screenStates.entities[0]);
+    }
     return is_visible;
 };
 
