@@ -199,7 +199,7 @@ bool WorldSystem::is_over() const {
 	return bool(glfwWindowShouldClose(window));
 }
 
-// exit game or go back depending on game state
+// open pause menu or go back depending on game state
 void handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
@@ -210,6 +210,46 @@ void handleEscInput(int action) {
 void handleEnterInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "enter press" << std::endl;
+	}
+}
+
+void handleMovementInput(int action, int key) {
+	// Entity e = registry.players.entities[0];
+	// Motion& motion = registry.motions.get(e);
+
+	// if (action == GLFW_PRESS) {
+	// 	if (key == GLFW_KEY_W) {
+	// 		motion.velocity[1] = -100;
+	// 	}
+	// 	if (key == GLFW_KEY_S) {
+	// 		motion.velocity[1] = 100;
+	// 	}
+	// 	if (key == GLFW_KEY_A) {
+	// 		motion.velocity[0] = -100;
+	// 	}
+	// 	if (key == GLFW_KEY_D) {
+	// 		motion.velocity[0] = 100;
+	// 	}
+	// }
+	// else if (action == GLFW_RELEASE) {
+	// 	if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
+	// 		motion.velocity[1] = 0;
+	// 	}
+	// 	if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
+	// 		motion.velocity[0] = 0;
+	// 	}
+	// }
+	if (action == GLFW_PRESS) {
+		std::cout << key << " PRESSED" << '\n';
+	}
+	else if (action == GLFW_RELEASE) {
+		std::cout << key << " RELEASED" << '\n';
+	}
+}
+
+void handleRhythmInput(int action, int key) {
+	if (action == GLFW_PRESS) {
+
 	}
 }
 
