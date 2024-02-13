@@ -2,6 +2,8 @@
 #include "physics_system.hpp"
 #include "world_init.hpp"
 
+#include <iostream>
+
 // Returns the local bounding coordinates scaled by the current size of the entity
 // vec2 get_bounding_box(const Motion& motion)
 // {
@@ -28,12 +30,29 @@
 
 void PhysicsSystem::step(float elapsed_ms)
 {
-	// // Move entities
-	// auto& motion_registry = registry.motions;
-	// for(uint i = 0; i< motion_registry.size(); i++)
-	// {
-	// 	(void)elapsed_ms; // placeholder to silence unused warning until implemented
-	// }
+	 // Move entities
+	 auto& motion_registry = registry.motions;
+	 for(uint i = 0; i< motion_registry.size(); i++)
+	 {
+		 Motion& motion = motion_registry.components[i];
+		 Entity entity = motion_registry.entities[i];
+
+		 float step_seconds = elapsed_ms / 1000.f;
+
+		 GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+		 if (registry.players.has(entity)) {
+			 if ((motion.velocity[0] < 0 && motion.position[0] > (0 + PLAYER_WIDTH/2)) || (motion.velocity[0] > 0 && motion.position[0] < (mode->width - PLAYER_WIDTH - 175))) {
+				motion.position[0] = motion.position[0] + (step_seconds * motion.velocity[0]);
+			 }
+			 
+			 if ((motion.velocity[1] < 0 && motion.position[1] > (0 + PLAYER_HEIGHT / 2)) || (motion.velocity[1] > 0 && motion.position[1] < (mode->height - PLAYER_HEIGHT))) {
+				motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
+			 }
+			 
+		 }
+	 }
 
 	// // Check for collisions between all moving entities
     // ComponentContainer<Motion> &motion_container = registry.motions;
