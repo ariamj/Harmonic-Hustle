@@ -18,8 +18,10 @@ WorldSystem::WorldSystem() {
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
 
-	is_in_battle = false;
-	is_in_overworld = true;
+	// set current scene to overworld
+	curr_scene = Screen::OVERWORLD;
+	// curr_scene = Screen::BATTLE;
+
 	overworld.init();
 	battle.init();
 
@@ -92,9 +94,9 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	// handle next step of game
-	if (is_in_overworld) {
+	if (curr_scene == Screen::OVERWORLD) {
 		overworld.handle_step(elapsed_ms_since_last_update);
-	} else if (is_in_battle) {
+	} else if (curr_scene == Screen::BATTLE) {
 		battle.handle_step(elapsed_ms_since_last_update);
 	}
 	return true;
@@ -108,9 +110,9 @@ void WorldSystem::restart_game() {
 // Compute collisions between entities
 void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
-	if (is_in_overworld) {
+	if (curr_scene == Screen::OVERWORLD) {
 		overworld.handle_collisions();
-	} else if (is_in_battle) {
+	} else if (curr_scene == Screen::BATTLE) {
 		battle.handle_collisions();
 	}
 }
@@ -148,10 +150,17 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 	// DFJK -> rhythm
 
 	switch (key) {
-		case GLFW_KEY_C:
-		std::cout << "attempting change color" << std::endl;
-			
-			// glutPostRedisplay();
+		case GLFW_KEY_C:			
+			// hard code scene switching to key 'c' for now
+			if (action == GLFW_PRESS) {
+				if (curr_scene == Screen::OVERWORLD) {
+					curr_scene = Screen::BATTLE;
+					std::cout << "current screen: battle" << std::endl;
+				} else {
+					curr_scene = Screen::OVERWORLD;
+					std::cout << "current screen: overworld" << std::endl;
+				}
+			}
 			break;
 		case GLFW_KEY_ESCAPE:
 			handleEscInput(action);
@@ -160,11 +169,12 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			handleEnterInput(action);
 			break;
 		default:
-			if (is_in_overworld) {
+			if (curr_scene == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
-			} else if (is_in_battle) {
+			} else if (curr_scene == Screen::BATTLE) {
 				battle.handle_key(key, scancode, action, mod);
 			}
+			break;
 	}
 }
 
