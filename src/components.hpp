@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include "../ext/stb_image/stb_image.h"
+#include "screen.hpp"
 
 
 // Sets the brightness of the screen
@@ -75,9 +76,10 @@ struct JudgementLine
 };
 
 // used to manage the different screens (????)
-struct Scenes
+// the scene that the entity exists in
+struct Scene
 {
-
+	Screen scene;
 };
 
 /**
@@ -107,7 +109,9 @@ struct Scenes
 enum class TEXTURE_ASSET_ID {
 	PLAYER = 0,
 	ENEMY = PLAYER + 1,
-	TEXTURE_COUNT = ENEMY + 1 // keep as last variable
+	BATTLEPLAYER = ENEMY + 1,
+	BATTLEENEMY = BATTLEPLAYER + 1,
+	TEXTURE_COUNT = BATTLEENEMY + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -115,7 +119,9 @@ enum class EFFECT_ASSET_ID {
 	// set effect asset IDs
 	PLAYER = 0,
 	ENEMY = PLAYER + 1,
-	COLOURED = ENEMY + 1,
+	BATTLEPLAYER = ENEMY + 1,
+	BATTLEENEMY = BATTLEPLAYER + 1,
+	COLOURED = BATTLEENEMY + 1,
 	TEXTURED = COLOURED + 1,
 	ENVIRONMENT = TEXTURED + 1,
 	EFFECT_COUNT = ENVIRONMENT + 1 // keep as last variable

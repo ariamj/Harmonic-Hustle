@@ -215,13 +215,25 @@ void RenderSystem::draw()
 	gl_has_errors();
 	mat3 projection_2D = createProjectionMatrix();
 	// Draw all textured meshes that have a position and size component
+	// for (Entity entity : registry.renderRequests.entities)
+	// {
+	// 	// if (!registry.motions.has(entity))
+	// 	// 	continue;
+	// 	// Note, its not very efficient to access elements indirectly via the entity
+	// 	// albeit iterating through all Sprites in sequence. A good point to optimize
+	// 	drawTexturedMesh(entity, projection_2D);
+	// }
+
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// if (!registry.motions.has(entity))
 		// 	continue;
 		// Note, its not very efficient to access elements indirectly via the entity
 		// albeit iterating through all Sprites in sequence. A good point to optimize
-		drawTexturedMesh(entity, projection_2D);
+		// drawTexturedMesh(entity, projection_2D);
+
+		// render in accordance to current screen
+
 	}
 
 	// Truely render to the screen

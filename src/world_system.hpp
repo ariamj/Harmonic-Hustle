@@ -14,7 +14,7 @@
 #include "render_system.hpp"
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
-#include "screen.hpp"
+// #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -22,9 +22,9 @@ class WorldSystem
 {
 public:
 	WorldSystem();
-
-	Overworld overworld;
+	
 	Battle battle;
+	Overworld overworld;
 
 	// Creates a window
 	GLFWwindow* create_window();
@@ -57,8 +57,10 @@ private:
 	// Game state
 	RenderSystem* renderer;
 	float current_speed;
-	float next_enemy_spawn;
+	// float next_enemy_spawn;
 	Entity player_sprite;
+	Entity battle_player_sprite;
+	Entity battle_enemy_sprite;
 
 	// music references
 	Mix_Music* background_music;

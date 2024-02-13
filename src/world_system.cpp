@@ -16,8 +16,7 @@ const size_t ENEMY_DELAY_MS = 5000 * 3;
 
 
 // Create the bug world
-WorldSystem::WorldSystem() :
-	next_enemy_spawn(0.f) {
+WorldSystem::WorldSystem(){
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
 
@@ -25,8 +24,8 @@ WorldSystem::WorldSystem() :
 	curr_scene = Screen::OVERWORLD;
 	// curr_scene = Screen::BATTLE;
 
-	overworld.init();
-	battle.init();
+	// overworld.init(window);
+	// battle.init();
 
 }
 
@@ -94,56 +93,68 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
+	overworld.init(window, renderer_arg);
+	battle.init(window, renderer_arg);
+
 	// Set all states to default
     restart_game();
 }
 
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
+
+	if (curr_scene == Screen::OVERWORLD) {
+		overworld.handle_step(elapsed_ms_since_last_update);
+	} else {
+		return battle.handle_step(elapsed_ms_since_last_update);
+	}
+
+
 	// handle next step of game
 	// Update window title with current scene
-	std::stringstream title_ss;
-	title_ss << "Harmonic Hustle --- Overworld";
-	glfwSetWindowTitle(window, title_ss.str().c_str());
+	// std::stringstream title_ss;
+	// title_ss << "Harmonic Hustle --- Overworld";
+	// glfwSetWindowTitle(window, title_ss.str().c_str());
 
-	// Remove debug info from the last step
+	// // Remove debug info from the last step
 
-	// Remove out of screen entities (Notes, etc.)
-	auto& motions_registry = registry.motions;
+	// // Remove out of screen entities (Notes, etc.)
+	// auto& motions_registry = registry.motions;
 
-	// Remove entities that leave the screen on the left side
-	// Iterate backwards to be able to remove without unterfering with the next object to visit
-	// (the containers exchange the last element with the current)
-	for (int i = (int)motions_registry.components.size()-1; i>=0; --i) {
-	    Motion& motion = motions_registry.components[i];
-		if (motion.position.x + abs(motion.scale.x) < 0.f) {
-			if(!registry.players.has(motions_registry.entities[i])) // don't remove the player
-				registry.remove_all_components_of(motions_registry.entities[i]);
-		}
-	}
+	// // Remove entities that leave the screen on the left side
+	// // Iterate backwards to be able to remove without unterfering with the next object to visit
+	// // (the containers exchange the last element with the current)
+	// for (int i = (int)motions_registry.components.size()-1; i>=0; --i) {
+	//     Motion& motion = motions_registry.components[i];
+	// 	if (motion.position.x + abs(motion.scale.x) < 0.f) {
+	// 		if(!registry.players.has(motions_registry.entities[i])) // don't remove the player
+	// 			registry.remove_all_components_of(motions_registry.entities[i]);
+	// 	}
+	// }
 
-	// Spawn new enemies
-	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-		// reset timer
-		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-		// create an enemy
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	}
+	// // Spawn new enemies
+	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+	// 	// reset timer
+	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+	// 	// create an enemy
+	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
+	// }
 
-	// Process the player state
-	assert(registry.screenStates.components.size() <= 1);
-	ScreenState &screen = registry.screenStates.components[0];
+	// // Process the player state
+	// assert(registry.screenStates.components.size() <= 1);
+	// ScreenState &screen = registry.screenStates.components[0];
 
-	float min_counter_ms = 3000.f;
+	// float min_counter_ms = 3000.f;
 
-	return true;
+	// return true;
 }
 
 // Reset the world state to its initial state
 void WorldSystem::restart_game() {
     // handle restarting game (if need?)
 	// Debugging for memory/component leaks
+
 	registry.list_all_components();
 	printf("Restarting\n");
 
@@ -160,15 +171,23 @@ void WorldSystem::restart_game() {
 
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
+
+	battle_player_sprite = createBattlePlayer(renderer, { 200.f, 200.f});
+
+    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - 200.f, window_height_px - 200.f });
+
 }
 
 // Compute collisions between entities
 void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
-	if (curr_scene == Screen::OVERWORLD) {
-		overworld.handle_collisions();
-	} else if (curr_scene == Screen::BATTLE) {
-		battle.handle_collisions();
+	switch(curr_scene) {
+		case Screen::OVERWORLD:
+			overworld.handle_collisions();
+			break;
+		default:
+			battle.handle_collisions();
+			break;
 	}
 }
 
