@@ -50,6 +50,8 @@ private:
 
 	// Game state
 	RenderSystem* renderer;
+	float current_speed;
+	float next_enemy_spawn;
 	Entity player_sprite;
 
 	// music references

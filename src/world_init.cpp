@@ -39,8 +39,22 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 	registry.meshPtrs.emplace(entity, &mesh);
 
 	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 50, 50 };
+	motion.position = pos;
+	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 
 	// Create component
+	registry.enemies.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{
+			TEXTURE_ASSET_ID::ENEMY,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
 
 	return entity;
 }

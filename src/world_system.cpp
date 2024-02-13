@@ -9,10 +9,13 @@
 #include "physics_system.hpp"
 
 // Game configuration
+const size_t MAX_ENEMIES = 2;
+const size_t ENEMY_DELAY_MS = 5000 * 3;
 
 
 // Create the bug world
-WorldSystem::WorldSystem() {
+WorldSystem::WorldSystem() :
+	next_enemy_spawn(0.f) {
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
 }
@@ -110,6 +113,13 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	}
 
 	// Spawn new enemies
+	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+		// reset timer
+		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+		// create an enemy
+		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
+	}
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
@@ -126,6 +136,9 @@ void WorldSystem::restart_game() {
 	// Debugging for memory/component leaks
 	registry.list_all_components();
 	printf("Restarting\n");
+
+	// Reset the game speed
+	current_speed = 1.f;
 
 	// Remove all entities that we created
 	// All that have a motion (maybe exclude player? !!!<TODO>)

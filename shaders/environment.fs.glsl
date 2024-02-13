@@ -23,8 +23,6 @@ vec4 color_shift(vec4 in_color)
 	// TODO A1: HANDLE THE COLOR SHIFTING HERE (you may want to make it blue-ish)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	in_color *= vec4(1.0, 1.0, 0.9, 1.0);
-
 	return in_color;
 }
 

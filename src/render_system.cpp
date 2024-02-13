@@ -10,15 +10,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	// Handle transformations and rendering
 	// For references, refer back to A1 template code
 	Motion &motion = registry.motions.get(entity);
-	// Transformation code, see Rendering and Transformation in the template
-	// specification for more info Incrementally updates transformation matrix,
-	// thus ORDER IS IMPORTANT
+	// Transformation code
 	Transform transform;
 	transform.translate(motion.position);
 	transform.scale(motion.scale);
 	transform.rotate(motion.angle);
-	// !!! TODO A1: add rotation to the chain of transformations, mind the order
-	// of transformations
 
 	assert(registry.renderRequests.has(entity));
 	const RenderRequest &render_request = registry.renderRequests.get(entity);
@@ -92,8 +88,6 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 		// 	// GLint light_up_uloc = glGetUniformLocation(program, "light_up");
 		// 	// assert(light_up_uloc >= 0);
 
-		// 	// !!! TODO A1: set the light_up shader variable using glUniform1i,
-		// 	// similar to the glUniform1f call below. The 1f or 1i specified the type, here a single int.
 		// 	// GLint light_up = registry.lightUps.has(entity) ? 1 : 0;
 		// 	// glUniform1i(light_up_uloc, light_up);
 		// 	// gl_has_errors();
@@ -105,10 +99,11 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	}
 
 	// Getting uniform locations for glUniform* calls
-	// GLint color_uloc = glGetUniformLocation(program, "fcolor");
+	GLint color_uloc = glGetUniformLocation(program, "fcolor");
 	// const vec3 color = registry.colors.has(entity) ? registry.colors.get(entity) : vec3(1);
-	// glUniform3fv(color_uloc, 1, (float *)&color);
-	// gl_has_errors();
+	const vec3 color = vec3(1);
+	glUniform3fv(color_uloc, 1, (float *)&color);
+	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
 	GLint size = 0;
@@ -208,8 +203,8 @@ void RenderSystem::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	// glClearColor(0.674, 0.847, 1.0 , 1.0);
-	glClearColor(0.032, 0.139, 0.153, 1.0);
+	// glClearColor(0.032, 0.139, 0.153, 1.0); // background colour
+	glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
 	glClearDepth(10.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_BLEND);
