@@ -1,5 +1,6 @@
 # Other build files
 .vscode/
+build/
 
 # CMake build files
 CMakeFiles/

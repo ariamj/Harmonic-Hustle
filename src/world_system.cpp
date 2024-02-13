@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
+#include "overworld_screen.hpp"
+#include "battle_screen.hpp"
 
 // Game configuration
 
@@ -15,6 +17,12 @@
 WorldSystem::WorldSystem() {
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
+
+	is_in_battle = false;
+	is_in_overworld = true;
+	overworld.init();
+	battle.init();
+
 }
 
 WorldSystem::~WorldSystem() {
@@ -84,6 +92,11 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	// handle next step of game
+	if (is_in_overworld) {
+		overworld.handle_step(elapsed_ms_since_last_update);
+	} else if (is_in_battle) {
+		battle.handle_step(elapsed_ms_since_last_update);
+	}
 	return true;
 }
 
@@ -95,6 +108,11 @@ void WorldSystem::restart_game() {
 // Compute collisions between entities
 void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
+	if (is_in_overworld) {
+		overworld.handle_collisions();
+	} else if (is_in_battle) {
+		battle.handle_collisions();
+	}
 }
 
 // Should the game be over ?
@@ -105,60 +123,48 @@ bool WorldSystem::is_over() const {
 // exit game or go back depending on game state
 void handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
-
+		std::cout << "esc press" << std::endl;
 	}
 }
 
 // confirmation key
 void handleEnterInput(int action) {
 	if (action == GLFW_PRESS) {
-
-	}
-}
-
-void handleMovementInput(int action, int key) {
-	if (action == GLFW_PRESS) {
-		std::cout << key << " PRESSED" << '\n';
-	}
-	else if (action == GLFW_RELEASE) {
-		std::cout << key << " RELEASED" << '\n';
-	}
-}
-
-void handleRhythmInput(int action, int key) {
-	if (action == GLFW_PRESS) {
-
+		std::cout << "enter press" << std::endl;
 	}
 }
 
 // On key callback
-void WorldSystem::on_key(int key, int, int action, int mod) {
-    // handle key inputs
+void WorldSystem::on_key(int key, int scancode, int action, int mod) {
+
+	// global keys:
+	// esc -> exit/pause
+	// enter -> 
+	
+	// overworld keys:
+	// WASD -> walking
+
+	// battle keys:
+	// DFJK -> rhythm
+
 	switch (key) {
+		case GLFW_KEY_C:
+		std::cout << "attempting change color" << std::endl;
+			
+			// glutPostRedisplay();
+			break;
 		case GLFW_KEY_ESCAPE:
 			handleEscInput(action);
 			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
 			break;
-		case GLFW_KEY_W:
-		case GLFW_KEY_A:
-		case GLFW_KEY_S:
-			handleMovementInput(action, key);
-			break;
-		case GLFW_KEY_D:
-			//if were in the overworld then
-			handleMovementInput(action, key);
-			//else 
-			//handleRhythmInput(action, key);
-			break;
-		case GLFW_KEY_F:
-		case GLFW_KEY_J:
-		case GLFW_KEY_K:
-			handleRhythmInput(action, key);
-			break;
 		default:
-			break;
+			if (is_in_overworld) {
+				overworld.handle_key(key, scancode, action, mod);
+			} else if (is_in_battle) {
+				battle.handle_key(key, scancode, action, mod);
+			}
 	}
 }
 

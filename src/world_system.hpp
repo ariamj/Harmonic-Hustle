@@ -12,6 +12,8 @@
 #include <SDL_mixer.h>
 
 #include "render_system.hpp"
+#include "overworld_screen.hpp"
+#include "battle_screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
@@ -19,6 +21,9 @@ class WorldSystem
 {
 public:
 	WorldSystem();
+
+	Overworld overworld;
+	Battle battle;
 
 	// Creates a window
 	GLFWwindow* create_window();
@@ -39,7 +44,7 @@ public:
 	bool is_over()const;
 private:
 	// Input callback functions
-	void on_key(int key, int, int action, int mod);
+	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
 
 	// restart level
@@ -57,4 +62,9 @@ private:
 	// C++ random number generator
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
+
+	bool is_in_battle;
+	bool is_in_overworld;
+	// TODO for future -> add menu screen bool?
+
 };
