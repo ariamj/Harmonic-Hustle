@@ -14,6 +14,11 @@ public:
 	ComponentContainer<Mesh*> meshPtrs;
 	ComponentContainer<RenderRequest> renderRequests;
 	ComponentContainer<ScreenState> screenStates;
+	ComponentContainer<Motion> motions;
+	ComponentContainer<Note> notes;
+	ComponentContainer<Player> players;
+	ComponentContainer<Enemy> enemies;
+	ComponentContainer<Conductor> conductors;
 
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -22,6 +27,11 @@ public:
 		registry_list.push_back(&meshPtrs);
 		registry_list.push_back(&renderRequests);
 		registry_list.push_back(&screenStates);
+		registry_list.push_back(&motions);
+		registry_list.push_back(&notes);
+		registry_list.push_back(&players);
+		registry_list.push_back(&enemies);
+		registry_list.push_back(&conductors);
 	}
 
 	void clear_all_components() {

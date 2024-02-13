@@ -46,8 +46,8 @@ int main() {
 			(float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 		t = now;
 
-        //renderer.draw(world) // -> to be able to conditionally check game state
-
+        world.step(elapsed_ms);
+        renderSystem.draw();
     }
 
     return EXIT_SUCCESS;

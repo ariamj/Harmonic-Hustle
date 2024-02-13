@@ -11,10 +11,13 @@
 #include "battle_screen.hpp"
 
 // Game configuration
+const size_t MAX_ENEMIES = 2;
+const size_t ENEMY_DELAY_MS = 5000 * 3;
 
 
 // Create the bug world
-WorldSystem::WorldSystem() {
+WorldSystem::WorldSystem() :
+	next_enemy_spawn(0.f) {
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
 
@@ -63,10 +66,14 @@ GLFWwindow* WorldSystem::create_window() {
 #if __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
+	glfwWindowHint(GLFW_RESIZABLE, 1);
 
 	// Create the main window (for rendering, keyboard, and mouse input)
-	window = glfwCreateWindow(window_width_px, window_height_px, "Harmonic Hustle", nullptr, nullptr);
+	// Make main window size of the entire screen
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	window = glfwCreateWindow(mode->width, mode->height, "Harmonic Hustle", nullptr, nullptr);
+	// window = glfwCreateWindow(window_width_px, window_height_px, "Harmonic Hustle", nullptr, nullptr);
 	if (window == nullptr) {
 		fprintf(stderr, "Failed to glfwCreateWindow");
 		return nullptr;
@@ -94,17 +101,65 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	// handle next step of game
-	if (curr_scene == Screen::OVERWORLD) {
-		overworld.handle_step(elapsed_ms_since_last_update);
-	} else if (curr_scene == Screen::BATTLE) {
-		battle.handle_step(elapsed_ms_since_last_update);
+	// Update window title with current scene
+	std::stringstream title_ss;
+	title_ss << "Harmonic Hustle --- Overworld";
+	glfwSetWindowTitle(window, title_ss.str().c_str());
+
+	// Remove debug info from the last step
+
+	// Remove out of screen entities (Notes, etc.)
+	auto& motions_registry = registry.motions;
+
+	// Remove entities that leave the screen on the left side
+	// Iterate backwards to be able to remove without unterfering with the next object to visit
+	// (the containers exchange the last element with the current)
+	for (int i = (int)motions_registry.components.size()-1; i>=0; --i) {
+	    Motion& motion = motions_registry.components[i];
+		if (motion.position.x + abs(motion.scale.x) < 0.f) {
+			if(!registry.players.has(motions_registry.entities[i])) // don't remove the player
+				registry.remove_all_components_of(motions_registry.entities[i]);
+		}
 	}
+
+	// Spawn new enemies
+	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+		// reset timer
+		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+		// create an enemy
+		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
+	}
+
+	// Process the player state
+	assert(registry.screenStates.components.size() <= 1);
+	ScreenState &screen = registry.screenStates.components[0];
+
+	float min_counter_ms = 3000.f;
+
 	return true;
 }
 
 // Reset the world state to its initial state
 void WorldSystem::restart_game() {
     // handle restarting game (if need?)
+	// Debugging for memory/component leaks
+	registry.list_all_components();
+	printf("Restarting\n");
+
+	// Reset the game speed
+	current_speed = 1.f;
+
+	// Remove all entities that we created
+	// All that have a motion (maybe exclude player? !!!<TODO>)
+	while (registry.motions.entities.size() > 0)
+	    registry.remove_all_components_of(registry.motions.entities.back());
+
+	// Debugging for memory/component leaks
+	registry.list_all_components();
+
+	// Create a new Player
+	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 }
 
 // Compute collisions between entities

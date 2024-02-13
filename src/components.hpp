@@ -113,10 +113,12 @@ const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
 enum class EFFECT_ASSET_ID {
 	// set effect asset IDs
-	// PLAYER = 0,
-	// TEXTURED = PLAYER + 1,
-	// EFFECT_COUNT = TEXTURED + 1 // keep as last variable
-	EFFECT_COUNT = 0 // We have no shader files yet
+	PLAYER = 0,
+	ENEMY = PLAYER + 1,
+	COLOURED = ENEMY + 1,
+	TEXTURED = COLOURED + 1,
+	ENVIRONMENT = TEXTURED + 1,
+	EFFECT_COUNT = ENVIRONMENT + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
