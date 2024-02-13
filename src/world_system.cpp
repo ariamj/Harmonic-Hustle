@@ -7,25 +7,11 @@
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
-#include "overworld_screen.hpp"
-#include "battle_screen.hpp"
-
-// Game configuration
-const size_t MAX_ENEMIES = 2;
-const size_t ENEMY_DELAY_MS = 5000 * 3;
-
 
 // Create the bug world
 WorldSystem::WorldSystem(){
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
-
-	// set current scene to overworld
-	curr_scene = Screen::OVERWORLD;
-	// curr_scene = Screen::BATTLE;
-
-	// overworld.init(window);
-	// battle.init();
 
 }
 
@@ -93,10 +79,19 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
+	curr_scene = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
-	// overworld.set_visible(true);
-	battle.set_visible(true);
+	
+
+	// !!!hard coded right now to launch chosen scene on start
+	// TODO -> update transition
+	overworld.set_visible(true);
+	curr_scene = Screen::OVERWORLD;
+	// battle.set_visible(true);
+	// curr_scene = Screen::BATTLE;
+
+
 
 	// Set all states to default
     restart_game();
@@ -106,50 +101,10 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
 	if (curr_scene == Screen::OVERWORLD) {
-		overworld.handle_step(elapsed_ms_since_last_update);
+		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
-		return battle.handle_step(elapsed_ms_since_last_update);
+		return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
-
-
-	// handle next step of game
-	// Update window title with current scene
-	// std::stringstream title_ss;
-	// title_ss << "Harmonic Hustle --- Overworld";
-	// glfwSetWindowTitle(window, title_ss.str().c_str());
-
-	// // Remove debug info from the last step
-
-	// // Remove out of screen entities (Notes, etc.)
-	// auto& motions_registry = registry.motions;
-
-	// // Remove entities that leave the screen on the left side
-	// // Iterate backwards to be able to remove without unterfering with the next object to visit
-	// // (the containers exchange the last element with the current)
-	// for (int i = (int)motions_registry.components.size()-1; i>=0; --i) {
-	//     Motion& motion = motions_registry.components[i];
-	// 	if (motion.position.x + abs(motion.scale.x) < 0.f) {
-	// 		if(!registry.players.has(motions_registry.entities[i])) // don't remove the player
-	// 			registry.remove_all_components_of(motions_registry.entities[i]);
-	// 	}
-	// }
-
-	// // Spawn new enemies
-	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-	// 	// reset timer
-	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-	// 	// create an enemy
-	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	// }
-
-	// // Process the player state
-	// assert(registry.screenStates.components.size() <= 1);
-	// ScreenState &screen = registry.screenStates.components[0];
-
-	// float min_counter_ms = 3000.f;
-
-	// return true;
 }
 
 // Reset the world state to its initial state
@@ -213,46 +168,6 @@ void handleEnterInput(int action) {
 	}
 }
 
-void handleMovementInput(int action, int key) {
-	// Entity e = registry.players.entities[0];
-	// Motion& motion = registry.motions.get(e);
-
-	// if (action == GLFW_PRESS) {
-	// 	if (key == GLFW_KEY_W) {
-	// 		motion.velocity[1] = -100;
-	// 	}
-	// 	if (key == GLFW_KEY_S) {
-	// 		motion.velocity[1] = 100;
-	// 	}
-	// 	if (key == GLFW_KEY_A) {
-	// 		motion.velocity[0] = -100;
-	// 	}
-	// 	if (key == GLFW_KEY_D) {
-	// 		motion.velocity[0] = 100;
-	// 	}
-	// }
-	// else if (action == GLFW_RELEASE) {
-	// 	if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
-	// 		motion.velocity[1] = 0;
-	// 	}
-	// 	if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
-	// 		motion.velocity[0] = 0;
-	// 	}
-	// }
-	if (action == GLFW_PRESS) {
-		std::cout << key << " PRESSED" << '\n';
-	}
-	else if (action == GLFW_RELEASE) {
-		std::cout << key << " RELEASED" << '\n';
-	}
-}
-
-void handleRhythmInput(int action, int key) {
-	if (action == GLFW_PRESS) {
-
-	}
-}
-
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 
@@ -269,12 +184,17 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 	switch (key) {
 		case GLFW_KEY_C:			
 			// hard code scene switching to key 'c' for now
+			// TODO -> it's very buggy right now
 			if (action == GLFW_PRESS) {
 				if (curr_scene == Screen::OVERWORLD) {
 					curr_scene = Screen::BATTLE;
+					overworld.set_visible(false);
+					battle.set_visible(true);
 					std::cout << "current screen: battle" << std::endl;
 				} else {
 					curr_scene = Screen::OVERWORLD;
+					overworld.set_visible(true);
+					battle.set_visible(false);
 					std::cout << "current screen: overworld" << std::endl;
 				}
 			}

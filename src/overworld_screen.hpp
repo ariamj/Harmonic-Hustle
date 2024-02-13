@@ -24,7 +24,7 @@ class Overworld {
         ~Overworld();
 
         // Steps the game ahead by ms milliseconds
-        bool handle_step(float elapsed_ms_since_last_update);
+        bool handle_step(float elapsed_ms_since_last_update, float current_speed);
 
         bool set_visible(bool isVisible);
 

@@ -28,7 +28,7 @@ void Overworld::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
-bool Overworld::handle_step(float elapsed_ms_since_last_update) {
+bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
@@ -85,11 +85,30 @@ void Overworld::handle_collisions() {
 };
 
 void handleMovementInput(int action, int key) {
+	Entity e = registry.players.entities[0];
+	Motion& motion = registry.motions.get(e);
+
 	if (action == GLFW_PRESS) {
-		std::cout << key << " OVERWORLD PRESSED" << '\n';
+		if (key == GLFW_KEY_W) {
+			motion.velocity[1] = -100;
+		}
+		if (key == GLFW_KEY_S) {
+			motion.velocity[1] = 100;
+		}
+		if (key == GLFW_KEY_A) {
+			motion.velocity[0] = -100;
+		}
+		if (key == GLFW_KEY_D) {
+			motion.velocity[0] = 100;
+		}
 	}
 	else if (action == GLFW_RELEASE) {
-		std::cout << key << " OVERWORLD RELEASED" << '\n';
+		if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
+			motion.velocity[1] = 0;
+		}
+		if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
+			motion.velocity[0] = 0;
+		}
 	}
 }
 

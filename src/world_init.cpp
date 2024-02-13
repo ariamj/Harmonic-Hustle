@@ -84,7 +84,7 @@ Entity createBattlePlayer(RenderSystem* renderer, vec2 pos)
 	registry.screens.insert(entity, {Screen::BATTLE});
 
 	// Create component
-	registry.players.emplace(entity);
+	// registry.players.emplace(entity);
 	registry.renderRequests.insert(
 		entity,
 		{
@@ -116,7 +116,7 @@ Entity createBattleEnemy(RenderSystem* renderer, vec2 pos)
 	registry.screens.insert(entity, {Screen::BATTLE});
 
 	// Create component
-	registry.enemies.emplace(entity);
+	// registry.enemies.emplace(entity);
 	registry.renderRequests.insert(
 		entity,
 		{

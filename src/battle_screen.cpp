@@ -4,7 +4,7 @@
 #include <cassert>
 #include <sstream>
 #include <iostream>
-#include "world_init.hpp"
+// #include "world_init.hpp"
 #include <math.h>
 #include "tiny_ecs_registry.hpp"
 
@@ -22,7 +22,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
-bool Battle::handle_step(float elapsed_ms_since_last_update) {
+bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
