@@ -7,6 +7,7 @@
 // internal
 #include "world_system.hpp"
 #include <audio_system.hpp>
+#include "physics_system.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -16,6 +17,7 @@ int main() {
     WorldSystem world;
     RenderSystem renderSystem;
     AudioSystem audioSystem;
+    PhysicsSystem physics;
 
     // Initialize window
     GLFWwindow* window = world.create_window();
@@ -45,6 +47,7 @@ int main() {
 		t = now;
 
         world.step(elapsed_ms);
+        physics.step(elapsed_ms);
         renderSystem.draw();
     }
 
