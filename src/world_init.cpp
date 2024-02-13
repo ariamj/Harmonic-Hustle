@@ -6,12 +6,26 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	auto entity = Entity();
 
 	// Store a reference to the potentially re-used mesh object
-	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::PLAYER);
+	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
 	registry.meshPtrs.emplace(entity, &mesh);
 
 	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 50, 50 };
+	motion.position = pos;
+	motion.scale = vec2({ PLAYER_WIDTH, PLAYER_HEIGHT });
 
 	// Create component
+	registry.players.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{
+			TEXTURE_ASSET_ID::PLAYER,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
 
 	return entity;
 }

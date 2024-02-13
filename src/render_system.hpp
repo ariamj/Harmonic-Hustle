@@ -39,7 +39,8 @@ class RenderSystem {
 		shader_path("playerSprite"),
 		shader_path("enemySprite"),
 		shader_path("coloured"),
-		shader_path("textured")
+		shader_path("textured"),
+		shader_path("environment")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;

@@ -50,6 +50,7 @@ private:
 
 	// Game state
 	RenderSystem* renderer;
+	Entity player_sprite;
 
 	// music references
 	Mix_Music* background_music;

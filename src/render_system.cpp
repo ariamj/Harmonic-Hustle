@@ -86,18 +86,18 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 							  sizeof(ColoredVertex), (void *)sizeof(vec3));
 		gl_has_errors();
 
-		if (render_request.used_effect == EFFECT_ASSET_ID::PLAYER)
-		{
-			// Light up?
-			GLint light_up_uloc = glGetUniformLocation(program, "light_up");
-			assert(light_up_uloc >= 0);
+		// if (render_request.used_effect == EFFECT_ASSET_ID::PLAYER)
+		// {
+		// 	// Light up?
+		// 	// GLint light_up_uloc = glGetUniformLocation(program, "light_up");
+		// 	// assert(light_up_uloc >= 0);
 
-			// !!! TODO A1: set the light_up shader variable using glUniform1i,
-			// similar to the glUniform1f call below. The 1f or 1i specified the type, here a single int.
-			// GLint light_up = registry.lightUps.has(entity) ? 1 : 0;
-			// glUniform1i(light_up_uloc, light_up);
-			// gl_has_errors();
-		}
+		// 	// !!! TODO A1: set the light_up shader variable using glUniform1i,
+		// 	// similar to the glUniform1f call below. The 1f or 1i specified the type, here a single int.
+		// 	// GLint light_up = registry.lightUps.has(entity) ? 1 : 0;
+		// 	// glUniform1i(light_up_uloc, light_up);
+		// 	// gl_has_errors();
+		// }
 	}
 	else
 	{
@@ -139,15 +139,16 @@ void RenderSystem::drawToScreen()
 	// For references, refer back to A1 template code
 	// Setting shaders
 	// get the wind texture, sprite mesh, and program
-	// glUseProgram(effects[(GLuint)EFFECT_ASSET_ID::WIND]);
-	// gl_has_errors();
+	glUseProgram(effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT]);
+	gl_has_errors();
 	// Clearing backbuffer
 	int w, h;
 	glfwGetFramebufferSize(window, &w, &h); // Note, this will be 2x the resolution given to glfwCreateWindow on retina displays
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, w, h);
 	glDepthRange(0, 10);
-	glClearColor(0.032f, 0.139f, 0.153f, 1.0);
+	glClearColor(1.f, 0, 0, 1.0);
+	// glClearColor(0.032f, 0.139f, 0.153f, 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl_has_errors();
@@ -163,20 +164,20 @@ void RenderSystem::drawToScreen()
 		index_buffers[(GLuint)GEOMETRY_BUFFER_ID::SCREEN_TRIANGLE]); // Note, GL_ELEMENT_ARRAY_BUFFER associates
 																	 // indices to the bound GL_ARRAY_BUFFER
 	gl_has_errors();
-	// const GLuint wind_program = effects[(GLuint)EFFECT_ASSET_ID::WIND];
+	const GLuint wind_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
 	// Set clock
-	// GLuint time_uloc = glGetUniformLocation(wind_program, "time");
+	GLuint time_uloc = glGetUniformLocation(wind_program, "time");
 	// GLuint dead_timer_uloc = glGetUniformLocation(wind_program, "darken_screen_factor");
-	// glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	ScreenState &screen = registry.screenStates.get(screen_state_entity);
 	// glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
-	// GLint in_position_loc = glGetAttribLocation(wind_program, "in_position");
-	// glEnableVertexAttribArray(in_position_loc);
-	// glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
-	// gl_has_errors();
+	GLint in_position_loc = glGetAttribLocation(wind_program, "in_position");
+	glEnableVertexAttribArray(in_position_loc);
+	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
+	gl_has_errors();
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -185,7 +186,7 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 	// Draw
 	glDrawElements(
-		GL_TRIANGLES, 0, GL_UNSIGNED_SHORT, // changed from 3 for elements
+		GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, // changed from 3 for elements
 		nullptr); // one triangle = 3 vertices; nullptr indicates that there is
 				  // no offset from the bound index buffer
 	gl_has_errors();
@@ -207,7 +208,8 @@ void RenderSystem::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	glClearColor(0.674, 0.847, 1.0 , 1.0);
+	// glClearColor(0.674, 0.847, 1.0 , 1.0);
+	glClearColor(0.032, 0.139, 0.153, 1.0);
 	glClearDepth(10.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_BLEND);
