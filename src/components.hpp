@@ -114,7 +114,8 @@ const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 enum class EFFECT_ASSET_ID {
 	// set effect asset IDs
 	PLAYER = 0,
-	COLOURED = PLAYER + 1,
+	ENEMY = PLAYER + 1,
+	COLOURED = ENEMY + 1,
 	TEXTURED = COLOURED + 1,
 	EFFECT_COUNT = TEXTURED + 1 // keep as last variable
 };
