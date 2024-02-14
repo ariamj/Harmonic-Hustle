@@ -133,11 +133,11 @@ void WorldSystem::restart_game() {
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 
-	battle_player_sprite = createBattlePlayer(renderer, { 200.f, 200.f});
+	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
+	float yDisplacement = PORTRAIT_HEIGHT / 2;
 
-    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - 200.f, window_height_px - 200.f });
-
-
+	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
+    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - yDisplacement, window_height_px - xDisplacement });
 }
 
 // Compute collisions between entities
