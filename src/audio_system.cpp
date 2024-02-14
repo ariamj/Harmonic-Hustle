@@ -9,8 +9,8 @@ AudioSystem::AudioSystem() {
 
 AudioSystem::~AudioSystem() {
 		// Destroy music components
-	if (background_music != nullptr)
-		Mix_FreeMusic(background_music);
+	if (overworld_music != nullptr)
+		Mix_FreeMusic(overworld_music);
 	Mix_CloseAudio();
 
 	return;
@@ -28,25 +28,46 @@ bool AudioSystem::init() {
 	}
 
 	LoadFiles();
-	playBGM();
+	// Play overworld by default on game initialization.
+	playOverworld();
 	return true;
 }
 
 bool AudioSystem::LoadFiles() {
 	// Load BGM from file path
-	background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
+	std::string overworld_file = "overworld.wav";
+	overworld_music = Mix_LoadMUS(audio_path(overworld_file).c_str());
 
-	if (background_music == nullptr) { // add "%s\n" for each sound added
+	if (overworld_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
-			audio_path("music.wav").c_str());
+			audio_path(overworld_file).c_str());
 		return false;
 	}
+
+	std::string enemy0_file = "enemy0.wav";
+	Mix_Music* enemy0_music = Mix_LoadMUS(audio_path(enemy0_file).c_str());
+
+	if (enemy0_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(enemy0_file).c_str());
+		return false;
+	}
+
+	enemy_music.push_back(enemy0_music);
+
 	return true; // Successfully loaded all files
 }
 
-bool AudioSystem::playBGM() {
-	// Playing background music indefinitely using SDL
-	Mix_PlayMusic(background_music, -1);
+bool AudioSystem::playOverworld() {
+	// Use "Music" type and associated methods for background music (allegedly higher quality)
+		// Will Use "Chunk" type for short SFX snippets later on
+	Mix_PlayMusic(overworld_music, -1);
 	fprintf(stderr, "Playing background music\n");
+	return true;
+}
+
+bool AudioSystem::playBattle(int enemy_id) {
+	// enemy_music is a vector of audio file data
+	Mix_PlayMusic(enemy_music[enemy_id], -1);
 	return true;
 }

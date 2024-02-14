@@ -18,7 +18,6 @@ int main() {
     // Global systems
     WorldSystem world;
     RenderSystem renderSystem;
-    AudioSystem audioSystem;
     PhysicsSystem physics;
 
     // Initialize window
@@ -34,7 +33,6 @@ int main() {
     
     renderSystem.init(window);
     world.init(&renderSystem);
-    audioSystem.init();
 
     // variable timestep loop
     auto t = Clock::now();

@@ -7,6 +7,9 @@
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
+#include "audio_system.hpp"
+
+AudioSystem audioSystem;
 
 // Create the bug world
 WorldSystem::WorldSystem(){
@@ -91,7 +94,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	// battle.set_visible(true);
 	// curr_scene = Screen::BATTLE;
 
-
+	// Moved into here from main
+	audioSystem.init();
 
 	// Set all states to default
     restart_game();
@@ -190,12 +194,13 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					curr_scene = Screen::BATTLE;
 					overworld.set_visible(false);
 					battle.set_visible(true);
+					audioSystem.playBattle(0); // switch to battle music
 					std::cout << "current screen: battle" << std::endl;
 				} else {
 					curr_scene = Screen::OVERWORLD;
 					battle.set_visible(false);
 					overworld.set_visible(true);
-					
+					audioSystem.playOverworld();
 					std::cout << "current screen: overworld" << std::endl;
 				}
 			}
