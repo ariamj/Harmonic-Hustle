@@ -64,13 +64,22 @@ bool Battle::set_visible(bool isVisible) {
     return is_visible;
 };
 
+// change color of note and play event sound
 void Battle::handle_collisions() {
 
 };
 
+// battle keys:
+// DFJK -> rhythm
+// currently if any of DFJK is pressed, will check for collision
+
 void handleRhythmInput(int action, int key) {
 	if (action == GLFW_PRESS) {
         std::cout << "rhythm input: " << key << std::endl;
+		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
+			// handle collision or miss
+			
+		}
 	}
 }
 
