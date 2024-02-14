@@ -4,6 +4,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <vector>
 
 class AudioSystem 
 {
@@ -15,11 +16,13 @@ public:
 
 	bool init();
 
-	bool playBGM();
+	bool playOverworld();
+	bool playBattle(int enemy_id);
 private:
 	bool LoadFiles();
 
 	// music references
-	Mix_Music* background_music;
+	Mix_Music* overworld_music;
+	std::vector<Mix_Music*> enemy_music;
 
 };
