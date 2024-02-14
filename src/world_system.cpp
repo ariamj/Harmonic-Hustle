@@ -193,8 +193,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					std::cout << "current screen: battle" << std::endl;
 				} else {
 					curr_scene = Screen::OVERWORLD;
-					overworld.set_visible(true);
 					battle.set_visible(false);
+					overworld.set_visible(true);
+					
 					std::cout << "current screen: overworld" << std::endl;
 				}
 			}

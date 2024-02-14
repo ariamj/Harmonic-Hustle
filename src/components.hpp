@@ -82,6 +82,13 @@ struct Scene
 	Screen scene;
 };
 
+struct Collision
+{
+	// Note, the first object is stored in the ECS container.entities
+	Entity other; // the second object involved in the collision
+	Collision(Entity& other) { this->other = other; };
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
