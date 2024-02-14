@@ -240,7 +240,7 @@ void RenderSystem::draw()
 			drawTexturedMesh(entity, projection_2D);
 
 		}
-		
+	
 		// render in accordance to current screen
 
 	}
