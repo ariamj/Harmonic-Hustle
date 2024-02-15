@@ -166,6 +166,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	overworld.set_visible(true);
 	audioSystem.playOverworld();
 	std::cout << "current screen: overworld" << std::endl;
+	return true; // added to prevent error
 };
 
 // REQUIRES current scene to be overworld
@@ -176,6 +177,7 @@ bool WorldSystem::render_set_battle_screen() {
 	battle.set_visible(true);
 	audioSystem.playBattle(0); // switch to battle music
 	std::cout << "current screen: battle" << std::endl;
+	return true; // added to prevent error
 };
 
 // open pause menu or go back depending on game state
