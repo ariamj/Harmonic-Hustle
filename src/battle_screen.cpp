@@ -9,7 +9,7 @@
 
 // consts for now;
 const size_t MAX_NOTES = 5;
-const size_t NOTE_SPAWN_DELAY = 1000;
+const size_t NOTE_SPAWN_DELAY = 2000;
 
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
@@ -54,12 +54,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	float min_counter_ms = 3000.f;
 	next_note_spawn -= elapsed_ms_since_last_update * current_speed;
 
-	if (registry.enemies.components.size() <= MAX_NOTES && next_note_spawn < 0.f) {
+	if (registry.enemies.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
 		// reset timer
 		next_note_spawn = (NOTE_SPAWN_DELAY / 2) + uniform_dist(rng) * (NOTE_SPAWN_DELAY / 2);
 		// create an enemy
 
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 10),1);
+		createEnemy(renderer, vec2(150.f + uniform_dist(rng) * (window_width_px - 500.f), window_height_px / 10),1);
 	}
 
 	//if (registry.notes.components.size() <= MAX_NOTES && next_note_spawn < 0.f) {
@@ -88,7 +88,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		if (registry.enemies.has(motions_registry.entities[i])) {
 
-			motion.position += motion.velocity * elapsed_ms_since_last_update / 1000.0f;
+			motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
 		}
 	}
 
