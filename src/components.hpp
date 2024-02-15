@@ -124,7 +124,8 @@ enum class TEXTURE_ASSET_ID {
 	BATTLEPLAYER = ENEMY + 1,
 	BATTLEENEMY = BATTLEPLAYER + 1,
 	JUDGEMENT = BATTLEENEMY + 1,
-	TEXTURE_COUNT = JUDGEMENT + 1 // keep as last variable
+	NOTE = JUDGEMENT + 1,
+	TEXTURE_COUNT = NOTE + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -138,7 +139,8 @@ enum class EFFECT_ASSET_ID {
 	TEXTURED = COLOURED + 1,
 	ENVIRONMENT = TEXTURED + 1,
 	JUDGEMENT = ENVIRONMENT + 1,
-	EFFECT_COUNT = JUDGEMENT + 1 // keep as last variable
+	NOTE = JUDGEMENT + 1,
+	EFFECT_COUNT = NOTE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 

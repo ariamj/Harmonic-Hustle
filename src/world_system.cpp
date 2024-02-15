@@ -138,7 +138,12 @@ void WorldSystem::restart_game() {
 
 	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
     battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - yDisplacement, window_height_px - xDisplacement });
-	judgement_line_sprite = createJudgementLine(renderer, { window_width_px/2, window_height_px / 1.2 });
+
+	// hard coded values for now
+	judgement_line_sprite = createJudgementLine(renderer, { window_width_px/2 + 100.f, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { window_width_px / 2 + 300.f, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { window_width_px / 2 - 100.f, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { window_width_px / 2 - 300.f, window_height_px / 1.2 });
 }
 
 // Compute collisions between entities

@@ -8,8 +8,16 @@
 #include "tiny_ecs_registry.hpp"
 
 // consts for now;
-const size_t MAX_NOTES = 5;
-const size_t NOTE_SPAWN_DELAY = 2000;
+const size_t MAX_NOTES = 10;
+const size_t NOTE_SPAWN_DELAY = 3000;
+
+// lanes where notes will spawn
+const float LANE_1 = window_width_px / 2 - 300;
+const float LANE_2 = window_width_px / 2 - 100;
+const float LANE_3 = window_width_px / 2 + 100;
+const float LANE_4 = window_width_px / 2 + 300;
+
+float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
 
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
@@ -30,21 +38,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	title_ss << "Harmonic Hustle --- Battle";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
-	// Remove debug info from the last step
-
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
-
-	// Remove entities that leave the screen on the left side
-	// Iterate backwards to be able to remove without unterfering with the next object to visit
-	// (the containers exchange the last element with the current)
-	// for (int i = (int)motions_registry.components.size()-1; i>=0; --i) {
-	//     Motion& motion = motions_registry.components[i];
-	// 	if (motion.position.x + abs(motion.scale.x) < 0.f) {
-	// 		if(!registry.players.has(motions_registry.entities[i])) // don't remove the player
-	// 			registry.remove_all_components_of(motions_registry.entities[i]);
-	// 	}
-	// }
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
@@ -53,30 +48,19 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	float min_counter_ms = 3000.f;
 	next_note_spawn -= elapsed_ms_since_last_update * current_speed;
 
-	if (registry.enemies.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
+	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
 		// reset timer
 		next_note_spawn = (NOTE_SPAWN_DELAY / 2) + uniform_dist(rng) * (NOTE_SPAWN_DELAY / 2);
-		// create an enemy
-
-		createEnemy(renderer, vec2(150.f + uniform_dist(rng) * (window_width_px - 500.f), window_height_px / 10),1);
+		// spawn notes in the four lanes
+		createNote(renderer, vec2(lanes[rand() % 4], window_height_px / 10));
 	}
 
-	//if (registry.notes.components.size() <= MAX_NOTES && next_note_spawn < 0.f) {
-
-	//	// reset timer
-	//	next_note_spawn = (NOTE_SPAWN_DELAY / 2) + uniform_dist(rng) * (NOTE_SPAWN_DELAY / 2);
-	//	// create an enemy
-
-	//	//createNote(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	//}
-
-
-	// Remove entities that leave the screen on the left side
+	// Remove entities that leave the screen below
 	// Iterate backwards to be able to remove without unterfering with the next object to visit
 	// (the containers exchange the last element with the current)
 	for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
 		Motion& motion = motions_registry.components[i];
-		if (motion.position.y + abs(motion.scale.y) > 1400.f) {
+		if (motion.position.y + abs(motion.scale.y) > 1400.f) { // random hard coded just for test
 			registry.remove_all_components_of(motions_registry.entities[i]);
 		}
 	}
@@ -85,8 +69,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	for (int i = 0; i < registry.motions.components.size(); ++i) {
 		Motion& motion = registry.motions.components[i];
 
-		if (registry.enemies.has(motions_registry.entities[i])) {
-
+		if (registry.notes.has(motions_registry.entities[i])) {
 			motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
 		}
 	}
@@ -107,7 +90,7 @@ bool Battle::set_visible(bool isVisible) {
     return is_visible;
 };
 
-// change color of note and play event sound
+//TODO: change color of note and play event sound
 void Battle::handle_collisions() {
 	// Loop over all collisions detected by the physics system
 	auto& collisionsRegistry = registry.collisions;
@@ -120,15 +103,12 @@ void Battle::handle_collisions() {
 		if (registry.judgmentLine.has(entity)) {
 			
 			// Key - Judgment line collision checker:
-			//if (registry.notes.has(entity_other)) {
-			//	registry.collisionTimers.emplace(entity);
-			//	// now if key is pressed during timer, then it will disappear. otherwise turn red as it leaves off screen.
-			//}
-
 			if (registry.notes.has(entity_other)) {
-				registry.collisionTimers.emplace(entity);
+				registry.collisionTimers.emplace(entity_other);
+				registry.remove_all_components_of(entity_other);
 				// now if key is pressed during timer, then it will disappear. otherwise turn red as it leaves off screen.
 			}
+
 		}
 	}
 	registry.collisions.clear();

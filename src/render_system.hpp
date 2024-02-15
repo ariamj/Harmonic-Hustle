@@ -34,7 +34,9 @@ class RenderSystem {
 		textures_path("Enemy.png"),
 		textures_path("Player-Portrait-Neutral.png"),
 		textures_path("Enemy-Portrait-Neutral.png"),
-		textures_path("Judgement.png") };
+		textures_path("Judgement.png"),
+		textures_path("Note.png"),
+	};
 
 	std::array<GLuint, effect_count> effects;
 	// Make sure these paths remain in sync with the associated enumerators.
@@ -46,7 +48,8 @@ class RenderSystem {
 		shader_path("coloured"),
 		shader_path("textured"),
 		shader_path("environment"),
-		shader_path("judgement")
+		shader_path("judgement"),
+		shader_path("note")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;

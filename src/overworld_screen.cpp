@@ -55,7 +55,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
 		// create an enemy
 
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 0);
+		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
 	}
 
 	// Process the player state
