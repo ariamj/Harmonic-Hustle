@@ -62,6 +62,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		Motion& motion = motions_registry.components[i];
 		if (motion.position.y + abs(motion.scale.y) > window_height_px+50.f) {
 			// remove missed notes and play missed note sound
+			// TODO MUSIC: replace chicken dead sound
 			if (registry.notes.has(motions_registry.entities[i])) {
 				audio.playMissedNote();
 				registry.remove_all_components_of(motions_registry.entities[i]);
@@ -108,6 +109,7 @@ bool Battle::set_visible(bool isVisible) {
 bool key_pressed = false;
 //TODO: change color of note and play event sound
 void Battle::handle_collisions() {
+	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
 	if (key_pressed) {
 		// Loop over all collisions detected by the physics system
 		auto& collisionsRegistry = registry.collisions;
@@ -118,7 +120,7 @@ void Battle::handle_collisions() {
 
 			// check if judgment line
 			if (registry.judgmentLine.has(entity)) {
-			
+				got_hit = 1; // did not miss the note
 				// Key - Judgment line collision checker:
 				if (registry.notes.has(entity_other)) {
 					registry.collisionTimers.emplace(entity_other);
@@ -127,9 +129,18 @@ void Battle::handle_collisions() {
 
 			}
 		}
+		if (got_hit) {
+			// TODO MUSIC: play sound for successful hit note
+		}
+		else {
+			// TODO MUSIC: add correct sound
+			audio.playMissedNote(); // placeholder sound effect
+		}
 	}
 	registry.collisions.clear();
 	key_pressed = false;
+	
+	
 	
 };
 
@@ -143,9 +154,7 @@ void handleRhythmInput(int action, int key) {
 	if (action == GLFW_PRESS) {
         std::cout << "rhythm input: " << key << std::endl;
 		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
-			// handle collision or miss
 			key_pressed = true;
-			
 		}
 	}
 }
