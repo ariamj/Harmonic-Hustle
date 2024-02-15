@@ -15,7 +15,7 @@
 // the player
 Entity createPlayer(RenderSystem* renderer, vec2 pos);
 // the enemy
-Entity createEnemy(RenderSystem* renderer, vec2 pos);
+Entity createEnemy(RenderSystem* renderer, vec2 pos, int scene);
 
 // player in battle scene
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos);

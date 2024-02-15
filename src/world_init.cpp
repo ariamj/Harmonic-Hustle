@@ -33,7 +33,7 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createEnemy(RenderSystem* renderer, vec2 pos)
+Entity createEnemy(RenderSystem* renderer, vec2 pos, int scene)
 {
 	auto entity = Entity();
 
@@ -49,7 +49,13 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, {Screen::OVERWORLD});
+	if (scene == 0) {
+		registry.screens.insert(entity, {Screen::OVERWORLD});
+	}
+	else {
+		registry.screens.insert(entity, { Screen::BATTLE});
+	}
+	
 
 	// Create component
 	registry.enemies.emplace(entity);
@@ -64,6 +70,37 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 
 	return entity;
 }
+
+//Entity createNote(RenderSystem* renderer, vec2 pos) {
+//	auto entity = Entity();
+//	// Store a reference to the potentially re-used mesh object
+//	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
+//	registry.meshPtrs.emplace(entity, &mesh);
+//
+//	// Setting initial motion values
+//	auto& motion = registry.motions.emplace(entity);
+//	motion.angle = 0.f;
+//	motion.velocity = { 50, 50 };
+//	motion.position = pos;
+//	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
+//
+//	// screen entity exists in
+//	registry.screens.insert(entity, { Screen::BATTLE });
+//
+//	// Create component
+//	registry.enemies.emplace(entity);
+//	registry.renderRequests.insert(
+//		entity,
+//		{
+//			TEXTURE_ASSET_ID::NOTE,
+//			EFFECT_ASSET_ID::TEXTURED,
+//			GEOMETRY_BUFFER_ID::SPRITE,
+//		}
+//	);
+//
+//	return entity;
+//
+//}
 
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos)
 {

@@ -37,7 +37,8 @@ class Battle {
 
          // game state
         RenderSystem* renderer;
-        float current_speed;
+        //float current_speed;
+        float next_note_spawn;
         Entity player_battle_sprite;
         Entity enemy_battle_sprite;
 

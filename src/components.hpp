@@ -46,7 +46,7 @@ struct Motion {
 // for notes
 struct Note
 {
-
+	bool pressed = false;
 };
 
 struct Player
@@ -87,6 +87,11 @@ struct Collision
 	// Note, the first object is stored in the ECS container.entities
 	Entity other; // the second object involved in the collision
 	Collision(Entity& other) { this->other = other; };
+};
+
+// how many seconds you have to react to the collision
+struct CollisionTimer {
+	float counter_ms = 1000;
 };
 
 /**
