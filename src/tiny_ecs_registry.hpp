@@ -21,6 +21,8 @@ public:
 	ComponentContainer<Conductor> conductors;
 	ComponentContainer<Screen> screens;
 	ComponentContainer<Collision> collisions;
+	ComponentContainer<JudgementLine> judgmentLine;
+	ComponentContainer<CollisionTimer> collisionTimers;
 
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -36,6 +38,8 @@ public:
 		registry_list.push_back(&conductors);
 		registry_list.push_back(&screens);
 		registry_list.push_back(&collisions);
+		registry_list.push_back(&judgmentLine);
+		registry_list.push_back(&collisionTimers);
 	}
 
 	void clear_all_components() {

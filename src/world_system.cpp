@@ -7,9 +7,6 @@
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
-#include "audio_system.hpp"
-
-AudioSystem audioSystem;
 
 // Create the bug world
 WorldSystem::WorldSystem(){
@@ -138,6 +135,12 @@ void WorldSystem::restart_game() {
 
 	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
     battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - yDisplacement, window_height_px - xDisplacement });
+
+	// hard coded values for now
+	judgement_line_sprite = createJudgementLine(renderer, { LANE_1, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { LANE_2, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { LANE_3, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { LANE_4, window_height_px / 1.2 });
 }
 
 // Compute collisions between entities
@@ -166,6 +169,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	overworld.set_visible(true);
 	audioSystem.playOverworld();
 	std::cout << "current screen: overworld" << std::endl;
+	return true; // added to prevent error
 };
 
 // REQUIRES current scene to be overworld
@@ -176,6 +180,7 @@ bool WorldSystem::render_set_battle_screen() {
 	battle.set_visible(true);
 	audioSystem.playBattle(0); // switch to battle music
 	std::cout << "current screen: battle" << std::endl;
+	return true; // added to prevent error
 };
 
 // open pause menu or go back depending on game state

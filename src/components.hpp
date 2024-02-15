@@ -46,7 +46,7 @@ struct Motion {
 // for notes
 struct Note
 {
-
+	bool pressed = false;
 };
 
 struct Player
@@ -89,6 +89,11 @@ struct Collision
 	Collision(Entity& other) { this->other = other; };
 };
 
+// how many seconds you have to react to the collision
+struct CollisionTimer {
+	float counter_ms = 1000;
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
@@ -118,7 +123,9 @@ enum class TEXTURE_ASSET_ID {
 	ENEMY = PLAYER + 1,
 	BATTLEPLAYER = ENEMY + 1,
 	BATTLEENEMY = BATTLEPLAYER + 1,
-	TEXTURE_COUNT = BATTLEENEMY + 1 // keep as last variable
+	JUDGEMENT = BATTLEENEMY + 1,
+	NOTE = JUDGEMENT + 1,
+	TEXTURE_COUNT = NOTE + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -131,7 +138,9 @@ enum class EFFECT_ASSET_ID {
 	COLOURED = BATTLEENEMY + 1,
 	TEXTURED = COLOURED + 1,
 	ENVIRONMENT = TEXTURED + 1,
-	EFFECT_COUNT = ENVIRONMENT + 1 // keep as last variable
+	JUDGEMENT = ENVIRONMENT + 1,
+	NOTE = JUDGEMENT + 1,
+	EFFECT_COUNT = NOTE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 

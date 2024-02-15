@@ -55,6 +55,15 @@ bool AudioSystem::LoadFiles() {
 
 	enemy_music.push_back(enemy0_music);
 
+	std::string missed_note = "chicken_dead.wav";
+	missed_note_music = Mix_LoadWAV(audio_path("chicken_dead.wav").c_str());
+
+	if (missed_note_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(missed_note).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -69,5 +78,10 @@ bool AudioSystem::playOverworld() {
 bool AudioSystem::playBattle(int enemy_id) {
 	// enemy_music is a vector of audio file data
 	Mix_PlayMusic(enemy_music[enemy_id], -1);
+	return true;
+}
+
+bool AudioSystem::playMissedNote() {
+	Mix_PlayChannel(-1, missed_note_music, 0);
 	return true;
 }
