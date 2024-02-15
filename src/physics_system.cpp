@@ -18,9 +18,9 @@
  {
  	vec2 dp = motion1.position - motion2.position;
  	float dist_squared = dot(dp,dp);
- 	const vec2 other_bonding_box = get_bounding_box(motion1) / 20.f;
+ 	const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
  	const float other_r_squared = dot(other_bonding_box, other_bonding_box);
- 	const vec2 my_bonding_box = get_bounding_box(motion2) / 20.f;
+ 	const vec2 my_bonding_box = get_bounding_box(motion2) / 10.f;
  	const float my_r_squared = dot(my_bonding_box, my_bonding_box);
  	const float r_squared = max(other_r_squared, my_r_squared);
  	if (dist_squared < r_squared)

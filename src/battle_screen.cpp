@@ -6,18 +6,17 @@
 #include <math.h>
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
+#include <audio_system.hpp>
 
 // consts for now;
 const size_t MAX_NOTES = 10;
 const size_t NOTE_SPAWN_DELAY = 3000;
 
 // lanes where notes will spawn
-const float LANE_1 = window_width_px / 2 - 300;
-const float LANE_2 = window_width_px / 2 - 100;
-const float LANE_3 = window_width_px / 2 + 100;
-const float LANE_4 = window_width_px / 2 + 300;
-
 float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
+
+AudioSystem audio = AudioSystem();
+
 
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
@@ -31,6 +30,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
+	audio.init();
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -60,8 +60,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	// (the containers exchange the last element with the current)
 	for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
 		Motion& motion = motions_registry.components[i];
-		if (motion.position.y + abs(motion.scale.y) > 1400.f) { // random hard coded just for test
-			registry.remove_all_components_of(motions_registry.entities[i]);
+		if (motion.position.y + abs(motion.scale.y) > window_height_px+50.f) {
+			// remove missed notes and play missed note sound
+			if (registry.notes.has(motions_registry.entities[i])) {
+				audio.playMissedNote();
+				registry.remove_all_components_of(motions_registry.entities[i]);
+			}
 		}
 	}
 
@@ -119,7 +123,6 @@ void Battle::handle_collisions() {
 				if (registry.notes.has(entity_other)) {
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);
-					// now if key is pressed during timer, then it will disappear. otherwise turn red as it leaves off screen.
 				}
 
 			}

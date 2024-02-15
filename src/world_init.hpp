@@ -12,6 +12,11 @@
 // const float PORTRAIT_WIDTH = 3 * 165.f;
 // const float PORTRAIT_HEIGHT = 3 * 165.f;
 
+const float LANE_1 = window_width_px / 2 - 300;
+const float LANE_2 = window_width_px / 2 - 100;
+const float LANE_3 = window_width_px / 2 + 100;
+const float LANE_4 = window_width_px / 2 + 300;
+
 // the player
 Entity createPlayer(RenderSystem* renderer, vec2 pos);
 // the enemy

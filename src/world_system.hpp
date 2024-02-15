@@ -14,6 +14,7 @@
 #include "render_system.hpp"
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
+#include "audio_system.hpp"
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -25,6 +26,8 @@ public:
 	
 	Battle battle;
 	Overworld overworld;
+	AudioSystem audioSystem;
+	
 
 	// Creates a window
 	GLFWwindow* create_window();
