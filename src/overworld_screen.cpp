@@ -1,5 +1,4 @@
 #include "overworld_screen.hpp"
-// #include "world_init.hpp"
 
 #include <cassert>
 #include <sstream>
@@ -70,13 +69,15 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 
 bool Overworld::set_visible(bool isVisible) {
     this->is_visible = isVisible;
-    // TODO add more checks
-    if (is_visible) {
-        if (registry.screens.has(registry.screenStates.entities[0])) registry.screens.remove(registry.screenStates.entities[0]);
-        registry.screens.insert(registry.screenStates.entities[0], Screen::OVERWORLD);
-    } else {
-        registry.screens.remove(registry.screenStates.entities[0]);
-    }
+    
+    Entity& curr_screen_entity = registry.screenStates.entities[0];
+    
+    // remove curr screen component
+    if (registry.screens.has(curr_screen_entity)) registry.screens.remove(curr_screen_entity);
+
+    // if we need to set it to visible, add Battle scene back
+    if (is_visible) registry.screens.insert(curr_screen_entity, Screen::OVERWORLD);
+
     return is_visible;
 };
 
@@ -128,23 +129,4 @@ void Overworld::handle_key(int key, int scancode, int action, int mod) {
 
 void Overworld::handle_mouse_move(vec2 pos) {
     
-};
-
-void Overworld::handle_reset() {
-    // registry.list_all_components();
-	// printf("Restarting\n");
-
-	// // Reset the game speed
-	// current_speed = 1.f;
-
-	// // Remove all entities that we created
-	// // All that have a motion (maybe exclude player? !!!<TODO>)
-	// while (registry.motions.entities.size() > 0)
-	//     registry.remove_all_components_of(registry.motions.entities.back());
-
-	// // Debugging for memory/component leaks
-	// registry.list_all_components();
-
-	// // Create a new Player
-	// player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 };

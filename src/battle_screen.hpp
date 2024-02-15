@@ -7,10 +7,6 @@
 #include <vector>
 #include <random>
 
-// #define SDL_MAIN_HANDLED
-// #include <SDL.h>
-// #include <SDL_mixer.h>
-
 #include "render_system.hpp"
 
 class Battle {
@@ -31,24 +27,9 @@ class Battle {
         // Check for collisions
         void handle_collisions();
 
-        // Should the game be over ?
-        // bool is_over()const;
-    // private:
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
         void handle_mouse_move(vec2 pos);
-
-        // restart level
-        void handle_reset();
-
-        // OpenGL window handle
-        // GLFWwindow* window;
-
-        // Game state
-        // RenderSystem* renderer;
-
-        // music references
-        // Mix_Music* background_music;
 
         // C++ random number generator
         std::default_random_engine rng;

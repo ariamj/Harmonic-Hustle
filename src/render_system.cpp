@@ -228,21 +228,12 @@ void RenderSystem::draw()
 
 	for (Entity entity : registry.renderRequests.entities)
 	{
-		// if (!registry.motions.has(entity))
-		// 	continue;
-		// Note, its not very efficient to access elements indirectly via the entity
-		// albeit iterating through all Sprites in sequence. A good point to optimize
-		
-		// add a check for current scene?
-
+		// render entity only if belongs to same screen as screen_state_entity
 		Screen entity_screen = registry.screens.get(entity);
 		if (entity_screen == curr_screen) {
 			drawTexturedMesh(entity, projection_2D);
 
 		}
-		
-		// render in accordance to current screen
-
 	}
 
 	// Truely render to the screen

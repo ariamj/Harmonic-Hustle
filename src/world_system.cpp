@@ -133,11 +133,11 @@ void WorldSystem::restart_game() {
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 
-	battle_player_sprite = createBattlePlayer(renderer, { 200.f, 200.f});
+	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
+	float yDisplacement = PORTRAIT_HEIGHT / 2;
 
-    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - 200.f, window_height_px - 200.f });
-
-
+	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
+    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - yDisplacement, window_height_px - xDisplacement });
 }
 
 // Compute collisions between entities
@@ -157,6 +157,26 @@ void WorldSystem::handle_collisions() {
 bool WorldSystem::is_over() const {
 	return bool(glfwWindowShouldClose(window));
 }
+
+// REQUIRES current scene to be battle
+// switch to overworld scene
+bool WorldSystem::render_set_overworld_screen() {
+	curr_scene = Screen::OVERWORLD;
+	battle.set_visible(false);
+	overworld.set_visible(true);
+	audioSystem.playOverworld();
+	std::cout << "current screen: overworld" << std::endl;
+};
+
+// REQUIRES current scene to be overworld
+// switch to battle scene
+bool WorldSystem::render_set_battle_screen() {
+	curr_scene = Screen::BATTLE;
+	overworld.set_visible(false);
+	battle.set_visible(true);
+	audioSystem.playBattle(0); // switch to battle music
+	std::cout << "current screen: battle" << std::endl;
+};
 
 // open pause menu or go back depending on game state
 void handleEscInput(int action) {
@@ -188,20 +208,11 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 	switch (key) {
 		case GLFW_KEY_C:			
 			// hard code scene switching to key 'c' for now
-			// TODO -> it's very buggy right now
 			if (action == GLFW_PRESS) {
 				if (curr_scene == Screen::OVERWORLD) {
-					curr_scene = Screen::BATTLE;
-					overworld.set_visible(false);
-					battle.set_visible(true);
-					audioSystem.playBattle(0); // switch to battle music
-					std::cout << "current screen: battle" << std::endl;
-				} else {
-					curr_scene = Screen::OVERWORLD;
-					battle.set_visible(false);
-					overworld.set_visible(true);
-					audioSystem.playOverworld();
-					std::cout << "current screen: overworld" << std::endl;
+					render_set_battle_screen();
+				} else if (curr_scene == Screen::BATTLE) {
+					render_set_overworld_screen();
 				}
 			}
 			

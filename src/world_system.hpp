@@ -44,6 +44,12 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 private:
+	//sets the current scene to overworld
+	bool render_set_overworld_screen();
+	
+	// sets the current scene to battle
+	bool render_set_battle_screen();
+
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -69,9 +75,6 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 
-	// bool is_in_battle;
-	// bool is_in_overworld;
 	Screen curr_scene;
-	// TODO for future -> add menu screen bool?
 
 };

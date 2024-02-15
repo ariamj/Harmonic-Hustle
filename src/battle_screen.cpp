@@ -1,11 +1,10 @@
 #include "battle_screen.hpp"
-// #include "world_init.hpp"
 
 #include <cassert>
 #include <sstream>
 #include <iostream>
-// #include "world_init.hpp"
 #include <math.h>
+#include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 
 Battle::Battle() {
@@ -54,13 +53,14 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 bool Battle::set_visible(bool isVisible) {
     this->is_visible = isVisible;
-    // TODO add more checks
-    if (is_visible) {
-        if (registry.screens.has(registry.screenStates.entities[0])) registry.screens.remove(registry.screenStates.entities[0]);
-        registry.screens.insert(registry.screenStates.entities[0], Screen::BATTLE);
-    } else {
-        registry.screens.remove(registry.screenStates.entities[0]);
-    }
+    Entity& curr_screen_entity = registry.screenStates.entities[0];
+
+    // remove curr screen component
+    if (registry.screens.has(curr_screen_entity)) registry.screens.remove(curr_screen_entity);
+
+    // if we need to set it to visible, add Battle scene back
+    if (is_visible) registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+
     return is_visible;
 };
 
@@ -99,25 +99,4 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 
 void Battle::handle_mouse_move(vec2 pos) {
     
-};
-
-void Battle::handle_reset() {
-    // registry.list_all_components();
-	// printf("Restarting Battle\n");
-
-	// // Reset the game speed
-	// current_speed = 1.f;
-
-	// // Remove all entities that we created
-	// // All that have a motion (maybe exclude player? !!!<TODO>)
-	// while (registry.motions.entities.size() > 0)
-	//     registry.remove_all_components_of(registry.motions.entities.back());
-
-	// // Debugging for memory/component leaks
-	// registry.list_all_components();
-
-	// // Create a new Battle Player
-	// player_battle_sprite = createBattlePlayer(renderer, { 200.f, 200.f});
-
-    // enemy_battle_sprite = createBattleEnemy(renderer, { window_width_px - 200.f, window_height_px - 200.f });
 };
