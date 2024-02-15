@@ -67,6 +67,7 @@ private:
 	Entity player_sprite;
 	Entity battle_player_sprite;
 	Entity battle_enemy_sprite;
+	Entity judgement_line_sprite;
 
 	// music references
 	Mix_Music* background_music;

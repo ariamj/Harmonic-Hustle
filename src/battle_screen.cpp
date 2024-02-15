@@ -29,7 +29,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
-	//float current_speed = 1.0f; // speed at which note falls
 
 	// Remove debug info from the last step
 
@@ -91,9 +90,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
 		}
 	}
-
-
-
 
     return true;
 };

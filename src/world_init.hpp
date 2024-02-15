@@ -21,3 +21,5 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int scene);
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos);
 // enemy in battle scene
 Entity createBattleEnemy(RenderSystem* renderer, vec2 pos);
+// judgement line
+Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
