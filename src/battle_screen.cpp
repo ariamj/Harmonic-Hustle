@@ -65,12 +65,23 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 	}
 
-	 // update npc positions
+	 // update notes positions
 	for (int i = 0; i < registry.motions.components.size(); ++i) {
 		Motion& motion = registry.motions.components[i];
 
 		if (registry.notes.has(motions_registry.entities[i])) {
 			motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
+		}
+	}
+
+	// collision timers
+	for (Entity entity : registry.collisionTimers.entities) {
+		CollisionTimer& ct = registry.collisionTimers.get(entity);
+		ct.counter_ms -= elapsed_ms_since_last_update;
+
+		if (ct.counter_ms < 0) {
+			registry.collisions.remove(entity);
+			registry.collisionTimers.remove(entity);
 		}
 	}
 
@@ -90,28 +101,32 @@ bool Battle::set_visible(bool isVisible) {
     return is_visible;
 };
 
+bool key_pressed = false;
 //TODO: change color of note and play event sound
 void Battle::handle_collisions() {
-	// Loop over all collisions detected by the physics system
-	auto& collisionsRegistry = registry.collisions;
-	for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
-		// The entity and its collider
-		Entity entity = collisionsRegistry.entities[i];
-		Entity entity_other = collisionsRegistry.components[i].other;
+	if (key_pressed) {
+		// Loop over all collisions detected by the physics system
+		auto& collisionsRegistry = registry.collisions;
+		for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
+			// The entity and its collider
+			Entity entity = collisionsRegistry.entities[i];
+			Entity entity_other = collisionsRegistry.components[i].other;
 
-		// check if judgment line
-		if (registry.judgmentLine.has(entity)) {
+			// check if judgment line
+			if (registry.judgmentLine.has(entity)) {
 			
-			// Key - Judgment line collision checker:
-			if (registry.notes.has(entity_other)) {
-				registry.collisionTimers.emplace(entity_other);
-				registry.remove_all_components_of(entity_other);
-				// now if key is pressed during timer, then it will disappear. otherwise turn red as it leaves off screen.
-			}
+				// Key - Judgment line collision checker:
+				if (registry.notes.has(entity_other)) {
+					registry.collisionTimers.emplace(entity_other);
+					registry.remove_all_components_of(entity_other);
+					// now if key is pressed during timer, then it will disappear. otherwise turn red as it leaves off screen.
+				}
 
+			}
 		}
 	}
 	registry.collisions.clear();
+	key_pressed = false;
 	
 };
 
@@ -120,11 +135,13 @@ void Battle::handle_collisions() {
 // currently if any of DFJK is pressed, will check for collision
 
 void handleRhythmInput(int action, int key) {
+	auto& collisionsRegistry = registry.collisions;
+	auto& collisionsTimerRegistry = registry.collisionTimers;
 	if (action == GLFW_PRESS) {
         std::cout << "rhythm input: " << key << std::endl;
 		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
 			// handle collision or miss
-			
+			key_pressed = true;
 			
 		}
 	}
