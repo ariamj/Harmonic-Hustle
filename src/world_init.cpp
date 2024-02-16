@@ -179,7 +179,8 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos)
 	registry.screens.insert(entity, { Screen::BATTLE });
 
 	// Create component
-	 registry.judgmentLine.emplace(entity);
+	registry.judgmentLine.emplace(entity);
+	registry.colours.insert(entity, {1.f, 1.f, 1.f});
 	registry.renderRequests.insert(
 		entity,
 		{
