@@ -41,6 +41,7 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+	float progress = 0.f; // range [0,1] for linear interpolation
 };
 
 // for notes

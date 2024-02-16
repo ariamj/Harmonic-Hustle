@@ -43,6 +43,9 @@ const float PORTRAIT_HEIGHT = 3 * 165.f;
 const float NOTE_WIDTH = 0.6f * 165.f;
 const float NOTE_HEIGHT = 0.6f * 165.f;
 
+// Interpolation constants, on range [0,1] 
+const float NOTE_POSITION_STEP_SIZE = 0.002f;
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif

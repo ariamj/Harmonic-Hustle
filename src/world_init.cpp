@@ -74,7 +74,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 50, 50 };
+	motion.velocity = { 150, 150 };
 	motion.position = pos;
 	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
 

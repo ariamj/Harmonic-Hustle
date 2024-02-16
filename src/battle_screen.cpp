@@ -75,7 +75,17 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		Motion& motion = registry.motions.components[i];
 
 		if (registry.notes.has(motions_registry.entities[i])) {
-			motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
+			// motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
+			// Replaced direct addition with interpolation instead of using velocity
+			// 
+			motion.progress = min(1.f, motion.progress + NOTE_POSITION_STEP_SIZE);
+			motion.position.y = lerp(0.0, float(window_height_px), motion.progress);
+
+			// TODO: Interpolate one other property of a note
+
+			// Increasing note size over time is buggy, unless we change get_bounding_box in physics_system.cpp
+			// motion.scale.x = lerp(NOTE_WIDTH, 3.f * NOTE_WIDTH, motion.progress);
+			// motion.scale.y = lerp(NOTE_HEIGHT, 3.f * NOTE_HEIGHT, motion.progress);
 		}
 	}
 
@@ -176,3 +186,9 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 void Battle::handle_mouse_move(vec2 pos) {
     
 };
+
+// From https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/a-brief-introduction-to-lerp-r4954/
+// Linked on Canvas M1 requirements
+float Battle::lerp(float start, float end, float t) {
+	return start * (1-t) + end * t;
+}
