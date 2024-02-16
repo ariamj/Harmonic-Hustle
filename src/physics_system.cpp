@@ -18,16 +18,44 @@
 // surely implement a more accurate detection
  bool collides(const Motion& motion1, const Motion& motion2)
  {
- 	vec2 dp = motion1.position - motion2.position;
- 	float dist_squared = dot(dp,dp);
- 	const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
- 	const float other_r_squared = dot(other_bonding_box, other_bonding_box);
- 	const vec2 my_bonding_box = get_bounding_box(motion2) / 10.f;
- 	const float my_r_squared = dot(my_bonding_box, my_bonding_box);
- 	const float r_squared = max(other_r_squared, my_r_squared);
- 	if (dist_squared < r_squared)
- 		return true;
- 	return false;
+	float center1x = motion1.position.x;
+	float displacement = 30.f;
+	float left1 = center1x - displacement;
+	float right1 = center1x + displacement;
+
+	float center2x = motion2.position.x;
+	float left2 = center2x - displacement;
+	float right2 = center2x + displacement;
+
+	float center1y = motion1.position.y;
+	float top1 = center1y - displacement;
+	float bottom1 = center1y + displacement;
+
+	float center2y = motion2.position.y;
+	float top2 = center2y - displacement;
+	float bottom2 = center2y + displacement;
+
+	// horizontal: top1 < bottom2 && top2 < bottom1
+	if (top1 < bottom2 && top2 < bottom1) {
+		// vertical: left1 < right2 & left2 < right1
+		if (left1 < right2 && left2 < right1) {
+			return true;
+		}
+	}
+
+	return false;
+
+ 	// vec2 dp = motion1.position - motion2.position;
+ 	// float dist_squared = dot(dp,dp);
+ 	// const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
+ 	// const float other_r_squared = dot(other_bonding_box, other_bonding_box);
+ 	// const vec2 my_bonding_box = get_bounding_box(motion2) / 10.f;
+ 	// const float my_r_squared = dot(my_bonding_box, my_bonding_box);
+ 	// const float r_squared = max(other_r_squared, my_r_squared);
+ 	// if (dist_squared < r_squared)
+ 	// 	return true;
+
+ 	// return false;
  }
 
 void PhysicsSystem::step(float elapsed_ms)
@@ -69,6 +97,7 @@ void PhysicsSystem::step(float elapsed_ms)
 	 		Motion& motion_j = motion_container.components[j];
 	 		if (collides(motion_i, motion_j))
 	 		{
+				// std::cout << "COLLIDING" << std::endl;
 	 			Entity entity_j = motion_container.entities[j];
 	 			// Create a collisions event
 	 			// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
