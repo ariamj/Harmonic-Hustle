@@ -13,11 +13,81 @@
  	return { abs(motion.scale.x), abs(motion.scale.y) };
  }
 
+// return {left, right}
+ vec2 get_horizontal_bounds(const Motion& motion) {
+	float center = motion.position.x;
+	// float displacement = abs(motion.scale.x) / 2.f;
+
+	// hard coding size of bounding box for now
+	float displacement = 30.f;
+	float left = center - displacement;
+	float right = center + displacement;
+	return { left, right };
+ }
+
+// return {top, bottom}
+ vec2 get_vertical_bounds(const Motion& motion) {
+	float center = motion.position.y;
+	// float displacement = abs(motion.scale.y) / 2.f;
+
+	// hard coding size of bounding box for now
+	float displacement = 30.f;
+	float top = center - displacement;
+	float bottom = center + displacement;
+	return { top, bottom };
+ }
+
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You can
 // surely implement a more accurate detection
  bool collides(const Motion& motion1, const Motion& motion2)
  {
+
+	// vec2 box1LR = get_horizontal_bounds(motion1);
+	// vec2 box1TB = get_vertical_bounds(motion1);
+
+	// vec2 box2LR = get_horizontal_bounds(motion2);
+	// vec2 box2TB = get_vertical_bounds(motion2);
+
+	// // horizontal: top1 < bottom2 && top2 < bottom1
+	// if (box1TB[0] < box2TB[1] && box2TB[0] < box1TB[1]) {
+	// 	// vertical: left1 < right2 & left2 < right1
+	// 	if (box1LR[0] < box2LR[1] && box2LR[0] < box2TB[1]) {
+	// 		return true;
+	// 	}
+	// }
+	// return false;
+
+	float center1x = motion1.position.x;
+	float displacement = 30.f;
+	float left1 = center1x - displacement;
+	float right1 = center1x + displacement;
+
+	float center2x = motion2.position.x;
+	float left2 = center2x - displacement;
+	float right2 = center2x + displacement;
+
+	float center1y = motion1.position.y;
+	float top1 = center1y - displacement;
+	float bottom1 = center1y + displacement;
+
+	float center2y = motion2.position.y;
+	float top2 = center2y - displacement;
+	float bottom2 = center2y + displacement;
+
+	// horizontal: top1 < bottom2 && top2 < bottom1
+	if (top1 < bottom2 && top2 < bottom1) {
+		// vertical: left1 < right2 & left2 < right1
+		if (left1 < right2 && left2 < right1) {
+			return true;
+		}
+	}
+
+	return false;
+
+
+
+	// return false;
  	vec2 dp = motion1.position - motion2.position;
  	float dist_squared = dot(dp,dp);
  	const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
@@ -27,6 +97,7 @@
  	const float r_squared = max(other_r_squared, my_r_squared);
  	if (dist_squared < r_squared)
  		return true;
+
  	return false;
  }
 
@@ -69,6 +140,7 @@ void PhysicsSystem::step(float elapsed_ms)
 	 		Motion& motion_j = motion_container.components[j];
 	 		if (collides(motion_i, motion_j))
 	 		{
+				std::cout << "COLLIDING" << std::endl;
 	 			Entity entity_j = motion_container.entities[j];
 	 			// Create a collisions event
 	 			// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
