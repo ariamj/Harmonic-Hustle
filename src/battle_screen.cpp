@@ -10,7 +10,7 @@
 
 // consts for now;
 const size_t MAX_NOTES = 10;
-const size_t NOTE_SPAWN_DELAY = 1000;
+const size_t NOTE_SPAWN_DELAY = 2000;
 const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
 const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
@@ -138,7 +138,6 @@ bool Battle::set_visible(bool isVisible) {
 bool key_pressed = false;
 //TODO: change color of note and play event sound
 void Battle::handle_collisions() {
-	std::cout << "Handling collisions in battle scene" << "\n";
 	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
 	if (key_pressed) {
 		// Loop over all collisions detected by the physics system
