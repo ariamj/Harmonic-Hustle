@@ -100,6 +100,24 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 	}
 
+	min_counter_ms = 200.f;
+	for (Entity line : registry.judgmentLineTimers.entities) {
+		if (registry.judgmentLineTimers.has(line)) {
+			// progress timer
+			JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
+			counter.count_ms -= elapsed_ms_since_last_update;
+			if (counter.count_ms < min_counter_ms) {
+				min_counter_ms = counter.count_ms;
+			}
+			// change judgement line colour back after timer expires
+			if (counter.count_ms < 0) {
+				vec3& colour = registry.colours.get(line);
+				colour = {1.f, 1.f, 1.f};
+				registry.judgmentLineTimers.remove(line);
+			}
+		}
+	}
+
     return true;
 };
 
@@ -172,23 +190,15 @@ void handleRhythmInput(int action, int key) {
 			ComponentContainer<Motion> motion_container = registry.motions;
 			for (Entity line : registry.judgmentLine.entities) {
 				float lane = motion_container.get(line).position.x;
-				if (key == GLFW_KEY_D && lane == LANE_1) {
-					// change judgement line 1 colour
-					vec3& colour = registry.colours.get(line);
-					colour = GOOD_COLOUR;
-				} else if (key == GLFW_KEY_F && lane == LANE_2) {
-					// change judgement line 2 colour
-					vec3& colour = registry.colours.get(line);
-					colour = GOOD_COLOUR;
-				} else if (key == GLFW_KEY_J && lane == LANE_3) {
-					// change judgement line 3 colour
-					vec3& colour = registry.colours.get(line);
-					colour = GOOD_COLOUR;
-				} else if (key == GLFW_KEY_K && lane == LANE_4) {
-					// change judgement line 4 colour
-					vec3& colour = registry.colours.get(line);
-					colour = GOOD_COLOUR;
-				}
+				if ((key == GLFW_KEY_D && lane == LANE_1)
+					|| (key == GLFW_KEY_F && lane == LANE_2)
+					|| (key == GLFW_KEY_J && lane == LANE_3)
+					|| (key == GLFW_KEY_K && lane == LANE_4)) {
+						// change corresponding judgement line colour
+						registry.judgmentLineTimers.emplace_with_duplicates(line);
+						vec3& colour = registry.colours.get(line);
+						colour = GOOD_COLOUR;
+					}
 			}
 		}
 	}

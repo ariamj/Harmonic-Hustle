@@ -23,6 +23,7 @@ public:
 	ComponentContainer<Collision> collisions;
 	ComponentContainer<JudgementLine> judgmentLine;
 	ComponentContainer<CollisionTimer> collisionTimers;
+	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
 	ComponentContainer<vec3> colours;
 
 	// constructor that adds all containers for looping over them
@@ -41,6 +42,7 @@ public:
 		registry_list.push_back(&collisions);
 		registry_list.push_back(&judgmentLine);
 		registry_list.push_back(&collisionTimers);
+		registry_list.push_back(&judgmentLineTimers);
 		registry_list.push_back(&colours);
 	}
 
