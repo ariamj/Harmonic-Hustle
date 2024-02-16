@@ -8,6 +8,8 @@
  vec2 get_bounding_box(const Motion& motion)
  {
  	// abs is to avoid negative scale due to the facing direction.
+	// TODO: Keep region constant while increasing scale of note? (smaller -> bigger from top to bottom of screen)
+		// This current implementation will increase collision region as note gets bigger
  	return { abs(motion.scale.x), abs(motion.scale.y) };
  }
 
