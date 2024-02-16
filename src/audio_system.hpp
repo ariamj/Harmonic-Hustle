@@ -19,6 +19,7 @@ public:
 	bool playOverworld();
 	bool playBattle(int enemy_id);
 	bool playMissedNote();
+	bool playHitPerfect();
 
 private:
 	bool LoadFiles();
@@ -27,5 +28,6 @@ private:
 	Mix_Music* overworld_music;
 	std::vector<Mix_Music*> enemy_music;
 	Mix_Chunk* missed_note_music;
+	Mix_Chunk* hit_perfect_SFX;
 
 };

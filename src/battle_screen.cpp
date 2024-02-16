@@ -10,7 +10,7 @@
 
 // consts for now;
 const size_t MAX_NOTES = 10;
-const size_t NOTE_SPAWN_DELAY = 3000;
+const size_t NOTE_SPAWN_DELAY = 1000;
 
 // lanes where notes will spawn
 float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
@@ -75,17 +75,14 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		Motion& motion = registry.motions.components[i];
 
 		if (registry.notes.has(motions_registry.entities[i])) {
-			// motion.position.y += motion.velocity.y * elapsed_ms_since_last_update / 1000.0f;
-			// Replaced direct addition with interpolation instead of using velocity
-			// 
+			// Increment progress on range [0,1]
 			motion.progress = min(1.f, motion.progress + NOTE_POSITION_STEP_SIZE);
+
+			// Interpolate note position from top to bottom of screen
 			motion.position.y = lerp(0.0, float(window_height_px), motion.progress);
 
-			// TODO: Interpolate one other property of a note
-
-			// Increasing note size over time is buggy, unless we change get_bounding_box in physics_system.cpp
-			motion.scale_factor = lerp(1.0, 3.0, motion.progress); 
-			// motion.scale.y = lerp(NOTE_HEIGHT, 3.f * NOTE_HEIGHT, motion.progress);
+			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
+			motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
 		}
 	}
 
@@ -119,6 +116,7 @@ bool Battle::set_visible(bool isVisible) {
 bool key_pressed = false;
 //TODO: change color of note and play event sound
 void Battle::handle_collisions() {
+	std::cout << "Handling collisions in battle scene" << "\n";
 	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
 	if (key_pressed) {
 		// Loop over all collisions detected by the physics system
@@ -141,6 +139,7 @@ void Battle::handle_collisions() {
 		}
 		if (got_hit) {
 			// TODO MUSIC: play sound for successful hit note
+			audio.playHitPerfect();
 		}
 		else {
 			// TODO MUSIC: add correct sound
@@ -157,6 +156,7 @@ void Battle::handle_collisions() {
 // battle keys:
 // DFJK -> rhythm
 // currently if any of DFJK is pressed, will check for collision
+// TODO: Split into DFJK-specific column detection
 
 void handleRhythmInput(int action, int key) {
 	auto& collisionsRegistry = registry.collisions;
