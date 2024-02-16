@@ -77,6 +77,11 @@ struct JudgementLine
 
 };
 
+struct JudgementLineTimer
+{
+	float count_ms = 200;
+};
+
 // used to manage the different screens (????)
 // the scene that the entity exists in
 struct Scene

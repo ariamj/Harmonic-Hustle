@@ -11,6 +11,9 @@
 // consts for now;
 const size_t MAX_NOTES = 10;
 const size_t NOTE_SPAWN_DELAY = 1000;
+const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
+const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
+const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 // lanes where notes will spawn
 float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
@@ -97,6 +100,25 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 	}
 
+	// judgement line timers
+	min_counter_ms = 200.f;
+	for (Entity line : registry.judgmentLineTimers.entities) {
+		if (registry.judgmentLineTimers.has(line)) {
+			// progress timer
+			JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
+			counter.count_ms -= elapsed_ms_since_last_update;
+			if (counter.count_ms < min_counter_ms) {
+				min_counter_ms = counter.count_ms;
+			}
+			// change judgement line colour back after timer expires
+			if (counter.count_ms < 0) {
+				vec3& colour = registry.colours.get(line);
+				colour = {1.f, 1.f, 1.f};
+				registry.judgmentLineTimers.remove(line);
+			}
+		}
+	}
+
     return true;
 };
 
@@ -165,6 +187,20 @@ void handleRhythmInput(int action, int key) {
         std::cout << "rhythm input: " << key << std::endl;
 		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
 			key_pressed = true;
+			// Change judgment line colour on input
+			ComponentContainer<Motion> motion_container = registry.motions;
+			for (Entity line : registry.judgmentLine.entities) {
+				float lane = motion_container.get(line).position.x;
+				if ((key == GLFW_KEY_D && lane == LANE_1)
+					|| (key == GLFW_KEY_F && lane == LANE_2)
+					|| (key == GLFW_KEY_J && lane == LANE_3)
+					|| (key == GLFW_KEY_K && lane == LANE_4)) {
+						// change corresponding judgement line colour
+						registry.judgmentLineTimers.emplace_with_duplicates(line);
+						vec3& colour = registry.colours.get(line);
+						colour = GOOD_COLOUR;
+					}
+			}
 		}
 	}
 }
