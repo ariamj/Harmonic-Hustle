@@ -100,6 +100,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 	}
 
+	// judgement line timers
 	min_counter_ms = 200.f;
 	for (Entity line : registry.judgmentLineTimers.entities) {
 		if (registry.judgmentLineTimers.has(line)) {
