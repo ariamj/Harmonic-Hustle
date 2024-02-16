@@ -38,9 +38,10 @@ struct Mesh
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
-	float angle = 0;
+	float angle = 0.f;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
+	float scale_factor = 1.f;
 	float progress = 0.f; // range [0,1] for linear interpolation
 };
 

@@ -64,6 +64,15 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string hit_perfect = "hit_perfect.wav";
+	hit_perfect_SFX = Mix_LoadWAV(audio_path("hit_perfect.wav").c_str());
+
+	if (hit_perfect_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(hit_perfect).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -83,5 +92,10 @@ bool AudioSystem::playBattle(int enemy_id) {
 
 bool AudioSystem::playMissedNote() {
 	Mix_PlayChannel(-1, missed_note_music, 0);
+	return true;
+}
+
+bool AudioSystem::playHitPerfect() {
+	Mix_PlayChannel(-1, hit_perfect_SFX, 0);
 	return true;
 }

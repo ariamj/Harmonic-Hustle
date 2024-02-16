@@ -13,7 +13,7 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	// Transformation code
 	Transform transform;
 	transform.translate(motion.position);
-	transform.scale(motion.scale);
+	transform.scale(motion.scale * motion.scale_factor);
 	transform.rotate(motion.angle);
 
 	assert(registry.renderRequests.has(entity));
