@@ -84,7 +84,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// TODO: Interpolate one other property of a note
 
 			// Increasing note size over time is buggy, unless we change get_bounding_box in physics_system.cpp
-			// motion.scale.x = lerp(NOTE_WIDTH, 3.f * NOTE_WIDTH, motion.progress);
+			motion.scale_factor = lerp(1.0, 3.0, motion.progress); 
 			// motion.scale.y = lerp(NOTE_HEIGHT, 3.f * NOTE_HEIGHT, motion.progress);
 		}
 	}
