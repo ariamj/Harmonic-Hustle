@@ -147,14 +147,17 @@ void Battle::handle_collisions() {
 			// The entity and its collider
 			Entity entity = collisionsRegistry.entities[i];
 			Entity entity_other = collisionsRegistry.components[i].other;
-
+			
 			// check if judgment line
 			if (registry.judgmentLine.has(entity)) {
 				got_hit = 1; // did not miss the note
 				// Key - Judgment line collision checker:
 				if (registry.notes.has(entity_other)) {
+					// change node colour on collision
+					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
+					//colour = PERFECT_COLOUR;							// but can't press more than one key at the same time for input
 					registry.collisionTimers.emplace(entity_other);
-					registry.remove_all_components_of(entity_other);
+					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
 				}
 
 			}
