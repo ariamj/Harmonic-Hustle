@@ -83,6 +83,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 
 	// Create component
 	registry.notes.emplace(entity);
+	registry.colours.insert(entity, { 1.f, 1.f, 1.f });
 	registry.renderRequests.insert(
 		entity,
 		{
