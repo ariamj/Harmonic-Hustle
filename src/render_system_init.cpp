@@ -219,6 +219,7 @@ void RenderSystem::initializeGlGeometryBuffers()
 
 	///////////////////////////////////////////////////////
 	// Initialize screen triangle (yes, triangle, not quad; its more efficient).
+
 	std::vector<vec3> screen_vertices(3);
 	screen_vertices[0] = { -1, -6, 0.f };
 	screen_vertices[1] = { 6, -1, 0.f };
