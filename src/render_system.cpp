@@ -148,8 +148,8 @@ void RenderSystem::drawToScreen()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	gl_has_errors();
 	// Enabling alpha channel for textures
-	glDisable(GL_BLEND);
-	// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_DEPTH_TEST);
 
 	// Draw the screen texture on the quad geometry
@@ -177,7 +177,17 @@ void RenderSystem::drawToScreen()
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
 
-	glBindTexture(GL_TEXTURE_2D, off_screen_render_buffer_color);
+	Screen curr_screen = registry.screens.get(screen_state_entity);
+
+	if (curr_screen == OVERWORLD) {
+		GLuint texture_id =
+			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+
+	} else {
+		glBindTexture(GL_TEXTURE_2D, off_screen_render_buffer_color);
+	}
+	
 	gl_has_errors();
 	// Draw
 	glDrawElements(
@@ -224,6 +234,8 @@ void RenderSystem::draw()
 	// 	drawTexturedMesh(entity, projection_2D);
 	// }
 
+	drawToScreen();
+
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
 	for (Entity entity : registry.renderRequests.entities)
@@ -237,7 +249,6 @@ void RenderSystem::draw()
 	}
 
 	// Truely render to the screen
-	drawToScreen();
 
 	// flicker-free display with a double buffer
 	glfwSwapBuffers(window);
