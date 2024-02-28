@@ -34,10 +34,10 @@ const int window_width_px = 1680;
 const int window_height_px = 1050;
 
 // These are hard coded to the dimensions of the entity texture
-const float PLAYER_WIDTH = 0.6f * 165.f;
-const float PLAYER_HEIGHT = 0.6f * 165.f;
-const float ENEMY_WIDTH = 0.6f * 165.f;
-const float ENEMY_HEIGHT = 0.6f * 165.f;
+const float PLAYER_WIDTH = 1.0f * 165.f;
+const float PLAYER_HEIGHT = 1.0f * 165.f;
+const float ENEMY_WIDTH = 1.0f * 165.f;
+const float ENEMY_HEIGHT = 1.0f * 165.f;
 const float PORTRAIT_WIDTH = 3 * 165.f;
 const float PORTRAIT_HEIGHT = 3 * 165.f;
 const float NOTE_WIDTH = 0.6f * 165.f;
