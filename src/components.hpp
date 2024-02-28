@@ -84,9 +84,18 @@ struct JudgementLineTimer
 
 // used to manage the different screens (????)
 // the scene that the entity exists in
+struct GameInfo {
+	Screen curr_screen;
+	Entity player_sprite;
+};
+extern GameInfo gameInfo;
 struct Scene
 {
 	Screen scene;
+};
+
+struct IsChasing {
+	
 };
 
 struct Collision

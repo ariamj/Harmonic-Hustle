@@ -14,6 +14,7 @@ public:
 	ComponentContainer<Mesh*> meshPtrs;
 	ComponentContainer<RenderRequest> renderRequests;
 	ComponentContainer<ScreenState> screenStates;
+	ComponentContainer<IsChasing> isChasing;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Note> notes;
 	ComponentContainer<Player> players;
@@ -33,6 +34,7 @@ public:
 		registry_list.push_back(&meshPtrs);
 		registry_list.push_back(&renderRequests);
 		registry_list.push_back(&screenStates);
+		registry_list.push_back(&isChasing);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&notes);
 		registry_list.push_back(&players);

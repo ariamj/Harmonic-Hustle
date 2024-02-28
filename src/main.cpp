@@ -10,6 +10,7 @@
 #include "battle_screen.hpp"
 #include <audio_system.hpp>
 #include "physics_system.hpp"
+#include "ai_system.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -19,6 +20,7 @@ int main() {
     WorldSystem world;
     RenderSystem renderSystem;
     PhysicsSystem physics;
+    AISystem ai_system;
 
     // Initialize window
     GLFWwindow* window = world.create_window();
@@ -48,6 +50,7 @@ int main() {
 		t = now;
 
         world.step(elapsed_ms);
+        ai_system.step(elapsed_ms);
         physics.step(elapsed_ms);
         world.handle_collisions();
         renderSystem.draw();

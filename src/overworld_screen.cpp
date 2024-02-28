@@ -96,6 +96,7 @@ bool Overworld::handle_collisions() {
             registry.enemies.remove(entity_other);
             registry.renderRequests.remove(entity_other);
 
+            gameInfo.curr_screen = Screen::BATTLE;
             return true;
         }
     }
