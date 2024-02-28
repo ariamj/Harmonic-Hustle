@@ -88,6 +88,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	// TODO -> update transition
 	overworld.set_visible(true);
 	curr_scene = Screen::OVERWORLD;
+	//  battle.set_visible(true);
+	//  curr_scene = Screen::BATTLE;
 
 	// Moved into here from main
 	audioSystem.init();
@@ -146,7 +148,10 @@ void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
 	switch(curr_scene) {
 		case Screen::OVERWORLD:
-			overworld.handle_collisions();
+			// bool shouldSwitchScreen = overworld.handle_collisions();
+			if (overworld.handle_collisions()) {
+				render_set_battle_screen();
+			}
 			break;
 		default:
 			battle.handle_collisions();
@@ -177,6 +182,10 @@ bool WorldSystem::render_set_battle_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(true);
 	audioSystem.playBattle(0); // switch to battle music
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
 	std::cout << "current screen: battle" << std::endl;
 	return true; // added to prevent error
 };
