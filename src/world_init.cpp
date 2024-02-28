@@ -24,7 +24,7 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	registry.renderRequests.insert(
 		entity,
 		{
-			TEXTURE_ASSET_ID::PLAYER,
+			TEXTURE_ASSET_ID::PLAYER_WALK_F1,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}
@@ -56,7 +56,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 	registry.renderRequests.insert(
 		entity,
 		{
-			TEXTURE_ASSET_ID::ENEMY,
+			TEXTURE_ASSET_ID::ENEMY_GUITAR,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}
