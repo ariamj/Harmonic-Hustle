@@ -42,6 +42,10 @@ class Battle {
         float next_note_spawn;
         Entity player_battle_sprite;
         Entity enemy_battle_sprite;
+        bool d_key_pressed = false;
+        bool f_key_pressed = false;
+        bool j_key_pressed = false;
+        bool k_key_pressed = false;
 
         GLFWwindow* window;
 };

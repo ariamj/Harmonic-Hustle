@@ -86,10 +86,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	// !!!hard coded right now to launch chosen scene on start
 	// TODO -> update transition
-	//overworld.set_visible(true);
-	//curr_scene = Screen::OVERWORLD;
-	 battle.set_visible(true);
-	 curr_scene = Screen::BATTLE;
+	overworld.set_visible(true);
+	curr_scene = Screen::OVERWORLD;
 
 	// Moved into here from main
 	audioSystem.init();

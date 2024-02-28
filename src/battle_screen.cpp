@@ -148,10 +148,12 @@ void Battle::handle_collisions() {
 			Entity entity_other = collisionsRegistry.components[i].other;
 			
 			// check if judgment line
-			if (registry.judgmentLine.has(entity)) {
-				got_hit = 1; // did not miss the note
+			if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
+				float lane = registry.motions.get(entity).position.x;
 				// Key - Judgment line collision checker:
-				if (registry.notes.has(entity_other)) {
+				if ((d_key_pressed && lane == LANE_1) || (f_key_pressed && lane == LANE_2) 
+						|| (j_key_pressed && lane == LANE_3) || (k_key_pressed && lane ==LANE_4)) {
+					got_hit = 1; // did not miss the note
 					// change node colour on collision
 					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
 					//colour = PERFECT_COLOUR;							// but can't press more than one key at the same time for input
@@ -172,6 +174,10 @@ void Battle::handle_collisions() {
 	}
 	registry.collisions.clear();
 	key_pressed = false;
+	d_key_pressed = false;
+	f_key_pressed = false;
+	j_key_pressed = false;
+	k_key_pressed = false;
 	
 	
 	
@@ -210,9 +216,19 @@ void handleRhythmInput(int action, int key) {
 void Battle::handle_key(int key, int scancode, int action, int mod) {
     switch(key) {
         case GLFW_KEY_D:
+			d_key_pressed = true;
+			handleRhythmInput(action, key);
+            break;
 		case GLFW_KEY_F:
+			f_key_pressed = true;
+			handleRhythmInput(action, key);
+            break;
 		case GLFW_KEY_J:
+			j_key_pressed = true;
+			handleRhythmInput(action, key);
+            break;
 		case GLFW_KEY_K:
+			k_key_pressed = true;
             handleRhythmInput(action, key);
             break;
         default:
