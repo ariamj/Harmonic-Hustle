@@ -81,8 +81,22 @@ bool Overworld::set_visible(bool isVisible) {
     return is_visible;
 };
 
-void Overworld::handle_collisions() {
+// return true if should switch screens -> TODO update to something better if needed...
+bool Overworld::handle_collisions() {
+    auto& collisionsRegistry = registry.collisions;
+    for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
+        Entity entity = collisionsRegistry.entities[i];
+		Entity entity_other = collisionsRegistry.components[i].other;
 
+        // if colision between player and enemy, switch to battle scene, remove enemy
+        if (registry.players.has(entity) && registry.enemies.has(entity_other)) {
+            registry.enemies.remove(entity_other);
+            registry.renderRequests.remove(entity_other);
+
+            return true;
+        }
+    }
+    return false;
 };
 
 void handleMovementInput(int action, int key) {

@@ -25,7 +25,7 @@ class Overworld {
         bool set_visible(bool isVisible);
 
         // Check for collisions
-        void handle_collisions();
+        bool handle_collisions();
 
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
