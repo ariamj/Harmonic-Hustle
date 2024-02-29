@@ -54,6 +54,24 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	// screen entity exists in
 	registry.screens.insert(entity, {Screen::OVERWORLD});
 
+	TEXTURE_ASSET_ID textureAssetId = TEXTURE_ASSET_ID::ENEMY_GUITAR;
+
+	switch (level) {
+		case 1:
+			// guitar
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_GUITAR;
+			break;
+		case 2: 
+			// drum
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_DRUM;
+			break;
+		case 3:
+			// mic
+		defualt:
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_MIC;
+			
+	}
+
 	// enemy level
 	registry.levels.insert(entity, {level});
 
@@ -62,7 +80,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	registry.renderRequests.insert(
 		entity,
 		{
-			TEXTURE_ASSET_ID::ENEMY_GUITAR,
+			textureAssetId,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}

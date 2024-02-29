@@ -131,10 +131,27 @@ void WorldSystem::restart_game() {
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 
 	// create set number of enemies
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 2);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 2);
+	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
 
 
 	gameInfo.player_sprite = player_sprite;
