@@ -51,15 +51,32 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		}
 	}
 
-	// Spawn new enemies
-	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-		// reset timer
-		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-		// create an enemy
+	// // Spawn new enemies
+	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+	// 	// reset timer
+	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+	// 	// create an enemy
 
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	}
+	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	// }
+
+    // check if enemies are high level, if yes color red, else remove color if needed
+    auto& enemies = registry.enemies.entities;
+    int playerLevel = registry.levels.get(player_sprite).level;
+    for (Entity enemy : enemies) {
+        int enemyLevel = registry.levels.get(enemy).level;
+        if (enemyLevel > playerLevel) {
+            if (!registry.colours.has(enemy)) {
+                registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
+            }
+        } else {
+            if (registry.colours.has(enemy)) {
+                registry.colours.remove(enemy);
+            }
+        }
+    }
+
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);

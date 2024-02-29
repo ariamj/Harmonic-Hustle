@@ -20,7 +20,7 @@ const float LANE_4 = window_width_px / 2 + 300;
 // the player
 Entity createPlayer(RenderSystem* renderer, vec2 pos);
 // the enemy
-Entity createEnemy(RenderSystem* renderer, vec2 pos);
+Entity createEnemy(RenderSystem* renderer, vec2 pos, int level);
 // player in battle scene
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos);
 // enemy in battle scene

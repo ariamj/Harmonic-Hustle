@@ -130,6 +130,13 @@ void WorldSystem::restart_game() {
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 
+	// create set number of enemies
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 2);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 2);
+
+
 	gameInfo.player_sprite = player_sprite;
 
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;

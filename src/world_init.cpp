@@ -19,6 +19,9 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	// screen entity exists in
 	registry.screens.insert(entity, {Screen::OVERWORLD});
 
+	// player level always starts at 1
+	registry.levels.insert(entity, {1});
+
 	// Create component
 	registry.players.emplace(entity);
 	registry.renderRequests.insert(
@@ -33,7 +36,7 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createEnemy(RenderSystem* renderer, vec2 pos)
+Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 {
 	auto entity = Entity();
 
@@ -49,8 +52,11 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 
 	// screen entity exists in
-		registry.screens.insert(entity, {Screen::OVERWORLD});
-	
+	registry.screens.insert(entity, {Screen::OVERWORLD});
+
+	// enemy level
+	registry.levels.insert(entity, {level});
+
 	// Create component
 	registry.enemies.emplace(entity);
 	registry.renderRequests.insert(

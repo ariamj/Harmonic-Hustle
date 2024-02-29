@@ -98,6 +98,14 @@ struct IsChasing {
 	
 };
 
+struct IsRunning {
+
+};
+
+struct Level {
+	int level;
+};
+
 struct Collision
 {
 	// Note, the first object is stored in the ECS container.entities
