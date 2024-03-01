@@ -53,6 +53,10 @@ private:
 	// sets the current scene to battle
 	bool render_set_battle_screen();
 
+	void checkEnemyPositions();
+
+	vec2 getRamdomEnemyPosition();
+
 	void handleEscInput(int action);
 
 	// Input callback functions
