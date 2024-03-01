@@ -53,15 +53,32 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		}
 	}
 
-	// Spawn new enemies
-	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-		// reset timer
-		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-		// create an enemy
+	// // Spawn new enemies
+	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+	// 	// reset timer
+	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+	// 	// create an enemy
 
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	}
+	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	// }
+
+    // check if enemies are high level, if yes color red, else remove color if needed
+    auto& enemies = registry.enemies.entities;
+    int playerLevel = registry.levels.get(player_sprite).level;
+    for (Entity enemy : enemies) {
+        int enemyLevel = registry.levels.get(enemy).level;
+        if (enemyLevel > playerLevel) {
+            if (!registry.colours.has(enemy)) {
+                registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
+            }
+        } else {
+            if (registry.colours.has(enemy)) {
+                registry.colours.remove(enemy);
+            }
+        }
+    }
+
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
@@ -86,18 +103,40 @@ bool Overworld::set_visible(bool isVisible) {
     return is_visible;
 };
 
-// return true if should switch screens -> TODO update to something better if needed...
+// return true if should switch screens as well as updating current screen
+//  on collisions for now -> remove ALL enemies with the same level (TODO -> update if needed)
 bool Overworld::handle_collisions() {
     auto& collisionsRegistry = registry.collisions;
     for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
         Entity entity = collisionsRegistry.entities[i];
 		Entity entity_other = collisionsRegistry.components[i].other;
 
-        // if colision between player and enemy, switch to battle scene, remove enemy
+        // if collision between player and enemy, switch to battle scene, remove enemy
         if (registry.players.has(entity) && registry.enemies.has(entity_other)) {
-            registry.enemies.remove(entity_other);
-            registry.renderRequests.remove(entity_other);
+            int enemyLevel = registry.levels.get(entity_other).level;
 
+            // if collision is between enemy with level <= player level
+            //      remove all entities with the same level and update player level
+            //      TODO update on result of battle
+            // else
+            //      remove just the collided with enemy
+            //      TODO update to restart the game (player dies if collide with enemy with higher lvl)
+            if (registry.isRunning.has(entity_other)) {
+                auto& enemies = registry.enemies.entities;
+                for (Entity enemy : enemies) {
+                    int currEnemyLevel = registry.levels.get(enemy).level;
+                    if (currEnemyLevel == enemyLevel) {
+                        registry.enemies.remove(enemy);
+                        registry.renderRequests.remove(enemy);
+                    }
+                }
+                registry.levels.get(entity).level++;
+            } else {
+                registry.enemies.remove(entity_other);
+                registry.renderRequests.remove(entity_other);
+            }
+
+            gameInfo.curr_screen = Screen::BATTLE;
             return true;
         }
     }

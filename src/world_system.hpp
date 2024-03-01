@@ -53,6 +53,8 @@ private:
 	// sets the current scene to battle
 	bool render_set_battle_screen();
 
+	void handleEscInput(int action);
+
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -79,6 +81,6 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 
-	Screen curr_scene;
+	// Screen curr_scene;
 
 };
