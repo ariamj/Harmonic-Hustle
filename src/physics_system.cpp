@@ -84,26 +84,38 @@ void PhysicsSystem::step(float elapsed_ms)
 		 }
 	 }
 
-	// // Check for collisions between all moving entities
-     ComponentContainer<Motion> &motion_container = registry.motions;
-	 for(uint i = 0; i<motion_container.components.size(); i++)
+	 // Check for collisions between all moving entities
+	 for(uint i = 0; i< motion_registry.components.size(); i++)
 	 {
-	 	Motion& motion_i = motion_container.components[i];
-	 	Entity entity_i = motion_container.entities[i];
+	 	Motion& motion_i = motion_registry.components[i];
+	 	Entity entity_i = motion_registry.entities[i];
 		
 	 	// note starting j at i+1 to compare all (i,j) pairs only once (and to not compare with itself)
-	 	for(uint j = i+1; j<motion_container.components.size(); j++)
+	 	for(uint j = i+1; j< motion_registry.components.size(); j++)
 	 	{
-	 		Motion& motion_j = motion_container.components[j];
+	 		Motion& motion_j = motion_registry.components[j];
 	 		if (collides(motion_i, motion_j))
 	 		{
 				// std::cout << "COLLIDING" << std::endl;
-	 			Entity entity_j = motion_container.entities[j];
+	 			Entity entity_j = motion_registry.entities[j];
 	 			// Create a collisions event
 	 			// We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 	 			registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 	 			registry.collisions.emplace_with_duplicates(entity_j, entity_i);
 	 		}
 	 	}
+	 }
+	 if (debugging.in_debug_mode) {
+		 for (int i = 0; i < motion_registry.components.size(); ++i) {
+			 Motion& motion = registry.motions.components[i];
+			 Entity& entity = motion_registry.entities[i];
+			 if (registry.enemies.has(entity)) {
+				 vec2 bb = get_bounding_box(motion);
+				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
+				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
+				 Entity line3 = createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
+				 Entity line4 = createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
+			 }
+		 }
 	 }
 }
