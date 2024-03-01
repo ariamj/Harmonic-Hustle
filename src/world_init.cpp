@@ -47,7 +47,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 0, 0 };
+	motion.velocity = getRandomEnemyVelocity();
 	motion.position = pos;
 	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 

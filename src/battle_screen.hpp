@@ -47,5 +47,7 @@ class Battle {
         bool j_key_pressed = false;
         bool k_key_pressed = false;
 
+        float lanes[4] = {0, 0, 0, 0};
+
         GLFWwindow* window;
 };

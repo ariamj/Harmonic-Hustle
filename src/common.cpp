@@ -1,4 +1,6 @@
 #include "common.hpp"
+#include <random>
+
 
 // Note, we could also use the functions from GLM but we write the transformations here to show the uderlying math
 void Transform::scale(vec2 scale)
@@ -55,4 +57,15 @@ bool gl_has_errors()
 	}
 
 	return true;
+}
+
+vec2 getRandomEnemyVelocity() {
+	std::default_random_engine rng = std::default_random_engine(std::random_device()());
+	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
+
+	float leftOrRight = uniform_dist(rng) <= 0.5 ? 1.0f : -1.0f;
+	float upOrDown = uniform_dist(rng) <= 0.5 ? 1.0f : -1.0f;
+	float partVelocity = uniform_dist(rng);
+
+	return {leftOrRight * partVelocity * DEFAULT_ENEMY_VELOCITY, upOrDown * (1.0f - partVelocity) * DEFAULT_ENEMY_VELOCITY};
 }

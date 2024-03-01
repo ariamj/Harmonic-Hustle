@@ -72,16 +72,18 @@ void PhysicsSystem::step(float elapsed_ms)
 		 GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
+		// move player
 		 if (registry.players.has(entity)) {
-			 if ((motion.velocity[0] < 0 && motion.position[0] > (0 + PLAYER_WIDTH/2)) || (motion.velocity[0] > 0 && motion.position[0] < (mode->width - PLAYER_WIDTH - 175))) {
+			 if ((motion.velocity[0] < 0 && motion.position[0] > (0 + PLAYER_HEIGHT / 2.f)) || (motion.velocity[0] > 0 && motion.position[0] < (gameInfo.width - PLAYER_WIDTH / 2.f))) {
 				motion.position[0] = motion.position[0] + (step_seconds * motion.velocity[0]);
 			 }
 			 
-			 if ((motion.velocity[1] < 0 && motion.position[1] > (0 + PLAYER_HEIGHT / 2)) || (motion.velocity[1] > 0 && motion.position[1] < (mode->height - PLAYER_HEIGHT))) {
+			 if ((motion.velocity[1] < 0 && motion.position[1] > (0 + PLAYER_HEIGHT / 2.f)) || (motion.velocity[1] > 0 && motion.position[1] < (gameInfo.height - PLAYER_HEIGHT / 2.f))) {
 				motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
 			 }
 		 }
-		if (registry.enemies.has(entity)) {
+		 // move enemies
+		if (registry.enemies.has(entity) && !registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
 			
 			float xChange = step_seconds * motion.velocity.x;
 			float yChange = step_seconds * motion.velocity.y;
@@ -104,19 +106,19 @@ void PhysicsSystem::step(float elapsed_ms)
 			// 		else update pos as normal
 
 			if (registry.isRunning.has(entity)) {
-				if (left.x + xChange >= 0 && right.x + xChange <= mode->width && top.y + yChange >= 0 && bot.y + yChange <= mode->height) {
+				if (left.x + xChange >= 0 && right.x + xChange <= gameInfo.width && top.y + yChange >= 0 && bot.y + yChange <= gameInfo.height) {
 					motion.position = {newX, newY};
-				} else if (left.x + xChange >= 0 && right.x + xChange <= mode->width ) {
+				} else if (left.x + xChange >= 0 && right.x + xChange <= gameInfo.width ) {
 					motion.position = {newX, motion.position.y};
-				} else if (top.y + yChange >= 0 && bot.y + yChange <= mode->height) {
+				} else if (top.y + yChange >= 0 && bot.y + yChange <= gameInfo.height) {
 					motion.position = {motion.position.x, newY};
 				}
 			} else {
 				// hit top or bottom, change y
 				// hit right/left change x
-				if (right.x + xChange > mode->width || left.x + xChange < 0) {
+				if (right.x + xChange > gameInfo.width || left.x + xChange < 0) {
 					motion.velocity.x = -1.f * motion.velocity.x;
-				} else if (bot.y + yChange > mode->height || bot.y + yChange < 0) {
+				} else if (bot.y + yChange > gameInfo.height || top.y + yChange < 0) {
 					motion.velocity.y = -1.f * motion.velocity.y;
 				} else {
 					motion.position = {newX, newY};

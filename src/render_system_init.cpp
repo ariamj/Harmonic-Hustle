@@ -39,11 +39,11 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 		glViewport(0, 0, frame_buffer_width_px, frame_buffer_height_px);
 	#endif
 
-	if (frame_buffer_width_px != window_width_px)
+	if (frame_buffer_width_px != gameInfo.width)
 	{
 		printf("WARNING: retina display! https://stackoverflow.com/questions/36672935/why-retina-screen-coordinate-value-is-twice-the-value-of-pixel-value\n");
 		printf("glfwGetFramebufferSize = %d,%d\n", frame_buffer_width_px, frame_buffer_height_px);
-		printf("window width_height = %d,%d\n", window_width_px, window_height_px);
+		printf("window width_height = %d,%d\n", gameInfo.width, gameInfo.height);
 	}
 
 	// Hint: Ask your TA for how to setup pretty OpenGL error callbacks. 

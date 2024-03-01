@@ -57,6 +57,10 @@ GLFWwindow* WorldSystem::create_window() {
 	// Make main window size of the entire screen
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	
+	gameInfo.width = mode->width;
+	gameInfo.height = mode->height;
+
 	window = glfwCreateWindow(mode->width, mode->height, "Harmonic Hustle", nullptr, nullptr);
 	// window = glfwCreateWindow(window_width_px, window_height_px, "Harmonic Hustle", nullptr, nullptr);
 	if (window == nullptr) {
@@ -79,10 +83,14 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
+	gameInfo.lane_1 = gameInfo.width / 2 - 300;
+	gameInfo.lane_2  = gameInfo.width / 2 - 100;
+	gameInfo.lane_3 = gameInfo.width / 2 + 100;
+	gameInfo.lane_4 = gameInfo.width / 2 + 300;
+
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
-	
 
 	// !!!hard coded right now to launch chosen scene on start
 	// TODO -> update transition
@@ -128,43 +136,52 @@ void WorldSystem::restart_game() {
 	registry.list_all_components();
 
 	// Create a new Player
-	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
+	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
 	gameInfo.player_sprite = std::make_shared<Entity>(player_sprite);
 	
 	// create set number of enemies
 	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+	float xPadding = PLAYER_WIDTH / 2.f;
+	float doubleXPadding = xPadding * 2.f;
+	float yPadding = PLAYER_HEIGHT / 2.f;
+	float doubleYPadding = yPadding * 2.f;
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
 
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
 
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
-	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
-								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
+	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
+
+	// pause enemies for a sec on game start
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
+	}
 
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;
 
 	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
-    battle_enemy_sprite = createBattleEnemy(renderer, { window_width_px - yDisplacement, window_height_px - xDisplacement });
+    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement, gameInfo.height - xDisplacement });
 
 	// hard coded values for now
-	judgement_line_sprite = createJudgementLine(renderer, { LANE_1, window_height_px / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { LANE_2, window_height_px / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { LANE_3, window_height_px / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { LANE_4, window_height_px / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_1, gameInfo.height / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, gameInfo.height / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, gameInfo.height / 1.2 });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, gameInfo.height / 1.2 });
 }
 
 // Compute collisions between entities
@@ -172,10 +189,6 @@ void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
 	switch(gameInfo.curr_screen) {
 		case Screen::OVERWORLD:
-			// bool shouldSwitchScreen = overworld.handle_collisions();
-			// if (overworld.handle_collisions()) {
-			// render_set_battle_screen();
-			// }
 			overworld.handle_collisions();
 			if (gameInfo.curr_screen == Screen::BATTLE) {
 				render_set_battle_screen();
@@ -213,6 +226,10 @@ bool WorldSystem::render_set_battle_screen() {
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+	// add a timer so every time it switches enemies pause for a bit
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 	std::cout << "current screen: battle" << std::endl;
 	return true; // added to prevent error
