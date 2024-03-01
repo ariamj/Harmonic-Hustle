@@ -63,7 +63,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 
     // check if enemies are high level, if yes color red, else remove color if needed
     auto& enemies = registry.enemies.entities;
-    int playerLevel = registry.levels.get(player_sprite).level;
+    int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
     for (Entity enemy : enemies) {
         int enemyLevel = registry.levels.get(enemy).level;
         if (enemyLevel > playerLevel) {
@@ -76,7 +76,6 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
             }
         }
     }
-
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
@@ -133,6 +132,9 @@ bool Overworld::handle_collisions() {
                 registry.enemies.remove(entity_other);
                 registry.renderRequests.remove(entity_other);
             }
+            // iterate over enemies, if enemies are within chase/run away radius, update pos
+            //  so when we switch back to overworld, player isn't overwhelmed by any sudden enemy movements
+
 
             gameInfo.curr_screen = Screen::BATTLE;
             return true;

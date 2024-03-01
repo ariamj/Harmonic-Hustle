@@ -16,9 +16,9 @@ void AISystem::step(float elapsed_ms)
 	//		update enemy velocity
 
 	auto& enemies = registry.enemies.entities;
-	Motion& playerMotion = registry.motions.get(gameInfo.player_sprite);
+	Motion& playerMotion = registry.motions.get(*gameInfo.player_sprite);
 	vec2 playerPos = playerMotion.position;
-	int playerLevel = registry.levels.get(gameInfo.player_sprite).level;
+	int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
 	for (Entity enemy : enemies) {
 		Motion& enemyMotion = registry.motions.get(enemy);
 		vec2 enemyPos = enemyMotion.position;
