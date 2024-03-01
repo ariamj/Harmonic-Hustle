@@ -28,7 +28,7 @@ public:
 	ComponentContainer<CollisionTimer> collisionTimers;
 	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
 	ComponentContainer<vec3> colours;
-
+	ComponentContainer<DebugComponent> debugComponents;
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
 	{
@@ -50,6 +50,7 @@ public:
 		registry_list.push_back(&collisionTimers);
 		registry_list.push_back(&judgmentLineTimers);
 		registry_list.push_back(&colours);
+		registry_list.push_back(&debugComponents);
 	}
 
 	void clear_all_components() {

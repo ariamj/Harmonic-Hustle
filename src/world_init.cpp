@@ -217,3 +217,28 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos)
 
 	return entity;
 }
+
+Entity createLine(vec2 position, vec2 scale)
+{
+	Entity entity = Entity();
+	// screen entity exists in
+	registry.screens.insert(entity, { Screen::OVERWORLD });
+	//registry.screens.insert(entity, { Screen::BATTLE });
+	 //registry.colours.insert(entity, {1.f, 1.f, 1.f});
+	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+		 EFFECT_ASSET_ID::PLAYER,
+		 GEOMETRY_BUFFER_ID::DEBUG_LINE });
+
+	// Create motion
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = position;
+	motion.scale = scale;
+
+	registry.debugComponents.emplace(entity);
+	return entity;
+}

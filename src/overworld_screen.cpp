@@ -36,6 +36,8 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
+	while (registry.debugComponents.entities.size() > 0)
+		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
@@ -195,6 +197,12 @@ void handleMovementInput(int action, int key) {
 	}
 }
 
+void handleDebugInput(int action) {
+	if (action == GLFW_PRESS) {
+		debugging.in_debug_mode = !debugging.in_debug_mode;
+	}
+}
+
 void Overworld::handle_key(int key, int scancode, int action, int mod) {
     switch(key) {
         case GLFW_KEY_W:
@@ -203,6 +211,9 @@ void Overworld::handle_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_D:
             handleMovementInput(action, key);
 			break;
+		case GLFW_KEY_X:
+			// toggle debug
+			handleDebugInput(action);
         default:
             std::cout << "unhandled overworld key" << std::endl;
             break;

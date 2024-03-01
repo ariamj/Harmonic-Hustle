@@ -118,6 +118,19 @@ struct CollisionTimer {
 	float counter_ms = 1000;
 };
 
+// Data structure for toggling debug mode
+struct Debug {
+	bool in_debug_mode = 0;
+	bool in_freeze_mode = 0;
+};
+extern Debug debugging;
+
+// A struct to refer to debugging graphics in the ECS
+struct DebugComponent
+{
+	// Note, an empty struct has size 1
+};
+
 /**
  * The following enumerators represent global identifiers refering to graphic
  * assets. For example TEXTURE_ASSET_ID are the identifiers of each texture
@@ -178,7 +191,8 @@ enum class GEOMETRY_BUFFER_ID {
 	PLAYER = 0,
 	SPRITE = PLAYER + 1,
 	SCREEN_TRIANGLE = SPRITE + 1,
-	GEOMETRY_COUNT = SCREEN_TRIANGLE + 1 // keep as last variable
+	DEBUG_LINE = SCREEN_TRIANGLE + 1,
+	GEOMETRY_COUNT = DEBUG_LINE+ 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
