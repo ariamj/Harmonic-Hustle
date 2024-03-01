@@ -45,6 +45,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	title_ss << "Harmonic Hustle --- Battle";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
+	//// Remove debug info from the last step
+	//while (registry.debugComponents.entities.size() > 0)
+	//	registry.remove_all_components_of(registry.debugComponents.entities.back());
+
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
 
@@ -216,6 +220,12 @@ void handleRhythmInput(int action, int key) {
 	}
 }
 
+void handleDebug(int action) {
+	if (action == GLFW_PRESS) {
+		debugging.in_debug_mode = !debugging.in_debug_mode;
+	}
+}
+
 void Battle::handle_key(int key, int scancode, int action, int mod) {
     switch(key) {
         case GLFW_KEY_D:
@@ -234,6 +244,8 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 			k_key_pressed = true;
             handleRhythmInput(action, key);
             break;
+		case GLFW_KEY_X:
+			handleDebug(action);
         default:
             std::cout << "unhandled key" << std::endl;
             break;

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 
+Debug debugging;
 GameInfo gameInfo;
 
 // Very, VERY simple OBJ loader from https://github.com/opengl-tutorials/ogl tutorial 7
