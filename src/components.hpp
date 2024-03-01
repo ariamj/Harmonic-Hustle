@@ -86,7 +86,7 @@ struct JudgementLineTimer
 // the scene that the entity exists in
 struct GameInfo {
 	Screen curr_screen;
-	Entity player_sprite;
+	std::shared_ptr<Entity> player_sprite;
 };
 extern GameInfo gameInfo;
 struct Scene
