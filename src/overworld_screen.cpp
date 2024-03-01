@@ -79,6 +79,15 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
         }
     }
 
+    // count down enemy pause timer if needed
+    if (registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
+        PauseEnemyTimer& timer = registry.pauseEnemyTimers.get(*gameInfo.player_sprite);
+        timer.counter_ms = timer.counter_ms - elapsed_ms_since_last_update;
+        if (timer.counter_ms <= 0.f) {
+            registry.pauseEnemyTimers.remove(*gameInfo.player_sprite);
+        }
+    }
+
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
 	ScreenState &screen = registry.screenStates.components[0];
@@ -134,10 +143,6 @@ bool Overworld::handle_collisions() {
                 registry.enemies.remove(entity_other);
                 registry.renderRequests.remove(entity_other);
             }
-            // iterate over enemies, if enemies are within chase/run away radius, update pos
-            //  so when we switch back to overworld, player isn't overwhelmed by any sudden enemy movements
-
-
             gameInfo.curr_screen = Screen::BATTLE;
             return true;
         }

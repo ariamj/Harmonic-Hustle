@@ -87,6 +87,12 @@ struct JudgementLineTimer
 struct GameInfo {
 	Screen curr_screen;
 	std::shared_ptr<Entity> player_sprite;
+	int height;
+	int width;
+	float lane_1;
+	float lane_2;
+	float lane_3;
+	float lane_4;
 };
 extern GameInfo gameInfo;
 struct Scene
@@ -104,6 +110,11 @@ struct IsRunning {
 
 struct Level {
 	int level;
+};
+
+// pauses all enemy movement & collisions -> add to player for usage
+struct PauseEnemyTimer {
+	float counter_ms = 1500;
 };
 
 struct Collision

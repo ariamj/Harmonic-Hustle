@@ -16,7 +16,7 @@ const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 // lanes where notes will spawn
-float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
+// float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
 
 AudioSystem audio = AudioSystem();
 
@@ -34,6 +34,10 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     this->window = window;
     this->renderer = renderer;
 	audio.init();
+    lanes[0] = gameInfo.lane_1;
+    lanes[1] = gameInfo.lane_2;
+    lanes[2] = gameInfo.lane_3;
+    lanes[3] = gameInfo.lane_4;
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -59,7 +63,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// reset timer
 		next_note_spawn = (NOTE_SPAWN_DELAY / 2) + uniform_dist(rng) * (NOTE_SPAWN_DELAY / 2);
 		// spawn notes in the four lanes
-		createNote(renderer, vec2(lanes[rand() % 4], window_height_px / 10));
+		createNote(renderer, vec2(lanes[rand() % 4], gameInfo.height / 10));
 	}
 
 	// Remove entities that leave the screen below
@@ -67,7 +71,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	// (the containers exchange the last element with the current)
 	for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
 		Motion& motion = motions_registry.components[i];
-		if (motion.position.y + abs(motion.scale.y) > window_height_px+50.f) {
+		if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
 			// remove missed notes and play missed note sound
 			// TODO MUSIC: replace chicken dead sound
 			if (registry.notes.has(motions_registry.entities[i])) {
@@ -86,7 +90,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			motion.progress = min(1.f, motion.progress + NOTE_POSITION_STEP_SIZE);
 
 			// Interpolate note position from top to bottom of screen
-			motion.position.y = lerp(0.0, float(window_height_px), motion.progress);
+			motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
 			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
 			motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
@@ -155,8 +159,8 @@ void Battle::handle_collisions() {
 			if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
 				float lane = registry.motions.get(entity).position.x;
 				// Key - Judgment line collision checker:
-				if ((d_key_pressed && lane == LANE_1) || (f_key_pressed && lane == LANE_2) 
-						|| (j_key_pressed && lane == LANE_3) || (k_key_pressed && lane ==LANE_4)) {
+				if ((d_key_pressed && lane == gameInfo.lane_1) || (f_key_pressed && lane == gameInfo.lane_2) 
+						|| (j_key_pressed && lane == gameInfo.lane_3) || (k_key_pressed && lane == gameInfo.lane_4)) {
 					got_hit = 1; // did not miss the note
 					// change node colour on collision
 					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
@@ -164,7 +168,6 @@ void Battle::handle_collisions() {
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
 				}
-
 			}
 		}
 		if (got_hit) {
@@ -203,10 +206,10 @@ void handleRhythmInput(int action, int key) {
 			ComponentContainer<Motion> motion_container = registry.motions;
 			for (Entity line : registry.judgmentLine.entities) {
 				float lane = motion_container.get(line).position.x;
-				if ((key == GLFW_KEY_D && lane == LANE_1)
-					|| (key == GLFW_KEY_F && lane == LANE_2)
-					|| (key == GLFW_KEY_J && lane == LANE_3)
-					|| (key == GLFW_KEY_K && lane == LANE_4)) {
+				if ((key == GLFW_KEY_D && lane == gameInfo.lane_1)
+					|| (key == GLFW_KEY_F && lane == gameInfo.lane_2)
+					|| (key == GLFW_KEY_J && lane == gameInfo.lane_3)
+					|| (key == GLFW_KEY_K && lane == gameInfo.lane_4)) {
 						// change corresponding judgement line colour
 						registry.judgmentLineTimers.emplace_with_duplicates(line);
 						vec3& colour = registry.colours.get(line);
