@@ -80,8 +80,49 @@ void PhysicsSystem::step(float elapsed_ms)
 			 if ((motion.velocity[1] < 0 && motion.position[1] > (0 + PLAYER_HEIGHT / 2)) || (motion.velocity[1] > 0 && motion.position[1] < (mode->height - PLAYER_HEIGHT))) {
 				motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
 			 }
-			 
 		 }
+		if (registry.enemies.has(entity)) {
+			
+			float xChange = step_seconds * motion.velocity.x;
+			float yChange = step_seconds * motion.velocity.y;
+			float newX = motion.position.x + xChange;
+			float newY = motion.position.y + yChange;
+
+
+			float height = abs(motion.scale.y);
+			float width = abs(motion.scale.x);
+			vec2 top = {motion.position.x, motion.position.y - height / 2.f};
+			vec2 bot = {motion.position.x, motion.position.y + height / 2.f};
+			vec2 left = {motion.position.x - width / 2.f, motion.position.y};
+			vec2 right = {motion.position.x + width / 2.f, motion.position.y};
+
+			// if enemy is running, 
+			//		if not hit wall, keep running
+			//		else, keep running along wall
+			// if enemy is chasing or roaming
+			//		if hit wall, bounce off
+			// 		else update pos as normal
+
+			if (registry.isRunning.has(entity)) {
+				if (left.x + xChange >= 0 && right.x + xChange <= mode->width && top.y + yChange >= 0 && bot.y + yChange <= mode->height) {
+					motion.position = {newX, newY};
+				} else if (left.x + xChange >= 0 && right.x + xChange <= mode->width ) {
+					motion.position = {newX, motion.position.y};
+				} else if (top.y + yChange >= 0 && bot.y + yChange <= mode->height) {
+					motion.position = {motion.position.x, newY};
+				}
+			} else {
+				// hit top or bottom, change y
+				// hit right/left change x
+				if (right.x + xChange > mode->width || left.x + xChange < 0) {
+					motion.velocity.x = -1.f * motion.velocity.x;
+				} else if (bot.y + yChange > mode->height || bot.y + yChange < 0) {
+					motion.velocity.y = -1.f * motion.velocity.y;
+				} else {
+					motion.position = {newX, newY};
+				}
+			}
+		}
 	 }
 
 	// // Check for collisions between all moving entities

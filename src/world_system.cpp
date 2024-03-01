@@ -79,7 +79,7 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
-	curr_scene = Screen::OVERWORLD;
+	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
 	
@@ -87,7 +87,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	// !!!hard coded right now to launch chosen scene on start
 	// TODO -> update transition
 	overworld.set_visible(true);
-	curr_scene = Screen::OVERWORLD;
+	gameInfo.curr_screen = Screen::OVERWORLD;
 	//  battle.set_visible(true);
 	//  curr_scene = Screen::BATTLE;
 
@@ -101,7 +101,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
-	if (curr_scene == Screen::OVERWORLD) {
+	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
 		return battle.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -130,6 +130,32 @@ void WorldSystem::restart_game() {
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { window_width_px/2, window_height_px/2 });
 
+	// create set number of enemies
+	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 1);
+
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 2);
+
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f),
+								50.f + uniform_dist(rng) * (window_height_px - 100.f)), 3);
+
+
+	gameInfo.player_sprite = player_sprite;
+
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;
 
@@ -146,10 +172,14 @@ void WorldSystem::restart_game() {
 // Compute collisions between entities
 void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
-	switch(curr_scene) {
+	switch(gameInfo.curr_screen) {
 		case Screen::OVERWORLD:
 			// bool shouldSwitchScreen = overworld.handle_collisions();
-			if (overworld.handle_collisions()) {
+			// if (overworld.handle_collisions()) {
+			// render_set_battle_screen();
+			// }
+			overworld.handle_collisions();
+			if (gameInfo.curr_screen == Screen::BATTLE) {
 				render_set_battle_screen();
 			}
 			break;
@@ -167,7 +197,7 @@ bool WorldSystem::is_over() const {
 // REQUIRES current scene to be battle
 // switch to overworld scene
 bool WorldSystem::render_set_overworld_screen() {
-	curr_scene = Screen::OVERWORLD;
+	gameInfo.curr_screen = Screen::OVERWORLD;
 	battle.set_visible(false);
 	overworld.set_visible(true);
 	audioSystem.playOverworld();
@@ -178,7 +208,7 @@ bool WorldSystem::render_set_overworld_screen() {
 // REQUIRES current scene to be overworld
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
-	curr_scene = Screen::BATTLE;
+	gameInfo.curr_screen = Screen::BATTLE;
 	overworld.set_visible(false);
 	battle.set_visible(true);
 	audioSystem.playBattle(0); // switch to battle music
@@ -191,10 +221,11 @@ bool WorldSystem::render_set_battle_screen() {
 };
 
 // open pause menu or go back depending on game state
-void handleEscInput(int action) {
+void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
 	}
+	glfwSetWindowShouldClose(window, 1);
 }
 
 // confirmation key
@@ -221,11 +252,20 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_C:			
 			// hard code scene switching to key 'c' for now
 			if (action == GLFW_PRESS) {
-				if (curr_scene == Screen::OVERWORLD) {
-					render_set_battle_screen();
-				} else if (curr_scene == Screen::BATTLE) {
-					render_set_overworld_screen();
-				}
+				switch (gameInfo.curr_screen) {
+					case Screen::OVERWORLD:
+						render_set_battle_screen();
+						break;
+					case Screen::BATTLE:
+					default:
+						render_set_overworld_screen();
+						break;
+				};
+				// if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				// 	render_set_battle_screen();
+				// } else if (gameInfo.curr_screen == Screen::BATTLE) {
+				// 	render_set_overworld_screen();
+				// }
 			}
 			
 			break;
@@ -236,9 +276,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			handleEnterInput(action);
 			break;
 		default:
-			if (curr_scene == Screen::OVERWORLD) {
+			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
-			} else if (curr_scene == Screen::BATTLE) {
+			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.handle_key(key, scancode, action, mod);
 			}
 			break;

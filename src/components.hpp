@@ -84,9 +84,26 @@ struct JudgementLineTimer
 
 // used to manage the different screens (????)
 // the scene that the entity exists in
+struct GameInfo {
+	Screen curr_screen;
+	Entity player_sprite;
+};
+extern GameInfo gameInfo;
 struct Scene
 {
 	Screen scene;
+};
+
+struct IsChasing {
+	
+};
+
+struct IsRunning {
+
+};
+
+struct Level {
+	int level;
 };
 
 struct Collision
@@ -130,7 +147,9 @@ enum class TEXTURE_ASSET_ID {
 	PLAYER_WALK_F2 = PLAYER_WALK_F1 + 1,
 	PLAYER_WALK_F3 = PLAYER_WALK_F2 + 1,
 	ENEMY_GUITAR = PLAYER_WALK_F3 + 1,
-	BATTLEPLAYER = ENEMY_GUITAR + 1,
+	ENEMY_DRUM = ENEMY_GUITAR + 1,
+	ENEMY_MIC = ENEMY_DRUM + 1,
+	BATTLEPLAYER = ENEMY_MIC + 1,
 	BATTLEENEMY = BATTLEPLAYER + 1,
 	JUDGEMENT = BATTLEENEMY + 1,
 	NOTE = JUDGEMENT + 1,

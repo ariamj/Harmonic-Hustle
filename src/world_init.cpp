@@ -19,6 +19,9 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	// screen entity exists in
 	registry.screens.insert(entity, {Screen::OVERWORLD});
 
+	// player level always starts at 1
+	registry.levels.insert(entity, {1});
+
 	// Create component
 	registry.players.emplace(entity);
 	registry.renderRequests.insert(
@@ -33,7 +36,7 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createEnemy(RenderSystem* renderer, vec2 pos)
+Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 {
 	auto entity = Entity();
 
@@ -44,19 +47,40 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos)
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 50, 50 };
+	motion.velocity = { 0, 0 };
 	motion.position = pos;
 	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 
 	// screen entity exists in
-		registry.screens.insert(entity, {Screen::OVERWORLD});
-	
+	registry.screens.insert(entity, {Screen::OVERWORLD});
+
+	TEXTURE_ASSET_ID textureAssetId = TEXTURE_ASSET_ID::ENEMY_GUITAR;
+
+	switch (level) {
+		case 1:
+			// guitar
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_GUITAR;
+			break;
+		case 2: 
+			// drum
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_DRUM;
+			break;
+		case 3:
+			// mic
+		defualt:
+			textureAssetId = TEXTURE_ASSET_ID::ENEMY_MIC;
+			
+	}
+
+	// enemy level
+	registry.levels.insert(entity, {level});
+
 	// Create component
 	registry.enemies.emplace(entity);
 	registry.renderRequests.insert(
 		entity,
 		{
-			TEXTURE_ASSET_ID::ENEMY_GUITAR,
+			textureAssetId,
 			EFFECT_ASSET_ID::TEXTURED,
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}

@@ -34,6 +34,8 @@ class RenderSystem {
 		textures_path("Player-Walk-F2.png"),
 		textures_path("Player-Walk-F3.png"),
 		textures_path("Enemy-Guitar.png"),
+		textures_path("Enemy-Drum.png"),
+		textures_path("Enemy-Mic.png"),
 		textures_path("Player-Portrait-Neutral.png"),
 		textures_path("Enemy-Portrait-Neutral.png"),
 		textures_path("Judgement.png"),
