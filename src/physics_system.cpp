@@ -174,7 +174,7 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 					 glm::vec3 vertex_trans = proj_mat * transform.mat * vec3({ v.position.x, v.position.y, 1.0f });
 					 float vertex_x = vertex_trans.x;
 					 float vertex_y = vertex_trans.y;
-					 Entity vertex = createLine(vec2({ ((vertex_x + 1) / 2.f) * window_width_px, (1 - ((vertex_y + 1) / 2.f)) * window_height_px }), vec2({ motion.scale.x / 25, motion.scale.x / 25 }));
+					 Entity vertex = createLine(vec2({ ((vertex_x + 1) / 2.f) * gameInfo.width, (1 - ((vertex_y + 1) / 2.f)) * gameInfo.height }), vec2({ motion.scale.x / 25, motion.scale.x / 25 }));
 				 }
 			 }
 		 }
