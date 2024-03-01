@@ -141,30 +141,20 @@ void WorldSystem::restart_game() {
 	
 	// create set number of enemies
 	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	float xPadding = PLAYER_WIDTH / 2.f;
-	float doubleXPadding = xPadding * 2.f;
-	float yPadding = PLAYER_HEIGHT / 2.f;
-	float doubleYPadding = yPadding * 2.f;
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 1);
 
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
 
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
-	createEnemy(renderer, vec2(xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
-								yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)), 3);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
+
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+
+	checkEnemyPositions();
 
 	// pause enemies for a sec on game start
 	if (!registry.pauseEnemyTimers.has(player_sprite)) {
@@ -233,6 +223,47 @@ bool WorldSystem::render_set_battle_screen() {
 	}
 	std::cout << "current screen: battle" << std::endl;
 	return true; // added to prevent error
+};
+
+void WorldSystem::checkEnemyPositions() {
+	vec2 playerPos = registry.motions.get(player_sprite).position;
+	float xPadding = PLAYER_WIDTH / 2.f;
+	float doubleXPadding = xPadding * 2.f;
+	float yPadding = PLAYER_HEIGHT / 2.f;
+	float doubleYPadding = yPadding * 2.f;
+	
+	auto& enemies = registry.enemies.entities;
+	for (Entity enemy : enemies) {
+		Motion& enemyMotion = registry.motions.get(enemy);
+		float xDis = playerPos.x - enemyMotion.position.x;
+		float yDis = playerPos.y - enemyMotion.position.y;
+		float distance = xDis * xDis + yDis * yDis;
+		distance = sqrt(distance);
+		vec2 newPos = {0, 0};
+		while (distance < CHASE_PLAYER_RADIUS || distance < RUN_AWAY_RADIUS) {
+			newPos = getRamdomEnemyPosition();
+			xDis = playerPos.x - newPos.x;
+			yDis = playerPos.y - newPos.y;
+			distance = xDis * xDis + yDis * yDis;
+			distance = sqrt(distance);
+		}
+		if (newPos.x != 0 && newPos.y != 0) {
+			enemyMotion.position = newPos;
+		}
+	}
+};
+
+vec2 WorldSystem::getRamdomEnemyPosition() {
+	std::default_random_engine rng = std::default_random_engine(std::random_device()());
+	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
+
+	float xPadding = ENEMY_WIDTH / 2.f;
+	float doubleXPadding = xPadding * 2.f;
+	float yPadding = ENEMY_HEIGHT / 2.f;
+	float doubleYPadding = yPadding * 2.f;
+
+	return {xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
+			yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)};
 };
 
 // open pause menu or go back depending on game state
