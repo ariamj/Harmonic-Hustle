@@ -197,7 +197,7 @@ void handleMovementInput(int action, int key) {
 	}
 }
 
-void handleDebug(int action) {
+void handleDebugInput(int action) {
 	if (action == GLFW_PRESS) {
 		debugging.in_debug_mode = !debugging.in_debug_mode;
 	}
@@ -213,7 +213,7 @@ void Overworld::handle_key(int key, int scancode, int action, int mod) {
 			break;
 		case GLFW_KEY_X:
 			// toggle debug
-			handleDebug(action);
+			handleDebugInput(action);
         default:
             std::cout << "unhandled overworld key" << std::endl;
             break;

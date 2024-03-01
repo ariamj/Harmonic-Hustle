@@ -58,7 +58,7 @@
  	// return false;
  }
 
-void PhysicsSystem::step(float elapsed_ms)
+void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 {
 	 // Move entities
 	 auto& motion_registry = registry.motions;
@@ -148,14 +148,32 @@ void PhysicsSystem::step(float elapsed_ms)
 	 }
 	 if (debugging.in_debug_mode) {
 		 for (int i = 0; i < motion_registry.components.size(); ++i) {
-			 Motion& motion = registry.motions.components[i];
+			 Motion& motion = motion_registry.components[i];
 			 Entity& entity = motion_registry.entities[i];
-			 if (registry.enemies.has(entity)) {
+			 if (registry.enemies.has(entity) || registry.players.has(entity)) {
 				 vec2 bb = get_bounding_box(motion);
 				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
 				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
 				 Entity line3 = createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
 				 Entity line4 = createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
+			 }
+			 //TODO: Player Mesh
+			 else if (registry.players.has(entity)) {
+				 // visualize mesh
+				 Transform transform;
+				 transform.translate(motion.position);
+				 transform.rotate(motion.angle);
+				 transform.scale(motion.scale);
+				 mat3 proj_mat = renderSystem->createProjectionMatrix();
+				 Mesh& mesh = *(registry.meshPtrs.get(entity));
+				 float left_vertex_bound = 1, right_vertex_bound = -1, top_vertex_bound = -1, bot_vertex_bound = 1;
+				 for (const ColoredVertex& v : mesh.vertices) {
+					 // draw out the points of the mesh boundary
+					 glm::vec3 vertex_trans = proj_mat * transform.mat * vec3({ v.position.x, v.position.y, 1.0f });
+					 float vertex_x = vertex_trans.x;
+					 float vertex_y = vertex_trans.y;
+					 Entity vertex = createLine(vec2({ ((vertex_x + 1) / 2.f) * window_width_px, (1 - ((vertex_y + 1) / 2.f)) * window_height_px }), vec2({ motion.scale.x / 25, motion.scale.x / 25 }));
+				 }
 			 }
 		 }
 	 }
