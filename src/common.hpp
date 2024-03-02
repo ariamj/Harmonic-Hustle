@@ -52,6 +52,9 @@ const float DEFAULT_ENEMY_VELOCITY = 50.f;
 // Interpolation constants, on range [0,1] 
 const float NOTE_POSITION_STEP_SIZE = 0.002f;
 
+// FPS global set by main.cpp
+extern int FPS;
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif
