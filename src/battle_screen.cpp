@@ -43,6 +43,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
+	title_ss << " --- FPS: " << FPS;
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	//// Remove debug info from the last step

@@ -36,6 +36,12 @@ int main() {
     renderSystem.init(window);
     world.init(&renderSystem);
 
+    // Variables for counting frames
+
+    int frames = 0;
+    float ms_count = 0.f;
+    float fps_update_delay = 1000.f;
+
     // variable timestep loop
     auto t = Clock::now();
     while (!world.is_over()) {
@@ -54,6 +60,17 @@ int main() {
         physics.step(elapsed_ms, &renderSystem);
         world.handle_collisions();
         renderSystem.draw();
+
+        frames += 1;
+        ms_count += elapsed_ms;
+
+        if (ms_count > fps_update_delay) {
+            ms_count = 0.f;
+            FPS = frames; // update global variable
+            frames = 0;
+
+        }
+
     }
 
     return EXIT_SUCCESS;
