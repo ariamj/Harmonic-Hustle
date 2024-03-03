@@ -44,6 +44,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
+	title_ss << " --- Score: " << score; // TEMP !!!
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -77,6 +78,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// TODO MUSIC: replace chicken dead sound
 			if (registry.notes.has(motions_registry.entities[i])) {
 				audio.playMissedNote();
+				standing = missed;
+				score += standing;
 				registry.remove_all_components_of(motions_registry.entities[i]);
 			}
 		}
@@ -158,7 +161,8 @@ void Battle::handle_collisions() {
 			
 			// check if judgment line
 			if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
-				float lane = registry.motions.get(entity).position.x;
+				Motion lane_motion = registry.motions.get(entity);
+				float lane = lane_motion.position.x;
 				// Key - Judgment line collision checker:
 				if ((d_key_pressed && lane == gameInfo.lane_1) || (f_key_pressed && lane == gameInfo.lane_2) 
 						|| (j_key_pressed && lane == gameInfo.lane_3) || (k_key_pressed && lane == gameInfo.lane_4)) {
@@ -166,6 +170,27 @@ void Battle::handle_collisions() {
 					// change node colour on collision
 					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
 					//colour = PERFECT_COLOUR;							// but can't press more than one key at the same time for input
+
+					// Determine score standing
+					JudgementLine judgement_line = registry.judgmentLine.get(entity);
+					float note_y_pos = registry.motions.get(entity_other).position.y;
+					float lane_y_pos = lane_motion.position.y;
+					float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+					float scoring_margin = 3.f;
+					// standing standing;
+					if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
+						// set standing to Alright
+						standing = alright;
+					} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
+								|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
+						// set standing to Good
+						standing = good;
+					} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
+						// set standing to Perfect
+						standing = perfect;
+					}
+					score += standing;
+
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
 				}

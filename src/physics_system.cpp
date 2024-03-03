@@ -167,6 +167,10 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 // Judgement line center line for scoring
 			 if (registry.judgmentLine.has(entity)) {
 				Entity center_line = createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
+				vec2 bb = get_bounding_box(motion);
+				JudgementLine judgement_line = registry.judgmentLine.get(entity);
+				Entity top = createLine(motion.position - vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
+				Entity bottom = createLine(motion.position + vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
 			 }
 			 //TODO: Player Mesh
 			 else if (registry.players.has(entity)) {

@@ -13,6 +13,12 @@ class Battle {
     public:
         Battle();
         bool is_visible;
+        enum standing {
+            perfect = 15,
+            good = 10,
+            alright = 5,
+            missed = -5
+        };
 
         void init(GLFWwindow* window, RenderSystem* renderer);
 
@@ -46,6 +52,8 @@ class Battle {
         bool f_key_pressed = false;
         bool j_key_pressed = false;
         bool k_key_pressed = false;
+        standing standing;
+        float score = 0;
 
         float lanes[4] = {0, 0, 0, 0};
 

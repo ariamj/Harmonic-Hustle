@@ -74,7 +74,8 @@ struct Conductor
 // the area in which we gotta hit the notes
 struct JudgementLine
 {
-
+	// png img ratios
+	float actual_img_scale_factor = 1.f;
 };
 
 struct JudgementLineTimer
