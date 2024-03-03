@@ -45,7 +45,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
-	title_ss << " --- Score: " << score; // TEMP !!!
+	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -192,7 +192,6 @@ void Battle::handle_collisions() {
 						colour = PERFECT_COLOUR;
 					}
 					score += standing;
-
 
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
