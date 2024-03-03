@@ -140,6 +140,8 @@ bool Overworld::handle_collisions() {
                     }
                 }
                 registry.levels.get(entity).level++;
+				// Set enemy sprite as enemy for battle
+				battleInfo.score_threshold = registry.enemies.get(entity_other).score_threshold;
             } else {
                 registry.enemies.remove(entity_other);
                 registry.renderRequests.remove(entity_other);

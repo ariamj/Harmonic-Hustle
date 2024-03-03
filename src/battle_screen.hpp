@@ -9,11 +9,11 @@
 
 #include "render_system.hpp"
 
-struct BattleInfo {
-    float bpm;
-    int count_notes;
-    std::vector<float> note_timings;
-};
+// struct BattleInfo {
+//     float bpm;
+//     int count_notes;
+//     std::vector<float> note_timings;
+// };
 
 class Battle {
     public:
@@ -34,6 +34,8 @@ class Battle {
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
         float lerp(float start, float end, float t);
+
+        void handle_battle_end();
 
         void restart_battle();
 

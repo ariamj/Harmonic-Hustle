@@ -114,7 +114,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else {
 		bool song_playing = audioSystem.musicPlaying();
 		if (!song_playing) {
-			battle.restart_battle();
+			battle.handle_battle_end();
 			gameInfo.curr_screen = Screen::OVERWORLD;
 			render_set_overworld_screen();
 		}
@@ -218,6 +218,7 @@ bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
 	overworld.set_visible(false);
 	battle.set_visible(true);
+	battle.restart_battle();
 	// audioSystem.playBattle(0); // switch to battle music
 	audioSystem.playBattle(1); // switch to battle music // TEMP !!! FOR TESTING END
 	// sets the player velocity to 0 once screen switches

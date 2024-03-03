@@ -96,6 +96,14 @@ struct GameInfo {
 	float lane_4;
 };
 extern GameInfo gameInfo;
+
+struct BattleInfo {
+    float bpm;
+    int count_notes;
+    std::vector<float> note_timings;
+	float score_threshold = 0.f;
+};
+extern BattleInfo battleInfo;
 struct Scene
 {
 	Screen scene;

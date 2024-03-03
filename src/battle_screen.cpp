@@ -28,6 +28,8 @@ int next_note_index = 1;
 float bpm = 130.f;
 float bpm_ratio = bpm / 60.f;
 
+float score_threshold = 200.f; // TODO: load info from enemy battle sprite
+
 // Enemy-specific battle information
 // TODO: Load information into these, instead hard-coding as above
 const int num_unique_battles = 2;
@@ -48,33 +50,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
-
-	audio.init();
-    lanes[0] = gameInfo.lane_1;
-    lanes[1] = gameInfo.lane_2;
-    lanes[2] = gameInfo.lane_3;
-    lanes[3] = gameInfo.lane_4;
-
-	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
-
-	// OPTIMIZE: Read these from a file instead
-	std::vector<float> note_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
-								12.f, 13.f, 14.f, 14.5f, 15.f,
-								20.f, 21.f, 22.f, 22.5f, 23.f,
-								28.f, 29.f, 30.f, 30.5f, 31.f,
-								40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
-								56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
-	
-
-	// Convert beat-based timings into seconds-based timings, in ms
-	for (int i = 0; i < note_timings.size(); i++) {
-		note_spawns[i] = (1000.f * note_timings[i] / bpm_ratio) + spawn_offset;
-		// std::cout << note_spawns[i] << "\n";
-	}
-
-	// TODO: Account for when first note spawn is negative (before music starts)
-	next_note_spawn = note_spawns[0];
+	restart_battle();
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -175,9 +151,47 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     return true;
 };
 
+void Battle::handle_battle_end() {
+	// determine win or lose
+	if (score > score_threshold) {
+		// won battle
+		// TODO: render "won battle" overlay
+	} else {
+		// lost battle
+		// TODO: render "lost battle" overlay
+	}
+}
+
 void Battle::restart_battle() {
-	// TODO
-	// restart all battle stats for next battle
+	// restart all battle stats for new battle
+	audio.init();
+	score = 0;
+	// battleInfo.score_threshold = 0.f;
+    lanes[0] = gameInfo.lane_1;
+    lanes[1] = gameInfo.lane_2;
+    lanes[2] = gameInfo.lane_3;
+    lanes[3] = gameInfo.lane_4;
+
+	// Used to spawn notes relative to judgment line instead of window height
+	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
+
+	// OPTIMIZE: Read these from a file instead
+	std::vector<float> note_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
+								12.f, 13.f, 14.f, 14.5f, 15.f,
+								20.f, 21.f, 22.f, 22.5f, 23.f,
+								28.f, 29.f, 30.f, 30.5f, 31.f,
+								40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
+								56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
+	
+
+	// Convert beat-based timings into seconds-based timings, in ms
+	for (int i = 0; i < note_timings.size(); i++) {
+		note_spawns[i] = (1000.f * note_timings[i] / bpm_ratio) + spawn_offset;
+		// std::cout << note_spawns[i] << "\n";
+	}
+
+	// TODO: Account for when first note spawn is negative (before music starts)
+	next_note_spawn = note_spawns[0];
 }
 
 bool Battle::set_visible(bool isVisible) {
