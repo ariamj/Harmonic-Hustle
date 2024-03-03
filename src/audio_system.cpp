@@ -37,7 +37,6 @@ bool AudioSystem::LoadFiles() {
 	// Load BGM from file path
 	std::string overworld_file = "overworld.wav";
 	overworld_music = Mix_LoadMUS(audio_path(overworld_file).c_str());
-
 	if (overworld_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
 			audio_path(overworld_file).c_str());
@@ -46,30 +45,44 @@ bool AudioSystem::LoadFiles() {
 
 	std::string enemy0_file = "enemy0.wav";
 	Mix_Music* enemy0_music = Mix_LoadMUS(audio_path(enemy0_file).c_str());
-
 	if (enemy0_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
 			audio_path(enemy0_file).c_str());
 		return false;
 	}
-
 	enemy_music.push_back(enemy0_music);
+	
 
-	std::string missed_note = "chicken_dead.wav";
-	missed_note_music = Mix_LoadWAV(audio_path("chicken_dead.wav").c_str());
-
-	if (missed_note_music == nullptr) { // add "%s\n" for each sound added
+	std::string enemy1_file = "enemy1.wav";
+	Mix_Music* enemy1_music = Mix_LoadMUS(audio_path(enemy1_file).c_str());
+	if (enemy1_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
-			audio_path(missed_note).c_str());
+			audio_path(enemy1_file).c_str());
+		return false;
+	}
+	enemy_music.push_back(enemy1_music);
+
+	std::string drop = "drop.wav";
+	drop_SFX = Mix_LoadWAV(audio_path(drop).c_str());
+	if (drop_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(drop).c_str());
 		return false;
 	}
 
 	std::string hit_perfect = "hit_perfect.wav";
 	hit_perfect_SFX = Mix_LoadWAV(audio_path("hit_perfect.wav").c_str());
-
 	if (hit_perfect_SFX == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
 			audio_path(hit_perfect).c_str());
+		return false;
+	}
+
+	std::string miss = "miss.wav";
+	miss_SFX = Mix_LoadWAV(audio_path(miss).c_str());
+	if (miss_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(miss).c_str());
 		return false;
 	}
 
@@ -90,8 +103,13 @@ bool AudioSystem::playBattle(int enemy_id) {
 	return true;
 }
 
+bool AudioSystem::playDroppedNote() {
+	Mix_PlayChannel(-1, drop_SFX, 0);
+	return true;
+}
+
 bool AudioSystem::playMissedNote() {
-	Mix_PlayChannel(-1, missed_note_music, 0);
+	Mix_PlayChannel(-1, miss_SFX, 0);
 	return true;
 }
 
