@@ -87,88 +87,93 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	//	registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
-	auto& motions_registry = registry.motions;
 
-	// Process the player state
-	assert(registry.screenStates.components.size() <= 1);
-	ScreenState &screen = registry.screenStates.components[0];
+	if (battle_is_over) {
+		
+	} else {
+		auto& motions_registry = registry.motions;
 
-	float min_counter_ms = 3000.f;
-	next_note_spawn -= elapsed_ms_since_last_update;
+		// Process the player state
+		assert(registry.screenStates.components.size() <= 1);
+		ScreenState &screen = registry.screenStates.components[0];
 
-	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
-		// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
-		next_note_spawn = note_spawns[next_note_index] - note_spawns[next_note_index - 1] + next_note_spawn;
-		if (next_note_index <= num_notes) {
-			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
-		}
-		next_note_index += 1;
-	}
+		float min_counter_ms = 3000.f;
+		next_note_spawn -= elapsed_ms_since_last_update;
 
-	// Remove entities that leave the screen below
-	// Iterate backwards to be able to remove without unterfering with the next object to visit
-	// (the containers exchange the last element with the current)
-	for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
-		Motion& motion = motions_registry.components[i];
-		if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
-			// remove missed notes and play missed note sound
-			// TODO MUSIC: replace chicken dead sound
-			if (registry.notes.has(motions_registry.entities[i])) {
-				audio.playDroppedNote();
-				registry.remove_all_components_of(motions_registry.entities[i]);
+		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
+			// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
+			next_note_spawn = note_spawns[next_note_index] - note_spawns[next_note_index - 1] + next_note_spawn;
+			if (next_note_index <= num_notes) {
+				// spawn notes in the four lanes
+				createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 			}
+			next_note_index += 1;
 		}
-	} 
 
-	 // update notes positions
-	for (int i = 0; i < registry.motions.components.size(); ++i) {
-		Motion& motion = registry.motions.components[i];
+		// Remove entities that leave the screen below
+		// Iterate backwards to be able to remove without unterfering with the next object to visit
+		// (the containers exchange the last element with the current)
+		for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
+			Motion& motion = motions_registry.components[i];
+			if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
+				// remove missed notes and play missed note sound
+				// TODO MUSIC: replace chicken dead sound
+				if (registry.notes.has(motions_registry.entities[i])) {
+					audio.playDroppedNote();
+					registry.remove_all_components_of(motions_registry.entities[i]);
+				}
+			}
+		} 
+
+		// update notes positions
+		for (int i = 0; i < registry.motions.components.size(); ++i) {
+			Motion& motion = registry.motions.components[i];
 
 		if (registry.notes.has(motions_registry.entities[i])) {
 			// Increment progress on range [0,1]
 			float progress_step = elapsed_ms_since_last_update / NOTE_TRAVEL_TIME;
 			motion.progress = min(1.f, motion.progress + progress_step);
 
-			// Interpolate note position from top to bottom of screen
-			motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
+				// Interpolate note position from top to bottom of screen
+				motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
-			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-			motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
-		}
-	}
-
-	// collision timers
-	for (Entity entity : registry.collisionTimers.entities) {
-		CollisionTimer& ct = registry.collisionTimers.get(entity);
-		ct.counter_ms -= elapsed_ms_since_last_update;
-
-		if (ct.counter_ms < 0) {
-			registry.collisions.remove(entity);
-			registry.collisionTimers.remove(entity);
-		}
-	}
-
-	// judgement line timers
-	min_counter_ms = 200.f;
-	for (Entity line : registry.judgmentLineTimers.entities) {
-		if (registry.judgmentLineTimers.has(line)) {
-			// progress timer
-			JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
-			counter.count_ms -= elapsed_ms_since_last_update;
-			if (counter.count_ms < min_counter_ms) {
-				min_counter_ms = counter.count_ms;
-			}
-			// change judgement line colour back after timer expires
-			if (counter.count_ms < 0) {
-				vec3& colour = registry.colours.get(line);
-				colour = {1.f, 1.f, 1.f};
-				registry.judgmentLineTimers.remove(line);
+				// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
+				motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
 			}
 		}
+
+		// collision timers
+		for (Entity entity : registry.collisionTimers.entities) {
+			CollisionTimer& ct = registry.collisionTimers.get(entity);
+			ct.counter_ms -= elapsed_ms_since_last_update;
+
+			if (ct.counter_ms < 0) {
+				registry.collisions.remove(entity);
+				registry.collisionTimers.remove(entity);
+			}
+		}
+
+		// judgement line timers
+		min_counter_ms = 200.f;
+		for (Entity line : registry.judgmentLineTimers.entities) {
+			if (registry.judgmentLineTimers.has(line)) {
+				// progress timer
+				JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
+				counter.count_ms -= elapsed_ms_since_last_update;
+				if (counter.count_ms < min_counter_ms) {
+					min_counter_ms = counter.count_ms;
+				}
+				// change judgement line colour back after timer expires
+				if (counter.count_ms < 0) {
+					vec3& colour = registry.colours.get(line);
+					colour = {1.f, 1.f, 1.f};
+					registry.judgmentLineTimers.remove(line);
+				}
+			}
+		}
 	}
 
-    return true;
+	return true;
 };
 
 bool Battle::set_visible(bool isVisible) {
@@ -179,10 +184,44 @@ bool Battle::set_visible(bool isVisible) {
     if (registry.screens.has(curr_screen_entity)) registry.screens.remove(curr_screen_entity);
 
     // if we need to set it to visible, add Battle scene back
-    if (is_visible) registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+	// 		remove battle over popups as needed
+	//		reset note spawns as needed
+    if (is_visible) {
+		registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+		setBattleIsOver(false);
+		auto& notes = registry.notes.entities;
+		for (Entity note : notes) {
+			registry.renderRequests.remove(note);
+			registry.notes.remove(note);
+		}
+	}
 
     return is_visible;
 };
+
+// if battle is over, render pop up parts
+// 		else reset it by removing pop up parts
+void Battle::setBattleIsOver(bool isOver) {
+	// std::cout << "test set battle is over: " << isOver << std::endl;
+	battle_is_over = isOver;
+	auto& popUpEntities = registry.battleOverPopUpParts.entities;
+	if (battle_is_over) {
+		for (Entity popUpEntity : popUpEntities) {
+			if (!registry.screens.has(popUpEntity)) {
+				RenderRequest rr = registry.renderRequests.get(popUpEntity);
+				registry.renderRequests.remove(popUpEntity);
+				registry.renderRequests.insert(popUpEntity, rr);
+				registry.screens.insert(popUpEntity, Screen::BATTLE );
+			}
+		}
+	} else {
+		for (Entity popUpEntity : popUpEntities) {
+			if (registry.screens.has(popUpEntity)) {
+				registry.screens.remove(popUpEntity);
+			}
+		}
+	}
+}
 
 bool key_pressed = false;
 //TODO: change color of note and play event sound
@@ -227,6 +266,10 @@ void Battle::handle_collisions() {
 	k_key_pressed = false;
 	
 	
+	// set battle is over as needed
+	// 		if battle is over, add all battle over pop up parts to battle screen
+	// setting it to true for now
+	// setBattleIsOver(true);
 	
 };
 
@@ -264,29 +307,57 @@ void handleDebug(int action) {
 }
 
 void Battle::handle_key(int key, int scancode, int action, int mod) {
-    switch(key) {
-        case GLFW_KEY_D:
-			d_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_F:
-			f_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_J:
-			j_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_K:
-			k_key_pressed = true;
-            handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_X:
-			handleDebug(action);
-        default:
-            std::cout << "unhandled key" << std::endl;
-            break;
-    }
+	if (battle_is_over) {
+		switch(key) {
+			case GLFW_KEY_T:
+				if (action == GLFW_PRESS) { 
+					setBattleIsOver(!battle_is_over);
+					std::cout << "test toggle battle is over: " << battle_is_over << std::endl;
+				}
+				break;
+			case GLFW_KEY_SPACE:
+				if (action == GLFW_PRESS) { 
+					gameInfo.curr_screen = Screen::OVERWORLD;
+					std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
+				}
+				break;
+			default:
+				std::cout << "unhandled key" << std::endl;
+				break;
+		}
+	} else {
+		 switch(key) {
+			case GLFW_KEY_D:
+				d_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_F:
+				f_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_J:
+				j_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_K:
+				k_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_X:
+				handleDebug(action);
+				break;
+			case GLFW_KEY_T:
+				if (action == GLFW_PRESS) { 
+					
+					setBattleIsOver(!battle_is_over);
+					std::cout << "test toggle battle is over: " << battle_is_over << std::endl;
+				}
+				break;
+			default:
+				std::cout << "unhandled key" << std::endl;
+				break;
+		}
+	}
 };
 
 void Battle::handle_mouse_move(vec2 pos) {

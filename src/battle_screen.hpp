@@ -31,6 +31,8 @@ class Battle {
 
         bool set_visible(bool isVisible);
 
+        void setBattleIsOver(bool isOver);
+
         // Check for collisions
         void handle_collisions();
 
@@ -55,6 +57,7 @@ class Battle {
 
         float lanes[4] = {0, 0, 0, 0};
 
+        bool battle_is_over = false;
 
         GLFWwindow* window;
 };

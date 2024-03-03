@@ -31,3 +31,5 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 Entity createNote(RenderSystem* renderer, vec2 pos);
 // a red line for debugging purposes
 Entity createLine(vec2 position, vec2 size);
+// an empty white box
+Entity createBox(vec2 position, vec2 size);

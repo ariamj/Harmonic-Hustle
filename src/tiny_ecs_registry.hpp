@@ -18,6 +18,7 @@ public:
 	ComponentContainer<IsRunning> isRunning;
 	ComponentContainer<Level> levels;
 	ComponentContainer<PauseEnemyTimer> pauseEnemyTimers;
+	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Note> notes;
 	ComponentContainer<Player> players;
@@ -41,6 +42,7 @@ public:
 		registry_list.push_back(&isRunning);
 		registry_list.push_back(&levels);
 		registry_list.push_back(&pauseEnemyTimers);
+		registry_list.push_back(&battleOverPopUpParts);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&notes);
 		registry_list.push_back(&players);

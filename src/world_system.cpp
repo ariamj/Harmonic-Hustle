@@ -165,6 +165,20 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, gameInfo.height / 1.2 });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, gameInfo.height / 1.2 });
 
+
+	// save battle over pop up parts
+	vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
+	Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
+	Entity gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
+
+	registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
+	registry.colours.insert(gameOverPopUpOverlay, {0.758, 0.784, 0.801});
+	// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});	
+
+	registry.battleOverPopUpParts.emplace(gameOverPopUp);
+	registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
+	
+
 	// set current screen to overworld on every restart
 	render_set_overworld_screen();
 	// render_set_battle_screen();
@@ -322,6 +336,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				}
 			}
 			break;
 	}

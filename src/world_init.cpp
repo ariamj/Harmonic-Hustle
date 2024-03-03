@@ -242,3 +242,23 @@ Entity createLine(vec2 position, vec2 scale)
 	registry.debugComponents.emplace(entity);
 	return entity;
 }
+
+// renders a white box (using to render battle result popup)
+Entity createBox(vec2 position, vec2 scale) {
+	Entity entity = Entity();
+	// registry.screens.insert(entity, { Screen::BATTLE });
+	registry.renderRequests.insert(entity, {
+		TEXTURE_ASSET_ID::TEXTURE_COUNT,
+		EFFECT_ASSET_ID::PLAYER,
+		GEOMETRY_BUFFER_ID::BOX }
+	);
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = position;
+	motion.scale = scale;
+
+	return entity;
+
+}

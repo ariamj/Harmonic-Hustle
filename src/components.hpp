@@ -117,6 +117,11 @@ struct PauseEnemyTimer {
 	float counter_ms = 1500;
 };
 
+// if part of the battle over popup
+struct BattleOverPopUp {
+	
+};
+
 struct Collision
 {
 	// Note, the first object is stored in the ECS container.entities
@@ -203,7 +208,8 @@ enum class GEOMETRY_BUFFER_ID {
 	SPRITE = PLAYER + 1,
 	SCREEN_TRIANGLE = SPRITE + 1,
 	DEBUG_LINE = SCREEN_TRIANGLE + 1,
-	GEOMETRY_COUNT = DEBUG_LINE+ 1 // keep as last variable
+	BOX = DEBUG_LINE + 1,
+	GEOMETRY_COUNT = BOX + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
