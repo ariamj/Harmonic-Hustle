@@ -13,7 +13,7 @@ class Battle {
     public:
         Battle();
         bool is_visible;
-        enum standing {
+        enum Standing {
             perfect = 15,
             good = 10,
             alright = 5,
@@ -52,7 +52,7 @@ class Battle {
         bool f_key_pressed = false;
         bool j_key_pressed = false;
         bool k_key_pressed = false;
-        standing standing;
+        Standing standing;
         float score = 0;
 
         float lanes[4] = {0, 0, 0, 0};

@@ -13,6 +13,7 @@ const size_t MAX_NOTES = 10;
 const size_t NOTE_SPAWN_DELAY = 2000;
 const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
 const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
+const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 // lanes where notes will spawn
@@ -167,29 +168,31 @@ void Battle::handle_collisions() {
 				if ((d_key_pressed && lane == gameInfo.lane_1) || (f_key_pressed && lane == gameInfo.lane_2) 
 						|| (j_key_pressed && lane == gameInfo.lane_3) || (k_key_pressed && lane == gameInfo.lane_4)) {
 					got_hit = 1; // did not miss the note
-					// change node colour on collision
-					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
-					//colour = PERFECT_COLOUR;							// but can't press more than one key at the same time for input
 
 					// Determine score standing
+					// Simple standing feedback using judgement line colour
+					vec3& colour = registry.colours.get(entity);
 					JudgementLine judgement_line = registry.judgmentLine.get(entity);
 					float note_y_pos = registry.motions.get(entity_other).position.y;
 					float lane_y_pos = lane_motion.position.y;
 					float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
 					float scoring_margin = 3.f;
-					// standing standing;
 					if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
 						// set standing to Alright
 						standing = alright;
+						colour = ALRIGHT_COLOUR;
 					} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 								|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
 						// set standing to Good
 						standing = good;
+						colour = GOOD_COLOUR;
 					} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 						// set standing to Perfect
 						standing = perfect;
+						colour = PERFECT_COLOUR;
 					}
 					score += standing;
+
 
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
@@ -239,7 +242,7 @@ void handleRhythmInput(int action, int key) {
 						// change corresponding judgement line colour
 						registry.judgmentLineTimers.emplace_with_duplicates(line);
 						vec3& colour = registry.colours.get(line);
-						colour = GOOD_COLOUR;
+						colour = MISSED_COLOUR;
 					}
 			}
 		}
