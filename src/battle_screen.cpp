@@ -81,7 +81,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
-	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen
+	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen instead
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -174,6 +174,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
     return true;
 };
+
+void Battle::restart_battle() {
+	// TODO
+	// restart all battle stats for next battle
+}
 
 bool Battle::set_visible(bool isVisible) {
     this->is_visible = isVisible;

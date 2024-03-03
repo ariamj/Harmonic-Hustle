@@ -58,7 +58,7 @@ struct Player
 
 struct Enemy
 {
-
+	float score_threshold = 0.0;
 };
 
 // for keeping beat

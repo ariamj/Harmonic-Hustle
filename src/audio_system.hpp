@@ -22,6 +22,8 @@ public:
 	bool playMissedNote();
 	bool playHitPerfect();
 
+	bool musicPlaying();
+
 private:
 	bool LoadFiles();
 

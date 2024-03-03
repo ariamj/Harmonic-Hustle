@@ -99,7 +99,8 @@ bool AudioSystem::playOverworld() {
 
 bool AudioSystem::playBattle(int enemy_id) {
 	// enemy_music is a vector of audio file data
-	Mix_PlayMusic(enemy_music[enemy_id], -1);
+	// Mix_PlayMusic(enemy_music[enemy_id], -1);
+	Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
 	return true;
 }
 
@@ -116,4 +117,9 @@ bool AudioSystem::playMissedNote() {
 bool AudioSystem::playHitPerfect() {
 	Mix_PlayChannel(-1, hit_perfect_SFX, 0);
 	return true;
+}
+
+bool AudioSystem::musicPlaying() {
+	// return 1 if music still playing, 0 otherwise
+	return Mix_PlayingMusic();
 }
