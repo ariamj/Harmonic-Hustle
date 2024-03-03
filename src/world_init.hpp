@@ -30,6 +30,6 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 // notes
 Entity createNote(RenderSystem* renderer, vec2 pos);
 // a red line for debugging purposes
-Entity createLine(vec2 position, vec2 size);
+Entity createLine(vec2 position, vec2 size, Screen screen = Screen::OVERWORLD);
 // an empty white box
 Entity createBox(vec2 position, vec2 size);
