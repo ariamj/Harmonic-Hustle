@@ -58,7 +58,7 @@ struct Player
 
 struct Enemy
 {
-	float score_threshold = 0.0;
+	
 };
 
 // for keeping beat
@@ -94,16 +94,17 @@ struct GameInfo {
 	float lane_2;
 	float lane_3;
 	float lane_4;
+	Entity curr_enemy;
 };
 extern GameInfo gameInfo;
 
-struct BattleInfo {
+// Battle specs for an enemy
+struct BattleProfile {
     float bpm;
     int count_notes;
     std::vector<float> note_timings;
 	float score_threshold = 0.f;
 };
-extern BattleInfo battleInfo;
 struct Scene
 {
 	Screen scene;

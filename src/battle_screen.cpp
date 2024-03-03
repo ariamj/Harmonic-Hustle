@@ -28,8 +28,6 @@ int next_note_index = 1;
 float bpm = 130.f;
 float bpm_ratio = bpm / 60.f;
 
-float score_threshold = 200.f; // TODO: load info from enemy battle sprite
-
 // Enemy-specific battle information
 // TODO: Load information into these, instead hard-coding as above
 const int num_unique_battles = 2;
@@ -58,6 +56,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
 	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen instead
+	if (debugging.in_debug_mode) {
+		title_ss << " --- Score Threshold: " << score_threshold; // prob TEMP
+	}
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -160,13 +161,17 @@ void Battle::handle_battle_end() {
 		// lost battle
 		// TODO: render "lost battle" overlay
 	}
+	gameInfo.curr_enemy = {};
 }
 
 void Battle::restart_battle() {
 	// restart all battle stats for new battle
 	audio.init();
 	score = 0;
-	// battleInfo.score_threshold = 0.f;
+	enemy_battle_sprite = gameInfo.curr_enemy;
+	if (registry.battleProfiles.has(enemy_battle_sprite)) {
+		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
+	}
     lanes[0] = gameInfo.lane_1;
     lanes[1] = gameInfo.lane_2;
     lanes[2] = gameInfo.lane_3;

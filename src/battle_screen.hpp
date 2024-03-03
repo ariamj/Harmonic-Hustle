@@ -9,11 +9,11 @@
 
 #include "render_system.hpp"
 
-// struct BattleInfo {
-//     float bpm;
-//     int count_notes;
-//     std::vector<float> note_timings;
-// };
+struct BattleInfo {
+    float bpm;
+    int count_notes;
+    std::vector<float> note_timings;
+};
 
 class Battle {
     public:
@@ -64,6 +64,7 @@ class Battle {
         bool k_key_pressed = false;
         Standing standing;
         float score = 0;
+        float score_threshold = 200.f; // TODO: load info from enemy battle sprite
 
         float lanes[4] = {0, 0, 0, 0};
 
