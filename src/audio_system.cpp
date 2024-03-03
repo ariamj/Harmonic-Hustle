@@ -62,7 +62,7 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy1_music);
 
-	std::string drop = "chicken_dead.wav";
+	std::string drop = "drop.wav";
 	drop_SFX = Mix_LoadWAV(audio_path(drop).c_str());
 	if (drop_SFX == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",

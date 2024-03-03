@@ -18,12 +18,9 @@ const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 // the time it should take for note to fall from top to bottom
 const float NOTE_TRAVEL_TIME = 2000.f;
 
-// rhythmic input timing variables, to be initialized
-float judgment_lerp_progress; 
+// rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-
-// array of timings to spawn notes at
-// TODO: make this level-specific. hard-coded for testing enemy0
+// TODO: Use BattleInfo structs instead. These are hard-coded to match enemy0.wav
 int num_notes = 32;
 float note_spawns[32];
 int next_note_index = 1;
@@ -31,11 +28,9 @@ float bpm = 130.f;
 float bpm_ratio = bpm / 60.f;
 
 // Enemy-specific battle information
+// TODO: Load information into these, instead hard-coding as above
 const int num_unique_battles = 2;
 BattleInfo battleInfo[num_unique_battles];
-
-// lanes where notes will spawn
-// float lanes[4] = { LANE_1, LANE_2, LANE_3, LANE_4 };
 
 AudioSystem audio = AudioSystem();
 
@@ -58,9 +53,11 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     lanes[1] = gameInfo.lane_2;
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
-	// 1.2 is magic number for y of judgment line, from createJudgementLine
-	spawn_offset = NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f));
 
+	// Used to spawn notes relative to judgment line instead of window height
+	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
+
+	// OPTIMIZE: Read these from a file instead
 	std::vector<float> note_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
 								12.f, 13.f, 14.f, 14.5f, 15.f,
 								20.f, 21.f, 22.f, 22.5f, 23.f,
@@ -69,9 +66,9 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 								56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
 	
 
-	// Spawns a note every beat for now
+	// Convert beat-based timings into seconds-based timings, in ms
 	for (int i = 0; i < note_timings.size(); i++) {
-		note_spawns[i] = (1000.f * note_timings[i] / bpm_ratio) - spawn_offset;
+		note_spawns[i] = (1000.f * note_timings[i] / bpm_ratio) + spawn_offset;
 		// std::cout << note_spawns[i] << "\n";
 	}
 
@@ -122,7 +119,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				registry.remove_all_components_of(motions_registry.entities[i]);
 			}
 		}
-	}
+	} 
 
 	 // update notes positions
 	for (int i = 0; i < registry.motions.components.size(); ++i) {
@@ -235,9 +232,6 @@ void Battle::handle_collisions() {
 
 // battle keys:
 // DFJK -> rhythm
-// currently if any of DFJK is pressed, will check for collision
-// TODO: Split into DFJK-specific column detection
-
 void handleRhythmInput(int action, int key) {
 	auto& collisionsRegistry = registry.collisions;
 	auto& collisionsTimerRegistry = registry.collisionTimers;
