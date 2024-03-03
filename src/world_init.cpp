@@ -218,11 +218,12 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createLine(vec2 position, vec2 scale)
+Entity createLine(vec2 position, vec2 scale, Screen screen)
 {
 	Entity entity = Entity();
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::OVERWORLD });
+	registry.screens.insert(entity, { screen });
+	// registry.screens.insert(entity, { Screen::OVERWORLD });
 	//registry.screens.insert(entity, { Screen::BATTLE });
 	 //registry.colours.insert(entity, {1.f, 1.f, 1.f});
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)

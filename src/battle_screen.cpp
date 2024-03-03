@@ -46,9 +46,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	title_ss << " --- FPS: " << FPS;
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
-	//// Remove debug info from the last step
-	//while (registry.debugComponents.entities.size() > 0)
-	//	registry.remove_all_components_of(registry.debugComponents.entities.back());
+	// Remove debug info from the last step
+	while (registry.debugComponents.entities.size() > 0)
+		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
@@ -94,7 +94,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
 			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-			motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
+			motion.scale_factor = lerp(1.0, 2.5, motion.progress);
 		}
 	}
 

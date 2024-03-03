@@ -152,12 +152,21 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 		 for (int i = 0; i < motion_registry.components.size(); ++i) {
 			 Motion& motion = motion_registry.components[i];
 			 Entity& entity = motion_registry.entities[i];
+			 float line_thickness = 3.f;
 			 if (registry.enemies.has(entity) || registry.players.has(entity)) {
 				 vec2 bb = get_bounding_box(motion);
-				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
-				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(3.0, bb.y));
-				 Entity line3 = createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
-				 Entity line4 = createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, 3.0));
+				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
+				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
+				 Entity line3 = createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness));
+				 Entity line4 = createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness));
+			 }
+			 // Note center lines for scoring
+			 if (registry.notes.has(entity)) {
+				Entity center_line = createLine(motion.position, vec2(motion.scale.x, line_thickness), Screen::BATTLE);
+			 }
+			 // Judgement line center line for scoring
+			 if (registry.judgmentLine.has(entity)) {
+				Entity center_line = createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
 			 }
 			 //TODO: Player Mesh
 			 else if (registry.players.has(entity)) {
