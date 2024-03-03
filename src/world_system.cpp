@@ -88,16 +88,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.lane_3 = gameInfo.width / 2 + 100;
 	gameInfo.lane_4 = gameInfo.width / 2 + 300;
 
-	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
-
-	// !!!hard coded right now to launch chosen scene on start
-	// TODO -> update transition
-	overworld.set_visible(true);
-	gameInfo.curr_screen = Screen::OVERWORLD;
-	//  battle.set_visible(true);
-	//  curr_scene = Screen::BATTLE;
 
 	// Moved into here from main
 	audioSystem.init();
@@ -172,6 +164,10 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, gameInfo.height / 1.2 });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, gameInfo.height / 1.2 });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, gameInfo.height / 1.2 });
+
+	// set current screen to overworld on every restart
+	render_set_overworld_screen();
+	// render_set_battle_screen();
 }
 
 // Compute collisions between entities
