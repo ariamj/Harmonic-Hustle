@@ -13,6 +13,7 @@ const size_t MAX_NOTES = 10;
 const size_t NOTE_SPAWN_DELAY = 2000;
 const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
 const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
+const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 // the time it should take for note to fall from top to bottom
@@ -80,11 +81,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
+	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
-	//// Remove debug info from the last step
-	//while (registry.debugComponents.entities.size() > 0)
-	//	registry.remove_all_components_of(registry.debugComponents.entities.back());
+	// Remove debug info from the last step
+	while (registry.debugComponents.entities.size() > 0)
+		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
@@ -116,6 +118,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// TODO MUSIC: replace chicken dead sound
 			if (registry.notes.has(motions_registry.entities[i])) {
 				audio.playDroppedNote();
+				standing = missed;
+				score += standing;
 				registry.remove_all_components_of(motions_registry.entities[i]);
 			}
 		}
@@ -134,7 +138,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
 			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-			motion.scale_factor = lerp(1.0, 2.5, motion.progress); 
+			motion.scale_factor = lerp(1.0, 2.5, motion.progress);
 		}
 	}
 
@@ -198,14 +202,37 @@ void Battle::handle_collisions() {
 			
 			// check if judgment line
 			if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
-				float lane = registry.motions.get(entity).position.x;
+				Motion lane_motion = registry.motions.get(entity);
+				float lane = lane_motion.position.x;
 				// Key - Judgment line collision checker:
 				if ((d_key_pressed && lane == gameInfo.lane_1) || (f_key_pressed && lane == gameInfo.lane_2) 
 						|| (j_key_pressed && lane == gameInfo.lane_3) || (k_key_pressed && lane == gameInfo.lane_4)) {
 					got_hit = 1; // did not miss the note
-					// change node colour on collision
-					//vec3& colour = registry.colours.get(entity);		// uncomment these two lines if want node colour change
-					//colour = PERFECT_COLOUR;							// but can't press more than one key at the same time for input
+
+					// Determine score standing
+					// Simple standing feedback using judgement line colour
+					vec3& colour = registry.colours.get(entity);
+					JudgementLine judgement_line = registry.judgmentLine.get(entity);
+					float note_y_pos = registry.motions.get(entity_other).position.y;
+					float lane_y_pos = lane_motion.position.y;
+					float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+					float scoring_margin = 3.f;
+					if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
+						// set standing to Alright
+						standing = alright;
+						colour = ALRIGHT_COLOUR;
+					} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
+								|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
+						// set standing to Good
+						standing = good;
+						colour = GOOD_COLOUR;
+					} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
+						// set standing to Perfect
+						standing = perfect;
+						colour = PERFECT_COLOUR;
+					}
+					score += standing;
+
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
 				}
@@ -250,7 +277,7 @@ void handleRhythmInput(int action, int key) {
 						// change corresponding judgement line colour
 						registry.judgmentLineTimers.emplace_with_duplicates(line);
 						vec3& colour = registry.colours.get(line);
-						colour = GOOD_COLOUR;
+						colour = MISSED_COLOUR;
 					}
 			}
 		}
