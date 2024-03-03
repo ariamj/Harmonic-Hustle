@@ -68,7 +68,6 @@ int main() {
             ms_count = 0.f;
             FPS = frames; // update global variable
             frames = 0;
-
         }
 
     }

@@ -9,6 +9,12 @@
 
 #include "render_system.hpp"
 
+struct BattleInfo {
+    float bpm;
+    int count_notes;
+    std::vector<float> note_timings;
+};
+
 class Battle {
     public:
         Battle();
@@ -48,6 +54,7 @@ class Battle {
         bool k_key_pressed = false;
 
         float lanes[4] = {0, 0, 0, 0};
+
 
         GLFWwindow* window;
 };
