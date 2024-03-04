@@ -60,21 +60,39 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 
 	// Load battle-specific data into BattleInfo structs
 	// OPTIMIZE: Read these from a file instead
-	battleInfo[0].count_notes = 32;
-	battleInfo[0].bpm = 130.f;
+	int k = 0;
+	battleInfo[k].count_notes = 32;
+	battleInfo[k].bpm = 130.f;
 
 	std::vector<float> enemy0_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
-								12.f, 13.f, 14.f, 14.5f, 15.f,
-								20.f, 21.f, 22.f, 22.5f, 23.f,
-								28.f, 29.f, 30.f, 30.5f, 31.f,
-								40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
-								56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
-	bpm_ratio = battleInfo[0].bpm / 60.f;
-	for (int i = 0; i < battleInfo[0].count_notes; i++) {
+										12.f, 13.f, 14.f, 14.5f, 15.f,
+										20.f, 21.f, 22.f, 22.5f, 23.f,
+										28.f, 29.f, 30.f, 30.5f, 31.f,
+										40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
+	bpm_ratio = battleInfo[k].bpm / 60.f;
+	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
-		battleInfo[0].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[0].note_timings[i] << "\n";
+		battleInfo[k].note_timings.push_back(converted_timing);
+		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
+
+	// Another battle
+	k = 1;
+	battleInfo[k].count_notes = 36;
+	battleInfo[k].bpm = 184.f;
+
+	std::vector<float> enemy1_timings = { 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 13.5f, 14.5f, 15.f,
+										24.f, 25.f, 26.f, 27.f, 28.f, 29.f, 29.5f, 30.5f, 31.f,
+										40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f};
+	bpm_ratio = battleInfo[k].bpm / 60.f;
+	for (int i = 0; i < battleInfo[k].count_notes; i++) {
+		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
+		battleInfo[k].note_timings.push_back(converted_timing);
+		std::cout << battleInfo[k].note_timings[i] << "\n";
+	}
+
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
