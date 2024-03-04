@@ -95,6 +95,7 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	int curr_level = 1;
+	int max_level = 3;
 	bool victory = true; // True for testing; should be initialized to false
 };
 extern GameInfo gameInfo;

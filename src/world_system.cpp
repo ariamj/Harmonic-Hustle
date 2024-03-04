@@ -307,9 +307,10 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					case Screen::BATTLE:
 					default:
 						render_set_overworld_screen();
+						// TODO: Trigger this code when battle-over screen renders instead
 						if (gameInfo.victory) {
-							gameInfo.curr_level += 1;
-							gameInfo.victory = false;
+							gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+							// gameInfo.victory = false; // reset victory flag
 						}
 						break;
 				};

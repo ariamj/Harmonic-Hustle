@@ -28,7 +28,7 @@ int num_notes;
 int next_note_index;
 
 // Enemy-specific battle information
-const int NUM_UNIQUE_BATTLES = 2;
+const int NUM_UNIQUE_BATTLES = 3;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 AudioSystem audio = AudioSystem();
@@ -85,10 +85,27 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 	std::vector<float> enemy1_timings = { 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 13.5f, 14.5f, 15.f,
 										24.f, 25.f, 26.f, 27.f, 28.f, 29.f, 29.5f, 30.5f, 31.f,
 										40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
-										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f};
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f };
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
+		battleInfo[k].note_timings.push_back(converted_timing);
+		std::cout << battleInfo[k].note_timings[i] << "\n";
+	}
+
+	// Another battle
+	k = 2;
+	battleInfo[k].count_notes = 36;
+	battleInfo[k].bpm = 152.f;
+
+
+	std::vector<float> enemy2_timings = { 8.f, 8.5f, 9.f, 10.f, 11.f, 12.f, 12.5f, 13.f, 13.5f,
+										24.f, 24.5f, 25.f, 26.f, 27.f, 28.f, 28.5f, 29.f, 29.5f,
+										40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f };
+	bpm_ratio = battleInfo[k].bpm / 60.f;
+	for (int i = 0; i < battleInfo[k].count_notes; i++) {
+		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
 		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
@@ -201,7 +218,7 @@ void Battle::start() {
 	// Right now, it is 1:1 ratio, one enemy is one level
 
 	// Local variables to improve readability
-	enemy_index = gameInfo.curr_level - 1; // -1 for 0-indexing
+	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
 
 	// Reset score
