@@ -217,6 +217,92 @@ void RenderSystem::initializeGlGeometryBuffers()
 	 meshes[geom_index].vertex_indices = line_indices;
 	 bindVBOandIBO(GEOMETRY_BUFFER_ID::DEBUG_LINE, line_vertices, line_indices);
 
+	 //////////////////////////////////
+	// Initialize box
+	std::vector<ColoredVertex> box_vertices;
+	std::vector<uint16_t> box_indices;
+
+	constexpr vec3 white = { 1.0,1.0,1.0 };
+
+	// Corner points
+	box_vertices = {
+		{{-0.5,-0.5, 0.f}, white},
+		{{-0.5, 0.5, 0.f}, white},
+		{{ 0.5, 0.5, 0.f}, white},
+		{{ 0.5,-0.5, 0.f}, white},
+	};
+
+	// Two triangles
+	box_indices = {0, 1, 3, 1, 2, 3};
+	
+	 int box_geom_index = (int)GEOMETRY_BUFFER_ID::BOX;
+	 meshes[box_geom_index].vertices = box_vertices;
+	 meshes[box_geom_index].vertex_indices = box_indices;
+	 bindVBOandIBO(GEOMETRY_BUFFER_ID::BOX, box_vertices, box_indices);
+
+	////////////////////////
+	// Initialize circle outline
+	std::vector<ColoredVertex> circle_vertices;
+	std::vector<uint16_t> circle_indices;
+	// constexpr float z = -0.1f;
+	constexpr int CIRCLE_NUM_TRIANGLES = 64;
+
+	for (int i = 0; i < CIRCLE_NUM_TRIANGLES / 2; i++) {
+		const float t = float(i) * M_PI * 2.f / float(CIRCLE_NUM_TRIANGLES / 2 - 1);
+		circle_vertices.push_back({});
+		circle_vertices.back().position = { 0.5 * cos(t), 0.5 * sin(t), z };
+		circle_vertices.back().color = { 1, 1, 0.8 };
+	}
+	float thickness = 0.495; // change to update radius thickness (0 - 0.5)
+	for (int i = 0; i < CIRCLE_NUM_TRIANGLES / 2; i++) {
+		const float t = float(i) * M_PI * 2.f / float(CIRCLE_NUM_TRIANGLES / 2 - 1);
+		circle_vertices.push_back({});
+		circle_vertices.back().position = { thickness * cos(t),thickness * sin(t), z };
+		circle_vertices.back().color = { 1, 1, 0.8};
+	}
+	circle_vertices.push_back({});
+	circle_vertices.back().position = { 0, 0, 0 };
+	circle_vertices.back().color = { 1, 1, 0.8 };
+	for (int i = 0; i < CIRCLE_NUM_TRIANGLES / 2; i++) {
+		circle_indices.push_back((uint16_t)i);
+		circle_indices.push_back((uint16_t)((i + 1) % (CIRCLE_NUM_TRIANGLES / 2)));
+		circle_indices.push_back((uint16_t)(i + CIRCLE_NUM_TRIANGLES / 2));
+
+		circle_indices.push_back((uint16_t)(i + 1));
+		circle_indices.push_back((uint16_t)((i + CIRCLE_NUM_TRIANGLES / 2)));
+		circle_indices.push_back((uint16_t)(i + CIRCLE_NUM_TRIANGLES/ 2 + 1));
+	}
+	int geom_index_circle = (int)GEOMETRY_BUFFER_ID::CIRCLE_OUTLINE;
+	meshes[geom_index_circle].vertices = circle_vertices;
+	meshes[geom_index_circle].vertex_indices = circle_indices;
+	bindVBOandIBO(GEOMETRY_BUFFER_ID::CIRCLE_OUTLINE, meshes[geom_index_circle].vertices, meshes[geom_index_circle].vertex_indices);
+
+	////////////////////////
+	// Initialize red dot
+	std::vector<ColoredVertex> dot_vertices;
+	std::vector<uint16_t> dot_indices;
+	// constexpr float z = -0.1f;
+	constexpr int DOT_NUM_TRIANGLES = 62;
+
+	for (int i = 0; i < NUM_TRIANGLES; i++) {
+		const float t = float(i) * M_PI * 2.f / float(DOT_NUM_TRIANGLES - 1);
+		dot_vertices.push_back({});
+		dot_vertices.back().position = { 0.5 * cos(t), 0.5 * sin(t), z };
+		dot_vertices.back().color = red;
+	}
+	dot_vertices.push_back({});
+	dot_vertices.back().position = { 0, 0, 0 };
+	dot_vertices.back().color = red;
+	for (int i = 0; i < DOT_NUM_TRIANGLES; i++) {
+		dot_indices.push_back((uint16_t)i);
+		dot_indices.push_back((uint16_t)((i + 1) % DOT_NUM_TRIANGLES));
+		dot_indices.push_back((uint16_t)DOT_NUM_TRIANGLES);
+	}
+	int dot_geom_index = (int)GEOMETRY_BUFFER_ID::DOT;
+	meshes[dot_geom_index].vertices = dot_vertices;
+	meshes[dot_geom_index].vertex_indices = dot_indices;
+	bindVBOandIBO(GEOMETRY_BUFFER_ID::DOT, meshes[dot_geom_index].vertices, meshes[dot_geom_index].vertex_indices);
+
 	///////////////////////////////////////////////////////
 	// Initialize screen triangle (yes, triangle, not quad; its more efficient).
 

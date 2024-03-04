@@ -241,10 +241,11 @@ void RenderSystem::draw()
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
-		Screen entity_screen = registry.screens.get(entity);
-		if (entity_screen == curr_screen) {
-			drawTexturedMesh(entity, projection_2D);
-
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen) {
+				drawTexturedMesh(entity, projection_2D);
+			}
 		}
 	}
 
