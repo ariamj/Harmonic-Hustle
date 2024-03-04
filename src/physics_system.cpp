@@ -43,8 +43,8 @@ void fill_mesh_boundary_edge(Mesh& mesh) {
 			boundary_indices.insert(edge.second);
 		}
 	}
-	//printf("number of total edges = %i\n", edges.size());
-	//printf("number of boundary edges = %i\n", boundary_edges.size());
+	printf("number of total edges = %i\n", edges.size());
+	printf("number of boundary edges = %i\n", boundary_edges.size());
 }
 
 //https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -240,6 +240,7 @@ const float WALK_CYCLE_SPEED = 0.15;
 
 void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 {
+
 	 // Move entities
 	 auto& motion_registry = registry.motions;
 	 for(uint i = 0; i< motion_registry.size(); i++)
@@ -323,6 +324,10 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 if (registry.players.has(entity_i)) {
 				 Mesh* m_i = registry.meshPtrs.get(entity_i);
 
+				 if (boundary_indices.size() < 1) {
+					 fill_mesh_boundary_edge(*m_i);
+				 }
+
 				 // do mesh-line collision
 				 if (collides_mesh_line(*m_i, motion_i, motion_j)) {
 					 // Create a collisions event
@@ -333,6 +338,11 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 }
 			 else if (registry.players.has(entity_j)) {
 				 Mesh* m_j = registry.meshPtrs.get(entity_j);
+
+				 if (boundary_indices.size() < 1) {
+					 fill_mesh_boundary_edge(*m_j);
+				 }
+
 				 if (collides_mesh_line(*m_j, motion_j, motion_i)) {
 
 					 // Create a collisions event
