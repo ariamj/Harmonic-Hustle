@@ -323,7 +323,9 @@ void Battle::setBattleIsOver(bool isOver) {
 	battle_is_over = isOver;
 	if (battle_is_over) {
 		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
+		// the bigger border box
 		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
+		// the lighter box on top
 		Entity gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
 
 		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
@@ -332,6 +334,9 @@ void Battle::setBattleIsOver(bool isOver) {
 
 		registry.battleOverPopUpParts.emplace(gameOverPopUp);
 		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
+
+		registry.screens.insert(gameOverPopUp, { Screen::BATTLE });
+		registry.screens.insert(gameOverPopUpOverlay, { Screen::BATTLE });
 	} else {
 		auto& popUpEntities = registry.battleOverPopUpParts.entities;
 		for (Entity popUpEntity : popUpEntities) {

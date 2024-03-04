@@ -318,6 +318,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					case Screen::BATTLE:
 					default:
 						// pressing 'C' during battle triggers the battle over pop up for testing
+						// and treats it as battle lost
 						battle.handle_battle_end();
 
 						// render_set_overworld_screen();
