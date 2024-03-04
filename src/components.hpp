@@ -58,7 +58,7 @@ struct Player
 
 struct Enemy
 {
-	
+
 };
 
 // for keeping beat
@@ -100,9 +100,6 @@ extern GameInfo gameInfo;
 
 // Battle specs for an enemy
 struct BattleProfile {
-    float bpm;
-    int count_notes;
-    std::vector<float> note_timings;
 	float score_threshold = 0.f;
 };
 struct Scene

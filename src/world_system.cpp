@@ -221,8 +221,8 @@ bool WorldSystem::render_set_battle_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(true);
 	battle.restart_battle();
-	// audioSystem.playBattle(0); // switch to battle music
-	audioSystem.playBattle(1); // switch to battle music // TEMP !!! FOR TESTING END
+	audioSystem.playBattle(0); // switch to battle music
+	// audioSystem.playBattle(1); // switch to battle music // TEMP !!! FOR TESTING END
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};
