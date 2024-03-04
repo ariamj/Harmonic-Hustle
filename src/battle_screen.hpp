@@ -37,7 +37,8 @@ class Battle {
 
         void handle_battle_end();
 
-        void restart_battle();
+        // Setters
+        void start();
 
         bool set_visible(bool isVisible);
 

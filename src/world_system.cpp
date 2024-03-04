@@ -189,6 +189,7 @@ void WorldSystem::handle_collisions() {
 		case Screen::OVERWORLD:
 			overworld.handle_collisions();
 			if (gameInfo.curr_screen == Screen::BATTLE) {
+				battle.start();
 				render_set_battle_screen();
 			}
 			break;
@@ -220,9 +221,7 @@ bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
 	overworld.set_visible(false);
 	battle.set_visible(true);
-	battle.restart_battle();
-	audioSystem.playBattle(0); // switch to battle music
-	// audioSystem.playBattle(1); // switch to battle music // TEMP !!! FOR TESTING END
+	audioSystem.playBattle(gameInfo.curr_level - 1); // switch to battle music
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};
@@ -310,11 +309,16 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (action == GLFW_PRESS) {
 				switch (gameInfo.curr_screen) {
 					case Screen::OVERWORLD:
+						battle.start();
 						render_set_battle_screen();
 						break;
 					case Screen::BATTLE:
 					default:
 						render_set_overworld_screen();
+						if (gameInfo.victory) {
+							gameInfo.curr_level += 1;
+							gameInfo.victory = false;
+						}
 						break;
 				};
 				// if (gameInfo.curr_screen == Screen::OVERWORLD) {

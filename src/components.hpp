@@ -95,6 +95,8 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
+	int curr_level = 1;
+	bool victory = true; // True for testing; should be initialized to false
 };
 extern GameInfo gameInfo;
 
