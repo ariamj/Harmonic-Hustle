@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+float walk_cycle = 0.f;
+const float WALK_CYCLE_SPEED = 0.15;
+
 // Returns the local bounding coordinates scaled by the current size of the entity
  vec2 get_bounding_box(const Motion& motion)
  {
@@ -58,6 +61,26 @@
  	// return false;
  }
 
+ void handleWalkAnimation() {
+	 Entity e = registry.players.entities[0];
+	 RenderRequest& r = registry.renderRequests.get(e);
+
+	 walk_cycle += WALK_CYCLE_SPEED;
+
+	 if (walk_cycle <= 1.f) {
+		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F1;
+	 }
+	 else if (walk_cycle > 1.f && walk_cycle <= 2.f) {
+		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F2;
+	 }
+	 else if (walk_cycle > 2.f && walk_cycle <= 3.f) {
+		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F3;
+	 }
+	 else {
+		 walk_cycle = 0.f;
+	 }
+ }
+
 void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 {
 	 // Move entities
@@ -74,11 +97,13 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 
 		// move player
 		 if (registry.players.has(entity)) {
-			 if ((motion.velocity[0] < 0 && motion.position[0] > (0 + PLAYER_HEIGHT / 2.f)) || (motion.velocity[0] > 0 && motion.position[0] < (gameInfo.width - PLAYER_WIDTH / 2.f))) {
+			 if (motion.velocity[0] != 0 || motion.velocity[1] != 0) handleWalkAnimation();
+
+			 if ((motion.velocity[0] < 0 && motion.position[0] > PLAYER_HEIGHT / 2.f) || (motion.velocity[0] > 0 && motion.position[0] < (gameInfo.width - PLAYER_WIDTH / 2.f))) {
 				motion.position[0] = motion.position[0] + (step_seconds * motion.velocity[0]);
 			 }
 			 
-			 if ((motion.velocity[1] < 0 && motion.position[1] > (0 + PLAYER_HEIGHT / 2.f)) || (motion.velocity[1] > 0 && motion.position[1] < (gameInfo.height - PLAYER_HEIGHT / 2.f))) {
+			 if ((motion.velocity[1] < 0 && motion.position[1] > PLAYER_HEIGHT / 2.f) || (motion.velocity[1] > 0 && motion.position[1] < (gameInfo.height - PLAYER_HEIGHT / 2.f))) {
 				motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
 			 }
 		 }
