@@ -48,6 +48,16 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
+
+	audio.init();
+	lanes[0] = gameInfo.lane_1;
+    lanes[1] = gameInfo.lane_2;
+    lanes[2] = gameInfo.lane_3;
+    lanes[3] = gameInfo.lane_4;
+
+	// Used to spawn notes relative to judgment line instead of window height
+	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
+
 	restart_battle();
 };
 
@@ -55,9 +65,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
-	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen instead
+	// TODO: render score on screen instead
+	title_ss << " --- Score: " << score;
 	if (debugging.in_debug_mode) {
-		title_ss << " --- Score Threshold: " << score_threshold; // prob TEMP
+		// TODO: render threshold on screen instead
+		title_ss << " --- Score Threshold: " << score_threshold;
 	}
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
@@ -166,19 +178,12 @@ void Battle::handle_battle_end() {
 
 void Battle::restart_battle() {
 	// restart all battle stats for new battle
-	audio.init();
 	score = 0;
+	next_note_index = 1;
 	enemy_battle_sprite = gameInfo.curr_enemy;
 	if (registry.battleProfiles.has(enemy_battle_sprite)) {
 		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
 	}
-    lanes[0] = gameInfo.lane_1;
-    lanes[1] = gameInfo.lane_2;
-    lanes[2] = gameInfo.lane_3;
-    lanes[3] = gameInfo.lane_4;
-
-	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
 
 	// OPTIMIZE: Read these from a file instead
 	std::vector<float> note_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
