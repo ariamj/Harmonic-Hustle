@@ -88,6 +88,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.lane_3 = gameInfo.width / 2 + 100;
 	gameInfo.lane_4 = gameInfo.width / 2 + 300;
 
+	gameInfo.curr_enemy = (Entity){};
+
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
 
@@ -104,7 +106,15 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
-		return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		bool song_playing = audioSystem.musicPlaying();
+		if (!song_playing) {
+			battle.handle_battle_end();
+			gameInfo.curr_screen = Screen::OVERWORLD;
+			render_set_overworld_screen();
+		} else {
+			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		}
+		return true;
 	}
 }
 
@@ -191,6 +201,7 @@ void WorldSystem::handle_collisions() {
 		case Screen::OVERWORLD:
 			overworld.handle_collisions();
 			if (gameInfo.curr_screen == Screen::BATTLE) {
+				battle.start();
 				render_set_battle_screen();
 			}
 			break;
@@ -222,7 +233,7 @@ bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
 	overworld.set_visible(false);
 	battle.set_visible(true);
-	audioSystem.playBattle(0); // switch to battle music
+	audioSystem.playBattle(gameInfo.curr_level - 1); // switch to battle music
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};
@@ -310,11 +321,17 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (action == GLFW_PRESS) {
 				switch (gameInfo.curr_screen) {
 					case Screen::OVERWORLD:
+						battle.start();
 						render_set_battle_screen();
 						break;
 					case Screen::BATTLE:
 					default:
 						render_set_overworld_screen();
+						// TODO: Trigger this code when battle-over screen renders instead
+						if (gameInfo.victory) {
+							gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+							// gameInfo.victory = false; // reset victory flag
+						}
 						break;
 				};
 				// if (gameInfo.curr_screen == Screen::OVERWORLD) {

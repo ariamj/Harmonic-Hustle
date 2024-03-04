@@ -17,6 +17,7 @@ public:
 	ComponentContainer<IsChasing> isChasing;
 	ComponentContainer<IsRunning> isRunning;
 	ComponentContainer<Level> levels;
+	ComponentContainer<BattleProfile> battleProfiles;
 	ComponentContainer<PauseEnemyTimer> pauseEnemyTimers;
 	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
 	ComponentContainer<Motion> motions;
@@ -31,6 +32,7 @@ public:
 	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
+	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
 	{
@@ -41,6 +43,7 @@ public:
 		registry_list.push_back(&isChasing);
 		registry_list.push_back(&isRunning);
 		registry_list.push_back(&levels);
+		registry_list.push_back(&battleProfiles);
 		registry_list.push_back(&pauseEnemyTimers);
 		registry_list.push_back(&battleOverPopUpParts);
 		registry_list.push_back(&motions);

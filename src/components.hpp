@@ -94,8 +94,17 @@ struct GameInfo {
 	float lane_2;
 	float lane_3;
 	float lane_4;
+	Entity curr_enemy;
+	int curr_level = 1;
+	int max_level = 3;
+	bool victory = true; // True for testing; should be initialized to false
 };
 extern GameInfo gameInfo;
+
+// Battle specs for an enemy
+struct BattleProfile {
+	float score_threshold = 0.f;
+};
 struct Scene
 {
 	Screen scene;

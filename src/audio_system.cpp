@@ -62,6 +62,17 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy1_music);
 
+
+
+	std::string enemy2_file = "enemy2.wav";
+	Mix_Music* enemy2_music = Mix_LoadMUS(audio_path(enemy2_file).c_str());
+	if (enemy2_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(enemy2_file).c_str());
+		return false;
+	}
+	enemy_music.push_back(enemy2_music);
+
 	std::string drop = "drop.wav";
 	drop_SFX = Mix_LoadWAV(audio_path(drop).c_str());
 	if (drop_SFX == nullptr) { // add "%s\n" for each sound added
@@ -99,7 +110,8 @@ bool AudioSystem::playOverworld() {
 
 bool AudioSystem::playBattle(int enemy_id) {
 	// enemy_music is a vector of audio file data
-	Mix_PlayMusic(enemy_music[enemy_id], -1);
+	// Mix_PlayMusic(enemy_music[enemy_id], -1);
+	Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
 	return true;
 }
 
@@ -116,4 +128,9 @@ bool AudioSystem::playMissedNote() {
 bool AudioSystem::playHitPerfect() {
 	Mix_PlayChannel(-1, hit_perfect_SFX, 0);
 	return true;
+}
+
+bool AudioSystem::musicPlaying() {
+	// return 1 if music still playing, 0 otherwise
+	return Mix_PlayingMusic();
 }

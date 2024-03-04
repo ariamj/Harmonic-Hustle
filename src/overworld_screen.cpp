@@ -140,7 +140,11 @@ bool Overworld::handle_collisions() {
                     }
                 }
                 registry.levels.get(entity).level++;
+				// Set enemy sprite as enemy for battle
+				gameInfo.curr_enemy = entity_other;
             } else {
+				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
+				gameInfo.curr_enemy = entity_other;
                 registry.enemies.remove(entity_other);
                 registry.renderRequests.remove(entity_other);
             }
