@@ -75,8 +75,11 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	// enemy level
 	registry.levels.insert(entity, {level});
 
+	// enemy battle info
+	registry.battleProfiles.insert(entity, { 200.f * (float)level });
+
 	// Create component
-	registry.enemies.emplace(entity);
+	Enemy enemy = registry.enemies.emplace(entity);
 	registry.renderRequests.insert(
 		entity,
 		{

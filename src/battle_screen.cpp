@@ -48,7 +48,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 
 	audio.init();
-    lanes[0] = gameInfo.lane_1;
+	lanes[0] = gameInfo.lane_1;
     lanes[1] = gameInfo.lane_2;
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
@@ -99,7 +99,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
-	title_ss << " --- Score: " << score; // TEMP !!! TODO: render score on screen
+	// TODO: render score on screen instead
+	title_ss << " --- Score: " << score;
+	if (debugging.in_debug_mode) {
+		// TODO: render threshold on screen instead
+		title_ss << " --- Score Threshold: " << score_threshold;
+	}
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -196,6 +201,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
     return true;
 };
 
+void Battle::handle_battle_end() {
+	// determine win or lose
+	if (score > score_threshold) {
+		// won battle
+		// TODO: render "won battle" overlay
+	} else {
+		// lost battle
+		// TODO: render "lost battle" overlay
+	}
+	gameInfo.curr_enemy = {};
+}
+
 void Battle::start() {
 	// STRETCH: Have multiple different "enemies" (combination of music + notes) for each level
 	// Right now, it is 1:1 ratio, one enemy is one level
@@ -206,6 +223,11 @@ void Battle::start() {
 
 	// Reset score
 	score = 0;
+  // Reset score threshold
+  enemy_battle_sprite = gameInfo.curr_enemy;
+	if (registry.battleProfiles.has(enemy_battle_sprite)) {
+		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
+	}
 
 	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
 
@@ -217,6 +239,7 @@ void Battle::start() {
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1;
+
 }
 
 bool Battle::set_visible(bool isVisible) {

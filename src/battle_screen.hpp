@@ -35,8 +35,11 @@ class Battle {
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
         float lerp(float start, float end, float t);
 
+        void handle_battle_end();
+
         // Setters
         void start();
+
         bool set_visible(bool isVisible);
 
         // Check for collisions
@@ -62,6 +65,7 @@ class Battle {
         bool k_key_pressed = false;
         Standing standing;
         float score = 0;
+        float score_threshold = 200.f; // TODO: load info from enemy battle sprite
 
         float lanes[4] = {0, 0, 0, 0};
 

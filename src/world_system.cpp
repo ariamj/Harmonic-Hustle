@@ -88,6 +88,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.lane_3 = gameInfo.width / 2 + 100;
 	gameInfo.lane_4 = gameInfo.width / 2 + 300;
 
+	gameInfo.curr_enemy = (Entity){};
+
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
@@ -112,7 +114,15 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
-		return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		bool song_playing = audioSystem.musicPlaying();
+		if (!song_playing) {
+			battle.handle_battle_end();
+			gameInfo.curr_screen = Screen::OVERWORLD;
+			render_set_overworld_screen();
+		} else {
+			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		}
+		return true;
 	}
 }
 
