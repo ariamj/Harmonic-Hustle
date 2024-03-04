@@ -233,6 +233,11 @@ void Battle::handle_battle_end() {
 	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
 	setBattleIsOver(true);
 
+	// Delete any remaining note entities
+	for (auto entity : registry.notes.entities) {
+		registry.remove_all_components_of(entity);
+	}
+
 	// replay current lvl battle music for the battle over popup -> TODO update if needed
 	audio.playBattle(gameInfo.curr_level - 1);
 
@@ -280,11 +285,6 @@ void Battle::start() {
 	}
 
 	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
-
-	// TODO: Move this to transition back to overworld via battle-over screen
-	for (auto entity : registry.notes.entities) {
-		registry.remove_all_components_of(entity);
-	}
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
@@ -402,6 +402,7 @@ void Battle::handle_collisions() {
 			audio.playHitPerfect();
 		}
 		else {
+			score += missed;
 			audio.playMissedNote(); // placeholder sound effect
 		}
 	}

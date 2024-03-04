@@ -317,16 +317,13 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 						break;
 					case Screen::BATTLE:
 					default:
-						// pressing 'C' during battle triggers the battle over pop up for testing
-						// and treats it as battle lost
-						battle.handle_battle_end();
+						// pressing 'C' during battle immedidately ends battle, for testing
+						// added guard to prevent pressing when battle is already over
+						if (!battle.battle_is_over) {
+							battle.handle_battle_end();
+						}
 
 						// render_set_overworld_screen();
-						// // TODO: Trigger this code when battle-over screen renders instead
-						// if (gameInfo.victory) {
-						// 	gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
-						// 	// gameInfo.victory = false; // reset victory flag
-						// }
 						break;
 				};
 			}
