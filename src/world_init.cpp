@@ -251,7 +251,7 @@ Entity createLine(vec2 position, vec2 scale, Screen screen)
 // renders a white box (using to render battle result popup)
 Entity createBox(vec2 position, vec2 scale) {
 	Entity entity = Entity();
-	// registry.screens.insert(entity, { Screen::BATTLE });
+	registry.screens.insert(entity, { Screen::BATTLE });
 	registry.renderRequests.insert(entity, {
 		TEXTURE_ASSET_ID::TEXTURE_COUNT,
 		EFFECT_ASSET_ID::PLAYER,

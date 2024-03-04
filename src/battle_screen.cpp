@@ -131,7 +131,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	// Remove out of screen entities (Notes, etc.)
 
 	if (battle_is_over) {
-		
+		//TODO render in text that has:
+		//		battle outcome, player score and a "press space to continue" line
 	} else {
 		auto& motions_registry = registry.motions;
 
@@ -223,14 +224,41 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	return true;
 };
 
+// when battle ends, 
+// 		set battle is over to true, TODO -> render text on screen
+//  	if won, remove all same level entities from screen, increment player lvl
+//			increment player level
+//		if lost, remove only collided with enemy on screen
 void Battle::handle_battle_end() {
-	// determine win or lose
+	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
+	setBattleIsOver(true);
+
+	// replay current lvl battle music for the battle over popup -> TODO update if needed
+	audio.playBattle(gameInfo.curr_level - 1);
+
+	// battle won
 	if (score > score_threshold) {
-		// won battle
-		// TODO: render "won battle" overlay
+		// remove all lower lvl enemies
+		int currLevel = gameInfo.curr_level;
+		auto& enemies = registry.enemies.entities;
+		for (Entity enemy : enemies) {
+			int currEnemyLevel = registry.levels.get(enemy).level;
+			if (currEnemyLevel == currLevel) {
+				registry.enemies.remove(enemy);
+				registry.renderRequests.remove(enemy);
+			}
+		}
+
+		// increment player lvl
+		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+		registry.levels.get(*gameInfo.player_sprite).level++;
+
+	// battle lost
 	} else {
-		// lost battle
-		// TODO: render "lost battle" overlay
+		// remove colllided with enemy (give player another chance)
+		registry.enemies.remove(gameInfo.curr_enemy);
+		registry.renderRequests.remove(gameInfo.curr_enemy);
+
 	}
 	gameInfo.curr_enemy = {};
 }
@@ -245,8 +273,8 @@ void Battle::start() {
 
 	// Reset score
 	score = 0;
-  // Reset score threshold
-  enemy_battle_sprite = gameInfo.curr_enemy;
+	// Reset score threshold
+	enemy_battle_sprite = gameInfo.curr_enemy;
 	if (registry.battleProfiles.has(enemy_battle_sprite)) {
 		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
 	}
@@ -262,6 +290,7 @@ void Battle::start() {
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1;
 
+	setBattleIsOver(false);
 }
 
 bool Battle::set_visible(bool isVisible) {
@@ -292,17 +321,19 @@ bool Battle::set_visible(bool isVisible) {
 void Battle::setBattleIsOver(bool isOver) {
 	// std::cout << "test set battle is over: " << isOver << std::endl;
 	battle_is_over = isOver;
-	auto& popUpEntities = registry.battleOverPopUpParts.entities;
 	if (battle_is_over) {
-		for (Entity popUpEntity : popUpEntities) {
-			if (!registry.screens.has(popUpEntity)) {
-				RenderRequest rr = registry.renderRequests.get(popUpEntity);
-				registry.renderRequests.remove(popUpEntity);
-				registry.renderRequests.insert(popUpEntity, rr);
-				registry.screens.insert(popUpEntity, Screen::BATTLE );
-			}
-		}
+		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
+		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
+		Entity gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
+
+		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
+		registry.colours.insert(gameOverPopUpOverlay, {0.758, 0.784, 0.801});
+		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});	
+
+		registry.battleOverPopUpParts.emplace(gameOverPopUp);
+		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
 	} else {
+		auto& popUpEntities = registry.battleOverPopUpParts.entities;
 		for (Entity popUpEntity : popUpEntities) {
 			if (registry.screens.has(popUpEntity)) {
 				registry.screens.remove(popUpEntity);
@@ -375,13 +406,6 @@ void Battle::handle_collisions() {
 	f_key_pressed = false;
 	j_key_pressed = false;
 	k_key_pressed = false;
-	
-	
-	// set battle is over as needed
-	// 		if battle is over, add all battle over pop up parts to battle screen
-	// setting it to true for now
-	// setBattleIsOver(true);
-	
 };
 
 // battle keys:
@@ -420,12 +444,6 @@ void handleDebug(int action) {
 void Battle::handle_key(int key, int scancode, int action, int mod) {
 	if (battle_is_over) {
 		switch(key) {
-			case GLFW_KEY_T:
-				if (action == GLFW_PRESS) { 
-					setBattleIsOver(!battle_is_over);
-					std::cout << "test toggle battle is over: " << battle_is_over << std::endl;
-				}
-				break;
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
 					gameInfo.curr_screen = Screen::OVERWORLD;
@@ -456,13 +474,6 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 				break;
 			case GLFW_KEY_X:
 				handleDebug(action);
-				break;
-			case GLFW_KEY_T:
-				if (action == GLFW_PRESS) { 
-					
-					setBattleIsOver(!battle_is_over);
-					std::cout << "test toggle battle is over: " << battle_is_over << std::endl;
-				}
 				break;
 			default:
 				std::cout << "unhandled key" << std::endl;
