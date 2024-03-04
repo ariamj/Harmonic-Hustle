@@ -186,7 +186,9 @@ void Battle::start() {
 	// Local variables to improve readability
 	enemy_index = gameInfo.curr_level - 1; // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
-	
+
+	// Reset score
+	score = 0;
 
 	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
 
