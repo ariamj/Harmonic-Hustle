@@ -21,16 +21,15 @@ const float NOTE_TRAVEL_TIME = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-// TODO: Use BattleInfo structs instead. These are hard-coded to match enemy0.wav
+
+// battle-specific variables for readability, initialized in .start
+int enemy_index;
 int num_notes;
-int next_note_index = 1;
+int next_note_index;
 
 // Enemy-specific battle information
-// TODO: Load information into these, instead hard-coding as above
-const int num_unique_battles = 2;
-BattleInfo battleInfo[num_unique_battles];
-
-int enemy_index = 0;
+const int NUM_UNIQUE_BATTLES = 2;
+BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 AudioSystem audio = AudioSystem();
 
