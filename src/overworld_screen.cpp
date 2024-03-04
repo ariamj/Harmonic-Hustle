@@ -10,9 +10,7 @@
 // Game configuration
 const size_t MAX_ENEMIES = 2;
 const size_t ENEMY_DELAY_MS = 5000 * 3;
-
-float walk_cycle = 0.f;
-const float walk_cycle_speed = 0.3;
+const float PLAYER_SPEED = 100.f;
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f) 
@@ -155,56 +153,33 @@ bool Overworld::handle_collisions() {
     return false;
 };
 
-void handleWalkAnimation() {
-	Entity e = registry.players.entities[0];
-	RenderRequest& r = registry.renderRequests.get(e);
-
-	walk_cycle += walk_cycle_speed;
-
-	if (walk_cycle <= 1.f) {
-		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F1;
-	}
-	else if (walk_cycle > 1.f && walk_cycle <= 2.f) {
-		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F2;
-	}
-	else if (walk_cycle > 2.f && walk_cycle <= 3.f) {
-		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F3;
-	}
-	else {
-		walk_cycle = 0.f;
-	}
-}
-
 void handleMovementInput(int action, int key) {
 	Entity e = registry.players.entities[0];
 	Motion& motion = registry.motions.get(e);
 
-	if (key == GLFW_KEY_W || key == GLFW_KEY_S || key == GLFW_KEY_A || key == GLFW_KEY_D) {
-		handleWalkAnimation();
-
-		if (action == GLFW_PRESS) {
-			if (key == GLFW_KEY_W) {
-				motion.velocity[1] = -100;
-			}
-			if (key == GLFW_KEY_S) {
-				motion.velocity[1] = 100;
-			}
-			if (key == GLFW_KEY_A) {
-				motion.velocity[0] = -100;
-			}
-			if (key == GLFW_KEY_D) {
-				motion.velocity[0] = 100;
-			}
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_W) {
+			motion.velocity[1] = -PLAYER_SPEED;
 		}
-		else if (action == GLFW_RELEASE) {
-			if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
-				motion.velocity[1] = 0;
-			}
-			if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
-				motion.velocity[0] = 0;
-			}
+		if (key == GLFW_KEY_S) {
+			motion.velocity[1] = PLAYER_SPEED;
+		}
+		if (key == GLFW_KEY_A) {
+			motion.velocity[0] = -PLAYER_SPEED;
+		}
+		if (key == GLFW_KEY_D) {
+			motion.velocity[0] = PLAYER_SPEED;
 		}
 	}
+	else if (action == GLFW_RELEASE) {
+		if (key == GLFW_KEY_W || key == GLFW_KEY_S) {
+			motion.velocity[1] = 0;
+		}
+		if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
+			motion.velocity[0] = 0;
+		}
+	}
+	
 }
 
 void handleDebugInput(int action) {

@@ -88,7 +88,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.lane_3 = gameInfo.width / 2 + 100;
 	gameInfo.lane_4 = gameInfo.width / 2 + 300;
 
-	gameInfo.curr_enemy = (Entity){};
+	gameInfo.curr_enemy = Entity{};
 
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
