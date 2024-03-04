@@ -252,7 +252,7 @@ void WorldSystem::checkEnemyPositions() {
 		float distance = xDis * xDis + yDis * yDis;
 		distance = sqrt(distance);
 		vec2 newPos = {0, 0};
-		while (distance < CHASE_PLAYER_RADIUS || distance < RUN_AWAY_RADIUS) {
+		while (distance < PLAYER_ENEMY_RADIUS ) {
 			newPos = getRamdomEnemyPosition();
 			xDis = playerPos.x - newPos.x;
 			yDis = playerPos.y - newPos.y;

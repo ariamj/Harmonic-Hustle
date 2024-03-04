@@ -28,7 +28,7 @@ void AISystem::step(float elapsed_ms)
 
 			// chase if higher level, else run away
 			if (enemyLevel > playerLevel) {
-				if (distance <= CHASE_PLAYER_RADIUS) {
+				if (distance <= PLAYER_ENEMY_RADIUS) {
 					if (!registry.isChasing.has(enemy)) {
 						registry.isChasing.emplace(enemy);
 					};
@@ -46,7 +46,7 @@ void AISystem::step(float elapsed_ms)
 					// enemyMotion.velocity = getRandomVelocity();
 				}
 			} else {
-				if (distance <= RUN_AWAY_RADIUS) {
+				if (distance <= PLAYER_ENEMY_RADIUS) {
 					if (!registry.isRunning.has(enemy)) {
 						registry.isRunning.emplace(enemy);
 					};

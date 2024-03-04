@@ -219,7 +219,9 @@ enum class GEOMETRY_BUFFER_ID {
 	SCREEN_TRIANGLE = SPRITE + 1,
 	DEBUG_LINE = SCREEN_TRIANGLE + 1,
 	BOX = DEBUG_LINE + 1,
-	GEOMETRY_COUNT = BOX + 1 // keep as last variable
+	CIRCLE_OUTLINE = BOX + 1,
+	DOT = CIRCLE_OUTLINE + 1,
+	GEOMETRY_COUNT = DOT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
