@@ -21,17 +21,15 @@ const float NOTE_TRAVEL_TIME = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-// TODO: Use BattleInfo structs instead. These are hard-coded to match enemy0.wav
-int num_notes = 32;
-float note_spawns[32];
-int next_note_index = 1;
-float bpm = 130.f;
-float bpm_ratio = bpm / 60.f;
+
+// battle-specific variables for readability, initialized in .start
+int enemy_index;
+int num_notes;
+int next_note_index;
 
 // Enemy-specific battle information
-// TODO: Load information into these, instead hard-coding as above
-const int num_unique_battles = 2;
-BattleInfo battleInfo[num_unique_battles];
+const int NUM_UNIQUE_BATTLES = 2;
+BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 AudioSystem audio = AudioSystem();
 
@@ -58,23 +56,25 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 	// Used to spawn notes relative to judgment line instead of window height
 	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
 
+	float bpm_ratio;
+
+	// Load battle-specific data into BattleInfo structs
 	// OPTIMIZE: Read these from a file instead
-	std::vector<float> note_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
+	battleInfo[0].count_notes = 32;
+	battleInfo[0].bpm = 130.f;
+
+	std::vector<float> enemy0_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
 								12.f, 13.f, 14.f, 14.5f, 15.f,
 								20.f, 21.f, 22.f, 22.5f, 23.f,
 								28.f, 29.f, 30.f, 30.5f, 31.f,
 								40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
 								56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
-	
-
-	// Convert beat-based timings into seconds-based timings, in ms
-	for (int i = 0; i < note_timings.size(); i++) {
-		note_spawns[i] = (1000.f * note_timings[i] / bpm_ratio) + spawn_offset;
-		// std::cout << note_spawns[i] << "\n";
+	bpm_ratio = battleInfo[0].bpm / 60.f;
+	for (int i = 0; i < battleInfo[0].count_notes; i++) {
+		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
+		battleInfo[0].note_timings.push_back(converted_timing);
+		std::cout << battleInfo[0].note_timings[i] << "\n";
 	}
-
-	// TODO: Account for when first note spawn is negative (before music starts)
-	next_note_spawn = note_spawns[0];
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -98,13 +98,17 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	float min_counter_ms = 3000.f;
 	next_note_spawn -= elapsed_ms_since_last_update;
 
-	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f) {
-		// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
-		next_note_spawn = note_spawns[next_note_index] - note_spawns[next_note_index - 1] + next_note_spawn;
-		if (next_note_index <= num_notes) {
-			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
+		// spawn notes in the four lanes
+		createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+
+		if (next_note_index < num_notes) {
+			// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
+			next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
+							- battleInfo[enemy_index].note_timings[next_note_index - 1]
+							+ next_note_spawn;
 		}
+
 		next_note_index += 1;
 	}
 
@@ -115,7 +119,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		Motion& motion = motions_registry.components[i];
 		if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
 			// remove missed notes and play missed note sound
-			// TODO MUSIC: replace chicken dead sound
 			if (registry.notes.has(motions_registry.entities[i])) {
 				audio.playDroppedNote();
 				standing = missed;
@@ -174,6 +177,29 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
     return true;
 };
+
+void Battle::start() {
+	// STRETCH: Have multiple different "enemies" (combination of music + notes) for each level
+	// Right now, it is 1:1 ratio, one enemy is one level
+
+	// Local variables to improve readability
+	enemy_index = gameInfo.curr_level - 1; // -1 for 0-indexing
+	num_notes = battleInfo[enemy_index].count_notes;
+
+	// Reset score
+	score = 0;
+
+	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
+
+	// TODO: Move this to transition back to overworld via battle-over screen
+	for (auto entity : registry.notes.entities) {
+		registry.remove_all_components_of(entity);
+	}
+
+	// TODO: Account for when note spawns are negative (before music starts)
+	next_note_spawn = battleInfo[enemy_index].note_timings[0];
+	next_note_index = 1;
+}
 
 bool Battle::set_visible(bool isVisible) {
     this->is_visible = isVisible;

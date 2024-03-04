@@ -181,6 +181,7 @@ void WorldSystem::handle_collisions() {
 		case Screen::OVERWORLD:
 			overworld.handle_collisions();
 			if (gameInfo.curr_screen == Screen::BATTLE) {
+				battle.start();
 				render_set_battle_screen();
 			}
 			break;
@@ -300,11 +301,16 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (action == GLFW_PRESS) {
 				switch (gameInfo.curr_screen) {
 					case Screen::OVERWORLD:
+						battle.start();
 						render_set_battle_screen();
 						break;
 					case Screen::BATTLE:
 					default:
 						render_set_overworld_screen();
+						if (gameInfo.victory) {
+							gameInfo.curr_level += 1;
+							gameInfo.victory = false;
+						}
 						break;
 				};
 				// if (gameInfo.curr_screen == Screen::OVERWORLD) {
