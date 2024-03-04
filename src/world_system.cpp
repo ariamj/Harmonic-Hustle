@@ -119,8 +119,10 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			battle.handle_battle_end();
 			gameInfo.curr_screen = Screen::OVERWORLD;
 			render_set_overworld_screen();
+		} else {
+			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		return true;
 	}
 }
 
