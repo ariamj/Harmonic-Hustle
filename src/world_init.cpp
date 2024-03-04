@@ -247,3 +247,70 @@ Entity createLine(vec2 position, vec2 scale, Screen screen)
 	registry.debugComponents.emplace(entity);
 	return entity;
 }
+
+// renders a white box (using to render battle result popup)
+Entity createBox(vec2 position, vec2 scale) {
+	Entity entity = Entity();
+	// registry.screens.insert(entity, { Screen::BATTLE });
+	registry.renderRequests.insert(entity, {
+		TEXTURE_ASSET_ID::TEXTURE_COUNT,
+		EFFECT_ASSET_ID::PLAYER,
+		GEOMETRY_BUFFER_ID::BOX }
+	);
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = position;
+	motion.scale = scale;
+
+	return entity;
+}
+
+Entity createCircleOutline(vec2 pos, float radius) {
+	Entity entity = Entity();
+
+	// screen entity exists in
+	registry.screens.insert(entity, Screen::OVERWORLD);
+
+	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+		 EFFECT_ASSET_ID::PLAYER,
+		 GEOMETRY_BUFFER_ID::CIRCLE_OUTLINE });
+
+	// Create motion
+	Motion& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = pos;
+	motion.scale = {radius * 2.f, radius * 2.f};
+
+	registry.debugComponents.emplace(entity);
+	return entity;
+}
+
+Entity createDot(vec2 pos, vec2 size)
+{
+	auto entity = Entity();
+
+	registry.screens.insert(entity, Screen::OVERWORLD);
+
+	// Setting initial motion values
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+
+	// Create and (empty) Chicken component to be able to refer to all eagles
+	registry.debugComponents.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT, // TEXTURE_COUNT indicates that no txture is needed
+			EFFECT_ASSET_ID::PLAYER,
+			GEOMETRY_BUFFER_ID::DOT });
+
+	return entity;
+}

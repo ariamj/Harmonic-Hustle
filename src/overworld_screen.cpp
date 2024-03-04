@@ -110,7 +110,7 @@ bool Overworld::set_visible(bool isVisible) {
     return is_visible;
 };
 
-// return true if should switch screens as well as updating current screen
+// return true if game should restart
 //  on collisions for now -> remove ALL enemies with the same level (TODO -> update if needed)
 bool Overworld::handle_collisions() {
     auto& collisionsRegistry = registry.collisions;
@@ -123,31 +123,20 @@ bool Overworld::handle_collisions() {
             int enemyLevel = registry.levels.get(entity_other).level;
 
             // if collision is between enemy with level <= player level
-            //      remove all entities with the same level and update player level
-            //      TODO update on result of battle
-            // else
-            //      remove just the collided with enemy
-            //      TODO update to restart the game (player dies if collide with enemy with higher lvl)
-            if (registry.isRunning.has(entity_other)) {
-                auto& enemies = registry.enemies.entities;
-                for (Entity enemy : enemies) {
-                    int currEnemyLevel = registry.levels.get(enemy).level;
-                    if (currEnemyLevel == enemyLevel) {
-                        registry.enemies.remove(enemy);
-                        registry.renderRequests.remove(enemy);
-                    }
-                }
-                registry.levels.get(entity).level++;
+            //      set curr enemy and switch to battle scene
+            // else restart the entire game
+			if (registry.isRunning.has(entity_other)) {
+
 				// Set enemy sprite as enemy for battle
 				gameInfo.curr_enemy = entity_other;
+				gameInfo.curr_screen = Screen::BATTLE;
+
             } else {
 				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
 				gameInfo.curr_enemy = entity_other;
-                registry.enemies.remove(entity_other);
-                registry.renderRequests.remove(entity_other);
+				// return true to restart game
+				return true;
             }
-            gameInfo.curr_screen = Screen::BATTLE;
-            return true;
         }
     }
     return false;

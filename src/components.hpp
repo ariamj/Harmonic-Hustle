@@ -97,7 +97,7 @@ struct GameInfo {
 	Entity curr_enemy;
 	int curr_level = 1;
 	int max_level = 3;
-	bool victory = true; // True for testing; should be initialized to false
+	bool victory = false; // True for testing; should be initialized to false
 };
 extern GameInfo gameInfo;
 
@@ -125,6 +125,11 @@ struct Level {
 // pauses all enemy movement & collisions -> add to player for usage
 struct PauseEnemyTimer {
 	float counter_ms = 1500;
+};
+
+// if part of the battle over popup
+struct BattleOverPopUp {
+	
 };
 
 struct Collision
@@ -213,7 +218,10 @@ enum class GEOMETRY_BUFFER_ID {
 	SPRITE = PLAYER + 1,
 	SCREEN_TRIANGLE = SPRITE + 1,
 	DEBUG_LINE = SCREEN_TRIANGLE + 1,
-	GEOMETRY_COUNT = DEBUG_LINE+ 1 // keep as last variable
+	BOX = DEBUG_LINE + 1,
+	CIRCLE_OUTLINE = BOX + 1,
+	DOT = CIRCLE_OUTLINE + 1,
+	GEOMETRY_COUNT = DOT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 

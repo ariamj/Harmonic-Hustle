@@ -179,6 +179,9 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 Entity& entity = motion_registry.entities[i];
 			 float line_thickness = 3.f;
 			 if (registry.enemies.has(entity) || registry.players.has(entity)) {
+				// create a dot in the motion.positin for ai debugging
+				Entity spriteDot = createDot(motion.position, vec2{8, 8});
+
 				 vec2 bb = get_bounding_box(motion);
 				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
 				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
@@ -199,6 +202,9 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 }
 			 //TODO: Player Mesh
 			 else if (registry.players.has(entity)) {
+				// player radius for enemy ai debugging
+				Entity playerRadius = createCircleOutline(motion.position, PLAYER_ENEMY_RADIUS);
+
 				 // visualize mesh
 				 Transform transform;
 				 transform.translate(motion.position);

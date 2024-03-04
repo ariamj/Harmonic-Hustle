@@ -31,3 +31,9 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 Entity createNote(RenderSystem* renderer, vec2 pos);
 // a red line for debugging purposes
 Entity createLine(vec2 position, vec2 size, Screen screen = Screen::OVERWORLD);
+// an empty white box
+Entity createBox(vec2 position, vec2 size);
+// a circle outline for radius debugging purposes
+Entity createCircleOutline(vec2 pos, float radius);
+// a filled in circle for debugging purposes
+Entity createDot(vec2 pos, vec2 size);

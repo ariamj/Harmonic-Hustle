@@ -90,16 +90,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	gameInfo.curr_enemy = Entity{};
 
-	gameInfo.curr_screen = Screen::OVERWORLD;
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
-
-	// !!!hard coded right now to launch chosen scene on start
-	// TODO -> update transition
-	overworld.set_visible(true);
-	gameInfo.curr_screen = Screen::OVERWORLD;
-	//  battle.set_visible(true);
-	//  curr_scene = Screen::BATTLE;
 
 	// Moved into here from main
 	audioSystem.init();
@@ -115,14 +107,18 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
 		bool song_playing = audioSystem.musicPlaying();
+		bool toReturn = true;
+		// once song ends, display battle over overlay
+		// 		curr screen is set to overworld when battle is over and user presses SPACE
 		if (!song_playing) {
 			battle.handle_battle_end();
-			gameInfo.curr_screen = Screen::OVERWORLD;
-			render_set_overworld_screen();
 		} else {
-			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		return true;
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			render_set_overworld_screen();
+		}
+		return toReturn;
 	}
 }
 
@@ -182,6 +178,10 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, gameInfo.height / 1.2 });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, gameInfo.height / 1.2 });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, gameInfo.height / 1.2 });
+
+	// set current screen to overworld on every restart
+	render_set_overworld_screen();
+	// render_set_battle_screen();
 }
 
 // Compute collisions between entities
@@ -189,8 +189,9 @@ void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
 	switch(gameInfo.curr_screen) {
 		case Screen::OVERWORLD:
-			overworld.handle_collisions();
-			if (gameInfo.curr_screen == Screen::BATTLE) {
+			if (overworld.handle_collisions()) {
+				restart_game();
+			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.start();
 				render_set_battle_screen();
 			}
@@ -251,7 +252,7 @@ void WorldSystem::checkEnemyPositions() {
 		float distance = xDis * xDis + yDis * yDis;
 		distance = sqrt(distance);
 		vec2 newPos = {0, 0};
-		while (distance < CHASE_PLAYER_RADIUS || distance < RUN_AWAY_RADIUS) {
+		while (distance < PLAYER_ENEMY_RADIUS ) {
 			newPos = getRamdomEnemyPosition();
 			xDis = playerPos.x - newPos.x;
 			yDis = playerPos.y - newPos.y;
@@ -316,19 +317,18 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 						break;
 					case Screen::BATTLE:
 					default:
-						render_set_overworld_screen();
-						// TODO: Trigger this code when battle-over screen renders instead
-						if (gameInfo.victory) {
-							gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
-							// gameInfo.victory = false; // reset victory flag
-						}
+						// pressing 'C' during battle triggers the battle over pop up for testing
+						// and treats it as battle lost
+						battle.handle_battle_end();
+
+						// render_set_overworld_screen();
+						// // TODO: Trigger this code when battle-over screen renders instead
+						// if (gameInfo.victory) {
+						// 	gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+						// 	// gameInfo.victory = false; // reset victory flag
+						// }
 						break;
 				};
-				// if (gameInfo.curr_screen == Screen::OVERWORLD) {
-				// 	render_set_battle_screen();
-				// } else if (gameInfo.curr_screen == Screen::BATTLE) {
-				// 	render_set_overworld_screen();
-				// }
 			}
 			
 			break;
@@ -343,6 +343,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				}
 			}
 			break;
 	}

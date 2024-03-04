@@ -129,14 +129,19 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
-	auto& motions_registry = registry.motions;
 
-	// Process the player state
-	assert(registry.screenStates.components.size() <= 1);
-	ScreenState &screen = registry.screenStates.components[0];
+	if (battle_is_over) {
+		//TODO render in text that has:
+		//		battle outcome, player score and a "press space to continue" line
+	} else {
+		auto& motions_registry = registry.motions;
 
-	float min_counter_ms = 3000.f;
-	next_note_spawn -= elapsed_ms_since_last_update;
+		// Process the player state
+		assert(registry.screenStates.components.size() <= 1);
+		ScreenState &screen = registry.screenStates.components[0];
+
+		float min_counter_ms = 3000.f;
+		next_note_spawn -= elapsed_ms_since_last_update;
 
 	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
 		// spawn notes in the four lanes
@@ -168,64 +173,92 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 	} 
 
-	 // update notes positions
-	for (int i = 0; i < registry.motions.components.size(); ++i) {
-		Motion& motion = registry.motions.components[i];
+		// update notes positions
+		for (int i = 0; i < registry.motions.components.size(); ++i) {
+			Motion& motion = registry.motions.components[i];
 
 		if (registry.notes.has(motions_registry.entities[i])) {
 			// Increment progress on range [0,1]
 			float progress_step = elapsed_ms_since_last_update / NOTE_TRAVEL_TIME;
 			motion.progress = min(1.f, motion.progress + progress_step);
 
-			// Interpolate note position from top to bottom of screen
-			motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
+				// Interpolate note position from top to bottom of screen
+				motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
 			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
 			motion.scale_factor = lerp(1.0, 2.5, motion.progress);
 		}
 	}
 
-	// collision timers
-	for (Entity entity : registry.collisionTimers.entities) {
-		CollisionTimer& ct = registry.collisionTimers.get(entity);
-		ct.counter_ms -= elapsed_ms_since_last_update;
+		// collision timers
+		for (Entity entity : registry.collisionTimers.entities) {
+			CollisionTimer& ct = registry.collisionTimers.get(entity);
+			ct.counter_ms -= elapsed_ms_since_last_update;
 
-		if (ct.counter_ms < 0) {
-			registry.collisions.remove(entity);
-			registry.collisionTimers.remove(entity);
+			if (ct.counter_ms < 0) {
+				registry.collisions.remove(entity);
+				registry.collisionTimers.remove(entity);
+			}
+		}
+
+		// judgement line timers
+		min_counter_ms = 200.f;
+		for (Entity line : registry.judgmentLineTimers.entities) {
+			if (registry.judgmentLineTimers.has(line)) {
+				// progress timer
+				JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
+				counter.count_ms -= elapsed_ms_since_last_update;
+				if (counter.count_ms < min_counter_ms) {
+					min_counter_ms = counter.count_ms;
+				}
+				// change judgement line colour back after timer expires
+				if (counter.count_ms < 0) {
+					vec3& colour = registry.colours.get(line);
+					colour = {1.f, 1.f, 1.f};
+					registry.judgmentLineTimers.remove(line);
+				}
+			}
 		}
 	}
 
-	// judgement line timers
-	min_counter_ms = 200.f;
-	for (Entity line : registry.judgmentLineTimers.entities) {
-		if (registry.judgmentLineTimers.has(line)) {
-			// progress timer
-			JudgementLineTimer& counter = registry.judgmentLineTimers.get(line);
-			counter.count_ms -= elapsed_ms_since_last_update;
-			if (counter.count_ms < min_counter_ms) {
-				min_counter_ms = counter.count_ms;
-			}
-			// change judgement line colour back after timer expires
-			if (counter.count_ms < 0) {
-				vec3& colour = registry.colours.get(line);
-				colour = {1.f, 1.f, 1.f};
-				registry.judgmentLineTimers.remove(line);
-			}
-		}
-	}
-
-    return true;
+	return true;
 };
 
+// when battle ends, 
+// 		set battle is over to true, TODO -> render text on screen
+//  	if won, remove all same level entities from screen, increment player lvl
+//			increment player level
+//		if lost, remove only collided with enemy on screen
 void Battle::handle_battle_end() {
-	// determine win or lose
+	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
+	setBattleIsOver(true);
+
+	// replay current lvl battle music for the battle over popup -> TODO update if needed
+	audio.playBattle(gameInfo.curr_level - 1);
+
+	// battle won
 	if (score > score_threshold) {
-		// won battle
-		// TODO: render "won battle" overlay
+		// remove all lower lvl enemies
+		int currLevel = gameInfo.curr_level;
+		auto& enemies = registry.enemies.entities;
+		for (Entity enemy : enemies) {
+			int currEnemyLevel = registry.levels.get(enemy).level;
+			if (currEnemyLevel == currLevel) {
+				registry.enemies.remove(enemy);
+				registry.renderRequests.remove(enemy);
+			}
+		}
+
+		// increment player lvl
+		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+		registry.levels.get(*gameInfo.player_sprite).level++;
+
+	// battle lost
 	} else {
-		// lost battle
-		// TODO: render "lost battle" overlay
+		// remove colllided with enemy (give player another chance)
+		registry.enemies.remove(gameInfo.curr_enemy);
+		registry.renderRequests.remove(gameInfo.curr_enemy);
+
 	}
 	gameInfo.curr_enemy = {};
 }
@@ -240,8 +273,8 @@ void Battle::start() {
 
 	// Reset score
 	score = 0;
-  // Reset score threshold
-  enemy_battle_sprite = gameInfo.curr_enemy;
+	// Reset score threshold
+	enemy_battle_sprite = gameInfo.curr_enemy;
 	if (registry.battleProfiles.has(enemy_battle_sprite)) {
 		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
 	}
@@ -257,6 +290,7 @@ void Battle::start() {
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1;
 
+	setBattleIsOver(false);
 }
 
 bool Battle::set_visible(bool isVisible) {
@@ -267,10 +301,51 @@ bool Battle::set_visible(bool isVisible) {
     if (registry.screens.has(curr_screen_entity)) registry.screens.remove(curr_screen_entity);
 
     // if we need to set it to visible, add Battle scene back
-    if (is_visible) registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+	// 		remove battle over popups as needed
+	//		reset note spawns as needed
+    if (is_visible) {
+		registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+		setBattleIsOver(false);
+		auto& notes = registry.notes.entities;
+		for (Entity note : notes) {
+			registry.renderRequests.remove(note);
+			registry.notes.remove(note);
+		}
+	}
 
     return is_visible;
 };
+
+// if battle is over, render pop up parts
+// 		else reset it by removing pop up parts
+void Battle::setBattleIsOver(bool isOver) {
+	// std::cout << "test set battle is over: " << isOver << std::endl;
+	battle_is_over = isOver;
+	if (battle_is_over) {
+		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
+		// the bigger border box
+		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
+		// the lighter box on top
+		Entity gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
+
+		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
+		registry.colours.insert(gameOverPopUpOverlay, {0.758, 0.784, 0.801});
+		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});	
+
+		registry.battleOverPopUpParts.emplace(gameOverPopUp);
+		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
+
+		registry.screens.insert(gameOverPopUp, { Screen::BATTLE });
+		registry.screens.insert(gameOverPopUpOverlay, { Screen::BATTLE });
+	} else {
+		auto& popUpEntities = registry.battleOverPopUpParts.entities;
+		for (Entity popUpEntity : popUpEntities) {
+			if (registry.screens.has(popUpEntity)) {
+				registry.screens.remove(popUpEntity);
+			}
+		}
+	}
+}
 
 bool key_pressed = false;
 //TODO: change color of note and play event sound
@@ -336,9 +411,6 @@ void Battle::handle_collisions() {
 	f_key_pressed = false;
 	j_key_pressed = false;
 	k_key_pressed = false;
-	
-	
-	
 };
 
 // battle keys:
@@ -375,29 +447,44 @@ void handleDebug(int action) {
 }
 
 void Battle::handle_key(int key, int scancode, int action, int mod) {
-    switch(key) {
-        case GLFW_KEY_D:
-			d_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_F:
-			f_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_J:
-			j_key_pressed = true;
-			handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_K:
-			k_key_pressed = true;
-            handleRhythmInput(action, key);
-            break;
-		case GLFW_KEY_X:
-			handleDebug(action);
-        default:
-            std::cout << "unhandled key" << std::endl;
-            break;
-    }
+	if (battle_is_over) {
+		switch(key) {
+			case GLFW_KEY_SPACE:
+				if (action == GLFW_PRESS) { 
+					gameInfo.curr_screen = Screen::OVERWORLD;
+					std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
+				}
+				break;
+			default:
+				std::cout << "unhandled key" << std::endl;
+				break;
+		}
+	} else {
+		 switch(key) {
+			case GLFW_KEY_D:
+				d_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_F:
+				f_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_J:
+				j_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_K:
+				k_key_pressed = true;
+				handleRhythmInput(action, key);
+				break;
+			case GLFW_KEY_X:
+				handleDebug(action);
+				break;
+			default:
+				std::cout << "unhandled key" << std::endl;
+				break;
+		}
+	}
 };
 
 void Battle::handle_mouse_move(vec2 pos) {
