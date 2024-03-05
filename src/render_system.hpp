@@ -70,7 +70,7 @@ public:
 	// Initialize the window
 	bool init(GLFWwindow* window);
 
-    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size, GLuint* vao);
+    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size);
 
     template <class T>
 	void bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices);
@@ -94,6 +94,8 @@ public:
 	// Draw all entities
 	void draw();
 
+	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans);
+
 	mat3 createProjectionMatrix();
 
 private:
@@ -111,7 +113,9 @@ private:
 
 	// GLuint m_font_VAO;
 	// GLuint vao;
+	GLuint m_font_VAO;
 	GLuint m_font_VBO;
+	// GLuint m_font_shaderProgram;
 
 	Entity screen_state_entity;
 };
