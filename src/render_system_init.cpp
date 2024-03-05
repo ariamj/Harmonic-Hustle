@@ -77,7 +77,7 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	// We are not really using VAO's but without at least one bound we will crash in
 	// some systems.
 	std::cout << "REACHED BEFORE SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
-	GLuint vao;
+	// GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	gl_has_errors();
@@ -97,17 +97,19 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
 	unsigned int font_default_size = 48;
 	fontInit(*window, font_filename, font_default_size);
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
 	return true;
 }
 
 bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size) {
 	// GLuint m_font_VAO = *vao;
-	// m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
+	m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
 	// font buffer setup
-	glGenVertexArrays(1, &m_font_VAO);
+	// glGenVertexArrays(1, &m_font_VAO);
 	// glBindVertexArray(m_font_VAO);
-	// glGenBuffers(1, &m_font_VBO);
+	glGenBuffers(1, &m_font_VBO);
 
 	// // Opening files
 	// auto path = shader_path("font");
@@ -259,15 +261,15 @@ bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename
 	FT_Done_FreeType(ft);
 
 	// bind buffers
-	glBindVertexArray(m_font_VAO);
-	// glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	// glEnableVertexAttribArray(0);
-	// glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	// glBindVertexArray(m_font_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
 
 	// release buffers
-	// glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	return true;
 }

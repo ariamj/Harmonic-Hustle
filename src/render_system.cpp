@@ -252,87 +252,106 @@ void RenderSystem::draw()
 			Screen entity_screen = registry.screens.get(entity);
 			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
+				// renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 5.f, vec3(255, 1.f, 1.f), glm::mat4(1));
 			}
 		}
 	}
+	renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 5.f, vec3(255, 1.f, 1.f), glm::mat4(1));
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
 	// Truely render to the screen
 
 	// flicker-free display with a double buffer
 	glfwSwapBuffers(window);
 	gl_has_errors();
+
+	std::cout << "REACHED HERE 99" << std::endl;
 }
 
 void RenderSystem::renderText(const std::string& text, float x, float y,
-		float scale, const glm::vec3& color,
-		const glm::mat4& trans) {
+	float scale, const glm::vec3& color,
+	const glm::mat4& trans) {
 
-		// activate the shaders!
-		// glUseProgram(m_font_shaderProgram);
+	// activate the shaders!
+	// glUseProgram(m_font_shaderProgram);
+	std::cout << "REACHED HERE 0" << std::endl;
 
-		const GLuint font_program = effects[(GLuint)EFFECT_ASSET_ID::FONT];
-		glUseProgram(font_program);
+	const GLuint font_program = effects[(GLuint)EFFECT_ASSET_ID::FONT];
+	glUseProgram(font_program);
 
-		unsigned int textColor_location =
-			glGetUniformLocation(
-				font_program,
-				"textColor"
-			);
-		assert(textColor_location >= 0);
-		glUniform3f(textColor_location, color.x, color.y, color.z);
-
-		auto transform_location = glGetUniformLocation(
+	unsigned int textColor_location =
+		glGetUniformLocation(
 			font_program,
-			"transform"
+			"textColor"
 		);
-		assert(transform_location > -1);
-		glUniformMatrix4fv(transform_location, 1, GL_FALSE, (const GLfloat *)&trans);
+	assert(textColor_location >= 0);
+	glUniform3f(textColor_location, color.x, color.y, color.z);
+	std::cout << "REACHED HERE 1" << std::endl;
 
-		glBindVertexArray(m_font_VAO);
+	auto transform_location = glGetUniformLocation(
+		font_program,
+		"transform"
+	);
+	assert(transform_location > -1);
+	glUniformMatrix4fv(transform_location, 1, GL_FALSE, (const GLfloat *)&trans);
+	std::cout << "REACHED HERE 2" << std::endl;
 
-		// iterate through all characters
-		std::string::const_iterator c;
-		for (c = text.begin(); c != text.end(); c++)
-		{
-			Character ch = m_ftCharacters[*c];
+	// glBindVertexArray(m_font_VAO);
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	std::cout << "REACHED HERE 3" << std::endl;
 
-			float xpos = x + ch.Bearing.x * scale;
-			float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+	// iterate through all characters
+	std::string::const_iterator c;
+	for (c = text.begin(); c != text.end(); c++)
+	{
+		Character ch = m_ftCharacters[*c];
+		std::cout << "REACHED HERE 4" << std::endl;
 
-			float w = ch.Size.x * scale;
-			float h = ch.Size.y * scale;
+		float xpos = x + ch.Bearing.x * scale;
+		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
 
-			// update VBO for each character
-			float vertices[6][4] = {
-				{ xpos,     ypos + h,   0.0f, 0.0f },
-				{ xpos,     ypos,       0.0f, 1.0f },
-				{ xpos + w, ypos,       1.0f, 1.0f },
+		float w = ch.Size.x * scale;
+		float h = ch.Size.y * scale;
 
-				{ xpos,     ypos + h,   0.0f, 0.0f },
-				{ xpos + w, ypos,       1.0f, 1.0f },
-				{ xpos + w, ypos + h,   1.0f, 0.0f }
-			};
+		// update VBO for each character
+		float vertices[6][4] = {
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos,     ypos,       0.0f, 1.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
 
-			// render glyph texture over quad
-			glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-			// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+			{ xpos + w, ypos + h,   1.0f, 0.0f }
+		};
+		std::cout << "REACHED HERE 5" << std::endl;
 
-			// update content of VBO memory
-			glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+		std::cout << "REACHED HERE 6" << std::endl;
 
-			// render quad
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+		// update content of VBO memory
+		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		std::cout << "REACHED HERE 7" << std::endl;
 
-			// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-			x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-		}
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		std::cout << "REACHED HERE 8" << std::endl;
 
-		glBindVertexArray(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
+		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
 	}
+	std::cout << "REACHED HERE 9" << std::endl;
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	std::cout << "REACHED HERE 10" << std::endl;
+
+}
 
 mat3 RenderSystem::createProjectionMatrix()
 {
