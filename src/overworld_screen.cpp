@@ -10,6 +10,7 @@
 // Game configuration
 const size_t MAX_ENEMIES = 2;
 const size_t ENEMY_DELAY_MS = 5000 * 3;
+const float PLAYER_SPEED = 100.f;
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f) 
@@ -30,9 +31,12 @@ void Overworld::init(GLFWwindow* window, RenderSystem* renderer) {
 bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
+	title_ss << " --- FPS: " << FPS;
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
+	while (registry.debugComponents.entities.size() > 0)
+		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
@@ -48,15 +52,40 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		}
 	}
 
-	// Spawn new enemies
-	next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-		// reset timer
-		next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-		// create an enemy
+	// // Spawn new enemies
+	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
+	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
+	// 	// reset timer
+	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+	// 	// create an enemy
 
-		createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3));
-	}
+	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
+	// }
+
+    // check if enemies are high level, if yes color red, else remove color if needed
+    auto& enemies = registry.enemies.entities;
+    int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
+    for (Entity enemy : enemies) {
+        int enemyLevel = registry.levels.get(enemy).level;
+        if (enemyLevel > playerLevel) {
+            if (!registry.colours.has(enemy)) {
+                registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
+            }
+        } else {
+            if (registry.colours.has(enemy)) {
+                registry.colours.remove(enemy);
+            }
+        }
+    }
+
+    // count down enemy pause timer if needed
+    if (registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
+        PauseEnemyTimer& timer = registry.pauseEnemyTimers.get(*gameInfo.player_sprite);
+        timer.counter_ms = timer.counter_ms - elapsed_ms_since_last_update;
+        if (timer.counter_ms <= 0.f) {
+            registry.pauseEnemyTimers.remove(*gameInfo.player_sprite);
+        }
+    }
 
 	// Process the player state
 	assert(registry.screenStates.components.size() <= 1);
@@ -81,8 +110,37 @@ bool Overworld::set_visible(bool isVisible) {
     return is_visible;
 };
 
-void Overworld::handle_collisions() {
+// return true if game should restart
+//  on collisions for now -> remove ALL enemies with the same level (TODO -> update if needed)
+bool Overworld::handle_collisions() {
+    auto& collisionsRegistry = registry.collisions;
+    for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
+        Entity entity = collisionsRegistry.entities[i];
+		Entity entity_other = collisionsRegistry.components[i].other;
 
+        // if collision between player and enemy, switch to battle scene, remove enemy
+        if (registry.players.has(entity) && registry.enemies.has(entity_other)) {
+            int enemyLevel = registry.levels.get(entity_other).level;
+
+            // if collision is between enemy with level <= player level
+            //      set curr enemy and switch to battle scene
+            // else restart the entire game
+			if (registry.isRunning.has(entity_other)) {
+
+				// Set enemy sprite as enemy for battle
+				gameInfo.curr_enemy = entity_other;
+				gameInfo.curr_screen = Screen::BATTLE;
+
+            } else {
+				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
+				gameInfo.curr_enemy = entity_other;
+				gameInfo.curr_level = 1;
+				// return true to restart game
+				return true;
+            }
+        }
+    }
+    return false;
 };
 
 void handleMovementInput(int action, int key) {
@@ -91,16 +149,16 @@ void handleMovementInput(int action, int key) {
 
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_W) {
-			motion.velocity[1] = -100;
+			motion.velocity[1] = -PLAYER_SPEED;
 		}
 		if (key == GLFW_KEY_S) {
-			motion.velocity[1] = 100;
+			motion.velocity[1] = PLAYER_SPEED;
 		}
 		if (key == GLFW_KEY_A) {
-			motion.velocity[0] = -100;
+			motion.velocity[0] = -PLAYER_SPEED;
 		}
 		if (key == GLFW_KEY_D) {
-			motion.velocity[0] = 100;
+			motion.velocity[0] = PLAYER_SPEED;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
@@ -110,6 +168,13 @@ void handleMovementInput(int action, int key) {
 		if (key == GLFW_KEY_A || key == GLFW_KEY_D) {
 			motion.velocity[0] = 0;
 		}
+	}
+	
+}
+
+void handleDebugInput(int action) {
+	if (action == GLFW_PRESS) {
+		debugging.in_debug_mode = !debugging.in_debug_mode;
 	}
 }
 
@@ -121,6 +186,9 @@ void Overworld::handle_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_D:
             handleMovementInput(action, key);
 			break;
+		case GLFW_KEY_X:
+			// toggle debug
+			handleDebugInput(action);
         default:
             std::cout << "unhandled overworld key" << std::endl;
             break;

@@ -14,6 +14,12 @@ public:
 	ComponentContainer<Mesh*> meshPtrs;
 	ComponentContainer<RenderRequest> renderRequests;
 	ComponentContainer<ScreenState> screenStates;
+	ComponentContainer<IsChasing> isChasing;
+	ComponentContainer<IsRunning> isRunning;
+	ComponentContainer<Level> levels;
+	ComponentContainer<BattleProfile> battleProfiles;
+	ComponentContainer<PauseEnemyTimer> pauseEnemyTimers;
+	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Note> notes;
 	ComponentContainer<Player> players;
@@ -25,7 +31,8 @@ public:
 	ComponentContainer<CollisionTimer> collisionTimers;
 	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
 	ComponentContainer<vec3> colours;
-
+	ComponentContainer<DebugComponent> debugComponents;
+	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
 	{
@@ -33,6 +40,12 @@ public:
 		registry_list.push_back(&meshPtrs);
 		registry_list.push_back(&renderRequests);
 		registry_list.push_back(&screenStates);
+		registry_list.push_back(&isChasing);
+		registry_list.push_back(&isRunning);
+		registry_list.push_back(&levels);
+		registry_list.push_back(&battleProfiles);
+		registry_list.push_back(&pauseEnemyTimers);
+		registry_list.push_back(&battleOverPopUpParts);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&notes);
 		registry_list.push_back(&players);
@@ -44,6 +57,7 @@ public:
 		registry_list.push_back(&collisionTimers);
 		registry_list.push_back(&judgmentLineTimers);
 		registry_list.push_back(&colours);
+		registry_list.push_back(&debugComponents);
 	}
 
 	void clear_all_components() {

@@ -24,18 +24,27 @@ class RenderSystem {
 	// Associated id with .obj path
 	const std::vector < std::pair<GEOMETRY_BUFFER_ID, std::string>> mesh_paths =
 	{
-		  std::pair<GEOMETRY_BUFFER_ID, std::string>(GEOMETRY_BUFFER_ID::PLAYER, mesh_path("chicken.obj"))
+		  std::pair<GEOMETRY_BUFFER_ID, std::string>(GEOMETRY_BUFFER_ID::PLAYER, mesh_path("chicken.obj")),
+		  std::pair<GEOMETRY_BUFFER_ID, std::string>(GEOMETRY_BUFFER_ID::SPRITE, mesh_path("Player-Walk-F1.obj")),
+		  std::pair<GEOMETRY_BUFFER_ID, std::string>(GEOMETRY_BUFFER_ID::SPRITE, mesh_path("Player-Walk-F2.obj")),
+		  std::pair<GEOMETRY_BUFFER_ID, std::string>(GEOMETRY_BUFFER_ID::SPRITE, mesh_path("Player-Walk-F3.obj"))
 		  // specify meshes of other assets here
 	};
 
 	// Make sure these paths remain in sync with the associated enumerators.
-	const std::array<std::string, texture_count> texture_paths =  {
-		textures_path("Player.png"),
-		textures_path("Enemy.png"),
+	const std::array<std::string, texture_count> texture_paths = {
+		textures_path("Player-Walk-F1.png"),
+		textures_path("Player-Walk-F2.png"),
+		textures_path("Player-Walk-F3.png"),
+		textures_path("Enemy-Guitar.png"),
+		textures_path("Enemy-Drum.png"),
+		textures_path("Enemy-Mic.png"),
 		textures_path("Player-Portrait-Neutral.png"),
 		textures_path("Enemy-Portrait-Neutral.png"),
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
+		textures_path("Overworld-Background.png"),
+		textures_path("Help-Screen-Background.png")
 	};
 
 	std::array<GLuint, effect_count> effects;

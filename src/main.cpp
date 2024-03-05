@@ -8,8 +8,10 @@
 #include "world_system.hpp"
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
+#include "settings_screen.hpp"
 #include <audio_system.hpp>
 #include "physics_system.hpp"
+#include "ai_system.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -19,6 +21,7 @@ int main() {
     WorldSystem world;
     RenderSystem renderSystem;
     PhysicsSystem physics;
+    AISystem ai_system;
 
     // Initialize window
     GLFWwindow* window = world.create_window();
@@ -34,6 +37,12 @@ int main() {
     renderSystem.init(window);
     world.init(&renderSystem);
 
+    // Variables for counting frames
+
+    int frames = 0;
+    float ms_count = 0.f;
+    float fps_update_delay = 1000.f;
+
     // variable timestep loop
     auto t = Clock::now();
     while (!world.is_over()) {
@@ -48,9 +57,20 @@ int main() {
 		t = now;
 
         world.step(elapsed_ms);
-        physics.step(elapsed_ms);
+        ai_system.step(elapsed_ms);
+        physics.step(elapsed_ms, &renderSystem);
         world.handle_collisions();
         renderSystem.draw();
+
+        frames += 1;
+        ms_count += elapsed_ms;
+
+        if (ms_count > fps_update_delay) {
+            ms_count = 0.f;
+            FPS = frames; // update global variable
+            frames = 0;
+        }
+
     }
 
     return EXIT_SUCCESS;

@@ -9,10 +9,22 @@
 
 #include "render_system.hpp"
 
+struct BattleInfo {
+    float bpm;
+    int count_notes;
+    std::vector<float> note_timings;
+};
+
 class Battle {
     public:
         Battle();
         bool is_visible;
+        enum Standing {
+            perfect = 15,
+            good = 10,
+            alright = 5,
+            missed = -5
+        };
 
         void init(GLFWwindow* window, RenderSystem* renderer);
 
@@ -23,7 +35,14 @@ class Battle {
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
         float lerp(float start, float end, float t);
 
+        void handle_battle_end();
+
+        // Setters
+        void start();
+
         bool set_visible(bool isVisible);
+
+        void setBattleIsOver(bool isOver);
 
         // Check for collisions
         void handle_collisions();
@@ -42,6 +61,17 @@ class Battle {
         float next_note_spawn;
         Entity player_battle_sprite;
         Entity enemy_battle_sprite;
+        bool d_key_pressed = false;
+        bool f_key_pressed = false;
+        bool j_key_pressed = false;
+        bool k_key_pressed = false;
+        Standing standing;
+        float score = 0;
+        float score_threshold = 200.f; // TODO: load info from enemy battle sprite
+
+        float lanes[4] = {0, 0, 0, 0};
+
+        bool battle_is_over = false;
 
         GLFWwindow* window;
 };

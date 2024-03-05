@@ -14,6 +14,7 @@
 #include "render_system.hpp"
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
+#include "settings_screen.hpp"
 #include "audio_system.hpp"
 // #include "screen.hpp"
 
@@ -26,6 +27,7 @@ public:
 	
 	Battle battle;
 	Overworld overworld;
+	Settings settings;
 	AudioSystem audioSystem;
 	
 
@@ -53,6 +55,15 @@ private:
 	// sets the current scene to battle
 	bool render_set_battle_screen();
 
+	// sets the current scene to settings/help
+	bool render_set_settings_screen();
+
+	void checkEnemyPositions();
+
+	vec2 getRamdomEnemyPosition();
+
+	void handleEscInput(int action);
+
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
@@ -79,6 +90,6 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 
-	Screen curr_scene;
+	// Screen curr_scene;
 
 };

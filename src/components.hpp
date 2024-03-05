@@ -74,7 +74,8 @@ struct Conductor
 // the area in which we gotta hit the notes
 struct JudgementLine
 {
-
+	// png img ratios
+	float actual_img_scale_factor = 1.f;
 };
 
 struct JudgementLineTimer
@@ -84,9 +85,51 @@ struct JudgementLineTimer
 
 // used to manage the different screens (????)
 // the scene that the entity exists in
+struct GameInfo {
+	Screen curr_screen;
+	std::shared_ptr<Entity> player_sprite;
+	int height;
+	int width;
+	float lane_1;
+	float lane_2;
+	float lane_3;
+	float lane_4;
+	Entity curr_enemy;
+	int curr_level = 1;
+	int max_level = 3;
+	bool victory = false; // True for testing; should be initialized to false
+};
+extern GameInfo gameInfo;
+
+// Battle specs for an enemy
+struct BattleProfile {
+	float score_threshold = 0.f;
+};
 struct Scene
 {
 	Screen scene;
+};
+
+struct IsChasing {
+	
+};
+
+struct IsRunning {
+
+};
+
+struct Level {
+	int level;
+};
+
+// pauses all enemy movement & collisions -> add to player for usage
+struct PauseEnemyTimer {
+	float counter_ms = 1500;
+};
+
+// if part of the battle over popup
+struct BattleOverPopUp {
+	
 };
 
 struct Collision
@@ -99,6 +142,19 @@ struct Collision
 // how many seconds you have to react to the collision
 struct CollisionTimer {
 	float counter_ms = 1000;
+};
+
+// Data structure for toggling debug mode
+struct Debug {
+	bool in_debug_mode = 0;
+	bool in_freeze_mode = 0;
+};
+extern Debug debugging;
+
+// A struct to refer to debugging graphics in the ECS
+struct DebugComponent
+{
+	// Note, an empty struct has size 1
 };
 
 /**
@@ -126,21 +182,27 @@ struct CollisionTimer {
  */
 
 enum class TEXTURE_ASSET_ID {
-	PLAYER = 0,
-	ENEMY = PLAYER + 1,
-	BATTLEPLAYER = ENEMY + 1,
+	PLAYER_WALK_F1 = 0,
+	PLAYER_WALK_F2 = PLAYER_WALK_F1 + 1,
+	PLAYER_WALK_F3 = PLAYER_WALK_F2 + 1,
+	ENEMY_GUITAR = PLAYER_WALK_F3 + 1,
+	ENEMY_DRUM = ENEMY_GUITAR + 1,
+	ENEMY_MIC = ENEMY_DRUM + 1,
+	BATTLEPLAYER = ENEMY_MIC + 1,
 	BATTLEENEMY = BATTLEPLAYER + 1,
 	JUDGEMENT = BATTLEENEMY + 1,
 	NOTE = JUDGEMENT + 1,
-	TEXTURE_COUNT = NOTE + 1 // keep as last variable
+	OVERWORLD_BG = NOTE + 1,
+	HELP_BG = OVERWORLD_BG + 1,
+	TEXTURE_COUNT = HELP_BG + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
 enum class EFFECT_ASSET_ID {
 	// set effect asset IDs
 	PLAYER = 0,
-	ENEMY = PLAYER + 1,
-	BATTLEPLAYER = ENEMY + 1,
+	ENEMY_GUITAR = PLAYER + 1,
+	BATTLEPLAYER = ENEMY_GUITAR + 1,
 	BATTLEENEMY = BATTLEPLAYER + 1,
 	COLOURED = BATTLEENEMY + 1,
 	TEXTURED = COLOURED + 1,
@@ -156,7 +218,11 @@ enum class GEOMETRY_BUFFER_ID {
 	PLAYER = 0,
 	SPRITE = PLAYER + 1,
 	SCREEN_TRIANGLE = SPRITE + 1,
-	GEOMETRY_COUNT = SCREEN_TRIANGLE + 1 // keep as last variable
+	DEBUG_LINE = SCREEN_TRIANGLE + 1,
+	BOX = DEBUG_LINE + 1,
+	CIRCLE_OUTLINE = BOX + 1,
+	DOT = CIRCLE_OUTLINE + 1,
+	GEOMETRY_COUNT = DOT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
