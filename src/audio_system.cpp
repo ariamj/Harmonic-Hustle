@@ -29,7 +29,6 @@ bool AudioSystem::init() {
 
 	LoadFiles();
 	// Play overworld by default on game initialization.
-	playOverworld();
 	return true;
 }
 
@@ -53,7 +52,7 @@ bool AudioSystem::LoadFiles() {
 	enemy_music.push_back(enemy0_music);
 	
 
-	std::string enemy1_file = "enemy1.wav";
+	std::string enemy1_file = "enemy1.1.wav";
 	Mix_Music* enemy1_music = Mix_LoadMUS(audio_path(enemy1_file).c_str());
 	if (enemy1_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
