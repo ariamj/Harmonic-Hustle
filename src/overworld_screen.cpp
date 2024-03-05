@@ -134,6 +134,7 @@ bool Overworld::handle_collisions() {
             } else {
 				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
 				gameInfo.curr_enemy = entity_other;
+				gameInfo.curr_level = 1;
 				// return true to restart game
 				return true;
             }
