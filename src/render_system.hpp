@@ -70,7 +70,7 @@ public:
 	// Initialize the window
 	bool init(GLFWwindow* window);
 
-    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size);
+    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size, GLuint* vao);
 
     template <class T>
 	void bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices);
@@ -109,7 +109,8 @@ private:
 	GLuint off_screen_render_buffer_color;
 	GLuint off_screen_render_buffer_depth;
 
-	GLuint m_font_VAO;
+	// GLuint m_font_VAO;
+	// GLuint vao;
 	GLuint m_font_VBO;
 
 	Entity screen_state_entity;

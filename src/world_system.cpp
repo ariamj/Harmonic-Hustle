@@ -141,6 +141,9 @@ void WorldSystem::restart_game() {
 	// Debugging for memory/component leaks
 	registry.list_all_components();
 
+	// TEMP -- TESTING FONTS
+	auto text1 = createText("HELLOW WORLD", vec2(gameInfo.width/2.f, gameInfo.height/2.f), vec2(3));
+
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
 	gameInfo.player_sprite = std::make_shared<Entity>(player_sprite);

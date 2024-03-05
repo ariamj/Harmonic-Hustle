@@ -315,7 +315,7 @@ Entity createDot(vec2 pos, vec2 size)
 	return entity;
 }
 
-Entity createText(const std::string& text, vec2 pos, vec2 size, Screen screen) {
+Entity createText(const std::string text, vec2 pos, vec2 size, Screen screen) {
 	Entity entity = Entity();
 
 	registry.screens.insert(entity, {screen});

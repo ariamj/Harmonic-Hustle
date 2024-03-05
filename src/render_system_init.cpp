@@ -62,10 +62,10 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 		printf("window width_height = %d,%d\n", gameInfo.width, gameInfo.height);
 	}
 
-	// setup fonts
-	font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
-	unsigned int font_default_size = 48;
-	fontInit(*window, font_filename, font_default_size);
+	// // setup fonts
+	// font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
+	// unsigned int font_default_size = 48;
+	// fontInit(*window, font_filename, font_default_size);
 
 	// Hint: Ask your TA for how to setup pretty OpenGL error callbacks. 
 	// This can not be done in mac os, so do not enable
@@ -82,6 +82,11 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	gl_has_errors();
 	std::cout << "REACHED AFTER SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
 
+	// setup fonts
+	font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
+	unsigned int font_default_size = 48;
+	fontInit(*window, font_filename, font_default_size, &vao);
+
 	initScreenTexture();
     initializeGlTextures();
 	initializeGlEffects();
@@ -90,11 +95,11 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	return true;
 }
 
-bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size) {
-	// GLuint m_font_VAO;
+bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size, GLuint* vao) {
+	GLuint m_font_VAO = *vao;
 	m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
 	// font buffer setup
-	glGenVertexArrays(1, &m_font_VAO);
+	// glGenVertexArrays(1, &m_font_VAO);
 	glGenBuffers(1, &m_font_VBO);
 
 	// font vertex shader
@@ -202,7 +207,7 @@ bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename
 	FT_Done_FreeType(ft);
 
 	// bind buffers
-	glBindVertexArray(m_font_VAO);
+	// glBindVertexArray(m_font_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
