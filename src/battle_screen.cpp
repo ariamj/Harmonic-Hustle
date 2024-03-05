@@ -79,13 +79,17 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 
 	// Another battle
 	k = 1;
-	battleInfo[k].count_notes = 36;
+	battleInfo[k].count_notes = 70;
 	battleInfo[k].bpm = 184.f;
 
 	std::vector<float> enemy1_timings = { 8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 13.5f, 14.5f, 15.f,
 										24.f, 25.f, 26.f, 27.f, 28.f, 29.f, 29.5f, 30.5f, 31.f,
 										40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
-										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f };
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f,
+										80.f, 81.f, 82.f, 83.f, 84.f, 85.f, 86.f, 87.f,
+										88.f, 89.f, 90.f, 91.f, 92.f, 93.f, 94.f, 95.f, 96.f, 97.f, 98.f, 99.f,
+										116.f, 118.f, 120.f, 122.f, 123.f, 130.f, 131.f,
+										148.f, 150.f, 152.f, 154.f, 156.f, 158.f, 159.f};
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
@@ -233,6 +237,11 @@ void Battle::handle_battle_end() {
 	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
 	setBattleIsOver(true);
 
+	// Delete any remaining note entities
+	for (auto entity : registry.notes.entities) {
+		registry.remove_all_components_of(entity);
+	}
+
 	// replay current lvl battle music for the battle over popup -> TODO update if needed
 	audio.playBattle(gameInfo.curr_level - 1);
 
@@ -280,11 +289,6 @@ void Battle::start() {
 	}
 
 	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
-
-	// TODO: Move this to transition back to overworld via battle-over screen
-	for (auto entity : registry.notes.entities) {
-		registry.remove_all_components_of(entity);
-	}
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
@@ -402,6 +406,7 @@ void Battle::handle_collisions() {
 			audio.playHitPerfect();
 		}
 		else {
+			score += missed;
 			audio.playMissedNote(); // placeholder sound effect
 		}
 	}
