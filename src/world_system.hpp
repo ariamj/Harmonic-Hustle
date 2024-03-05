@@ -14,6 +14,7 @@
 #include "render_system.hpp"
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
+#include "settings_screen.hpp"
 #include "audio_system.hpp"
 // #include "screen.hpp"
 
@@ -26,6 +27,7 @@ public:
 	
 	Battle battle;
 	Overworld overworld;
+	Settings settings;
 	AudioSystem audioSystem;
 	
 
@@ -52,6 +54,9 @@ private:
 	
 	// sets the current scene to battle
 	bool render_set_battle_screen();
+
+	// sets the current scene to settings/help
+	bool render_set_settings_screen();
 
 	void checkEnemyPositions();
 
