@@ -26,6 +26,20 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
+struct Character {
+	unsigned int TextureID;  // ID handle of the glyph texture
+	glm::ivec2   Size;       // Size of glyph
+	glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
+	unsigned int Advance;    // Offset to advance to next glyph
+	char character;
+};
+
+struct Text
+{
+	// Text to be rendered
+	std::string text;
+};
+
 // Mesh datastructure for storing vertex and index buffers
 struct Mesh
 {
@@ -208,7 +222,8 @@ enum class EFFECT_ASSET_ID {
 	ENVIRONMENT = TEXTURED + 1,
 	JUDGEMENT = ENVIRONMENT + 1,
 	NOTE = JUDGEMENT + 1,
-	EFFECT_COUNT = NOTE + 1 // keep as last variable
+	FONT = NOTE + 1,
+	EFFECT_COUNT = FONT + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
@@ -221,7 +236,8 @@ enum class GEOMETRY_BUFFER_ID {
 	BOX = DEBUG_LINE + 1,
 	CIRCLE_OUTLINE = BOX + 1,
 	DOT = CIRCLE_OUTLINE + 1,
-	GEOMETRY_COUNT = DOT + 1 // keep as last variable
+	FONT = DOT + 1,
+	GEOMETRY_COUNT = FONT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 

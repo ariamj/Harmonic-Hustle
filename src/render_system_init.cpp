@@ -13,6 +13,22 @@
 #include <iostream>
 #include <sstream>
 
+// Fonts
+#include <ft2build.h>
+#include <freetype/freetype.h>
+#include FT_FREETYPE_H
+#include <map>
+
+std::string font_filename;
+// struct Character {
+// 	unsigned int TextureID;  // ID handle of the glyph texture
+// 	glm::ivec2   Size;       // Size of glyph
+// 	glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
+// 	unsigned int Advance;    // Offset to advance to next glyph
+// 	char character;
+// };
+// std::map<char, Character> m_ftCharacters;
+
 // World initialization
 bool RenderSystem::init(GLFWwindow* window_arg)
 {
@@ -46,6 +62,11 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 		printf("window width_height = %d,%d\n", gameInfo.width, gameInfo.height);
 	}
 
+	// setup fonts
+	font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
+	unsigned int font_default_size = 48;
+	fontInit(*window, font_filename, font_default_size);
+
 	// Hint: Ask your TA for how to setup pretty OpenGL error callbacks. 
 	// This can not be done in mac os, so do not enable
 	// it unless you are on Linux or Windows. You will need to change the window creation
@@ -54,15 +75,142 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 
 	// We are not really using VAO's but without at least one bound we will crash in
 	// some systems.
+	std::cout << "REACHED BEFORE SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	gl_has_errors();
+	std::cout << "REACHED AFTER SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
 
 	initScreenTexture();
     initializeGlTextures();
 	initializeGlEffects();
 	initializeGlGeometryBuffers();
+
+	return true;
+}
+
+bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size) {
+	// GLuint m_font_VAO;
+	m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
+	// font buffer setup
+	glGenVertexArrays(1, &m_font_VAO);
+	glGenBuffers(1, &m_font_VBO);
+
+	// font vertex shader
+	// unsigned int font_vertexShader;
+	// font_vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	// glShaderSource(font_vertexShader, 1, &fontVertexShaderSource, NULL); // handled in load effects
+	// glCompileShader(font_vertexShader);
+
+	// font fragement shader
+	// unsigned int font_fragmentShader;
+	// font_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	// glShaderSource(font_fragmentShader, 1, &fontFragmentShaderSource, NULL); // handled in load effects
+	// glCompileShader(font_fragmentShader);
+
+	// font shader program
+	// m_font_shaderProgram = glCreateProgram();
+	// glAttachShader(m_font_shaderProgram, font_vertexShader);
+	// glAttachShader(m_font_shaderProgram, font_fragmentShader);
+	// glLinkProgram(m_font_shaderProgram);
+
+	// clean up shaders
+	// glDeleteShader(font_vertexShader);
+	// glDeleteShader(font_fragmentShader);
+
+	// use our new shader
+	// glUseProgram(m_font_shaderProgram);
+
+	// apply projection matrix for font
+	// glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), 0.0f, static_cast<float>(gameInfo.height));
+	// GLint project_location = glGetUniformLocation(m_font_shaderProgram, "projection");
+	// assert(project_location > -1);
+	// std::cout << "project_location: " << project_location << std::endl;
+	// glUniformMatrix4fv(project_location, 1, GL_FALSE, &projection);
+
+	// init FreeType fonts
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+	{
+		std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+		return false;
+	}
+
+	FT_Face face;
+	if (FT_New_Face(ft, font_filename.c_str(), 0, &face))
+	{
+		std::cerr << "ERROR::FREETYPE: Failed to load font: " << font_filename << std::endl;
+		return false;
+	}
+
+	// extract a default size
+	FT_Set_Pixel_Sizes(face, 0, font_default_size);
+
+	// disable byte-alignment restriction in OpenGL
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	// load each of the chars - note only first 128 ASCII chars
+	for (unsigned char c = 0; c < 128; c++)
+	{
+		// load character glyph 
+		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+		{
+			std::cerr << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+			continue;
+		}
+
+		// generate texture
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+
+		// std::cout << "texture: " << c << " = " << texture << std::endl;
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RED,
+			face->glyph->bitmap.width,
+			face->glyph->bitmap.rows,
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			face->glyph->bitmap.buffer
+		);
+
+		// set texture options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// now store character for later use
+		Character character = {
+			texture,
+			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+			static_cast<unsigned int>(face->glyph->advance.x),
+			static_cast<char>(c)
+		};
+		m_ftCharacters.insert(std::pair<char, Character>(c, character));
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// clean up
+	FT_Done_Face(face);
+	FT_Done_FreeType(ft);
+
+	// bind buffers
+	glBindVertexArray(m_font_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+
+	// release buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	return true;
 }
@@ -325,6 +473,12 @@ RenderSystem::~RenderSystem()
 	glDeleteTextures((GLsizei)texture_gl_handles.size(), texture_gl_handles.data());
 	glDeleteTextures(1, &off_screen_render_buffer_color);
 	glDeleteRenderbuffers(1, &off_screen_render_buffer_depth);
+	gl_has_errors();
+
+	// font
+	// glDeleteProgram(m_font_shaderProgram); // handled below in effects
+	// glDeleteBuffers(1, &m_font_VBO);
+	// glDeleteBuffers(1, &m_font_VAO);
 	gl_has_errors();
 
 	for(uint i = 0; i < effect_count; i++) {

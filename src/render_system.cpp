@@ -4,6 +4,9 @@
 
 #include "tiny_ecs_registry.hpp"
 
+// temp
+#include <iostream>
+
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
@@ -24,17 +27,21 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	const GLuint program = (GLuint)effects[used_effect_enum];
 
 	// Setting shaders
+	std::cout << "REACHED SETTING SHADERS PROGRAM - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 	glUseProgram(program);
 	gl_has_errors();
+	std::cout << "DONE SETTING SHADERS PROGRAM - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 
 	assert(render_request.used_geometry != GEOMETRY_BUFFER_ID::GEOMETRY_COUNT);
 	const GLuint vbo = vertex_buffers[(GLuint)render_request.used_geometry];
 	const GLuint ibo = index_buffers[(GLuint)render_request.used_geometry];
 
 	// Setting vertex and index buffers
+	std::cout << "REACHED SETTING VBOs - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	gl_has_errors();
+	std::cout << "DONE SETTING VBOs - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 
 	// Input data location as in the vertex buffer
 	if (render_request.used_effect == EFFECT_ASSET_ID::TEXTURED)
@@ -92,6 +99,66 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 		// 	// glUniform1i(light_up_uloc, light_up);
 		// 	// gl_has_errors();
 		// }
+	}
+	else if (render_request.used_effect == EFFECT_ASSET_ID::FONT) {
+		unsigned int textColor_location =
+			glGetUniformLocation(
+				program,
+				"textColor"
+			);
+		assert(textColor_location >= 0);
+		const vec3 textColor = registry.colours.has(entity) ? registry.colours.get(entity) : vec3(1);
+		glUniform3fv(textColor_location, 1, (float *)&textColor);
+
+		const Motion text_motion = registry.motions.get(entity);
+		const std::string& text = registry.texts.get(entity).text;
+		const float scale = text_motion.scale.x;
+		float x = text_motion.position.x;
+		float y = text_motion.position.y;
+
+		// iterate through all characters
+		std::string::const_iterator c;
+		for (c = text.begin(); c != text.end(); c++)
+		{
+			Character ch = m_ftCharacters[*c];
+
+			float xpos = x + ch.Bearing.x * scale;
+			float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+			float w = ch.Size.x * scale;
+			float h = ch.Size.y * scale;
+
+			// update VBO for each character
+			float vertices[6][4] = {
+				{ xpos,     ypos + h,   0.0f, 0.0f },
+				{ xpos,     ypos,       0.0f, 1.0f },
+				{ xpos + w, ypos,       1.0f, 1.0f },
+
+				{ xpos,     ypos + h,   0.0f, 0.0f },
+				{ xpos + w, ypos,       1.0f, 1.0f },
+				{ xpos + w, ypos + h,   1.0f, 0.0f }
+			};
+
+			// render glyph texture over quad
+			glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+			// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+
+			// update content of VBO memory
+			glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			// const std::vector<uint16_t> font_indices = { 0, 3, 1, 1, 3, 2 };
+			// bindVBOandIBO(GEOMETRY_BUFFER_ID::FONT, vertices, font_indices);
+
+			// render quad
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+			x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+		}
+		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else
 	{

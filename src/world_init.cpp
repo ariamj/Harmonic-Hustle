@@ -314,3 +314,27 @@ Entity createDot(vec2 pos, vec2 size)
 
 	return entity;
 }
+
+Entity createText(const std::string& text, vec2 pos, vec2 size, Screen screen) {
+	Entity entity = Entity();
+
+	registry.screens.insert(entity, {screen});
+
+	// Add motion for transformations
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 0.f };
+	motion.scale = size;
+
+	// Create text component to be rendered
+	registry.texts.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{ TEXTURE_ASSET_ID::TEXTURE_COUNT,
+			EFFECT_ASSET_ID::FONT,
+			GEOMETRY_BUFFER_ID::FONT }
+	);
+
+	return entity;
+}
