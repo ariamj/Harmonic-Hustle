@@ -193,7 +193,8 @@ enum class TEXTURE_ASSET_ID {
 	JUDGEMENT = BATTLEENEMY + 1,
 	NOTE = JUDGEMENT + 1,
 	OVERWORLD_BG = NOTE + 1,
-	TEXTURE_COUNT = OVERWORLD_BG + 1 // keep as last variable
+	HELP_BG = OVERWORLD_BG + 1,
+	TEXTURE_COUNT = HELP_BG + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

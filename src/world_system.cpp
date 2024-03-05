@@ -92,6 +92,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg);
+	settings.init(window, renderer_arg);
 
 	// Moved into here from main
 	audioSystem.init();
@@ -105,7 +106,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
-	} else {
+	} else if (gameInfo.curr_screen == Screen::BATTLE) {
 		bool song_playing = audioSystem.musicPlaying();
 		bool toReturn = true;
 		// once song ends, display battle over overlay
@@ -119,6 +120,8 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			render_set_overworld_screen();
 		}
 		return toReturn;
+	} else {
+		return settings.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
 
@@ -185,6 +188,7 @@ void WorldSystem::restart_game() {
 }
 
 // Compute collisions between entities
+// no collision handling for settings
 void WorldSystem::handle_collisions() {
 	// handle world collisions (if need?)
 	switch(gameInfo.curr_screen) {
@@ -207,21 +211,26 @@ bool WorldSystem::is_over() const {
 	return bool(glfwWindowShouldClose(window));
 }
 
-// REQUIRES current scene to be battle
+// REQUIRES current scene NOT be overworld
 // switch to overworld scene
 bool WorldSystem::render_set_overworld_screen() {
+	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
+	settings.set_visible(false);
 	battle.set_visible(false);
 	overworld.set_visible(true);
-	audioSystem.playOverworld();
+	// don't restart the overworld music if coming from settings
+	if (prevScreen != Screen::SETTINGS)
+		audioSystem.playOverworld();
 	std::cout << "current screen: overworld" << std::endl;
 	return true; // added to prevent error
 };
 
-// REQUIRES current scene to be overworld
+// REQUIRES current scene NOT be battle
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
+	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(true);
 	audioSystem.playBattle(gameInfo.curr_level - 1); // switch to battle music
@@ -234,6 +243,28 @@ bool WorldSystem::render_set_battle_screen() {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 	std::cout << "current screen: battle" << std::endl;
+	return true; // added to prevent error
+};
+
+// REQUIRES current scene to NOT be settings
+// switch to battle scene
+bool WorldSystem::render_set_settings_screen() {
+	gameInfo.curr_screen = Screen::SETTINGS;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(true);
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+
+	// add a timer so every time it switches enemies pause for a bit
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
+	}
+
+	std::cout << "current screen: settings" << std::endl;
 	return true; // added to prevent error
 };
 
@@ -279,11 +310,19 @@ vec2 WorldSystem::getRamdomEnemyPosition() {
 };
 
 // open pause menu or go back depending on game state
+// 		-> currently toggle help screen will only work in OVERWORLD
+//		TODO -> add in pause for battle?
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
+		
+		// glfwSetWindowShouldClose(window, 1);
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			render_set_settings_screen();
+		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
+			render_set_overworld_screen();
+		}
 	}
-	glfwSetWindowShouldClose(window, 1);
 }
 
 // confirmation key

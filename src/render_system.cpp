@@ -184,7 +184,11 @@ void RenderSystem::drawToScreen()
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
 
-	} else {
+	} else if (curr_screen == SETTINGS) {
+		GLuint texture_id =
+			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::HELP_BG];
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+	} else{
 		glBindTexture(GL_TEXTURE_2D, off_screen_render_buffer_color);
 	}
 	
