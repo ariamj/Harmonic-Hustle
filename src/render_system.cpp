@@ -27,21 +27,17 @@ void RenderSystem::drawTexturedMesh(Entity entity,
 	const GLuint program = (GLuint)effects[used_effect_enum];
 
 	// Setting shaders
-	std::cout << "REACHED SETTING SHADERS PROGRAM - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 	glUseProgram(program);
 	gl_has_errors();
-	std::cout << "DONE SETTING SHADERS PROGRAM - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 
 	assert(render_request.used_geometry != GEOMETRY_BUFFER_ID::GEOMETRY_COUNT);
 	const GLuint vbo = vertex_buffers[(GLuint)render_request.used_geometry];
 	const GLuint ibo = index_buffers[(GLuint)render_request.used_geometry];
 
 	// Setting vertex and index buffers
-	std::cout << "REACHED SETTING VBOs - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	gl_has_errors();
-	std::cout << "DONE SETTING VBOs - RENDER_SYSTEM - DRAW TEXTURED MESH" << std::endl;
 
 	// Input data location as in the vertex buffer
 	if (render_request.used_effect == EFFECT_ASSET_ID::TEXTURED)
@@ -252,21 +248,17 @@ void RenderSystem::draw()
 			Screen entity_screen = registry.screens.get(entity);
 			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
-				// renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 5.f, vec3(255, 1.f, 1.f), glm::mat4(1));
+				renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 5.f, vec3(255, 1.f, 1.f), glm::mat4(1));
 			}
 		}
 	}
-	renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 5.f, vec3(255, 1.f, 1.f), glm::mat4(1));
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	// renderText("HELLO WORLDDDD", gameInfo.width / 2.f, gameInfo.height / 2.f, 100.f, vec3(255.f, 1.f, 1.f), glm::mat4(1.0f));
 
 	// Truely render to the screen
 
 	// flicker-free display with a double buffer
 	glfwSwapBuffers(window);
 	gl_has_errors();
-
-	std::cout << "REACHED HERE 99" << std::endl;
 }
 
 void RenderSystem::renderText(const std::string& text, float x, float y,
@@ -275,7 +267,6 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 
 	// activate the shaders!
 	// glUseProgram(m_font_shaderProgram);
-	std::cout << "REACHED HERE 0" << std::endl;
 
 	const GLuint font_program = effects[(GLuint)EFFECT_ASSET_ID::FONT];
 	glUseProgram(font_program);
@@ -287,7 +278,6 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 		);
 	assert(textColor_location >= 0);
 	glUniform3f(textColor_location, color.x, color.y, color.z);
-	std::cout << "REACHED HERE 1" << std::endl;
 
 	auto transform_location = glGetUniformLocation(
 		font_program,
@@ -295,19 +285,16 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	);
 	assert(transform_location > -1);
 	glUniformMatrix4fv(transform_location, 1, GL_FALSE, (const GLfloat *)&trans);
-	std::cout << "REACHED HERE 2" << std::endl;
 
 	// glBindVertexArray(m_font_VAO);
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	std::cout << "REACHED HERE 3" << std::endl;
 
 	// iterate through all characters
 	std::string::const_iterator c;
 	for (c = text.begin(); c != text.end(); c++)
 	{
 		Character ch = m_ftCharacters[*c];
-		std::cout << "REACHED HERE 4" << std::endl;
 
 		float xpos = x + ch.Bearing.x * scale;
 		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -325,31 +312,31 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 			{ xpos + w, ypos,       1.0f, 1.0f },
 			{ xpos + w, ypos + h,   1.0f, 0.0f }
 		};
-		std::cout << "REACHED HERE 5" << std::endl;
 
 		// render glyph texture over quad
 		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
-		std::cout << "REACHED HERE 6" << std::endl;
 
 		// update content of VBO memory
 		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		std::cout << "REACHED HERE 7" << std::endl;
 
 		// render quad
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		std::cout << "REACHED HERE 8" << std::endl;
 
 		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
 		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
 	}
-	std::cout << "REACHED HERE 9" << std::endl;
 
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	std::cout << "REACHED HERE 10" << std::endl;
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Rebind VAO
+	glBindVertexArray(vao);
 
 }
 
@@ -358,7 +345,6 @@ mat3 RenderSystem::createProjectionMatrix()
 	// Fake projection matrix, scales with respect to window coordinates
 	float left = 0.f;
 	float top = 0.f;
-	std::cout << "REACHED BEFORE CREATE PROJECTION -- RENDER SYS -- CREATE PROJ" << std::endl;
 
 	gl_has_errors();
 	// float right = (float) window_width_px;
@@ -370,6 +356,5 @@ mat3 RenderSystem::createProjectionMatrix()
 	float sy = 2.f / (top - bottom);
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
-	std::cout << "REACHED AFTER CREATE PROJECTION -- RENDER SYS -- CREATE PROJ" << std::endl;
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }

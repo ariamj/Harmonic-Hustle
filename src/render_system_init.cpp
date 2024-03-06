@@ -19,16 +19,10 @@
 #include FT_FREETYPE_H
 #include <map>
 
-// GLuint vao;
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 std::string font_filename;
-// struct Character {
-// 	unsigned int TextureID;  // ID handle of the glyph texture
-// 	glm::ivec2   Size;       // Size of glyph
-// 	glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
-// 	unsigned int Advance;    // Offset to advance to next glyph
-// 	char character;
-// };
-// std::map<char, Character> m_ftCharacters;
 
 // World initialization
 bool RenderSystem::init(GLFWwindow* window_arg)
@@ -76,17 +70,10 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 
 	// We are not really using VAO's but without at least one bound we will crash in
 	// some systems.
-	std::cout << "REACHED BEFORE SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
 	// GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	gl_has_errors();
-	std::cout << "REACHED AFTER SET VAOs -- RENDER_SYS_INIT -- INIT" <<std::endl;
-
-	// // setup fonts
-	// font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
-	// unsigned int font_default_size = 48;
-	// fontInit(*window, font_filename, font_default_size);
 
 	initScreenTexture();
     initializeGlTextures();
@@ -104,85 +91,18 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 }
 
 bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size) {
-	// GLuint m_font_VAO = *vao;
 	m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
 	// font buffer setup
-	// glGenVertexArrays(1, &m_font_VAO);
-	// glBindVertexArray(m_font_VAO);
 	glGenBuffers(1, &m_font_VBO);
 
-	// // Opening files
-	// auto path = shader_path("font");
-	// const std::string vs_path = path + ".vs.glsl";
-	// const std::string fs_path = path + ".fs.glsl";
-	// std::ifstream vs_is(vs_path);
-	// std::ifstream fs_is(fs_path);
-	// if (!vs_is.good() || !fs_is.good())
-	// {
-	// 	fprintf(stderr, "Failed to load shader files %s, %s", vs_path.c_str(), fs_path.c_str());
-	// 	assert(false);
-	// 	return false;
-	// }
-
-	// // Get shaders
-	// std::stringstream vs_ss, fs_ss;
-	// vs_ss << vs_is.rdbuf();
-	// fs_ss << fs_is.rdbuf();
-	// std::string vs_str = vs_ss.str();
-	// std::string fs_str = fs_ss.str();
-	// const char* fontVertexShaderSource = vs_str.c_str();
-	// const char* fontFragmentShaderSource = fs_str.c_str();
-	// GLsizei vs_len = (GLsizei)vs_str.size();
-	// GLsizei fs_len = (GLsizei)fs_str.size();
-
-	std::cout << "REACHED BEFORE SET FONT VERTEX & FRAG SHADERS -- RENDER SYS INIT -- FONT INIT" << std::endl;
-
-	// font vertex shader
-	// unsigned int font_vertexShader;
-	// font_vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// glShaderSource(font_vertexShader, 1, &fontVertexShaderSource, NULL); // handled in load effects
-	// glCompileShader(font_vertexShader);
-	// GLuint font_vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// glShaderSource(font_vertexShader, 1, &fontVertexShaderSource, &vs_len);
-
-	// font fragement shader
-	// unsigned int font_fragmentShader;
-	// font_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// glShaderSource(font_fragmentShader, 1, &fontFragmentShaderSource, NULL); // handled in load effects
-	// glCompileShader(font_fragmentShader);
-	// GLuint font_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// glShaderSource(font_fragmentShader, 1, &fontFragmentShaderSource, &fs_len);
-	// gl_has_errors();
-	std::cout << "REACHED AFTER SET FONT VERTEX & FRAG SHADERS -- RENDER SYS INIT -- FONT INIT" << std::endl;
-
-	// font shader program
-	// m_font_shaderProgram = glCreateProgram();
-	// glAttachShader(m_font_shaderProgram, font_vertexShader);
-	// glAttachShader(m_font_shaderProgram, font_fragmentShader);
-	// glLinkProgram(m_font_shaderProgram);
-
-	gl_has_errors();
-	std::cout << "REACHED AFTER SET FONT PROGRAM -- RENDER SYS INIT -- FONT INIT" << std::endl;
-
-	// clean up shaders
-	// glDeleteShader(font_vertexShader);
-	// glDeleteShader(font_fragmentShader);
-
-	gl_has_errors();
-	std::cout << "REACHED AFTER CLEAN UP SHADERS -- RENDER SYS INIT -- FONT INIT" << std::endl;
-
 	// use our new shader
-	// glUseProgram(m_font_shaderProgram);
 	const GLuint font_program = effects[(GLuint)EFFECT_ASSET_ID::FONT];
 	glUseProgram(font_program);
 
-	gl_has_errors();
-	std::cout << "REACHED AFTER USE SHADER PROGRAM -- RENDER SYS INIT -- FONT INIT" << std::endl;
-
 	// apply projection matrix for font
-	// glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), 0.0f, static_cast<float>(gameInfo.height));
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), 0.0f, static_cast<float>(gameInfo.height));
 	// mat3 projection = createProjectionMatrix();
-	glm::mat4 projection = glm::mat4(1.0f);
+	// glm::mat4 projection = glm::mat4(1.0f);
 	GLint project_location = glGetUniformLocation(font_program, "projection");
 	// assert(project_location > -1);
 	std::cout << "project_location: " << project_location << std::endl;
@@ -261,7 +181,7 @@ bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename
 	FT_Done_FreeType(ft);
 
 	// bind buffers
-	// glBindVertexArray(m_font_VAO);
+	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
@@ -555,8 +475,6 @@ RenderSystem::~RenderSystem()
 // Initialize the screen texture from a standard sprite
 bool RenderSystem::initScreenTexture()
 {
-	std::cout << "REACHED INTO INIT SCREEN TEXTURE TEACTXTURES -- REANDER SYS INIT -- INIT SCREEN TEXTURE" << std::endl;
-
 	registry.screenStates.emplace(screen_state_entity);
 
 	int framebuffer_width, framebuffer_height;
@@ -568,8 +486,6 @@ bool RenderSystem::initScreenTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	gl_has_errors();
-
-	std::cout << "REACHED after INIT SCREEN TEXTURE frames -- REANDER SYS INIT -- INIT SCREEN TEXTURE" << std::endl;
 
 	glGenRenderbuffers(1, &off_screen_render_buffer_depth);
 	glBindRenderbuffer(GL_RENDERBUFFER, off_screen_render_buffer_depth);
