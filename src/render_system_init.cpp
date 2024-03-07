@@ -15,14 +15,15 @@
 
 // Fonts
 #include <ft2build.h>
-#include <freetype/freetype.h>
 #include FT_FREETYPE_H
 #include <map>
 
+// Matrices
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
-std::string font_filename;
+// std::string font_filename;
 
 // World initialization
 bool RenderSystem::init(GLFWwindow* window_arg)
@@ -81,32 +82,29 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	initializeGlGeometryBuffers();
 
 	// setup fonts
-	font_filename = "./data//fonts//Kenney_Pixel_Square.ttf";
+	std::string font_filename = "./data/fonts/Kenney_Pixel_Square.ttf";
 	unsigned int font_default_size = 48;
 	fontInit(*window, font_filename, font_default_size);
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
 
 	return true;
 }
 
 bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size) {
-	m_font_VBO = vertex_buffers[(uint)effects[(GLuint)EFFECT_ASSET_ID::FONT]];
+
 	// font buffer setup
+	glGenVertexArrays(1, &m_font_VAO);
 	glGenBuffers(1, &m_font_VBO);
 
 	// use our new shader
-	const GLuint font_program = effects[(GLuint)EFFECT_ASSET_ID::FONT];
-	glUseProgram(font_program);
+	m_font_shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FONT];
+	glUseProgram(m_font_shaderProgram);
 
 	// apply projection matrix for font
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), 0.0f, static_cast<float>(gameInfo.height));
-	// mat3 projection = createProjectionMatrix();
-	// glm::mat4 projection = glm::mat4(1.0f);
-	GLint project_location = glGetUniformLocation(font_program, "projection");
-	// assert(project_location > -1);
+	GLint project_location = glGetUniformLocation(m_font_shaderProgram, "projection");
+	assert(project_location > -1);
 	std::cout << "project_location: " << project_location << std::endl;
-	glUniformMatrix4fv(project_location, 1, GL_FALSE, (const GLfloat *)&projection);
+	glUniformMatrix4fv(project_location, 1, GL_FALSE, glm::value_ptr(projection));
 
 	// init FreeType fonts
 	FT_Library ft;
@@ -181,7 +179,7 @@ bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename
 	FT_Done_FreeType(ft);
 
 	// bind buffers
-	glBindVertexArray(vao);
+	glBindVertexArray(m_font_VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
@@ -190,6 +188,9 @@ bool RenderSystem::fontInit(GLFWwindow& window, const std::string& font_filename
 	// release buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	// Rebind VAO
+	glBindVertexArray(vao);
 
 	return true;
 }
@@ -455,9 +456,8 @@ RenderSystem::~RenderSystem()
 	gl_has_errors();
 
 	// font
-	// glDeleteProgram(m_font_shaderProgram); // handled below in effects
-	// glDeleteBuffers(1, &m_font_VBO);
-	// glDeleteBuffers(1, &m_font_VAO);
+	glDeleteBuffers(1, &m_font_VBO);
+	glDeleteBuffers(1, &m_font_VAO);
 	gl_has_errors();
 
 	for(uint i = 0; i < effect_count; i++) {

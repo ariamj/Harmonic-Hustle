@@ -111,11 +111,10 @@ private:
 	GLuint off_screen_render_buffer_color;
 	GLuint off_screen_render_buffer_depth;
 
-	// GLuint m_font_VAO;
 	GLuint vao;
-	// GLuint m_font_VAO;
+	GLuint m_font_VAO;
 	GLuint m_font_VBO;
-	// GLuint m_font_shaderProgram;
+	GLuint m_font_shaderProgram;
 
 	Entity screen_state_entity;
 };
