@@ -4,6 +4,8 @@
 
 #include "tiny_ecs_registry.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
@@ -201,6 +203,93 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 }
 
+void RenderSystem::renderText(const std::string& text, float x, float y,
+		float scale, const glm::vec3& color,
+		const glm::mat4& trans, bool center_pos) {
+
+	// activate the shaders!
+	glUseProgram(m_font_shaderProgram);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	unsigned int textColor_location =
+		glGetUniformLocation(
+			m_font_shaderProgram,
+			"textColor"
+		);
+	assert(textColor_location >= 0);
+	glUniform3f(textColor_location, color.x, color.y, color.z);
+
+	auto transform_location = glGetUniformLocation(
+		m_font_shaderProgram,
+		"transform"
+	);
+	assert(transform_location > -1);
+	glUniformMatrix4fv(transform_location, 1, GL_FALSE, glm::value_ptr(trans));
+
+	glBindVertexArray(m_font_VAO);
+
+	if (center_pos) {
+		// Adjust xpos to be center of text
+		float textWidth = 0.f;
+		float textHeight = 0.f;
+		std::string::const_iterator text_c;
+		for (text_c = text.begin(); text_c != text.end(); text_c++) {
+			Character text_ch = m_ftCharacters[*text_c];
+			textWidth += text_ch.Advance >> 6;
+			textHeight = max(textHeight, (float)text_ch.Size.y);
+		}
+		x -= textWidth * scale / 2.f;
+		y = gameInfo.height - y - ((textHeight / 2.f) * scale);
+	}
+
+	// iterate through all characters
+	std::string::const_iterator c;
+	for (c = text.begin(); c != text.end(); c++)
+	{
+		Character ch = m_ftCharacters[*c];
+
+		float xpos = x + ch.Bearing.x * scale;
+		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+		float w = ch.Size.x * scale;
+		float h = ch.Size.y * scale;
+
+		// update VBO for each character
+		float vertices[6][4] = {
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos,     ypos,       0.0f, 1.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+			{ xpos + w, ypos + h,   1.0f, 0.0f }
+		};
+
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+
+		// update content of VBO memory
+		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+	}
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Rebind VAO
+	glBindVertexArray(vao);
+}
+
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void RenderSystem::draw()
@@ -250,6 +339,22 @@ void RenderSystem::draw()
 			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
 			}
+		}
+	}
+	// Font matrix transformation
+	// glm::mat4 trans = glm::mat4(1.0f);
+
+	// Font matrix rotation
+	// trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	// trans = glm::scale(trans, glm::vec3(0.25, 0.25, 1.0));
+	// trans = glm::mat4(1.0f);
+	// trans = glm::rotate(trans, glm::radians(window.rotation), glm::vec3(0.0, 0.0, 1.0));
+	// trans = glm::scale(trans, glm::vec3(0.5, 0.5, 1.0));
+
+	for (Entity entity : registry.texts.entities) {
+		Text text_e = registry.texts.get(entity);
+		if (text_e.screen == curr_screen) {
+			renderText(text_e.text, text_e.position.x, text_e.position.y, text_e.scale, text_e.colour, text_e.trans, text_e.center_pos);
 		}
 	}
 

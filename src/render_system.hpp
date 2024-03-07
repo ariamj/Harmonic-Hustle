@@ -7,6 +7,8 @@
 #include "components.hpp"
 #include "tiny_ecs.hpp"
 
+#include <map>
+
 // System responsible for setting up OpenGL and for rendering all the
 // visual entities in the game
 class RenderSystem {
@@ -58,7 +60,8 @@ class RenderSystem {
 		shader_path("textured"),
 		shader_path("environment"),
 		shader_path("judgement"),
-		shader_path("note")
+		shader_path("note"),
+		shader_path("font")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;
@@ -66,10 +69,14 @@ class RenderSystem {
 	std::array<Mesh, geometry_count> meshes;
 
 public:
+	std::map<char, Character> m_ftCharacters;
+
 	// Initialize the window
 	bool init(GLFWwindow* window);
 
-	template <class T>
+    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size);
+
+    template <class T>
 	void bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices);
 
 	void initializeGlTextures();
@@ -91,6 +98,8 @@ public:
 	// Draw all entities
 	void draw();
 
+	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans = glm::mat4(1.f), bool center_pos = true);
+
 	mat3 createProjectionMatrix();
 
 private:
@@ -105,6 +114,11 @@ private:
 	GLuint frame_buffer;
 	GLuint off_screen_render_buffer_color;
 	GLuint off_screen_render_buffer_depth;
+
+	GLuint vao;
+	GLuint m_font_VAO;
+	GLuint m_font_VBO;
+	GLuint m_font_shaderProgram;
 
 	Entity screen_state_entity;
 };

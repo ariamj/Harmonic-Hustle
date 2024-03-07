@@ -37,3 +37,5 @@ Entity createBox(vec2 position, vec2 size);
 Entity createCircleOutline(vec2 pos, float radius);
 // a filled in circle for debugging purposes
 Entity createDot(vec2 pos, vec2 size);
+// // creates a text to be rendered
+Entity createText(std::string text, vec2 pos, float scale, vec3 colour, glm::mat4 trans = glm::mat4(1.f), Screen screen = Screen::OVERWORLD, bool center_pos = true);
