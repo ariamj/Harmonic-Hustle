@@ -38,6 +38,12 @@ struct Text
 {
 	// Text to be rendered
 	std::string text;
+	vec2 position = { 0.f, 0.f };
+	float scale = 1.f;
+	glm::vec3 colour = { 1.f, 1.f, 1.f };
+	glm::mat4 trans = glm::mat4(1.f);
+	Screen screen = Screen::OVERWORLD;
+	bool center_pos;
 };
 
 // Mesh datastructure for storing vertex and index buffers

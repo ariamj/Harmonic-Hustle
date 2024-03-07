@@ -141,6 +141,10 @@ void WorldSystem::restart_game() {
 	// Debugging for memory/component leaks
 	registry.list_all_components();
 
+	// Title
+	// TODO: put onto some sort of splash screen
+	createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::OVERWORLD);
+
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
 	gameInfo.player_sprite = std::make_shared<Entity>(player_sprite);
@@ -166,6 +170,8 @@ void WorldSystem::restart_game() {
 	if (!registry.pauseEnemyTimers.has(player_sprite)) {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
+
+	createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::BATTLE);
 
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;

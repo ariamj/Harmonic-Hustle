@@ -94,7 +94,7 @@ public:
 	// Draw all entities
 	void draw();
 
-	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans);
+	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans = glm::mat4(1.f), bool center_pos = true);
 
 	mat3 createProjectionMatrix();
 

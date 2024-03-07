@@ -201,7 +201,7 @@ void RenderSystem::drawToScreen()
 
 void RenderSystem::renderText(const std::string& text, float x, float y,
 		float scale, const glm::vec3& color,
-		const glm::mat4& trans) {
+		const glm::mat4& trans, bool center_pos) {
 
 	// activate the shaders!
 	glUseProgram(m_font_shaderProgram);
@@ -225,6 +225,20 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	glUniformMatrix4fv(transform_location, 1, GL_FALSE, glm::value_ptr(trans));
 
 	glBindVertexArray(m_font_VAO);
+
+	if (center_pos) {
+		// Adjust xpos to be center of text
+		float textWidth = 0.f;
+		float textHeight = 0.f;
+		std::string::const_iterator text_c;
+		for (text_c = text.begin(); text_c != text.end(); text_c++) {
+			Character text_ch = m_ftCharacters[*text_c];
+			textWidth += text_ch.Advance >> 6;
+			textHeight = max(textHeight, (float)text_ch.Size.y);
+		}
+		x -= textWidth * scale / 2.f;
+		y = gameInfo.height - y - ((textHeight / 2.f) * scale);
+	}
 
 	// iterate through all characters
 	std::string::const_iterator c;
@@ -323,16 +337,22 @@ void RenderSystem::draw()
 			}
 		}
 	}
-	// matrix transformation
-	glm::mat4 trans = glm::mat4(1.0f);
+	// Font matrix transformation
+	// glm::mat4 trans = glm::mat4(1.0f);
 
-	// matrix rotation
+	// Font matrix rotation
 	// trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	// trans = glm::scale(trans, glm::vec3(0.25, 0.25, 1.0));
 	// trans = glm::mat4(1.0f);
 	// trans = glm::rotate(trans, glm::radians(window.rotation), glm::vec3(0.0, 0.0, 1.0));
 	// trans = glm::scale(trans, glm::vec3(0.5, 0.5, 1.0));
-	renderText("Test - press R to rotate", 0.0f, 0.0f, 1.0f, glm::vec3(1.0, 1.0, 1.0), trans);
+
+	for (Entity entity : registry.texts.entities) {
+		Text text_e = registry.texts.get(entity);
+		if (text_e.screen == curr_screen) {
+			renderText(text_e.text, text_e.position.x, text_e.position.y, text_e.scale, text_e.colour, text_e.trans, text_e.center_pos);
+		}
+	}
 
 	// Truely render to the screen
 
