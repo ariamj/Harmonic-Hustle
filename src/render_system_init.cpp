@@ -82,7 +82,8 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	initializeGlGeometryBuffers();
 
 	// setup fonts
-	std::string font_filename = "./data/fonts/Kenney_Future.ttf";
+	// std::string font_filename = "../data/fonts/Kenney_Future.ttf";
+	std::string font_filename = data_path() + "/fonts/Kenney_Future.ttf";
 	unsigned int font_default_size = 48;
 	fontInit(*window, font_filename, font_default_size);
 
