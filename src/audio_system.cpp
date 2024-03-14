@@ -104,6 +104,8 @@ bool AudioSystem::playOverworld() {
 		// Will Use "Chunk" type for short SFX snippets later on
 	Mix_PlayMusic(overworld_music, -1);
 	fprintf(stderr, "Playing background music\n");
+
+	current_music = overworld_music;
 	return true;
 }
 
@@ -111,6 +113,7 @@ bool AudioSystem::playBattle(int enemy_id) {
 	// enemy_music is a vector of audio file data
 	// Mix_PlayMusic(enemy_music[enemy_id], -1);
 	Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
+	current_music = enemy_music[enemy_id];
 	return true;
 }
 
@@ -132,4 +135,8 @@ bool AudioSystem::playHitPerfect() {
 bool AudioSystem::musicPlaying() {
 	// return 1 if music still playing, 0 otherwise
 	return Mix_PlayingMusic();
+}
+
+float AudioSystem::getSongPosition() {
+	return Mix_GetMusicPosition(current_music);
 }

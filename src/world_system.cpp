@@ -91,7 +91,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.curr_enemy = Entity{};
 
 	overworld.init(window, renderer_arg);
-	battle.init(window, renderer_arg);
+	battle.init(window, renderer_arg, &audioSystem);
 	settings.init(window, renderer_arg);
 
 	// Moved into here from main

@@ -23,10 +23,12 @@ public:
 	bool playHitPerfect();
 
 	bool musicPlaying();
+	float getSongPosition();
 
 private:
 	bool LoadFiles();
 
+	Mix_Music* current_music;
 	// music references
 	Mix_Music* overworld_music;
 	std::vector<Mix_Music*> enemy_music;
