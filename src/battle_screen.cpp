@@ -74,7 +74,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 	// Another battle
@@ -94,7 +93,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 	// Another battle
@@ -111,7 +109,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 };
@@ -155,7 +152,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// + Safeguards against any delay in starting the music
 		// Could still be useful for visual FX that happen periodically
 		conductor.song_position = audio->getSongPosition();
-		std::cout << conductor.song_position << "\n";
+		// std::cout << conductor.song_position << "\n";
 
 		// Track each beat of song
 		if (conductor.song_position > last_beat + conductor.crotchet) {
@@ -262,16 +259,20 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 //			increment player level
 //		if lost, remove only collided with enemy on screen
 void Battle::handle_battle_end() {
+	// replay current lvl battle music for the battle over popup
+	audio->playBattle(enemy_index);
+
 	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
+	// Only process events once
+	if (battle_is_over) {
+		return;
+	}
 	setBattleIsOver(true);
 
 	// Delete any remaining note entities
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
-
-	// replay current lvl battle music for the battle over popup -> TODO update if needed
-	audio->playBattle(gameInfo.curr_level - 1);
 
 	// battle won
 	if (score > score_threshold) {
@@ -328,6 +329,7 @@ void Battle::start() {
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1; // Set to 0 if using song position
 
+	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
 }
 
