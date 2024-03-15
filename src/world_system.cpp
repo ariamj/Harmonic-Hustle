@@ -146,7 +146,7 @@ void WorldSystem::restart_game() {
 
 	// Title
 	// TODO: put onto some sort of splash screen
-	createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::OVERWORLD);
+	// createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::OVERWORLD);
 
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
@@ -174,7 +174,7 @@ void WorldSystem::restart_game() {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 
-	createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::BATTLE);
+	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::BATTLE);
 
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;
@@ -183,10 +183,19 @@ void WorldSystem::restart_game() {
     battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement, gameInfo.height - xDisplacement });
 
 	// hard coded values for now
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_1, gameInfo.height / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, gameInfo.height / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, gameInfo.height / 1.2 });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, gameInfo.height / 1.2 });
+	float judgement_line_y_pos = gameInfo.height / 1.2;
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
+	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
+
+	float text_y_pos = judgement_line_y_pos + 100.f;
+	vec3 text_colour = vec3(0.75f);
+	float text_scale = 1.5f;
+	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 
 	// set current screen to overworld on every restart
 	render_set_overworld_screen();
