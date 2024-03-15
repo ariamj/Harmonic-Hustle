@@ -8,6 +8,7 @@
 #include <random>
 
 #include "render_system.hpp"
+#include "audio_system.hpp"
 
 struct BattleInfo {
     float bpm;
@@ -26,7 +27,7 @@ class Battle {
             missed = -5
         };
 
-        void init(GLFWwindow* window, RenderSystem* renderer);
+        void init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio);
 
         // Releases all associated resources
         ~Battle();
@@ -57,6 +58,7 @@ class Battle {
 
          // game state
         RenderSystem* renderer;
+        AudioSystem* audio;
         //float current_speed;
         float next_note_spawn;
         Entity player_battle_sprite;

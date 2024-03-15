@@ -90,6 +90,7 @@ struct Conductor
 	float offset;
 	float song_position;
 };
+extern Conductor conductor;
 
 // the area in which we gotta hit the notes
 struct JudgementLine

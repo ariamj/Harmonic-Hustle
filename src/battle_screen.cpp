@@ -26,12 +26,11 @@ float spawn_offset;
 int enemy_index;
 int num_notes;
 int next_note_index;
+float last_beat;
 
 // Enemy-specific battle information
 const int NUM_UNIQUE_BATTLES = 3;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
-
-AudioSystem audio = AudioSystem();
 
 
 Battle::Battle() {
@@ -42,19 +41,20 @@ Battle::~Battle() {
 
 };
 
-void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
+void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
+	this->audio = audio;
 
-	audio.init();
 	lanes[0] = gameInfo.lane_1;
     lanes[1] = gameInfo.lane_2;
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
 
 	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.25f)));
+		// Divide by 1000.f if using song position
+	spawn_offset = -(NOTE_TRAVEL_TIME - (NOTE_TRAVEL_TIME * (1 - 1.f / 1.225f)));
 
 	float bpm_ratio;
 
@@ -64,17 +64,16 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 	battleInfo[k].count_notes = 32;
 	battleInfo[k].bpm = 130.f;
 
-	std::vector<float> enemy0_timings = {4.f, 5.f, 6.f, 6.5f, 7.f, 
+	std::vector<float> enemy0_timings = { 4.f, 5.f, 6.f, 6.5f, 7.f,
 										12.f, 13.f, 14.f, 14.5f, 15.f,
 										20.f, 21.f, 22.f, 22.5f, 23.f,
 										28.f, 29.f, 30.f, 30.5f, 31.f,
 										40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
-										56.f, 57.f, 58.f, 59.f, 60.f, 61.5f};
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.5f };
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 	// Another battle
@@ -89,12 +88,11 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 										80.f, 81.f, 82.f, 83.f, 84.f, 85.f, 86.f, 87.f,
 										88.f, 89.f, 90.f, 91.f, 92.f, 93.f, 94.f, 95.f, 96.f, 97.f, 98.f, 99.f,
 										116.f, 118.f, 120.f, 122.f, 123.f, 130.f, 131.f,
-										148.f, 150.f, 152.f, 154.f, 156.f, 158.f, 159.f};
+										148.f, 150.f, 152.f, 154.f, 156.f, 158.f, 159.f };
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 	// Another battle
@@ -111,13 +109,12 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer) {
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
-		std::cout << battleInfo[k].note_timings[i] << "\n";
 	}
 
 };
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
-    std::stringstream title_ss;
+	std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
 	title_ss << " --- FPS: " << FPS;
 	// TODO: render score on screen instead
@@ -137,62 +134,90 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	if (battle_is_over) {
 		//TODO render in text that has:
 		//		battle outcome, player score and a "press space to continue" line
-	} else {
+	}
+	else {
 		auto& motions_registry = registry.motions;
 
 		// Process the player state
 		assert(registry.screenStates.components.size() <= 1);
-		ScreenState &screen = registry.screenStates.components[0];
+		ScreenState& screen = registry.screenStates.components[0];
 
 		float min_counter_ms = 3000.f;
 		next_note_spawn -= elapsed_ms_since_last_update;
 
-	if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
-		// spawn notes in the four lanes
-		createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+		// Update song position every frame
+		// SADNESS: Only changes in value every 5-8 frames :( 
+			// - Notes will stutter if used for interpolation every frame
+			// - Slightly less accurate spawning compared to using elapsed time
+			// + Safeguards against any delay in starting the music
+		// Could still be useful for visual FX that happen periodically
+		conductor.song_position = audio->getSongPosition();
+		// std::cout << conductor.song_position << "\n";
 
-		if (next_note_index < num_notes) {
-			// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
-			next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
-							- battleInfo[enemy_index].note_timings[next_note_index - 1]
-							+ next_note_spawn;
+		// Track each beat of song
+		if (conductor.song_position > last_beat + conductor.crotchet) {
+			// TODO (?): Initiate some visual FX on every beat of song
+			std::cout << "Beat detected" << "\n";
+			last_beat += conductor.crotchet;
 		}
 
-		next_note_index += 1;
-	}
-
-	// Remove entities that leave the screen below
-	// Iterate backwards to be able to remove without unterfering with the next object to visit
-	// (the containers exchange the last element with the current)
-	for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
-		Motion& motion = motions_registry.components[i];
-		if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
-			// remove missed notes and play missed note sound
-			if (registry.notes.has(motions_registry.entities[i])) {
-				audio.playDroppedNote();
-				standing = missed;
-				score += standing;
-				registry.remove_all_components_of(motions_registry.entities[i]);
+		// Spawning notes based on song position
+		/*
+		if (next_note_index < num_notes) {
+			if (conductor.song_position > battleInfo[enemy_index].note_timings[next_note_index]) {
+				createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+				next_note_index += 1;
 			}
 		}
-	} 
+		*/
+		
+		// Spawning notes based on elapsed time
+		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
+			// spawn notes in the four lanes
+			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+
+			if (next_note_index < num_notes) {
+				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
+				next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
+								- battleInfo[enemy_index].note_timings[next_note_index - 1]
+								+ next_note_spawn;
+			}
+
+			next_note_index += 1;
+		}
+
+		// Remove entities that leave the screen below
+		// Iterate backwards to be able to remove without unterfering with the next object to visit
+		// (the containers exchange the last element with the current)
+		for (int i = (int)motions_registry.components.size() - 1; i >= 0; --i) {
+			Motion& motion = motions_registry.components[i];
+			if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
+				// remove missed notes and play missed note sound
+				if (registry.notes.has(motions_registry.entities[i])) {
+					audio->playDroppedNote();
+					standing = missed;
+					score += standing;
+					registry.remove_all_components_of(motions_registry.entities[i]);
+				}
+			}
+		} 
 
 		// update notes positions
 		for (int i = 0; i < registry.motions.components.size(); ++i) {
 			Motion& motion = registry.motions.components[i];
 
-		if (registry.notes.has(motions_registry.entities[i])) {
-			// Increment progress on range [0,1]
-			float progress_step = elapsed_ms_since_last_update / NOTE_TRAVEL_TIME;
-			motion.progress = min(1.f, motion.progress + progress_step);
+			if (registry.notes.has(motions_registry.entities[i])) {
+				// Increment progress on range [0,1]
+				float progress_step = elapsed_ms_since_last_update / NOTE_TRAVEL_TIME;
+				motion.progress = min(1.f, motion.progress + progress_step);
 
-				// Interpolate note position from top to bottom of screen
-				motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
+					// Interpolate note position from top to bottom of screen
+					motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
-			// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-			motion.scale_factor = lerp(1.0, 2.5, motion.progress);
+				// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
+				motion.scale_factor = lerp(1.0, 2.5, motion.progress);
+			}
 		}
-	}
 
 		// collision timers
 		for (Entity entity : registry.collisionTimers.entities) {
@@ -234,16 +259,20 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 //			increment player level
 //		if lost, remove only collided with enemy on screen
 void Battle::handle_battle_end() {
+	// replay current lvl battle music for the battle over popup
+	audio->playBattle(enemy_index);
+
 	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
+	// Only process events once
+	if (battle_is_over) {
+		return;
+	}
 	setBattleIsOver(true);
 
 	// Delete any remaining note entities
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
-
-	// replay current lvl battle music for the battle over popup -> TODO update if needed
-	audio.playBattle(gameInfo.curr_level - 1);
 
 	// battle won
 	if (score > score_threshold) {
@@ -280,6 +309,12 @@ void Battle::start() {
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
 
+	// Set Conductor variables
+	conductor.bpm = battleInfo[enemy_index].bpm;
+	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
+	conductor.offset = 0.f; // unused right now.
+	last_beat = 0.f; // moving reference point
+
 	// Reset score
 	score = 0;
 	// Reset score threshold
@@ -292,8 +327,9 @@ void Battle::start() {
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
-	next_note_index = 1;
+	next_note_index = 1; // Set to 0 if using song position
 
+	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
 }
 
@@ -403,11 +439,11 @@ void Battle::handle_collisions() {
 		}
 		if (got_hit) {
 			// TODO MUSIC: play sound for successful hit note
-			audio.playHitPerfect();
+			audio->playHitPerfect();
 		}
 		else {
 			score += missed;
-			audio.playMissedNote(); // placeholder sound effect
+			audio->playMissedNote(); // placeholder sound effect
 		}
 	}
 	registry.collisions.clear();
