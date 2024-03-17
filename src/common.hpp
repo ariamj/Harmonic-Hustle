@@ -70,6 +70,25 @@ struct Transform {
 	void translate(vec2 offset);
 };
 
+// Commonly used colours (especially for texts)
+namespace Colour {
+	static const vec3 red = { 1.0, 0.0, 0.0 };
+	static const vec3 dark_red = red - vec3(0.5f);
+	static const vec3 yellow = { 1.0, 1.0, 0.0 };
+	static const vec3 dark_yellow = yellow - vec3(0.5f);
+	static const vec3 green = { 0.0, 1.0, 0.0 };
+	static const vec3 dark_green = green - vec3(0.5f);
+	static const vec3 blue = { 0.0, 0.0, 1.0 };
+	static const vec3 dark_blue = blue - vec3(0.5f);
+	static const vec3 purple = { 1.0, 0.0, 1.0 };
+	static const vec3 dark_purple = purple - vec3(0.5f);
+	static const vec3 black = { 0.0, 0.0, 0.0 };
+	static const vec3 light_gray = { 0.75, 0.75, 0.75 };
+	static const vec3 gray = { 0.5, 0.5, 0.5 };
+	static const vec3 dark_gray = { 0.25, 0.25, 0.25 };
+	static const vec3 white = { 1.0, 1.0, 1.0 };
+};
+
 bool gl_has_errors();
 
 vec2 getRandomEnemyVelocity();

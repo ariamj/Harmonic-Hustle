@@ -189,14 +189,6 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 
-	float text_y_pos = judgement_line_y_pos + 100.f;
-	vec3 text_colour = vec3(0.75f);
-	float text_scale = 1.5f;
-	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-
 	// set current screen to overworld on every restart
 	render_set_overworld_screen();
 	// render_set_battle_screen();
