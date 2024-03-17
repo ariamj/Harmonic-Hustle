@@ -43,6 +43,7 @@ class Battle {
         bool set_visible(bool isVisible);
 
         void setBattleIsOver(bool isOver);
+        bool battleWon();
 
         // Check for collisions
         void handle_collisions();
@@ -66,10 +67,15 @@ class Battle {
         bool j_key_pressed = false;
         bool k_key_pressed = false;
         Standing standing;
+        int perfect_counter = 0;
+        int good_counter = 0;
+        int alright_counter = 0;
+        int missed_counter = 0;
         float score = 0;
         float score_threshold = 200.f; // TODO: load info from enemy battle sprite
 
         float lanes[4] = {0, 0, 0, 0};
+        Entity gameOverPopUpOverlay;
 
         bool battle_is_over = false;
 
