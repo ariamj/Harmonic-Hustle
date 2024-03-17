@@ -91,7 +91,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameInfo.curr_enemy = Entity{};
 
 	overworld.init(window, renderer_arg);
-	battle.init(window, renderer_arg);
+	battle.init(window, renderer_arg, &audioSystem);
 	settings.init(window, renderer_arg);
 
 	// Moved into here from main
@@ -240,7 +240,6 @@ bool WorldSystem::render_set_battle_screen() {
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(true);
-	audioSystem.playBattle(gameInfo.curr_level - 1); // switch to battle music
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};

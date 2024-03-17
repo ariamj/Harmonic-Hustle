@@ -10,6 +10,7 @@
 
 Debug debugging;
 GameInfo gameInfo;
+Conductor conductor;
 
 // Very, VERY simple OBJ loader from https://github.com/opengl-tutorials/ogl tutorial 7
 // (modified to also read vertex color and omit uv and normals)
