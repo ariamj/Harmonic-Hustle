@@ -233,6 +233,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				if (registry.notes.has(motions_registry.entities[i])) {
 					audio->playDroppedNote();
 					standing = missed;
+					missed_counter++;
 					score += standing;
 					registry.remove_all_components_of(motions_registry.entities[i]);
 				}
@@ -492,8 +493,6 @@ void Battle::handle_collisions() {
 			audio->playHitPerfect();
 		}
 		else {
-			score += missed;
-			missed_counter++;
 			audio->playMissedNote(); // placeholder sound effect
 		}
 	}

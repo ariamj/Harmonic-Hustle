@@ -67,7 +67,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 			break;
 		case 3:
 			// mic
-		defualt:
+		default:
 			textureAssetId = TEXTURE_ASSET_ID::ENEMY_MIC;
 			
 	}
