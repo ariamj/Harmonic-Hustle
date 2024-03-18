@@ -359,6 +359,11 @@ void Battle::start() {
 	if (registry.battleProfiles.has(enemy_battle_sprite)) {
 		score_threshold = registry.battleProfiles.get(enemy_battle_sprite).score_threshold;
 	}
+	// Reset counters
+	perfect_counter = 0;
+    good_counter = 0;
+    alright_counter = 0;
+    missed_counter = 0;
 
 	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
 
@@ -489,7 +494,7 @@ void Battle::handle_collisions() {
 		else {
 			score += missed;
 			missed_counter++;
-			audio.playMissedNote(); // placeholder sound effect
+			audio->playMissedNote(); // placeholder sound effect
 		}
 	}
 	registry.collisions.clear();
