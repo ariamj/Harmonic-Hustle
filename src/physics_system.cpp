@@ -250,9 +250,6 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 
 		 float step_seconds = elapsed_ms / 1000.f;
 
-		 GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-		 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
 		// move player
 		 if (registry.players.has(entity)) {
 			 if (motion.velocity[0] != 0 || motion.velocity[1] != 0) handleWalkAnimation();
