@@ -58,7 +58,7 @@ private:
     // render state
     GLuint shaderProgram;
     TEXTURE_ASSET_ID used_texture;
-    unsigned int vao;
+    GLuint vao;
     // initializes buffer and vertex attributes
     void init();
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive

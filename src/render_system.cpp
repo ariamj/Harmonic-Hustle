@@ -329,6 +329,7 @@ void RenderSystem::draw()
 
 	drawToScreen();
 
+
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
 	for (Entity entity : registry.renderRequests.entities)
@@ -344,6 +345,8 @@ void RenderSystem::draw()
 
 	// Particle rendering. Drawing needs to happen here. Updates happen in world_system step
 	trail_particle_generator->Draw();
+	glBindVertexArray(vao);
+
 
 	// Text-rendering
 

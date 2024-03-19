@@ -9,6 +9,7 @@
 ** option) any later version.
 ******************************************************************/
 #include "particle_generator.hpp"
+#include "iostream"
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount)
     : amount(amount), shaderProgram(shaderProgram), used_texture(used_texture)
@@ -18,6 +19,7 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used
 
 void ParticleGenerator::Update(float dt, Entity entity, unsigned int newParticles, glm::vec2 offset)
 {
+    std::cout << dt << " \n";
     // add new particles 
     for (unsigned int i = 0; i < newParticles; ++i)
     {
@@ -31,8 +33,8 @@ void ParticleGenerator::Update(float dt, Entity entity, unsigned int newParticle
         p.life -= dt; // reduce life
         if (p.life > 0.0f)
         {	// particle is alive, thus update
-            p.position -= p.velocity * dt; 
-            p.color.a -= dt * 2.5f;
+            p.position += p.velocity * dt; 
+            p.color.a -= dt * 2.5;
         }
     }
 }
@@ -49,11 +51,11 @@ void ParticleGenerator::Draw()
         if (particle.life > 0.0f)
         {
             //this->shader.SetVector2f("offset", particle.Position);
-            GLint offset_uloc = glGetAttribLocation(shaderProgram, "offset");
+            GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
             glUniform2fv(offset_uloc, 1, (float *)&particle.position);
 
             //this->shader.SetVector4f("color", particle.Color);
-            GLint color_uloc = glGetAttribLocation(shaderProgram, "color");
+            GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
             glUniform4fv(color_uloc, 1, (float *)&particle.color);
 
             //this->texture.Bind();
@@ -127,7 +129,7 @@ void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
     particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.life = 1.0f;
+    particle.life = 1.f; // TODO: Change back to 1.0f. Excessive lifespan for testing purposes for now
     particle.velocity = entity_motion.velocity * 0.1f;
 }
 

@@ -10,7 +10,7 @@
 // Game configuration
 const size_t MAX_ENEMIES = 2;
 const size_t ENEMY_DELAY_MS = 5000 * 3;
-const float PLAYER_SPEED = 150.f;
+const float PLAYER_SPEED = 200.f;
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f) 
@@ -94,7 +94,8 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	float min_counter_ms = 3000.f;
 
 	int new_particles = 2;
-	renderer->trail_particle_generator->Update(elapsed_ms_since_last_update, *gameInfo.player_sprite, new_particles, vec2(0.f, 0.f));
+	float dt = elapsed_ms_since_last_update / 1000.f;
+	renderer->trail_particle_generator->Update(dt, *gameInfo.player_sprite, new_particles, vec2(0.f, 0.f));
 
     return true;
 };
