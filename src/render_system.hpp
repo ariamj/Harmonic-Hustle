@@ -7,6 +7,8 @@
 #include "components.hpp"
 #include "tiny_ecs.hpp"
 
+#include "particle_generator.hpp"
+
 #include <map>
 
 // System responsible for setting up OpenGL and for rendering all the
@@ -94,6 +96,8 @@ public:
 	// shader
 	bool initScreenTexture();
 
+	void initializeParticleGenerators();
+
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 
@@ -121,6 +125,9 @@ private:
 	GLuint m_font_VAO;
 	GLuint m_font_VBO;
 	GLuint m_font_shaderProgram;
+
+	// Particles
+	ParticleGenerator* trail_particle_generator;
 
 	Entity screen_state_entity;
 };

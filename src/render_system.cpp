@@ -341,6 +341,12 @@ void RenderSystem::draw()
 			}
 		}
 	}
+
+	// Particle rendering
+
+
+	// Text-rendering
+
 	// Font matrix transformation
 	// glm::mat4 trans = glm::mat4(1.0f);
 
