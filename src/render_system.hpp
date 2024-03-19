@@ -7,6 +7,8 @@
 #include "components.hpp"
 #include "tiny_ecs.hpp"
 
+#include "particle_generator.hpp"
+
 #include <map>
 
 // System responsible for setting up OpenGL and for rendering all the
@@ -46,7 +48,8 @@ class RenderSystem {
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
-		textures_path("Help-Screen-Background.png")
+		textures_path("Help-Screen-Background.png"),
+		textures_path("Trail-Particle.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -61,7 +64,8 @@ class RenderSystem {
 		shader_path("environment"),
 		shader_path("judgement"),
 		shader_path("note"),
-		shader_path("font")
+		shader_path("font"),
+		shader_path("trailParticle")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;
@@ -92,6 +96,8 @@ public:
 	// shader
 	bool initScreenTexture();
 
+	void initializeParticleGenerators();
+
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 
@@ -101,6 +107,13 @@ public:
 	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans = glm::mat4(1.f), bool center_pos = true);
 
 	mat3 createProjectionMatrix();
+
+	// Particles
+	std::vector<ParticleGenerator*> particle_generators;
+
+	ParticleGenerator* createParticleGenerator(int particle_type_id, Entity entity);
+	void updateParticles(float elapsed_ms_since_last_update);
+
 
 private:
 	// Internal drawing functions for each entity type

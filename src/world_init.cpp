@@ -119,6 +119,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}
 	);
+	registry.particleEffects.emplace(entity);
 
 	return entity;
 

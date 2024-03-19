@@ -327,7 +327,9 @@ void RenderSystem::draw()
 	// 	drawTexturedMesh(entity, projection_2D);
 	// }
 
+	glBindVertexArray(vao);
 	drawToScreen();
+
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
@@ -341,6 +343,15 @@ void RenderSystem::draw()
 			}
 		}
 	}
+
+	// Particle rendering. Drawing needs to happen here. Updates happen in world_system step
+	for (auto generator : particle_generators) {
+		generator->Draw();
+	}
+
+
+	// Text-rendering
+
 	// Font matrix transformation
 	// glm::mat4 trans = glm::mat4(1.0f);
 
@@ -382,4 +393,37 @@ mat3 RenderSystem::createProjectionMatrix()
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
+}
+
+ParticleGenerator* RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
+	GLuint shaderProgram;
+	TEXTURE_ASSET_ID usedTexture;
+	int amount = 0;
+	switch (particle_type_id) {
+		case (int)PARTICLE_TYPE_ID::TRAIL:
+			shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+			usedTexture = TEXTURE_ASSET_ID::TRAIL_PARTICLE;
+			amount = 500;
+	}
+	ParticleGenerator* generator = new ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity);
+	particle_generators.push_back(generator);
+
+	return generator;
+}
+
+void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
+	// Update particles
+	int new_particles = 2;
+	float dt = elapsed_ms_since_last_update / 1000.f;
+	for (auto generator : particle_generators) {
+		// ParticleEffect component signals entities that have particle generators
+		if (registry.particleEffects.has(generator->entity)) {
+			generator->Update(dt, new_particles, vec2(0.f, 0.f));
+		}
+		else {
+			// Remove generator and free memory
+			particle_generators.erase(std::remove(particle_generators.begin(), particle_generators.end(), generator), particle_generators.end());
+			delete(generator);
+		}
+	}
 }

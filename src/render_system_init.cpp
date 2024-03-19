@@ -81,6 +81,9 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 	initializeGlEffects();
 	initializeGlGeometryBuffers();
 
+	// Initialize particle generators after all textures and effects are initialized
+	initializeParticleGenerators();
+
 	// setup fonts
 	// std::string font_filename = "../data/fonts/Kenney_Future.ttf";
 	std::string font_filename = data_path() + "/fonts/Kenney_Future.ttf";
@@ -498,6 +501,21 @@ bool RenderSystem::initScreenTexture()
 	assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
 	return true;
+}
+
+void RenderSystem::initializeParticleGenerators()
+{
+	GLuint trail_shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+
+	glUseProgram(trail_shaderProgram);
+	// apply projection matrix
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), static_cast<float>(gameInfo.height), 0.0f);
+	GLint project_location = glGetUniformLocation(trail_shaderProgram, "projection");
+	assert(project_location > -1);
+	std::cout << "project_location: " << project_location << std::endl;
+	glUniformMatrix4fv(project_location, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// trail_particle_generator = new ParticleGenerator(trail_shaderProgram, TEXTURE_ASSET_ID::TRAIL_PARTICLE, 500);
 }
 
 bool gl_compile_shader(GLuint shader)

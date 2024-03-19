@@ -10,7 +10,7 @@
 // Game configuration
 const size_t MAX_ENEMIES = 2;
 const size_t ENEMY_DELAY_MS = 5000 * 3;
-const float PLAYER_SPEED = 150.f;
+const float PLAYER_SPEED = 200.f;
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f) 
