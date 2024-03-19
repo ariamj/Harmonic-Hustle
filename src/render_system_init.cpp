@@ -515,7 +515,7 @@ void RenderSystem::initializeParticleGenerators()
 	std::cout << "project_location: " << project_location << std::endl;
 	glUniformMatrix4fv(project_location, 1, GL_FALSE, glm::value_ptr(projection));
 
-	trail_particle_generator = new ParticleGenerator(trail_shaderProgram, TEXTURE_ASSET_ID::TRAIL_PARTICLE, 500);
+	// trail_particle_generator = new ParticleGenerator(trail_shaderProgram, TEXTURE_ASSET_ID::TRAIL_PARTICLE, 500);
 }
 
 bool gl_compile_shader(GLuint shader)

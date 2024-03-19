@@ -46,6 +46,11 @@ struct Text
 	bool center_pos;
 };
 
+struct ParticleEffect
+{
+
+};
+
 // Mesh datastructure for storing vertex and index buffers
 struct Mesh
 {
@@ -250,6 +255,12 @@ enum class GEOMETRY_BUFFER_ID {
 	GEOMETRY_COUNT = FONT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
+
+enum class PARTICLE_TYPE_ID {
+	TRAIL = 0,
+	PARTICLE_TYPE_COUNT = TRAIL + 1
+};
+const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
 
 struct RenderRequest {
 	TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;

@@ -46,15 +46,17 @@ class ParticleGenerator
 {
 public:
     // constructor
-    ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount);
+    ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount, Entity entity);
     // update all particles
-    void Update(float dt, Entity entity, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
     void Draw();
 private:
     // state
     std::vector<Particle> particles;
     unsigned int amount;
+    Entity entity;
+
     // render state
     GLuint shaderProgram;
     TEXTURE_ASSET_ID used_texture;
@@ -64,7 +66,7 @@ private:
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
     unsigned int firstUnusedParticle();
     // respawns particle
-    void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void respawnParticle(Particle &particle, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
 
 #endif

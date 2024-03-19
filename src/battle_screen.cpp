@@ -211,7 +211,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Spawning notes based on elapsed time
 		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
 			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			Entity note = createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			// attach particle generator to note
+			
+			renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL, note);
 
 			if (next_note_index < num_notes) {
 				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
@@ -286,6 +289,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				}
 			}
 		}
+	}
+
+	// Update particles
+	int new_particles = 2;
+	float dt = elapsed_ms_since_last_update / 1000.f;
+	for (auto generator : renderer->particle_generators) {
+		generator->Update(dt, new_particles, vec2(0.f, 0.f));
 	}
 
 	return true;

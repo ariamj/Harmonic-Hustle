@@ -33,6 +33,7 @@ public:
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<Text> texts;
+	ComponentContainer<ParticleEffect> particleEffects;
 	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -60,6 +61,7 @@ public:
 		registry_list.push_back(&colours);
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&texts);
+		registry_list.push_back(&particleEffects);
 	}
 
 	void clear_all_components() {

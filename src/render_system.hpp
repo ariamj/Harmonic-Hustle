@@ -109,7 +109,10 @@ public:
 	mat3 createProjectionMatrix();
 
 	// Particles
-	ParticleGenerator* trail_particle_generator;
+	std::vector<ParticleGenerator*> particle_generators;
+
+	ParticleGenerator* createParticleGenerator(int particle_type_id, Entity entity);
+
 
 private:
 	// Internal drawing functions for each entity type

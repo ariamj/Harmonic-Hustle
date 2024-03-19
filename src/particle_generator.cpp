@@ -11,19 +11,19 @@
 #include "particle_generator.hpp"
 #include "iostream"
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount)
-    : amount(amount), shaderProgram(shaderProgram), used_texture(used_texture)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount, Entity entity)
+    : amount(amount), shaderProgram(shaderProgram), used_texture(used_texture), entity(entity)
 {
     init();
 }
 
-void ParticleGenerator::Update(float dt, Entity entity, unsigned int newParticles, glm::vec2 offset)
+void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 offset)
 {
     // add new particles 
     for (unsigned int i = 0; i < newParticles; ++i)
     {
         int unusedParticle = firstUnusedParticle();
-        respawnParticle(particles[unusedParticle], entity, offset);
+        respawnParticle(particles[unusedParticle], offset);
     }
     // update all particles
     for (unsigned int i = 0; i < amount; ++i)
@@ -123,7 +123,7 @@ unsigned int ParticleGenerator::firstUnusedParticle()
     return 0;
 }
 
-void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::vec2 offset)
+void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
 {
     float random = ((rand() % 100) - 50) / 10.0f;
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
