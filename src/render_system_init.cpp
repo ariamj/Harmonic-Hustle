@@ -509,7 +509,7 @@ void RenderSystem::initializeParticleGenerators()
 
 	glUseProgram(trail_shaderProgram);
 	// apply projection matrix
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), 0.0f, static_cast<float>(gameInfo.height));
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), static_cast<float>(gameInfo.height), 0.0f);
 	GLint project_location = glGetUniformLocation(trail_shaderProgram, "projection");
 	assert(project_location > -1);
 	std::cout << "project_location: " << project_location << std::endl;

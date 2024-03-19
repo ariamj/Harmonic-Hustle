@@ -19,7 +19,6 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used
 
 void ParticleGenerator::Update(float dt, Entity entity, unsigned int newParticles, glm::vec2 offset)
 {
-    std::cout << dt << " \n";
     // add new particles 
     for (unsigned int i = 0; i < newParticles; ++i)
     {
@@ -52,10 +51,12 @@ void ParticleGenerator::Draw()
         {
             //this->shader.SetVector2f("offset", particle.Position);
             GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
+            assert(offset_uloc > -1);
             glUniform2fv(offset_uloc, 1, (float *)&particle.position);
 
             //this->shader.SetVector4f("color", particle.Color);
             GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
+            assert(color_uloc > -1);
             glUniform4fv(color_uloc, 1, (float *)&particle.color);
 
             //this->texture.Bind();
