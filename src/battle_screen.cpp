@@ -406,27 +406,23 @@ void Battle::setBattleIsOver(bool isOver) {
 	battle_is_over = isOver;
 	if (battle_is_over) {
 		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
-		// the bigger border box
-		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
 		// the lighter box on top
 		gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
+		// the bigger border box
+		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
 
-		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
 		registry.colours.insert(gameOverPopUpOverlay, {0.758, 0.784, 0.801});
-		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});	
+		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});
+		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
 
-		registry.battleOverPopUpParts.emplace(gameOverPopUp);
 		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
+		registry.battleOverPopUpParts.emplace(gameOverPopUp);
 
-		registry.screens.insert(gameOverPopUp, { Screen::BATTLE });
 		registry.screens.insert(gameOverPopUpOverlay, { Screen::BATTLE });
+		registry.screens.insert(gameOverPopUp, { Screen::BATTLE });
 	} else {
-		auto& popUpEntities = registry.battleOverPopUpParts.entities;
-		for (Entity popUpEntity : popUpEntities) {
-			if (registry.screens.has(popUpEntity)) {
-				registry.screens.remove(popUpEntity);
-			}
-		}
+		while (registry.battleOverPopUpParts.entities.size() > 0)
+			registry.remove_all_components_of(registry.battleOverPopUpParts.entities.back());
 	}
 }
 
