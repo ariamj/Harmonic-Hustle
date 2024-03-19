@@ -28,7 +28,7 @@ void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 of
     // update all particles
     for (unsigned int i = 0; i < amount; ++i)
     {
-        Particle &p = particles[i];
+        Particle p = particles[i];
         p.life -= dt; // reduce life
         if (p.life > 0.0f)
         {	// particle is alive, thus update
@@ -70,7 +70,15 @@ void ParticleGenerator::Draw()
 
     glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
     glBindVertexArray(vao);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 100 triangles of 6 vertices each
+
+    // Bind instanced VBO again to update values of particles
+    glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
+
+    // Clean up
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     // don't forget to reset to default blending mode
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -103,12 +111,12 @@ void ParticleGenerator::init()
 
     // create this->amount default particle instances
     for (unsigned int i = 0; i < amount; ++i)
-        particles.push_back(Particle());
+        particles[i] = Particle();
 
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * 500, &particles[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -119,6 +127,11 @@ void ParticleGenerator::init()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2)));
     glVertexAttribDivisor(2, 1); // attribute at layout 2 is instanced
+
+    // Point aLife attribute to each Particle's life in particles array
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4)));
+    glVertexAttribDivisor(3, 1); // attribute at layout 2 is instanced
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -156,5 +169,6 @@ void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
     particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
     particle.life = 1.f; // TODO: Change back to 1.0f. Excessive lifespan for testing purposes for now
     particle.velocity = entity_motion.velocity * 0.1f;
+    std::cout << particle.position.x << " " << particle.position.y <<"\n";
 }
 

@@ -56,7 +56,7 @@ public:
     Entity entity;
 private:
     // state
-    std::vector<Particle> particles;
+    Particle particles[500];
     unsigned int amount;
 
     // render state
