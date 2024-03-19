@@ -410,3 +410,20 @@ ParticleGenerator* RenderSystem::createParticleGenerator(int particle_type_id, E
 
 	return generator;
 }
+
+void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
+	// Update particles
+	int new_particles = 2;
+	float dt = elapsed_ms_since_last_update / 1000.f;
+	for (auto generator : particle_generators) {
+		// ParticleEffect component signals entities that have particle generators
+		if (registry.particleEffects.has(generator->entity)) {
+			generator->Update(dt, new_particles, vec2(0.f, 0.f));
+		}
+		else {
+			// Remove generator and free memory
+			particle_generators.erase(std::remove(particle_generators.begin(), particle_generators.end(), generator), particle_generators.end());
+			free(generator);
+		}
+	}
+}

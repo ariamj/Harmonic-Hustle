@@ -112,6 +112,7 @@ public:
 	std::vector<ParticleGenerator*> particle_generators;
 
 	ParticleGenerator* createParticleGenerator(int particle_type_id, Entity entity);
+	void updateParticles(float elapsed_ms_since_last_update);
 
 
 private:
