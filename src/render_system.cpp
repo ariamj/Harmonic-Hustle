@@ -423,7 +423,7 @@ void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
 		else {
 			// Remove generator and free memory
 			particle_generators.erase(std::remove(particle_generators.begin(), particle_generators.end(), generator), particle_generators.end());
-			free(generator);
+			delete(generator);
 		}
 	}
 }
