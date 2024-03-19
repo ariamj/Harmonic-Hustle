@@ -31,7 +31,8 @@
 
 // Represents a single particle and its state
 struct Particle {
-    glm::vec2 position, velocity;
+    glm::vec2 position;
+    glm::vec2 velocity;
     glm::vec4 color;
     float     life;
 
@@ -62,6 +63,7 @@ private:
     GLuint shaderProgram;
     TEXTURE_ASSET_ID used_texture;
     GLuint vao;
+    GLuint instance_VBO;
     // initializes buffer and vertex attributes
     void init();
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive

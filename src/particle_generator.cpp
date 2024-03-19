@@ -45,34 +45,40 @@ void ParticleGenerator::Draw()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     // this->shader.Use();
     glUseProgram(shaderProgram);
-    for (Particle particle : particles)
-    {
-        if (particle.life > 0.0f)
-        {
-            //this->shader.SetVector2f("offset", particle.Position);
-            GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
-            assert(offset_uloc > -1);
-            glUniform2fv(offset_uloc, 1, (float *)&particle.position);
+    // for (Particle particle : particles)
+    // {
+    //     if (particle.life > 0.0f)
+    //     {
+    //         //this->shader.SetVector2f("offset", particle.Position);
+    //         GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
+    //         assert(offset_uloc > -1);
+    //         glUniform2fv(offset_uloc, 1, (float *)&particle.position);
 
-            //this->shader.SetVector4f("color", particle.Color);
-            GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
-            assert(color_uloc > -1);
-            glUniform4fv(color_uloc, 1, (float *)&particle.color);
+    //         //this->shader.SetVector4f("color", particle.Color);
+    //         GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
+    //         assert(color_uloc > -1);
+    //         glUniform4fv(color_uloc, 1, (float *)&particle.color);
 
-            //this->texture.Bind();
-            glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture); // doesn't seem right
+    //         //this->texture.Bind();
+    //         glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
 
-            glBindVertexArray(vao);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glBindVertexArray(0);
-        }
-    }
+    //         glBindVertexArray(vao);
+    //         glDrawArrays(GL_TRIANGLES, 0, 6);
+    //         glBindVertexArray(0);
+    //     }
+    // }        
+
+    glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
+    glBindVertexArray(vao);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 100 triangles of 6 vertices each
+    glBindVertexArray(0);
     // don't forget to reset to default blending mode
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ParticleGenerator::init()
 {
+
     // set up mesh and attribute properties
     unsigned int VBO;
     float particle_quad[] = {
@@ -93,11 +99,29 @@ void ParticleGenerator::init()
     // set mesh attributes
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
 
     // create this->amount default particle instances
     for (unsigned int i = 0; i < amount; ++i)
         particles.push_back(Particle());
+
+    // Generate instance VBO
+    glGenBuffers(1, &instance_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * 500, &particles[0], GL_STATIC_DRAW);
+
+    // Point aOffset attribute to each Particle's position in particles array
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
+    glVertexAttribDivisor(1, 1); // attribute at layout 1 is instanced
+
+    // Point aColor attribute to each Particle's color in particles array
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2)));
+    glVertexAttribDivisor(2, 1); // attribute at layout 2 is instanced
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 // stores the index of the last particle used (for quick access to next dead particle)
