@@ -108,6 +108,9 @@ public:
 
 	mat3 createProjectionMatrix();
 
+	// Particles
+	ParticleGenerator* trail_particle_generator;
+
 private:
 	// Internal drawing functions for each entity type
 	void drawTexturedMesh(Entity entity, const mat3& projection);
@@ -125,9 +128,6 @@ private:
 	GLuint m_font_VAO;
 	GLuint m_font_VBO;
 	GLuint m_font_shaderProgram;
-
-	// Particles
-	ParticleGenerator* trail_particle_generator;
 
 	Entity screen_state_entity;
 };

@@ -342,8 +342,8 @@ void RenderSystem::draw()
 		}
 	}
 
-	// Particle rendering
-
+	// Particle rendering. Drawing needs to happen here. Updates happen in world_system step
+	trail_particle_generator->Draw();
 
 	// Text-rendering
 
