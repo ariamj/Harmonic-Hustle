@@ -11,7 +11,7 @@
 #include "particle_generator.hpp"
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount)
-    : shaderProgram(shaderProgram), used_texture(used_texture), amount(amount)
+    : amount(amount), shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
 }

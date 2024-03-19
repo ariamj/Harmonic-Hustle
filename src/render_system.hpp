@@ -46,7 +46,8 @@ class RenderSystem {
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
-		textures_path("Help-Screen-Background.png")
+		textures_path("Help-Screen-Background.png"),
+		textures_path("Trail-Particle.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -61,7 +62,8 @@ class RenderSystem {
 		shader_path("environment"),
 		shader_path("judgement"),
 		shader_path("note"),
-		shader_path("font")
+		shader_path("font"),
+		shader_path("trailParticle")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;

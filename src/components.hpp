@@ -215,7 +215,8 @@ enum class TEXTURE_ASSET_ID {
 	NOTE = JUDGEMENT + 1,
 	OVERWORLD_BG = NOTE + 1,
 	HELP_BG = OVERWORLD_BG + 1,
-	TEXTURE_COUNT = HELP_BG + 1 // keep as last variable
+	TRAIL_PARTICLE = HELP_BG + 1,
+	TEXTURE_COUNT = TRAIL_PARTICLE + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -231,7 +232,8 @@ enum class EFFECT_ASSET_ID {
 	JUDGEMENT = ENVIRONMENT + 1,
 	NOTE = JUDGEMENT + 1,
 	FONT = NOTE + 1,
-	EFFECT_COUNT = FONT + 1 // keep as last variable
+	TRAIL_PARTICLE = FONT + 1,
+	EFFECT_COUNT = TRAIL_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
