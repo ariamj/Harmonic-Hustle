@@ -505,18 +505,16 @@ bool RenderSystem::initScreenTexture()
 
 void RenderSystem::initializeParticleGenerators()
 {
-	GLuint trail_shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
-
-	glUseProgram(trail_shaderProgram);
-	// apply projection matrix
+	// set projection matrix to all particle shader programs
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), static_cast<float>(gameInfo.height), 0.0f);
-	GLint project_location = glGetUniformLocation(trail_shaderProgram, "projection");
-	assert(project_location > -1);
-	std::cout << "project_location: " << project_location << std::endl;
-	glUniformMatrix4fv(project_location, 1, GL_FALSE, glm::value_ptr(projection));
-
-	// trail_particle_generator = new ParticleGenerator(trail_shaderProgram, TEXTURE_ASSET_ID::TRAIL_PARTICLE, 500);
+	
+	GLuint trail_shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+	glUseProgram(trail_shaderProgram);
+	GLint projection_uloc = glGetUniformLocation(trail_shaderProgram, "projection");
+	assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
 }
+
 
 bool gl_compile_shader(GLuint shader)
 {

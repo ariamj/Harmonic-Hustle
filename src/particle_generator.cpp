@@ -43,8 +43,9 @@ void ParticleGenerator::Draw()
 {
     // use additive blending to give it a 'glow' effect
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    // this->shader.Use();
     glUseProgram(shaderProgram);
+
+    // Previous non-instanced rendering
     // for (Particle particle : particles)
     // {
     //     if (particle.life > 0.0f)
@@ -75,11 +76,13 @@ void ParticleGenerator::Draw()
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
+    // Instanced rendering call
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
 
     // Clean up
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    
     // don't forget to reset to default blending mode
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
