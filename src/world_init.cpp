@@ -121,6 +121,10 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	);
 	registry.particleEffects.emplace(entity);
 
+	// attach particle generator to note
+			
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL, entity);
+
 	return entity;
 
 }
