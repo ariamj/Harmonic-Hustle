@@ -28,12 +28,12 @@ void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 of
     // update all particles
     for (unsigned int i = 0; i < amount; ++i)
     {
-        Particle p = particles[i];
-        p.life -= dt; // reduce life
-        if (p.life > 0.0f)
+        Particle* p = &particles[i];
+        p->life -= dt; // reduce life
+        if (p->life > 0.0f)
         {	// particle is alive, thus update
-            p.position += p.velocity * dt; 
-            p.color.a -= dt * 2.5;
+            p->position += p->velocity * dt; 
+            p->color.a -= dt * 2.5;
         }
     }
 }
@@ -116,7 +116,6 @@ void ParticleGenerator::init()
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -167,8 +166,7 @@ void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
     particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.life = 1.f; // TODO: Change back to 1.0f. Excessive lifespan for testing purposes for now
+    particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
-    std::cout << particle.position.x << " " << particle.position.y <<"\n";
 }
 
