@@ -8,7 +8,7 @@ Add .png texture file
 
 In `components.hpp`:
 Increment enums `TEXTURE_ASSET_ID` and `EFFECT_ASSET_ID`
-Add the particle's `EFFECT_ASSET_ID` to the enum `PARTICLE_TYPE_ID`
+Increment enum `PARTICLE_TYPE_ID`
 
 In `render_system_init.cpp`:
 Inside `initializeParticleGenerators`, set the particle shader program's projection matrix (the same for all particle shaders) 
