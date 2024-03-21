@@ -39,3 +39,5 @@ Entity createCircleOutline(vec2 pos, float radius);
 Entity createDot(vec2 pos, vec2 size);
 // // creates a text to be rendered
 Entity createText(std::string text, vec2 pos, float scale, vec3 colour, glm::mat4 trans = glm::mat4(1.f), Screen screen = Screen::OVERWORLD, bool center_pos = true);
+// creates a button - need to add text separately
+Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 size, vec3 text_colour, vec3 box_colour, Screen screen);

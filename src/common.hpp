@@ -89,6 +89,14 @@ namespace Colour {
 	static const vec3 white = { 1.0, 1.0, 1.0 };
 };
 
+// box area of interest (eg. for buttons, active area)
+struct BoxAreaBound {
+	float left;
+	float right;
+	float top;
+	float bottom;
+};
+
 bool gl_has_errors();
 
 vec2 getRandomEnemyVelocity();

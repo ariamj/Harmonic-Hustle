@@ -67,12 +67,16 @@ private:
 
 	vec2 getRamdomEnemyPosition();
 
+	void renderButtons();
+
 	void handleEscInput(int action);
 	void handleSpaceInput(int action);
+	void handleClickStartBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
+	void on_mouse_button(int button, int action, int mods);
 
 	// restart level
 	void restart_game();
@@ -88,6 +92,15 @@ private:
 	Entity battle_player_sprite;
 	Entity battle_enemy_sprite;
 	Entity judgement_line_sprite;
+
+	// buttons
+	Entity start_btn;
+	bool in_start_btn_area = false;
+	enum MouseArea {
+		in_unclickable,
+		in_start_btn,
+	};
+	MouseArea mouse_area = in_unclickable;
 
 	// music references
 	Mix_Music* background_music;

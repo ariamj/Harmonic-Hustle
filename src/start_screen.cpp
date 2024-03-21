@@ -18,7 +18,6 @@ void Start::init(GLFWwindow* window, RenderSystem* renderer) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
-
 }
 
 bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -30,7 +29,28 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
     
-    createText("START", vec2(gameInfo.width/2.f, gameInfo.height/2.f), 2.f, Colour::purple, glm::mat4(1.f), Screen::START, true);
+    for (Entity entity : registry.boxButtons.entities) {
+        if (registry.screens.get(entity) == Screen::START) {
+            BoxButton btn = registry.boxButtons.get(entity);
+            Motion motion = registry.motions.get(entity);
+            std::string text = registry.boxButtons.get(entity).text;
+            createText(text, motion.position, btn.text_scale, btn.text_colour, glm::mat4(1.f), Screen::START, true);
+        }
+    }
+
+    // Debug
+    if (debugging.in_debug_mode) {
+        for (Entity entity : registry.boxButtons.entities) {
+            Motion motion = registry.motions.get(entity);
+            vec2 pos = motion.position;
+            BoxAreaBound bound = registry.boxAreaBounds.get(entity);
+            createLine(vec2(bound.left, pos.y), vec2(5, motion.scale.y), Screen::START);
+            createLine(vec2(bound.right, pos.y), vec2(5, motion.scale.y), Screen::START);
+            createLine(vec2(pos.x, bound.top), vec2(motion.scale.x, 5), Screen::START);
+            createLine(vec2(pos.x, bound.bottom), vec2(motion.scale.x, 5), Screen::START);
+        }
+    }
+    
 
     return true;
 }
@@ -55,7 +75,13 @@ void Start::handle_key(int key, int scancode, int action, int mod) {
     switch(key) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
+                std::cout << "space pressed" << std::endl;
                 gameInfo.curr_screen = Screen::OVERWORLD;
+            }
+            break;
+        case GLFW_KEY_X:
+            if (action == GLFW_PRESS) {
+                debugging.in_debug_mode = !debugging.in_debug_mode;
             }
             break;
         default:
@@ -65,5 +91,5 @@ void Start::handle_key(int key, int scancode, int action, int mod) {
 }
 
 void Start::handle_mouse_move(vec2 pos) {
-
+    (vec2)pos; // silence warning
 }
