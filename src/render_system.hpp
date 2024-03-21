@@ -49,7 +49,11 @@ class RenderSystem {
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
 		textures_path("Help-Screen-Background.png"),
-		textures_path("Trail-Particle.png")
+		textures_path("Trail-Particle.png"),
+		textures_path("Boss-CS-Neutral.png"),
+		textures_path("Boss-Protrait-Neutral.png"),
+		textures_path("Player-CS-Neutral.png"),
+		textures_path("CS-Text-Box.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
