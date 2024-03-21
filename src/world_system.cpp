@@ -120,8 +120,10 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			render_set_overworld_screen();
 		}
 		return toReturn;
-	} else {
+	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
 		return settings.handle_step(elapsed_ms_since_last_update, current_speed);
+	} else {
+		return start.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
 
@@ -189,9 +191,10 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 
-	// set current screen to overworld on every restart
-	render_set_overworld_screen();
+	// set current screen to start screen on every restart
+	// render_set_overworld_screen();
 	// render_set_battle_screen();
+	render_set_start_screen();
 }
 
 // Compute collisions between entities
@@ -223,6 +226,7 @@ bool WorldSystem::is_over() const {
 bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
+	start.set_visible(false);
 	settings.set_visible(false);
 	battle.set_visible(false);
 	overworld.set_visible(true);
@@ -237,6 +241,7 @@ bool WorldSystem::render_set_overworld_screen() {
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
+	start.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(true);
@@ -258,6 +263,7 @@ bool WorldSystem::render_set_settings_screen() {
 	gameInfo.curr_screen = Screen::SETTINGS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
+	start.set_visible(false);
 	settings.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -271,6 +277,28 @@ bool WorldSystem::render_set_settings_screen() {
 	}
 
 	std::cout << "current screen: settings" << std::endl;
+	return true; // added to prevent error
+};
+
+// REQUIRES current scene to NOT be start screen
+// switch to start screen
+bool WorldSystem::render_set_start_screen() {
+	gameInfo.curr_screen = Screen::START;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+	start.set_visible(true);
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+	// add a timer so every time it switches enemies pause for a bit
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
+	}
+
+	std::cout << "current screen: start" << std::endl;
 	return true; // added to prevent error
 };
 
@@ -338,6 +366,18 @@ void handleEnterInput(int action) {
 	}
 }
 
+// Start -> Overworld
+// TODO: use mouse input?
+void WorldSystem::handleSpaceInput(int action) {
+	if (action == GLFW_PRESS) {
+		std::cout << "space pressed" << std::endl;
+
+		if (gameInfo.curr_screen == Screen::START) {
+			render_set_overworld_screen();
+		}
+	}
+}
+
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 
@@ -379,6 +419,10 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
+			break;
+		case GLFW_KEY_SPACE:
+			// Start -> Overworld
+			handleSpaceInput(action);
 			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {

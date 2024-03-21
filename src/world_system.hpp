@@ -15,6 +15,7 @@
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
 #include "settings_screen.hpp"
+#include "start_screen.hpp"
 #include "audio_system.hpp"
 // #include "screen.hpp"
 
@@ -28,6 +29,7 @@ public:
 	Battle battle;
 	Overworld overworld;
 	Settings settings;
+	Start start;
 	AudioSystem audioSystem;
 	
 
@@ -58,11 +60,15 @@ private:
 	// sets the current scene to settings/help
 	bool render_set_settings_screen();
 
+	// sets the current scene to start screen
+	bool render_set_start_screen();
+
 	void checkEnemyPositions();
 
 	vec2 getRamdomEnemyPosition();
 
 	void handleEscInput(int action);
+	void handleSpaceInput(int action);
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
