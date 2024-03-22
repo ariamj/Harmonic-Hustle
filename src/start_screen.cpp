@@ -20,6 +20,30 @@ void Start::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 }
 
+void Start::init_screen() {
+    renderButtons();
+}
+
+void Start::renderButtons() {
+	vec2 main_menu_size = vec2(gameInfo.width/6.f, gameInfo.height/12.f);
+	float y_padding = main_menu_size.y + 15.f;
+	vec2 center_pos = vec2(gameInfo.width/2.f, gameInfo.height/2.f);
+	vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
+
+	// Start button
+	Entity start_shadow = createBox(shadow_pos, main_menu_size);
+	registry.screens.insert(start_shadow, Screen::START);
+	registry.colours.insert(start_shadow, Colour::theme_blue_3);
+	start_btn = createButton("START", center_pos, 1.5f, main_menu_size, Colour::white, Colour::theme_blue_2, Screen::START);
+	
+	// Help button
+	Entity help_shadow = createBox(vec2(0, y_padding) + shadow_pos, main_menu_size);
+	registry.screens.insert(help_shadow, Screen::START);
+	registry.colours.insert(help_shadow, Colour::theme_blue_3);
+	help_btn = createButton("HELP", center_pos + vec2(0, y_padding), 1.5f, main_menu_size, Colour::white, Colour::theme_blue_2, Screen::START);
+	
+}
+
 bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
     title_ss << "Harmonic Hustle --- Settings/Help";
@@ -29,6 +53,17 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
     
+    // title - shadow
+    vec2 title_1_pos = vec2(gameInfo.width/2.f - gameInfo.width/8.f, gameInfo.height/8.f);
+    vec2 title_2_pos = vec2(gameInfo.width/2.f + gameInfo.width/8.f, gameInfo.height*2/8.f);
+    vec2 shadow_offset = vec2(10.f);
+    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
+    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
+    // title
+    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
+    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
+    
+    // Render all button texts
     for (Entity entity : registry.boxButtons.entities) {
         if (registry.screens.get(entity) == Screen::START) {
             BoxButton btn = registry.boxButtons.get(entity);
@@ -88,8 +123,4 @@ void Start::handle_key(int key, int scancode, int action, int mod) {
             std::cout << "unhandled key" << std::endl;
             break;
     }
-}
-
-void Start::handle_mouse_move(vec2 pos) {
-    (vec2)pos; // silence warning
 }

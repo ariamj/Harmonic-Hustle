@@ -87,6 +87,11 @@ namespace Colour {
 	static const vec3 gray = { 0.5, 0.5, 0.5 };
 	static const vec3 dark_gray = { 0.25, 0.25, 0.25 };
 	static const vec3 white = { 1.0, 1.0, 1.0 };
+
+	// game theme colours
+	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue
+	static const vec3 theme_blue_2 = { 0.308, 0.434, 0.451 }; //mid blue
+	static const vec3 theme_blue_3 = { 0.048, 0.184, 0.201 }; //background colour
 };
 
 // box area of interest (eg. for buttons, active area)

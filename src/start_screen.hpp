@@ -10,6 +10,8 @@ class Start {
         ~Start();
 
         void init(GLFWwindow* window, RenderSystem* renderer);
+        void init_screen();
+        void renderButtons();
 
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
 
@@ -19,6 +21,10 @@ class Start {
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
         void handle_mouse_move(vec2 pos);
+
+        // buttons
+        Entity start_btn;
+	    Entity help_btn;
 
     private:
         // game state

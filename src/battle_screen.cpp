@@ -413,9 +413,9 @@ void Battle::setBattleIsOver(bool isOver) {
 		// the bigger border box
 		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
 
-		registry.colours.insert(gameOverPopUpOverlay, {0.758, 0.784, 0.801});
+		registry.colours.insert(gameOverPopUpOverlay, Colour::theme_blue_1);
 		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});
-		registry.colours.insert(gameOverPopUp, {0.308, 0.434, 0.451});
+		registry.colours.insert(gameOverPopUp, Colour::theme_blue_2);
 
 		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
 		registry.battleOverPopUpParts.emplace(gameOverPopUp);

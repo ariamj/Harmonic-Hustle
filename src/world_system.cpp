@@ -194,7 +194,7 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 
-	renderButtons();
+	start.init_screen();
 
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();
@@ -348,9 +348,18 @@ vec2 WorldSystem::getRamdomEnemyPosition() {
 			yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)};
 };
 
-void WorldSystem::renderButtons() {
-	// Start button
-	start_btn = createButton("START", vec2(gameInfo.width/2.f, gameInfo.height/2.f), 1.5f, vec2(gameInfo.width/6.f, gameInfo.height/12.f), Colour::white, Colour::dark_blue, Screen::START);
+// For testing/debugging purposes
+void testButton(Entity& btn) {
+	// test button clicks
+	if (registry.colours.has(btn)) {
+		vec3 colour = registry.colours.get(btn);
+		registry.colours.remove(btn);
+		if (colour == Colour::theme_blue_2) {
+			registry.colours.insert(btn, Colour::dark_blue);
+		} else {
+			registry.colours.insert(btn, Colour::theme_blue_2);
+		}
+	}
 }
 
 // open pause menu or go back depending on game state
@@ -376,22 +385,35 @@ void handleEnterInput(int action) {
 	}
 }
 
+// temp - testing start screen
+void WorldSystem::handleSpaceInput(int action) {
+	if (action == GLFW_PRESS) {
+		std::cout << "space pressed" << std::endl;
+		if (gameInfo.curr_screen == Screen::OVERWORLD || gameInfo.curr_screen == Screen::SETTINGS) {
+			render_set_start_screen();
+		}
+	}
+}
+
 void WorldSystem::handleClickStartBtn() {
 	std::cout << "Clicked on 'START'" << std::endl;
 	// test button clicks
-	if (registry.colours.has(start_btn)) {
-		vec3 colour = registry.colours.get(start_btn);
-		registry.colours.remove(start_btn);
-		if (colour == Colour::dark_blue) {
-			registry.colours.insert(start_btn, Colour::dark_green);
-		} else {
-			registry.colours.insert(start_btn, Colour::dark_blue);
-		}
-	}
+	testButton(start.start_btn);
 
 	// To overworld
 	if (gameInfo.curr_screen == Screen::START) {
 		render_set_overworld_screen();
+	}
+}
+
+void WorldSystem::handleClickHelpBtn() {
+	std::cout << "Clicked on 'HELP'" << std::endl;
+	// test button clicks
+	testButton(start.help_btn);
+
+	// To settings
+	if (gameInfo.curr_screen == Screen::START) {
+		render_set_settings_screen();
 	}
 }
 
@@ -437,6 +459,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
 			break;
+		case GLFW_KEY_SPACE:
+			handleSpaceInput(action);
+			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
@@ -458,13 +483,23 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 
 	float y_padding = 50.f; // for some reason y coords a bit off...
 
-	// START button
-	BoxAreaBound btn_area = registry.boxAreaBounds.get(start_btn);
-	if ((xpos >= btn_area.left) && (xpos <= btn_area.right) && (ypos >= btn_area.top - y_padding) && (ypos <= btn_area.bottom - y_padding)) {
-		std::cout << "in start button area" << std::endl;
-		mouse_area = in_start_btn;
-	} else {
-		mouse_area = in_unclickable;
+	/* Start screen buttons*/
+	if (gameInfo.curr_screen == Screen::START) {
+		// START button
+		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(start.start_btn);
+		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
+		// HELP button
+		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		if (within_start_btn_area) {
+			std::cout << "in start button area" << std::endl;
+			mouse_area = in_start_btn;
+		} else if (within_help_btn_area) {
+			std::cout << "in help button area" << std::endl;
+			mouse_area = in_help_btn;
+		} else {
+			mouse_area = in_unclickable;
+		}
 	}
 }
 
@@ -474,6 +509,9 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 		switch(mouse_area) {
 			case in_start_btn:
 				handleClickStartBtn();
+				break;
+			case in_help_btn:
+				handleClickHelpBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

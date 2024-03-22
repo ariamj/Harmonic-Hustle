@@ -181,7 +181,7 @@ void RenderSystem::drawToScreen()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
-	if (curr_screen == OVERWORLD) {
+	if (curr_screen == OVERWORLD || curr_screen == START) {
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -307,7 +307,9 @@ void RenderSystem::draw()
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
 	// glClearColor(0.032, 0.139, 0.153, 1.0); // background colour
-	glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	// glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	vec3 bckgd_colour = Colour::theme_blue_3;
+	glClearColor(bckgd_colour.x, bckgd_colour.y, bckgd_colour.z, 1.0); // background colour
 	glClearDepth(10.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_BLEND);

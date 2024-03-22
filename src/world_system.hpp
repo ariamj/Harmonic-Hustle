@@ -67,11 +67,10 @@ private:
 
 	vec2 getRamdomEnemyPosition();
 
-	void renderButtons();
-
 	void handleEscInput(int action);
 	void handleSpaceInput(int action);
 	void handleClickStartBtn();
+	void handleClickHelpBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
@@ -94,11 +93,10 @@ private:
 	Entity judgement_line_sprite;
 
 	// buttons
-	Entity start_btn;
-	bool in_start_btn_area = false;
 	enum MouseArea {
 		in_unclickable,
 		in_start_btn,
+		in_help_btn,
 	};
 	MouseArea mouse_area = in_unclickable;
 
