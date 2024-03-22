@@ -76,7 +76,8 @@ bool BossCutscene::handle_step(float elapsed_ms_since_last_update, float current
         Entity text = createText(DIALOGUE[dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
         registry.CSTexts.emplace(text);
 
-        Entity continue_text = createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
+        // continue text
+        createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
     }
     else {
         for (auto& e : registry.CSTexts.entities) {

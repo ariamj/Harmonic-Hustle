@@ -105,7 +105,7 @@ private:
 	MouseArea mouse_area = in_unclickable;
 
 	// music references
-	Mix_Music* background_music;
+	// Mix_Music* background_music;
 
 	// C++ random number generator
 	std::default_random_engine rng;

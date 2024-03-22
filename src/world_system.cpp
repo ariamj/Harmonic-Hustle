@@ -354,10 +354,10 @@ bool WorldSystem::render_set_boss_cs() {
 
 void WorldSystem::checkEnemyPositions() {
 	vec2 playerPos = registry.motions.get(player_sprite).position;
-	float xPadding = PLAYER_WIDTH / 2.f;
-	float doubleXPadding = xPadding * 2.f;
-	float yPadding = PLAYER_HEIGHT / 2.f;
-	float doubleYPadding = yPadding * 2.f;
+	// float xPadding = PLAYER_WIDTH / 2.f;
+	// float doubleXPadding = xPadding * 2.f;
+	// float yPadding = PLAYER_HEIGHT / 2.f;
+	// float doubleYPadding = yPadding * 2.f;
 	
 	auto& enemies = registry.enemies.entities;
 	for (Entity enemy : enemies) {
