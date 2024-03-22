@@ -235,8 +235,8 @@ bool WorldSystem::render_set_overworld_screen() {
 	settings.set_visible(false);
 	battle.set_visible(false);
 	overworld.set_visible(true);
-	// don't restart the overworld music if coming from settings
-	if (prevScreen != Screen::SETTINGS)
+	// don't restart the overworld music if coming from settings or start screen
+	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
 		audioSystem.playOverworld();
 	std::cout << "current screen: overworld" << std::endl;
 	return true; // added to prevent error
@@ -288,6 +288,7 @@ bool WorldSystem::render_set_settings_screen() {
 // REQUIRES current scene to NOT be start screen
 // switch to start screen
 bool WorldSystem::render_set_start_screen() {
+	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::START;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -302,6 +303,10 @@ bool WorldSystem::render_set_start_screen() {
 	if (!registry.pauseEnemyTimers.has(player_sprite)) {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
+
+	// don't restart the music if coming from help screen
+	if (prevScreen != Screen::SETTINGS)
+		audioSystem.playOverworld();
 
 	std::cout << "current screen: start" << std::endl;
 	return true; // added to prevent error
@@ -398,7 +403,7 @@ void WorldSystem::handleBackspaceInput(int action) {
 void WorldSystem::handleClickStartBtn() {
 	std::cout << "Clicked on 'START'" << std::endl;
 	// test button clicks
-	testButton(start.start_btn);
+	// testButton(start.start_btn);
 
 	// To overworld
 	if (gameInfo.curr_screen == Screen::START) {
@@ -409,7 +414,7 @@ void WorldSystem::handleClickStartBtn() {
 void WorldSystem::handleClickHelpBtn() {
 	std::cout << "Clicked on 'HELP'" << std::endl;
 	// test button clicks
-	testButton(start.help_btn);
+	// testButton(start.help_btn);
 
 	// To settings
 	if (gameInfo.curr_screen == Screen::START) {
@@ -472,6 +477,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				}
 			}
 			break;
 	}

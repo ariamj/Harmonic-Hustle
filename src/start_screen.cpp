@@ -86,6 +86,8 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
         }
     }
 
+    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, glm::mat4(1.f), Screen::START, true);
+
     // Debug
     if (debugging.in_debug_mode) {
         for (Entity entity : registry.boxButtons.entities) {
@@ -116,7 +118,7 @@ bool Start::set_visible(bool isVisible) {
     
     ScreenState& screen = registry.screenStates.components[0];
     if (isVisible) {
-        screen.darken_screen_factor = 0.15;
+        screen.darken_screen_factor = 0.2;
     } else {
         screen.darken_screen_factor = 0;
     }
