@@ -193,6 +193,102 @@ Entity createBattleEnemy(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
+Entity createCSTextbox(RenderSystem* renderer, vec2 pos)
+{
+	auto entity = Entity();
+
+	// Store a reference to the potentially re-used mesh object
+	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
+	registry.meshPtrs.emplace(entity, &mesh);
+
+	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = pos;
+	motion.scale = vec2({ 2000, 600 });
+
+	// screen entity exists in
+	registry.screens.insert(entity, { Screen::BOSS_CS });
+
+	// Create component
+	// registry.enemies.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{
+			TEXTURE_ASSET_ID::BOX_CS,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
+
+	return entity;
+}
+
+Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
+{
+	auto entity = Entity();
+
+	// Store a reference to the potentially re-used mesh object
+	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
+	registry.meshPtrs.emplace(entity, &mesh);
+
+	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = pos;
+	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
+
+	// screen entity exists in
+	registry.screens.insert(entity, { Screen::BOSS_CS });
+
+	// Create component
+	// registry.enemies.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{
+			TEXTURE_ASSET_ID::BOSS_CS,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
+
+	return entity;
+}
+
+Entity createCSPlayer(RenderSystem* renderer, vec2 pos)
+{
+	auto entity = Entity();
+
+	// Store a reference to the potentially re-used mesh object
+	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
+	registry.meshPtrs.emplace(entity, &mesh);
+
+	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = pos;
+	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
+
+	// screen entity exists in
+	registry.screens.insert(entity, { Screen::BOSS_CS });
+
+	// Create component
+	// registry.enemies.emplace(entity);
+	registry.renderRequests.insert(
+		entity,
+		{
+			TEXTURE_ASSET_ID::PLAYER_CS,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
+
+	return entity;
+}
+
 Entity createJudgementLine(RenderSystem* renderer, vec2 pos)
 {
 	auto entity = Entity();

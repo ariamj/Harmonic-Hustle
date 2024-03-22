@@ -25,6 +25,12 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level);
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos);
 // enemy in battle scene
 Entity createBattleEnemy(RenderSystem* renderer, vec2 pos);
+// player in cutscene
+Entity createCSPlayer(RenderSystem* renderer, vec2 pos);
+// enemy in cutscene
+Entity createCSEnemy(RenderSystem* renderer, vec2 pos);
+// text box for cutscenes
+Entity createCSTextbox(RenderSystem* renderer, vec2 pos);
 // judgement line
 Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 // notes

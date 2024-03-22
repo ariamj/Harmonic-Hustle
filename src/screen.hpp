@@ -2,5 +2,6 @@ enum Screen {
     OVERWORLD = 0,
     BATTLE = 1,
     SETTINGS = 2,
-    START = 3
+    START = 3,
+    BOSS_CS = 4
 };

@@ -29,7 +29,7 @@ int next_note_index;
 float last_beat;
 
 // Enemy-specific battle information
-const int NUM_UNIQUE_BATTLES = 3;
+const int NUM_UNIQUE_BATTLES = 4;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 
@@ -108,6 +108,22 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
+		battleInfo[k].note_timings.push_back(converted_timing);
+	}
+
+	//TODO: JUST PLACEHOLDER DATA FOR NOW
+	k = 3;
+	battleInfo[k].count_notes = 36;
+	battleInfo[k].bpm = 152.f;
+
+
+	std::vector<float> enemy3_timings = { 8.f, 8.5f, 9.f, 10.f, 11.f, 12.f, 12.5f, 13.f, 13.5f,
+										24.f, 24.5f, 25.f, 26.f, 27.f, 28.f, 28.5f, 29.f, 29.5f,
+										40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
+										56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f };
+	bpm_ratio = battleInfo[k].bpm / 60.f;
+	for (int i = 0; i < battleInfo[k].count_notes; i++) {
+		float converted_timing = (1000.f * enemy3_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
 	}
 
@@ -329,8 +345,10 @@ void Battle::handle_battle_end() {
 
 		// increment player lvl
 		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
-		registry.levels.get(*gameInfo.player_sprite).level++;
 
+		if (gameInfo.curr_level != gameInfo.max_level) {
+			registry.levels.get(*gameInfo.player_sprite).level++;
+		}
 	// battle lost
 	} else {
 		// remove colllided with enemy (give player another chance)
@@ -373,6 +391,13 @@ void Battle::start() {
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1; // Set to 0 if using song position
+
+	if (gameInfo.curr_level == 4) {
+		Entity e = registry.battleEnemy.entities[0];
+
+		RenderRequest& render = registry.renderRequests.get(e);
+		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
+	}
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);

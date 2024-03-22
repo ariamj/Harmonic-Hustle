@@ -72,6 +72,9 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy2_music);
 
+	//TODO: ADD NEW SONG FOR THE BOSS
+	enemy_music.push_back(enemy2_music);
+
 	std::string drop = "drop.wav";
 	drop_SFX = Mix_LoadWAV(audio_path(drop).c_str());
 	if (drop_SFX == nullptr) { // add "%s\n" for each sound added
