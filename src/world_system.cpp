@@ -74,8 +74,10 @@ GLFWwindow* WorldSystem::create_window() {
 	glfwSetWindowUserPointer(window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((WorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((WorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+	auto mouse_btn_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) { ((WorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_button(_0, _1, _2); };
 	glfwSetKeyCallback(window, key_redirect);
 	glfwSetCursorPosCallback(window, cursor_pos_redirect);
+	glfwSetMouseButtonCallback(window, mouse_btn_redirect);
 
 	return window;
 }
@@ -93,6 +95,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	overworld.init(window, renderer_arg);
 	battle.init(window, renderer_arg, &audioSystem);
 	settings.init(window, renderer_arg);
+	start.init(window, renderer_arg);
 	bossCS.init(window, renderer_arg);
 
 	// Moved into here from main
@@ -126,8 +129,9 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			render_set_boss_cs();
 		}
 		return toReturn;
-	}
-	else if (gameInfo.curr_screen == Screen::BOSS_CS) {
+	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
+    return settings.handle_step(elapsed_ms_since_last_update, current_speed);
+	} else if (gameInfo.curr_screen == Screen::BOSS_CS) {
 		if (bossCS.dialogue_progress >= (bossCS.DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			bossCS.is_finished = true;
@@ -136,9 +140,8 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
 		return bossCS.handle_step(elapsed_ms_since_last_update, current_speed);
-	} 
-	else {
-		return settings.handle_step(elapsed_ms_since_last_update, current_speed);
+	} else {
+		return start.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
 
@@ -208,9 +211,12 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 
-	// set current screen to overworld on every restart
-	render_set_overworld_screen();
+	start.init_screen();
+
+	// set current screen to start screen on every restart
+	// render_set_overworld_screen();
 	// render_set_battle_screen();
+	render_set_start_screen();
 }
 
 // Compute collisions between entities
@@ -242,12 +248,13 @@ bool WorldSystem::is_over() const {
 bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
+	start.set_visible(false);
 	settings.set_visible(false);
 	battle.set_visible(false);
 	bossCS.set_visible(false);
 	overworld.set_visible(true);
-	// don't restart the overworld music if coming from settings
-	if (prevScreen != Screen::SETTINGS)
+	// don't restart the overworld music if coming from settings or start screen
+	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
 		audioSystem.playOverworld();
 	std::cout << "current screen: overworld" << std::endl;
 	return true; // added to prevent error
@@ -257,6 +264,7 @@ bool WorldSystem::render_set_overworld_screen() {
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
+	start.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	bossCS.set_visible(false);
@@ -279,6 +287,7 @@ bool WorldSystem::render_set_settings_screen() {
 	gameInfo.curr_screen = Screen::SETTINGS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
+	start.set_visible(false);
 	bossCS.set_visible(false);
 	settings.set_visible(true);
 
@@ -296,14 +305,40 @@ bool WorldSystem::render_set_settings_screen() {
 	return true; // added to prevent error
 };
 
+// REQUIRES current scene to NOT be start screen
+// switch to start screen
+bool WorldSystem::render_set_start_screen() {
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.curr_screen = Screen::START;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+  	bossCS.set_visible(false);
+	start.set_visible(true);
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+  
+  	// don't restart the music if coming from help screen
+	if (prevScreen != Screen::SETTINGS)
+		audioSystem.playOverworld();
+
+	std::cout << "current screen: start" << std::endl;
+  	return true; // added to prevent error
+}
+
 // REQUIRES current scene NOT be boss cutscene
 // switch to boss cutscene
 bool WorldSystem::render_set_boss_cs() {
 	gameInfo.curr_screen = Screen::BOSS_CS;
+  start.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	bossCS.set_visible(true);
+  
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = { 0, 0 };
@@ -312,6 +347,7 @@ bool WorldSystem::render_set_boss_cs() {
 	if (!registry.pauseEnemyTimers.has(player_sprite)) {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
+
 	std::cout << "current screen: boss cutscene" << std::endl;
 	return true; // added to prevent error
 };
@@ -356,6 +392,20 @@ vec2 WorldSystem::getRamdomEnemyPosition() {
 	return {xPadding + uniform_dist(rng) * (gameInfo.width - doubleXPadding),
 			yPadding + uniform_dist(rng) * (gameInfo.height - doubleYPadding)};
 };
+
+// For testing/debugging purposes
+void testButton(Entity& btn) {
+	// test button clicks
+	if (registry.colours.has(btn)) {
+		vec3 colour = registry.colours.get(btn);
+		registry.colours.remove(btn);
+		if (colour == Colour::theme_blue_2) {
+			registry.colours.insert(btn, Colour::dark_blue);
+		} else {
+			registry.colours.insert(btn, Colour::theme_blue_2);
+		}
+	}
+}
 
 // open pause menu or go back depending on game state
 // 		-> currently toggle help screen will only work in OVERWORLD
@@ -403,6 +453,38 @@ void WorldSystem::handleEscInput(int action) {
 void handleEnterInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "enter press" << std::endl;
+	}
+}
+
+// temp - testing start screen
+void WorldSystem::handleBackspaceInput(int action) {
+	if (action == GLFW_PRESS) {
+		std::cout << "space pressed" << std::endl;
+		if (gameInfo.curr_screen == Screen::OVERWORLD || gameInfo.curr_screen == Screen::SETTINGS) {
+			render_set_start_screen();
+		}
+	}
+}
+
+void WorldSystem::handleClickStartBtn() {
+	std::cout << "Clicked on 'START'" << std::endl;
+	// test button clicks
+	// testButton(start.start_btn);
+
+	// To overworld
+	if (gameInfo.curr_screen == Screen::START) {
+		render_set_overworld_screen();
+	}
+}
+
+void WorldSystem::handleClickHelpBtn() {
+	std::cout << "Clicked on 'HELP'" << std::endl;
+	// test button clicks
+	// testButton(start.help_btn);
+
+	// To settings
+	if (gameInfo.curr_screen == Screen::START) {
+		render_set_settings_screen();
 	}
 }
 
@@ -454,11 +536,19 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
 			break;
+		case GLFW_KEY_BACKSPACE:
+			handleBackspaceInput(action);
+			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				}
+			} else if (gameInfo.curr_screen == Screen::START) {
+				start.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
 				}
@@ -471,6 +561,45 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 }
 
 void WorldSystem::on_mouse_move(vec2 mouse_position) {
-    // handle mouse inputs (if need?)
-	(vec2)mouse_position; // dummy to avoid compiler warning
+	double xpos = mouse_position.x;
+    double ypos = mouse_position.y;
+
+	float y_padding = 50.f; // for some reason y coords a bit off...
+
+	/* Start screen buttons*/
+	if (gameInfo.curr_screen == Screen::START) {
+		// START button
+		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(start.start_btn);
+		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
+		// HELP button
+		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		if (within_start_btn_area) {
+			// std::cout << "in start button area" << std::endl;
+			mouse_area = in_start_btn;
+		} else if (within_help_btn_area) {
+			// std::cout << "in help button area" << std::endl;
+			mouse_area = in_help_btn;
+		} else {
+			mouse_area = in_unclickable;
+		}
+		start.handle_mouse_move(mouse_area);
+	}
+}
+
+void WorldSystem::on_mouse_button(int button, int action, int mods) {
+	// handle mouse button events	
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		switch(mouse_area) {
+			case in_start_btn:
+				handleClickStartBtn();
+				break;
+			case in_help_btn:
+				handleClickHelpBtn();
+				break;
+			default:
+				std::cout << "not in clickable area" << std::endl;
+				break;
+		}
+	}
 }

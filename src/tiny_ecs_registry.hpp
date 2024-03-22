@@ -33,7 +33,9 @@ public:
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<Text> texts;
+	ComponentContainer<BoxButton> boxButtons;
 	ComponentContainer<ParticleEffect> particleEffects;
+	ComponentContainer<BoxAreaBound> boxAreaBounds;
 	ComponentContainer<EnemyCS> enemyCS;
 	ComponentContainer<PlayerCS> playerCS;
 	ComponentContainer<CSText> CSTexts;
@@ -66,7 +68,9 @@ public:
 		registry_list.push_back(&colours);
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&texts);
+		registry_list.push_back(&boxButtons);
 		registry_list.push_back(&particleEffects);
+		registry_list.push_back(&boxAreaBounds);
 		registry_list.push_back(&enemyCS);
 		registry_list.push_back(&playerCS);
 		registry_list.push_back(&CSTexts);
