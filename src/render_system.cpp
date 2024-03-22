@@ -161,17 +161,17 @@ void RenderSystem::drawToScreen()
 		index_buffers[(GLuint)GEOMETRY_BUFFER_ID::SCREEN_TRIANGLE]); // Note, GL_ELEMENT_ARRAY_BUFFER associates
 																	 // indices to the bound GL_ARRAY_BUFFER
 	gl_has_errors();
-	const GLuint wind_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
+	const GLuint env_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
 	// Set clock
-	GLuint time_uloc = glGetUniformLocation(wind_program, "time");
-	// GLuint dead_timer_uloc = glGetUniformLocation(wind_program, "darken_screen_factor");
+	GLuint time_uloc = glGetUniformLocation(env_program, "time");
+	GLuint darken_screen_uloc = glGetUniformLocation(env_program, "darken_screen_factor");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	ScreenState &screen = registry.screenStates.get(screen_state_entity);
-	// glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
+	glUniform1f(darken_screen_uloc, screen.darken_screen_factor);
 	gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
-	GLint in_position_loc = glGetAttribLocation(wind_program, "in_position");
+	GLint in_position_loc = glGetAttribLocation(env_program, "in_position");
 	glEnableVertexAttribArray(in_position_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
 	gl_has_errors();

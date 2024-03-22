@@ -386,7 +386,7 @@ void handleEnterInput(int action) {
 }
 
 // temp - testing start screen
-void WorldSystem::handleSpaceInput(int action) {
+void WorldSystem::handleBackspaceInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "space pressed" << std::endl;
 		if (gameInfo.curr_screen == Screen::OVERWORLD || gameInfo.curr_screen == Screen::SETTINGS) {
@@ -459,8 +459,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
 			break;
-		case GLFW_KEY_SPACE:
-			handleSpaceInput(action);
+		case GLFW_KEY_BACKSPACE:
+			handleBackspaceInput(action);
 			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -492,14 +492,15 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
 		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
 		if (within_start_btn_area) {
-			std::cout << "in start button area" << std::endl;
+			// std::cout << "in start button area" << std::endl;
 			mouse_area = in_start_btn;
 		} else if (within_help_btn_area) {
-			std::cout << "in help button area" << std::endl;
+			// std::cout << "in help button area" << std::endl;
 			mouse_area = in_help_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
+		start.handle_mouse_move(mouse_area);
 	}
 }
 

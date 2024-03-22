@@ -102,6 +102,13 @@ struct BoxAreaBound {
 	float bottom;
 };
 
+// Button boundary enums
+enum MouseArea {
+	in_unclickable,
+	in_start_btn,
+	in_help_btn,
+};
+
 bool gl_has_errors();
 
 vec2 getRandomEnemyVelocity();

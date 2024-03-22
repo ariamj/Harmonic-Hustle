@@ -20,14 +20,20 @@ class Start {
 
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
-        void handle_mouse_move(vec2 pos);
+        void handle_mouse_move(MouseArea mouse_area);
 
         // buttons
         Entity start_btn;
 	    Entity help_btn;
 
+        // mouse area
+        MouseArea mouse_area;
+
     private:
         // game state
         RenderSystem* renderer;
         GLFWwindow* window;
+
+        vec2 title_1_pos;
+        vec2 title_2_pos;
 };
