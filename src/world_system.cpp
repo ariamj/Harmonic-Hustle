@@ -313,19 +313,20 @@ bool WorldSystem::render_set_start_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	settings.set_visible(false);
-  bossCS.set_visible(false);
+  	bossCS.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
 		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
   
-  // don't restart the music if coming from help screen
+  	// don't restart the music if coming from help screen
 	if (prevScreen != Screen::SETTINGS)
 		audioSystem.playOverworld();
 
 	std::cout << "current screen: start" << std::endl;
-  return true; // added to prevent error
+  	return true; // added to prevent error
 }
 
 // REQUIRES current scene NOT be boss cutscene
