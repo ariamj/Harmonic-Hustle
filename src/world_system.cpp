@@ -120,11 +120,17 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			render_set_overworld_screen();
 		}
+
+		// go to boss cutscene
+		if (gameInfo.curr_level == 4 && !bossCS.is_finished) {
+			render_set_boss_cs();
+		}
 		return toReturn;
 	}
 	else if (gameInfo.curr_screen == Screen::BOSS_CS) {
 		if (bossCS.dialogue_progress >= (bossCS.DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
+			bossCS.is_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -190,8 +196,10 @@ void WorldSystem::restart_game() {
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;
 
-	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement, yDisplacement});
-    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement, gameInfo.height - xDisplacement });
+	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement + 20.f, yDisplacement + 20.f });
+    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement - 20.f, gameInfo.height - xDisplacement - 20.f });
+
+	registry.battleEnemy.emplace(battle_enemy_sprite);
 
 	// hard coded values for now
 	float judgement_line_y_pos = gameInfo.height / 1.2;

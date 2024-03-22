@@ -38,6 +38,7 @@ public:
 	ComponentContainer<PlayerCS> playerCS;
 	ComponentContainer<CSText> CSTexts;
 	ComponentContainer<CSTextbox> CSTextbox;
+	ComponentContainer<BattleEnemy> battleEnemy;
 	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -70,6 +71,7 @@ public:
 		registry_list.push_back(&playerCS);
 		registry_list.push_back(&CSTexts);
 		registry_list.push_back(&CSTextbox);
+		registry_list.push_back(&battleEnemy);
 	}
 
 	void clear_all_components() {
