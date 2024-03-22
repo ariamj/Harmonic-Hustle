@@ -20,10 +20,10 @@ void Start::init_screen() {
     title_1_pos = vec2(gameInfo.width/2.f - gameInfo.width/8.f, gameInfo.height/8.f);
     title_2_pos = vec2(gameInfo.width/2.f + gameInfo.width/8.f, gameInfo.height*2/8.f);
     // title "banner"
-    Entity banner_1 = createBox(title_1_pos, vec2(gameInfo.width/2.f - 170.f, 100.f));
+    Entity banner_1 = createBox(title_1_pos, vec2(800.f, 100.f));
     registry.screens.insert(banner_1, Screen::START);
     registry.colours.insert(banner_1, Colour::white);
-    Entity banner_2 = createBox(title_2_pos, vec2(gameInfo.width/3.f - 20.f, 100.f));
+    Entity banner_2 = createBox(title_2_pos, vec2(650.f, 100.f));
     registry.screens.insert(banner_2, Screen::START);
     registry.colours.insert(banner_2, Colour::white);
 
@@ -31,7 +31,7 @@ void Start::init_screen() {
 }
 
 void Start::renderButtons() {
-	vec2 main_menu_size = vec2(gameInfo.width/6.f, gameInfo.height/12.f);
+	vec2 main_menu_size = vec2(350.f, gameInfo.height/12.f);
 	float y_padding = main_menu_size.y + 15.f;
 	vec2 center_pos = vec2(gameInfo.width/2.f, gameInfo.height/2.f);
 	vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
@@ -78,7 +78,7 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
             vec3 text_colour = btn.text_colour;
 
             // Hover effect
-            // if lag happens, comment this part out
+            // NOTE: if lag happens, comment this part out
             if ((text == "START" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn)) {
                 text_colour = Colour::white;
             }
