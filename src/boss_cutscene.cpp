@@ -47,18 +47,43 @@ bool BossCutscene::handle_step(float elapsed_ms_since_last_update, float current
         registry.CSTextbox.emplace(textbox);
     }
 
+    if ((dialogue_progress + 1) % 2 == 0) {
+        Entity e = registry.playerCS.entities[0];
+        Entity enemy = registry.enemyCS.entities[0];
+
+        if (!registry.colours.has(e)) {
+            registry.colours.insert(e, Colour::dark_gray);
+        }
+
+        if (registry.colours.has(enemy)) {
+            registry.colours.remove(enemy);
+        }
+    }
+    else {
+        Entity e = registry.enemyCS.entities[0];
+        Entity player = registry.playerCS.entities[0];
+
+        if (!registry.colours.has(e)) {
+            registry.colours.insert(e, Colour::dark_gray);
+        }
+
+        if (registry.colours.has(player)) {
+            registry.colours.remove(player);
+        }
+    }
+
     if (registry.CSTexts.components.size() == 0) {
-        Entity text = createText(DIALOGUE[dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, glm::vec3(1.f, 0.f, 0.f), glm::mat4(1.f), Screen::BOSS_CS);
+        Entity text = createText(DIALOGUE[dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
         registry.CSTexts.emplace(text);
 
-        Entity continue_text = createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, glm::vec3(1.f, 0.f, 0.f), glm::mat4(1.f), Screen::BOSS_CS);
+        Entity continue_text = createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
     }
     else {
         for (auto& e : registry.CSTexts.entities) {
             registry.texts.remove(e);
         }
 
-        Entity text = createText(DIALOGUE[dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, glm::vec3(1.f, 0.f, 0.f), glm::mat4(1.f), Screen::BOSS_CS);
+        Entity text = createText(DIALOGUE[dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::BOSS_CS);
         registry.CSTexts.emplace(text);
         
     }

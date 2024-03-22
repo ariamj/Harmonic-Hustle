@@ -86,6 +86,10 @@ struct Enemy
 
 };
 
+struct BattleEnemy {
+
+};
+
 // for keeping beat
 // https://fizzd.notion.site/How-To-Make-A-Rhythm-Game-Technical-Guide-ed09f5e09752451f97501ebddf68cf8a
 struct Conductor
@@ -121,8 +125,8 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
-	int curr_level = 1;
-	int max_level = 3;
+	int curr_level = 3;
+	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
 };
 extern GameInfo gameInfo;

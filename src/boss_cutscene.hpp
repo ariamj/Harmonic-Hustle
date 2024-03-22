@@ -12,6 +12,7 @@
 class BossCutscene {
     public:
         int dialogue_progress = 0;
+        bool is_finished = false;
 
         const std::string DIALOGUE[4] = {
             "hello",
