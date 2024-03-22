@@ -25,6 +25,9 @@ public:
 	bool musicPlaying();
 	float getSongPosition();
 
+	bool pauseMusic();
+	bool resumeMusic();
+
 private:
 	bool LoadFiles();
 

@@ -41,50 +41,53 @@ void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 of
 // render all particles
 void ParticleGenerator::Draw()
 {
-    // use additive blending to give it a 'glow' effect
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glUseProgram(shaderProgram);
+    // don't draw particles if in settings screen (update later if needed)
+    if (gameInfo.curr_screen != Screen::SETTINGS) {
+        // use additive blending to give it a 'glow' effect
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        glUseProgram(shaderProgram);
 
-    // Previous non-instanced rendering
-    // for (Particle particle : particles)
-    // {
-    //     if (particle.life > 0.0f)
-    //     {
-    //         //this->shader.SetVector2f("offset", particle.Position);
-    //         GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
-    //         assert(offset_uloc > -1);
-    //         glUniform2fv(offset_uloc, 1, (float *)&particle.position);
+        // Previous non-instanced rendering
+        // for (Particle particle : particles)
+        // {
+        //     if (particle.life > 0.0f)
+        //     {
+        //         //this->shader.SetVector2f("offset", particle.Position);
+        //         GLint offset_uloc = glGetUniformLocation(shaderProgram, "offset");
+        //         assert(offset_uloc > -1);
+        //         glUniform2fv(offset_uloc, 1, (float *)&particle.position);
 
-    //         //this->shader.SetVector4f("color", particle.Color);
-    //         GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
-    //         assert(color_uloc > -1);
-    //         glUniform4fv(color_uloc, 1, (float *)&particle.color);
+        //         //this->shader.SetVector4f("color", particle.Color);
+        //         GLint color_uloc = glGetUniformLocation(shaderProgram, "color");
+        //         assert(color_uloc > -1);
+        //         glUniform4fv(color_uloc, 1, (float *)&particle.color);
 
-    //         //this->texture.Bind();
-    //         glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
+        //         //this->texture.Bind();
+        //         glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
 
-    //         glBindVertexArray(vao);
-    //         glDrawArrays(GL_TRIANGLES, 0, 6);
-    //         glBindVertexArray(0);
-    //     }
-    // }        
+        //         glBindVertexArray(vao);
+        //         glDrawArrays(GL_TRIANGLES, 0, 6);
+        //         glBindVertexArray(0);
+        //     }
+        // }        
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
-    glBindVertexArray(vao);
+        glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
+        glBindVertexArray(vao);
 
-    // Bind instanced VBO again to update values of particles
-    glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+        // Bind instanced VBO again to update values of particles
+        glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
-    // Instanced rendering call
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
+        // Instanced rendering call
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
 
-    // Clean up
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-    
-    // don't forget to reset to default blending mode
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // Clean up
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        
+        // don't forget to reset to default blending mode
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 }
 
 void ParticleGenerator::init()

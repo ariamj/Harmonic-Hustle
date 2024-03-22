@@ -158,7 +158,22 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 
-	if (battle_is_over) {
+	if (in_countdown) {
+		// if in countdown mode, update the timer
+		//		if countdown is done, resume the game
+		//		else render the countdown number on screen
+		countdownTimer_ms -= elapsed_ms_since_last_update;
+
+		if (countdownTimer_ms <= 0) {
+			// fully resume game
+			in_countdown = false;
+			audio->resumeMusic();
+		} else {
+			// render count down text
+			int time = (int) (countdownTimer_ms / 1000) + 1;
+			createText(std::to_string(time), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, glm::mat4(1.f), Screen::BATTLE, true);
+		}
+	} else if (battle_is_over) {
 		//TODO render in text that has:
 		//		battle outcome, player score and a "press space to continue" line
 		float spacing = 50.f;
@@ -302,10 +317,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				}
 			}
 		}
+		renderer->updateParticles(elapsed_ms_since_last_update);
 	}
-
-	renderer->updateParticles(elapsed_ms_since_last_update);
-
 	return true;
 };
 
@@ -401,6 +414,29 @@ void Battle::start() {
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
+}
+
+// if isPaused = true, pause music
+// if isPaused = false, set to in countdown mode and reset timer
+//		-> requires prev screen to NOT be battle if resuming
+bool Battle::set_pause(bool isPaused) {
+	if (isPaused) {
+		audio->pauseMusic();
+	} else {
+		in_countdown = true;
+		countdownTimer_ms = 3000;
+
+		// double prevPosition = audio->getSongPosition();
+		// double newPosition = prevPosition - 3.0;
+		// audio->resumeMusic(newPosition);
+		this->is_visible = true;
+
+		Entity& curr_screen_entity = registry.screenStates.entities[0];
+		// remove curr screen component
+		if (registry.screens.has(curr_screen_entity)) registry.screens.remove(curr_screen_entity);
+		
+		registry.screens.insert(curr_screen_entity, Screen::BATTLE);
+	}
 }
 
 bool Battle::set_visible(bool isVisible) {
