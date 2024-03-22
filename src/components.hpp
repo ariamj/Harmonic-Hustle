@@ -120,10 +120,9 @@ struct JudgementLineTimer
 	float count_ms = 200;
 };
 
-// used to manage the different screens (????)
-// the scene that the entity exists in
 struct GameInfo {
 	Screen curr_screen;
+	Screen prev_screen; // to handle resume correct screen after pausing
 	std::shared_ptr<Entity> player_sprite;
 	int height;
 	int width;
@@ -132,7 +131,7 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
-	int curr_level = 3;
+	int curr_level = 1;
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
 };

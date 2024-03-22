@@ -413,12 +413,34 @@ void testButton(Entity& btn) {
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
-		
-		// glfwSetWindowShouldClose(window, 1);
+
+		// if curr screen is overworld, switch to settings
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			gameInfo.prev_screen = Screen::OVERWORLD;
 			render_set_settings_screen();
+
+		// if curr screen is battle, pause the battle and then switch to settings
+		} else if (gameInfo.curr_screen == Screen::BATTLE) {
+			gameInfo.prev_screen = Screen::BATTLE;
+			battle.set_pause(true);
+			render_set_settings_screen();
+
 		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
-			render_set_overworld_screen();
+			// if curr screen is settings,
+			//		-> prev screen is overworld, just switch back
+			//      -> prev screen is battle, update screen visabilities and SET PAUSE for battle NOT set visible
+			//				(set visible restarts the battle, set pause just unpausees it)
+			if (gameInfo.prev_screen == Screen::OVERWORLD) {
+				render_set_overworld_screen();
+			} else if (gameInfo.prev_screen == Screen::BATTLE) {
+				gameInfo.curr_screen = Screen::BATTLE;
+				settings.set_visible(false);
+				overworld.set_visible(false);
+				bossCS.set_visible(false);
+				battle.set_pause(false);
+				std::cout << "current screen: battle" << std::endl;
+			}
+
 		}
 		else if (gameInfo.curr_screen == Screen::BOSS_CS) {
 			battle.start();

@@ -41,6 +41,8 @@ class Battle {
         // Setters
         void start();
 
+        bool set_pause(bool isPaused);
+
         bool set_visible(bool isVisible);
 
         void setBattleIsOver(bool isOver);
@@ -80,6 +82,10 @@ class Battle {
         Entity gameOverPopUpOverlay;
 
         bool battle_is_over = false;
+        
+        // set to true once player resumes game from pause
+        bool in_countdown = false;
+        float countdownTimer_ms;
 
         GLFWwindow* window;
 };

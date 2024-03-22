@@ -143,3 +143,13 @@ bool AudioSystem::musicPlaying() {
 float AudioSystem::getSongPosition() {
 	return Mix_GetMusicPosition(current_music);
 }
+
+bool AudioSystem::pauseMusic() {
+	Mix_PauseMusic();
+	return true;
+}
+
+bool AudioSystem::resumeMusic() {
+	Mix_ResumeMusic();
+	return true;
+}
