@@ -437,6 +437,7 @@ bool Battle::set_pause(bool isPaused) {
 		
 		registry.screens.insert(curr_screen_entity, Screen::BATTLE);
 	}
+	return true; //silence warning
 }
 
 bool Battle::set_visible(bool isVisible) {
