@@ -8,8 +8,8 @@
 #include "tiny_ecs_registry.hpp"
 
 // Game configuration
-const size_t MAX_ENEMIES = 2;
-const size_t ENEMY_DELAY_MS = 5000 * 3;
+// const size_t MAX_ENEMIES = 2;
+// const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
 
 Overworld::Overworld() 
@@ -88,10 +88,10 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     }
 
 	// Process the player state
-	assert(registry.screenStates.components.size() <= 1);
-	ScreenState &screen = registry.screenStates.components[0];
+	// assert(registry.screenStates.components.size() <= 1);
+	// ScreenState &screen = registry.screenStates.components[0];
 
-	float min_counter_ms = 3000.f;
+	// float min_counter_ms = 3000.f;
 
     return true;
 };
@@ -120,7 +120,7 @@ bool Overworld::handle_collisions() {
 
         // if collision between player and enemy, switch to battle scene, remove enemy
         if (registry.players.has(entity) && registry.enemies.has(entity_other)) {
-            int enemyLevel = registry.levels.get(entity_other).level;
+            // int enemyLevel = registry.levels.get(entity_other).level;
 
             // if collision is between enemy with level <= player level
             //      set curr enemy and switch to battle scene

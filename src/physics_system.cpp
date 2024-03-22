@@ -43,8 +43,8 @@ void fill_mesh_boundary_edge(Mesh& mesh) {
 			boundary_indices.insert(edge.second);
 		}
 	}
-	printf("number of total edges = %i\n", edges.size());
-	printf("number of boundary edges = %i\n", boundary_edges.size());
+	printf("number of total edges = %zu\n", edges.size());
+	printf("number of boundary edges = %zu\n", boundary_edges.size());
 }
 
 //https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -139,12 +139,12 @@ bool collides_mesh_line(Mesh& mesh, const Motion& motion, const Motion& motion2)
 
 		// world coords
 		auto world_v1 = transform.mat * vec3(v1.position.x, v1.position.y, 1.0f);
-		float v1_x = world_v1.x;
-		float v1_y = world_v1.y;
+		// float v1_x = world_v1.x;
+		// float v1_y = world_v1.y;
 		auto world_v2 = transform.mat * vec3(v2.position.x, v2.position.y, 1.0f);
-		float v2_x = world_v2.x;
-		float v2_y = world_v2.y;
-		float m_12 = (v2_y - v1_y) / (v2_x - v1_x);
+		// float v2_x = world_v2.x;
+		// float v2_y = world_v2.y;
+		// float m_12 = (v2_y - v1_y) / (v2_x - v1_x);
 
 		vec2 p1(world_v1.x, world_v1.y);
 		vec2 q1(world_v2.x, world_v2.y);
@@ -369,32 +369,35 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 float line_thickness = 3.f;
 			 if (registry.enemies.has(entity) || registry.players.has(entity)) {
 				// create a dot in the motion.positin for ai debugging
-				Entity spriteDot = createDot(motion.position, vec2{8, 8});
+				createDot(motion.position, vec2{8, 8});
 
 				 vec2 bb = get_bounding_box(motion);
-				 Entity line1 = createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
-				 Entity line2 = createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y));
-				 Entity line3 = createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness));
-				 Entity line4 = createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness));
+				 createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line1
+				 createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line2
+				 createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line3
+				 createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line4
 			 }
 			 // Note center lines for scoring
 			 if (registry.notes.has(entity)) {
-				Entity center_line = createLine(motion.position, vec2(motion.scale.x, line_thickness), Screen::BATTLE);
+				createLine(motion.position, vec2(motion.scale.x, line_thickness), Screen::BATTLE);
 			 }
 			 // Judgement line center line for scoring
 			 if (registry.judgmentLine.has(entity)) {
-				Entity center_line = createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
+				// center line
+				createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
 				vec2 bb = get_bounding_box(motion);
 				JudgementLine judgement_line = registry.judgmentLine.get(entity);
-				Entity top = createLine(motion.position - vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
-				Entity bottom = createLine(motion.position + vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
+				// top
+				createLine(motion.position - vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
+				// bottom
+				createLine(motion.position + vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
 			 }
 
 			 // mesh
 			 if (registry.players.has(entity)) {
 
 				// player radius for enemy ai debugging
-				Entity playerRadius = createCircleOutline(motion.position, PLAYER_ENEMY_RADIUS);
+				createCircleOutline(motion.position, PLAYER_ENEMY_RADIUS);
 
 				 // visualize mesh
 				 Transform transform;
@@ -403,12 +406,13 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 				 transform.scale(motion.scale);
 				 mat3 projection = renderSystem->createProjectionMatrix();
 				 Mesh& mesh = *(registry.meshPtrs.get(entity));
-				 float left_vertex_bound = 1, right_vertex_bound = -1, top_vertex_bound = -1, bot_vertex_bound = 1;
+				//  float left_vertex_bound = 1, right_vertex_bound = -1, top_vertex_bound = -1, bot_vertex_bound = 1;
 				 // visualize the boundary vertices of the mesh
 				 for (auto& index : boundary_indices) {
 					 auto& v = mesh.vertices[index];
 					 auto world_v = projection * transform.mat * vec3(v.position.x, v.position.y, 1.f);
-					 Entity vertex = createLine(vec2({ ((world_v.x + 1) / 2.f) * gameInfo.width, (1 - ((world_v.y + 1) / 2.f)) * gameInfo.height }),
+					 // vertex
+					 createLine(vec2({ ((world_v.x + 1) / 2.f) * gameInfo.width, (1 - ((world_v.y + 1) / 2.f)) * gameInfo.height }),
 						 vec2({ motion.scale.x / 30, motion.scale.x / 30 }));
 				 }
 			 }
