@@ -136,6 +136,22 @@ struct Scene
 	Screen scene;
 };
 
+struct PlayerCS {
+
+};
+
+struct EnemyCS {
+
+};
+
+struct CSText {
+	int progress = 0;
+};
+
+struct CSTextbox {
+
+};
+
 struct IsChasing {
 	
 };
@@ -221,7 +237,11 @@ enum class TEXTURE_ASSET_ID {
 	OVERWORLD_BG = NOTE + 1,
 	HELP_BG = OVERWORLD_BG + 1,
 	TRAIL_PARTICLE = HELP_BG + 1,
-	TEXTURE_COUNT = TRAIL_PARTICLE + 1 // keep as last variable
+	BOSS_CS = TRAIL_PARTICLE + 1,
+	BATTLEBOSS = BOSS_CS + 1,
+	PLAYER_CS = BATTLEBOSS + 1,
+	BOX_CS = PLAYER_CS + 1,
+	TEXTURE_COUNT = BOX_CS + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

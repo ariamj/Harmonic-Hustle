@@ -16,6 +16,7 @@
 #include "battle_screen.hpp"
 #include "settings_screen.hpp"
 #include "audio_system.hpp"
+#include "boss_cutscene.hpp"
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -29,8 +30,8 @@ public:
 	Overworld overworld;
 	Settings settings;
 	AudioSystem audioSystem;
+	BossCutscene bossCS;
 	
-
 	// Creates a window
 	GLFWwindow* create_window();
 
@@ -57,6 +58,8 @@ private:
 
 	// sets the current scene to settings/help
 	bool render_set_settings_screen();
+
+	bool render_set_boss_cs();
 
 	void checkEnemyPositions();
 
