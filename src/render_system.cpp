@@ -161,17 +161,17 @@ void RenderSystem::drawToScreen()
 		index_buffers[(GLuint)GEOMETRY_BUFFER_ID::SCREEN_TRIANGLE]); // Note, GL_ELEMENT_ARRAY_BUFFER associates
 																	 // indices to the bound GL_ARRAY_BUFFER
 	gl_has_errors();
-	const GLuint wind_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
+	const GLuint env_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
 	// Set clock
-	GLuint time_uloc = glGetUniformLocation(wind_program, "time");
-	// GLuint dead_timer_uloc = glGetUniformLocation(wind_program, "darken_screen_factor");
+	GLuint time_uloc = glGetUniformLocation(env_program, "time");
+	GLuint darken_screen_uloc = glGetUniformLocation(env_program, "darken_screen_factor");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	ScreenState &screen = registry.screenStates.get(screen_state_entity);
-	// glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
+	glUniform1f(darken_screen_uloc, screen.darken_screen_factor);
 	gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
-	GLint in_position_loc = glGetAttribLocation(wind_program, "in_position");
+	GLint in_position_loc = glGetAttribLocation(env_program, "in_position");
 	glEnableVertexAttribArray(in_position_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
 	gl_has_errors();
@@ -181,7 +181,7 @@ void RenderSystem::drawToScreen()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
-	if (curr_screen == OVERWORLD) {
+	if (curr_screen == OVERWORLD || curr_screen == START) {
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -307,7 +307,9 @@ void RenderSystem::draw()
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
 	// glClearColor(0.032, 0.139, 0.153, 1.0); // background colour
-	glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	// glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	vec3 bckgd_colour = Colour::theme_blue_3;
+	glClearColor(bckgd_colour.x, bckgd_colour.y, bckgd_colour.z, 1.0); // background colour
 	glClearDepth(10.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_BLEND);

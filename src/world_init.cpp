@@ -435,3 +435,23 @@ Entity createText(const std::string text, vec2 pos, float scale, vec3 colour, gl
 
 	return entity;
 }
+
+Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 size, vec3 text_colour, vec3 box_colour, Screen screen) {
+	Entity btn_base = createBox(pos, size);
+
+    registry.screens.insert(btn_base, screen);
+    registry.colours.insert(btn_base, box_colour);
+	BoxAreaBound& bound = registry.boxAreaBounds.emplace(btn_base);
+	bound.left = pos.x - (size.x/2.f);
+	bound.right = pos.x + (size.x/2.f);
+	bound.top = pos.y - (size.y/2.f);
+	bound.bottom = pos.y + (size.y/2.f);
+
+	BoxButton& btn = registry.boxButtons.emplace(btn_base);
+	btn.button_base = btn_base;
+	btn.text = text;
+	btn.text_scale = text_scale;
+	btn.text_colour = text_colour;
+
+	return btn_base;
+}

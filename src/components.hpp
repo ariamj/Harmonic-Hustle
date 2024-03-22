@@ -46,6 +46,13 @@ struct Text
 	bool center_pos;
 };
 
+struct BoxButton {
+	Entity button_base;
+	std::string text;
+	float text_scale = 1.f;
+	glm::vec3 text_colour = vec3(0.f);
+};
+
 struct ParticleEffect
 {
 
