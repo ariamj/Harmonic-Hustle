@@ -17,7 +17,7 @@ Entity createPlayer(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ PLAYER_WIDTH, PLAYER_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, {Screen::OVERWORLD});
+	registry.screens.insert(entity, Screen::OVERWORLD);
 
 	// player level always starts at 1
 	registry.levels.insert(entity, {1});
@@ -52,7 +52,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	motion.scale = vec2({ ENEMY_WIDTH, ENEMY_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, {Screen::OVERWORLD});
+	registry.screens.insert(entity, Screen::OVERWORLD);
 
 	TEXTURE_ASSET_ID textureAssetId = TEXTURE_ASSET_ID::ENEMY_GUITAR;
 
@@ -79,7 +79,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	registry.battleProfiles.insert(entity, { 100.f * (float)level });
 
 	// Create component
-	Enemy enemy = registry.enemies.emplace(entity);
+	registry.enemies.emplace(entity);
 	registry.renderRequests.insert(
 		entity,
 		{
@@ -106,7 +106,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::BATTLE });
+	registry.screens.insert(entity, Screen::BATTLE);
 
 	// Create component
 	registry.notes.emplace(entity);
@@ -145,7 +145,7 @@ Entity createBattlePlayer(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ PORTRAIT_WIDTH, PORTRAIT_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, {Screen::BATTLE});
+	registry.screens.insert(entity, Screen::BATTLE);
 
 	// Create component
 	// registry.players.emplace(entity);
@@ -177,7 +177,7 @@ Entity createBattleEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ PORTRAIT_WIDTH, PORTRAIT_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, {Screen::BATTLE});
+	registry.screens.insert(entity, Screen::BATTLE);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -209,7 +209,7 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ 2000, 600 });
 
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::BOSS_CS });
+	registry.screens.insert(entity, Screen::BOSS_CS);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -241,7 +241,7 @@ Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::BOSS_CS });
+	registry.screens.insert(entity, Screen::BOSS_CS);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -273,7 +273,7 @@ Entity createCSPlayer(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::BOSS_CS });
+	registry.screens.insert(entity, Screen::BOSS_CS);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -305,7 +305,7 @@ Entity createJudgementLine(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ 200, 200 });
 
 	// screen entity exists in
-	registry.screens.insert(entity, { Screen::BATTLE });
+	registry.screens.insert(entity, Screen::BATTLE);
 
 	// Create component
 	auto& judgement_line = registry.judgmentLine.emplace(entity);
@@ -327,7 +327,7 @@ Entity createLine(vec2 position, vec2 scale, Screen screen)
 {
 	Entity entity = Entity();
 	// screen entity exists in
-	registry.screens.insert(entity, { screen });
+	registry.screens.insert(entity, screen);
 	// registry.screens.insert(entity, { Screen::OVERWORLD });
 	//registry.screens.insert(entity, { Screen::BATTLE });
 	 //registry.colours.insert(entity, {1.f, 1.f, 1.f});

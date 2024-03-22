@@ -10,7 +10,7 @@
 
 // consts for now;
 const size_t MAX_NOTES = 10;
-const size_t NOTE_SPAWN_DELAY = 2000;
+// const size_t NOTE_SPAWN_DELAY = 2000;
 const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
 const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
@@ -207,8 +207,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		auto& motions_registry = registry.motions;
 
 		// Process the player state
-		assert(registry.screenStates.components.size() <= 1);
-		ScreenState& screen = registry.screenStates.components[0];
+		// assert(registry.screenStates.components.size() <= 1);
+		// ScreenState& screen = registry.screenStates.components[0];
 
 		float min_counter_ms = 3000.f;
 		next_note_spawn -= elapsed_ms_since_last_update;
@@ -242,7 +242,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Spawning notes based on elapsed time
 		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
 			// spawn notes in the four lanes
-			Entity note = createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 
 			if (next_note_index < num_notes) {
 				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
@@ -481,8 +481,8 @@ void Battle::setBattleIsOver(bool isOver) {
 		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
 		registry.battleOverPopUpParts.emplace(gameOverPopUp);
 
-		registry.screens.insert(gameOverPopUpOverlay, { Screen::BATTLE });
-		registry.screens.insert(gameOverPopUp, { Screen::BATTLE });
+		registry.screens.insert(gameOverPopUpOverlay, Screen::BATTLE);
+		registry.screens.insert(gameOverPopUp, Screen::BATTLE);
 	} else {
 		while (registry.battleOverPopUpParts.entities.size() > 0)
 			registry.remove_all_components_of(registry.battleOverPopUpParts.entities.back());
@@ -566,8 +566,8 @@ void Battle::handle_collisions() {
 // battle keys:
 // DFJK -> rhythm
 void handleRhythmInput(int action, int key) {
-	auto& collisionsRegistry = registry.collisions;
-	auto& collisionsTimerRegistry = registry.collisionTimers;
+	// auto& collisionsRegistry = registry.collisions;
+	// auto& collisionsTimerRegistry = registry.collisionTimers;
 	if (action == GLFW_PRESS) {
         std::cout << "rhythm input: " << key << std::endl;
 		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {

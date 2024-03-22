@@ -12,7 +12,7 @@
 #include "iostream"
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount, Entity entity)
-    : amount(amount), shaderProgram(shaderProgram), used_texture(used_texture), entity(entity)
+    : entity(entity), amount(amount), shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
 }
