@@ -5,7 +5,6 @@
 #include "../ext/stb_image/stb_image.h"
 #include "screen.hpp"
 
-
 // Sets the brightness of the screen
 struct ScreenState
 {
@@ -55,7 +54,7 @@ struct BoxButton {
 
 struct ParticleEffect
 {
-
+	// std::shared_ptr<ParticleGenerator> generator = NULL;
 };
 
 // Mesh datastructure for storing vertex and index buffers

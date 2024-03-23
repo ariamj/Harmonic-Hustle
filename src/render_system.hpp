@@ -8,6 +8,7 @@
 #include "tiny_ecs.hpp"
 
 #include "particle_generator.hpp"
+#include "trail_particle_generator.hpp"
 
 #include <map>
 

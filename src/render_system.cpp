@@ -398,17 +398,15 @@ mat3 RenderSystem::createProjectionMatrix()
 }
 
 void RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
-	GLuint shaderProgram;
-	TEXTURE_ASSET_ID usedTexture;
-	int amount = 0;
+	// int amount = 0;
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
-			shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
-			usedTexture = TEXTURE_ASSET_ID::TRAIL_PARTICLE;
-			amount = 500;
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+			TEXTURE_ASSET_ID usedTexture = TEXTURE_ASSET_ID::TRAIL_PARTICLE;
+			std::shared_ptr<TrailParticleGenerator> generator =
+				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture, associated_entity));
+			particle_generators.push_back(generator);
 	}
-	std::shared_ptr<ParticleGenerator> generator = std::make_shared<ParticleGenerator>(ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity));
-	particle_generators.push_back(generator);
 }
 
 void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
