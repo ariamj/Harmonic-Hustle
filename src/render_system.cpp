@@ -397,7 +397,7 @@ mat3 RenderSystem::createProjectionMatrix()
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-ParticleGenerator* RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
+void RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
 	GLuint shaderProgram;
 	TEXTURE_ASSET_ID usedTexture;
 	int amount = 0;
@@ -407,10 +407,9 @@ ParticleGenerator* RenderSystem::createParticleGenerator(int particle_type_id, E
 			usedTexture = TEXTURE_ASSET_ID::TRAIL_PARTICLE;
 			amount = 500;
 	}
-	ParticleGenerator* generator = new ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity);
+	std::shared_ptr<ParticleGenerator> generator = std::make_shared<ParticleGenerator>(ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity));
 	particle_generators.push_back(generator);
 
-	return generator;
 }
 
 void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
@@ -419,13 +418,19 @@ void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
 	float dt = elapsed_ms_since_last_update / 1000.f;
 	for (auto generator : particle_generators) {
 		// ParticleEffect component signals entities that have particle generators
+		
+		if (generator == NULL) {
+			continue;
+		}
 		if (registry.particleEffects.has(generator->entity)) {
 			generator->Update(dt, new_particles, vec2(0.f, 0.f));
 		}
 		else {
 			// Remove generator and free memory
-			particle_generators.erase(std::remove(particle_generators.begin(), particle_generators.end(), generator), particle_generators.end());
-			delete(generator);
+			auto position = std::find(particle_generators.begin(), particle_generators.end(), generator);
+			if (position != particle_generators.end()) {
+				particle_generators.erase(position);
+			}
 		}
 	}
 }

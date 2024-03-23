@@ -342,6 +342,7 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	renderer->particle_generators.clear();
 
 	// battle won
 	if (battleWon()) {
