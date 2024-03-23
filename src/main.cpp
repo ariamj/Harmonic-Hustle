@@ -12,6 +12,7 @@
 #include <audio_system.hpp>
 #include "physics_system.hpp"
 #include "ai_system.hpp"
+#include "iostream"
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -41,7 +42,8 @@ int main() {
 
     int frames = 0;
     float ms_count = 0.f;
-    float fps_update_delay = 1000.f;
+    float fps_update_delay = 200.f;
+    float fps_ratio = 1000.f / fps_update_delay;
 
     // variable timestep loop
     auto t = Clock::now();
@@ -67,7 +69,7 @@ int main() {
 
         if (ms_count > fps_update_delay) {
             ms_count = 0.f;
-            FPS = frames; // update global variable
+            FPS = frames * fps_ratio; // update global variable
             frames = 0;
         }
 

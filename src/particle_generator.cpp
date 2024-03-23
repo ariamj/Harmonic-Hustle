@@ -9,6 +9,8 @@
 ******************************************************************/
 #include "particle_generator.hpp"
 #include "iostream"
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock;
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
     : entity(entity), shaderProgram(shaderProgram), used_texture(used_texture)
@@ -60,10 +62,16 @@ void ParticleGenerator::Draw()
 
         // Bind instanced VBO again to update values of particles
         glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(particles), particles);
 
+
+        // auto pre_render = Clock::now();
         // Instanced rendering call
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, amount);
+
+        // auto post_render = Clock::now();
+        // std::chrono::duration<double> duration = post_render - pre_render;
+        // std::cout << "Render:" << duration.count() << "\n";
 
         // Clean up
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -105,6 +113,7 @@ void ParticleGenerator::init()
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);

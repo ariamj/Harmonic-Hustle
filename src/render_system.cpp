@@ -5,6 +5,10 @@
 #include "tiny_ecs_registry.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#include "iostream"
+// stlib
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock;
 
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
@@ -335,12 +339,18 @@ void RenderSystem::draw()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
+	//auto pre_render = Clock::now();
 
 	// Particle rendering, behind associated entities. Updates happen in world_system step
 	for (auto generator : particle_generators) {
 		generator->Draw();
 	}
 	glBindVertexArray(vao);
+
+
+	// auto post_render = Clock::now();
+	// std::chrono::duration<double> duration = post_render - pre_render;
+	// std::cout << "Render:" << duration.count() << "\n";
 
 	for (Entity entity : registry.renderRequests.entities)
 	{
