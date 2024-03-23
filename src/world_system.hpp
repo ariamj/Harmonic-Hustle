@@ -17,7 +17,7 @@
 #include "settings_screen.hpp"
 #include "start_screen.hpp"
 #include "audio_system.hpp"
-#include "boss_cutscene.hpp"
+#include "cutscene.hpp"
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -32,7 +32,7 @@ public:
 	Settings settings;
 	Start start;
 	AudioSystem audioSystem;
-	BossCutscene bossCS;
+	Cutscene cutscene;
 	
 	// Creates a window
 	GLFWwindow* create_window();
@@ -64,8 +64,8 @@ private:
 	// sets the current scene to start screen
 	bool render_set_start_screen();
 
-  // sets to boss cut scene
-	bool render_set_boss_cs();
+  // sets to cut scene
+	bool render_set_cutscene();
 
 	void checkEnemyPositions();
 

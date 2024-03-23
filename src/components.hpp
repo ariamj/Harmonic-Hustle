@@ -131,7 +131,7 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
-	int curr_level = 1;
+	int curr_level = 3;
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
 };

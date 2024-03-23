@@ -209,7 +209,7 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ 2000, 600 });
 
 	// screen entity exists in
-	registry.screens.insert(entity, Screen::BOSS_CS);
+	registry.screens.insert(entity, Screen::CUTSCENE);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -241,7 +241,7 @@ Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, Screen::BOSS_CS);
+	registry.screens.insert(entity, Screen::CUTSCENE);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -273,7 +273,7 @@ Entity createCSPlayer(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, Screen::BOSS_CS);
+	registry.screens.insert(entity, Screen::CUTSCENE);
 
 	// Create component
 	// registry.enemies.emplace(entity);
