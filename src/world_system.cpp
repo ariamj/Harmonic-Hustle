@@ -108,6 +108,18 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
+	while (registry.texts.entities.size() > 0)
+		registry.remove_all_components_of(registry.texts.entities.back());
+
+	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS) {
+		// Help binding instruction
+		vec3 text_colour = Colour::theme_blue_1;
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			text_colour = Colour::theme_blue_3;
+		}
+		createText("(?)[ESC]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+	}
+
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::BATTLE) {
@@ -130,7 +142,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		}
 		return toReturn;
 	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
-    return settings.handle_step(elapsed_ms_since_last_update, current_speed);
+    	return settings.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::BOSS_CS) {
 		if (bossCS.dialogue_progress >= (bossCS.DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
@@ -425,6 +437,9 @@ void WorldSystem::handleEscInput(int action) {
 			battle.set_pause(true);
 			render_set_settings_screen();
 
+		} else if (gameInfo.curr_screen == Screen::START) {
+			gameInfo.prev_screen = Screen::START;
+			render_set_settings_screen();
 		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
 			// if curr screen is settings,
 			//		-> prev screen is overworld, just switch back
@@ -439,6 +454,8 @@ void WorldSystem::handleEscInput(int action) {
 				bossCS.set_visible(false);
 				battle.set_pause(false);
 				std::cout << "current screen: battle" << std::endl;
+			} else if (gameInfo.prev_screen == Screen::START) {
+				render_set_start_screen();
 			}
 
 		}
@@ -484,6 +501,7 @@ void WorldSystem::handleClickHelpBtn() {
 
 	// To settings
 	if (gameInfo.curr_screen == Screen::START) {
+		gameInfo.prev_screen = Screen::START;
 		render_set_settings_screen();
 	}
 }

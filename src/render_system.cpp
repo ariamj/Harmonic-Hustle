@@ -230,19 +230,19 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 
 	glBindVertexArray(m_font_VAO);
 
+	float textWidth = 0.f;
+	float textHeight = 0.f;
+	std::string::const_iterator text_c;
+	for (text_c = text.begin(); text_c != text.end(); text_c++) {
+		Character text_ch = m_ftCharacters[*text_c];
+		textWidth += text_ch.Advance >> 6;
+		textHeight = max(textHeight, (float)text_ch.Size.y);
+	}
 	if (center_pos) {
 		// Adjust xpos to be center of text
-		float textWidth = 0.f;
-		float textHeight = 0.f;
-		std::string::const_iterator text_c;
-		for (text_c = text.begin(); text_c != text.end(); text_c++) {
-			Character text_ch = m_ftCharacters[*text_c];
-			textWidth += text_ch.Advance >> 6;
-			textHeight = max(textHeight, (float)text_ch.Size.y);
-		}
 		x -= textWidth * scale / 2.f;
-		y = gameInfo.height - y - ((textHeight / 2.f) * scale);
 	}
+	y = gameInfo.height - y - ((textHeight / 2.f) * scale);
 
 	// iterate through all characters
 	std::string::const_iterator c;

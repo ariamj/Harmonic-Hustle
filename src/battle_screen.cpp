@@ -146,8 +146,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	// Remove out of screen entities (Notes, etc.)
-	while (registry.texts.entities.size() > 0)
-		registry.remove_all_components_of(registry.texts.entities.back());
+	// while (registry.texts.entities.size() > 0)
+	// 	registry.remove_all_components_of(registry.texts.entities.back());
 	
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
