@@ -3,5 +3,5 @@ enum Screen {
     BATTLE = 1,
     SETTINGS = 2,
     START = 3,
-    BOSS_CS = 4
+    CUTSCENE = 4
 };

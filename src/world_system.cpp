@@ -96,7 +96,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	battle.init(window, renderer_arg, &audioSystem);
 	settings.init(window, renderer_arg);
 	start.init(window, renderer_arg);
-	bossCS.init(window, renderer_arg);
+	cutscene.init(window, renderer_arg);
 
 	// Moved into here from main
 	audioSystem.init();
@@ -121,6 +121,10 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
+		if (!cutscene.is_intro_finished) {
+			std::cout << "GO TO INTRO" << '\n';
+			render_set_cutscene();
+		}
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::BATTLE) {
 		bool song_playing = audioSystem.musicPlaying();
@@ -137,21 +141,26 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		}
 
 		// go to boss cutscene
-		if (gameInfo.curr_level == 4 && !bossCS.is_finished) {
-			render_set_boss_cs();
+		if (gameInfo.curr_level == 4 && !cutscene.is_boss_finished) {
+			render_set_cutscene();
 		}
 		return toReturn;
 	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
     	return settings.handle_step(elapsed_ms_since_last_update, current_speed);
-	} else if (gameInfo.curr_screen == Screen::BOSS_CS) {
-		if (bossCS.dialogue_progress >= (bossCS.DIALOGUE->length() - 1)) {
+	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
+		if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
-			bossCS.is_finished = true;
+			cutscene.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		return bossCS.handle_step(elapsed_ms_since_last_update, current_speed);
+		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !cutscene.is_intro_finished) {
+			std::cout << "GO TO OVERWORLD" << std::endl;
+			cutscene.is_intro_finished = true;
+			render_set_overworld_screen();
+		}
+		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
 		return start.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
@@ -263,7 +272,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	start.set_visible(false);
 	settings.set_visible(false);
 	battle.set_visible(false);
-	bossCS.set_visible(false);
+	cutscene.set_visible(false);
 	overworld.set_visible(true);
 	// don't restart the overworld music if coming from settings or start screen
 	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
@@ -279,7 +288,7 @@ bool WorldSystem::render_set_battle_screen() {
 	start.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
-	bossCS.set_visible(false);
+	cutscene.set_visible(false);
 	battle.set_visible(true);
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -300,7 +309,7 @@ bool WorldSystem::render_set_settings_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	start.set_visible(false);
-	bossCS.set_visible(false);
+	cutscene.set_visible(false);
 	settings.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -325,7 +334,7 @@ bool WorldSystem::render_set_start_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	settings.set_visible(false);
-  	bossCS.set_visible(false);
+  	cutscene.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -341,15 +350,15 @@ bool WorldSystem::render_set_start_screen() {
   	return true; // added to prevent error
 }
 
-// REQUIRES current scene NOT be boss cutscene
-// switch to boss cutscene
-bool WorldSystem::render_set_boss_cs() {
-	gameInfo.curr_screen = Screen::BOSS_CS;
-  start.set_visible(false);
+// REQUIRES current scene NOT be cutscene
+// switch to cutscene
+bool WorldSystem::render_set_cutscene() {
+	gameInfo.curr_screen = Screen::CUTSCENE;
+	start.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(false);
-	bossCS.set_visible(true);
+	cutscene.set_visible(true);
   
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -360,7 +369,9 @@ bool WorldSystem::render_set_boss_cs() {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 
-	std::cout << "current screen: boss cutscene" << std::endl;
+	cutscene.remove_prev_assets();
+
+	std::cout << "current screen: cutscene" << std::endl;
 	return true; // added to prevent error
 };
 
@@ -451,7 +462,7 @@ void WorldSystem::handleEscInput(int action) {
 				gameInfo.curr_screen = Screen::BATTLE;
 				settings.set_visible(false);
 				overworld.set_visible(false);
-				bossCS.set_visible(false);
+				cutscene.set_visible(false);
 				battle.set_pause(false);
 				std::cout << "current screen: battle" << std::endl;
 			} else if (gameInfo.prev_screen == Screen::START) {
@@ -459,7 +470,7 @@ void WorldSystem::handleEscInput(int action) {
 			}
 
 		}
-		else if (gameInfo.curr_screen == Screen::BOSS_CS) {
+		else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 			battle.start();
 			render_set_battle_screen();
 		}
@@ -545,7 +556,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 		case GLFW_KEY_V:
 			// for testing purposes
 			if (action == GLFW_PRESS) {
-				render_set_boss_cs();
+				render_set_cutscene();
 			}
 			break;
 		case GLFW_KEY_ESCAPE:
@@ -571,8 +582,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					render_set_overworld_screen();
 				}
 			}
-			else if (gameInfo.curr_screen == Screen::BOSS_CS) {
-				bossCS.handle_key(key, scancode, action, mod);
+			else if (gameInfo.curr_screen == Screen::CUTSCENE) {
+				cutscene.handle_key(key, scancode, action, mod);
 			}
 			break;
 	}
