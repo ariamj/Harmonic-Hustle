@@ -7,7 +7,7 @@ class TrailParticleGenerator : public ParticleGenerator
 {
 public:
     // subclass constructor
-    TrailParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, Entity entity);
+    TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity);
     void Update(float dt, unsigned int newParticles, glm::vec2 offset);
     void respawnParticle(Particle& particle, glm::vec2 offset);
 };

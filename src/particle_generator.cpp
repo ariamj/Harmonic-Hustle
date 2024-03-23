@@ -10,7 +10,7 @@
 #include "particle_generator.hpp"
 #include "iostream"
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, Entity entity)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
     : entity(entity), shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
@@ -55,7 +55,7 @@ void ParticleGenerator::Draw()
         //     }
         // }        
 
-        glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
+        glBindTexture(GL_TEXTURE_2D, used_texture);
         glBindVertexArray(vao);
 
         // Bind instanced VBO again to update values of particles

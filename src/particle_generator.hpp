@@ -48,7 +48,7 @@ class ParticleGenerator
 {
 public:
     // constructor
-    ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, Entity entity);
+    ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity);
     // update all particles
     virtual void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
@@ -58,7 +58,7 @@ public:
 private:
     // render state
     GLuint shaderProgram;
-    TEXTURE_ASSET_ID used_texture;
+    GLuint used_texture;
 
     GLuint vao;
     GLuint instance_VBO;

@@ -10,7 +10,7 @@
 #include "trail_particle_generator.hpp"
 #include "iostream"
 
-TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, Entity entity)
+TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
     : ParticleGenerator(shaderProgram, used_texture, entity)
 {
     // init is called in ParticleGenerator constructor
@@ -33,7 +33,7 @@ void TrailParticleGenerator::Update(float dt, unsigned int newParticles, glm::ve
         {	// particle is alive, thus update
             p->position += p->velocity * dt;
             p->color.a -= dt * 2.5;
-            p->scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 3.f, p->position.y / gameInfo.height));
+            p->scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 2.f, p->position.y / gameInfo.height));
         }
     }
 }
