@@ -335,6 +335,13 @@ void RenderSystem::draw()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
+
+	// Particle rendering, behind associated entities. Updates happen in world_system step
+	for (auto generator : particle_generators) {
+		generator->Draw();
+	}
+	glBindVertexArray(vao);
+
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
@@ -345,12 +352,6 @@ void RenderSystem::draw()
 			}
 		}
 	}
-
-	// Particle rendering. Drawing needs to happen here. Updates happen in world_system step
-	for (auto generator : particle_generators) {
-		generator->Draw();
-	}
-
 
 	// Text-rendering
 

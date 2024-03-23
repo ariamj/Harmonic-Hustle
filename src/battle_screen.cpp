@@ -666,9 +666,3 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 void Battle::handle_mouse_move(vec2 pos) {
     
 };
-
-// From https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/a-brief-introduction-to-lerp-r4954/
-// Linked on Canvas M1 requirements
-float Battle::lerp(float start, float end, float t) {
-	return start * (1-t) + end * t;
-}

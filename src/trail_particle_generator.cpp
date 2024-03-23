@@ -22,7 +22,7 @@ void TrailParticleGenerator::Update(float dt, unsigned int newParticles, glm::ve
     for (unsigned int i = 0; i < newParticles; ++i)
     {
         int unusedParticle = firstUnusedParticle();
-        respawnParticle(particles[unusedParticle], offset);
+        respawnParticle(particles[unusedParticle], TRAIL_NOTE_OFFSET);
     }
     // update all particles
     for (unsigned int i = 0; i < amount; ++i)
@@ -33,6 +33,7 @@ void TrailParticleGenerator::Update(float dt, unsigned int newParticles, glm::ve
         {	// particle is alive, thus update
             p->position += p->velocity * dt;
             p->color.a -= dt * 2.5;
+            p->scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 3.f, p->position.y / gameInfo.height));
         }
     }
 }

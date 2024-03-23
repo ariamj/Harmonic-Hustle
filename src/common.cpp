@@ -70,3 +70,10 @@ vec2 getRandomEnemyVelocity() {
 
 	return {leftOrRight * partVelocity * DEFAULT_ENEMY_VELOCITY, upOrDown * (1.0f - partVelocity) * DEFAULT_ENEMY_VELOCITY};
 }
+
+
+// From https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/a-brief-introduction-to-lerp-r4954/
+// Linked on Canvas M1 requirements
+float lerp(float start, float end, float t) {
+	return start * (1 - t) + end * t;
+}

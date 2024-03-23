@@ -35,8 +35,9 @@ struct Particle {
     glm::vec2 velocity;
     glm::vec4 color;
     float     life;
+    glm::vec2 scale;
 
-    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) { }
+    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(DEFAULT_PARTICLE_SCALE) { }
 };
 
 
