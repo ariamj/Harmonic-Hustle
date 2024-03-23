@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
+#include <fstream>
 
 // Create the bug world
 WorldSystem::WorldSystem(){
@@ -28,7 +29,7 @@ namespace {
 		fprintf(stderr, "%d: %s", error, desc);
 	}
 }
-
+int savefile_num = 0;
 // World initialization
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer
 GLFWwindow* WorldSystem::create_window() {
@@ -82,6 +83,33 @@ GLFWwindow* WorldSystem::create_window() {
 	return window;
 }
 
+// load saved game state from save_<file number>.txt and return true if success
+// if file dne, make such a file and return false
+// saves to save_0 file
+bool loadSave(int file_number) {
+	std::string filename = "save_" + std::to_string(file_number) + ".txt";
+	FILE* fptr;
+	fptr = fopen(saves_path(filename).c_str(), "r");
+	if (fptr != NULL) {
+		// TODO: read game data from file
+		if (fscanf(fptr, "%d", &gameInfo.curr_level) == 1) {
+			printf("ok\n");
+			fclose(fptr);
+		}
+		else printf("something wrong\n");
+		
+		return true;
+	}
+	else {
+		std::ofstream MyFile(saves_path(filename));
+		// write to the file our initial state;
+		printf("Else\n");
+		// Close the file
+		MyFile.close();
+	}
+	return false;
+}
+
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
@@ -102,8 +130,12 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	audioSystem.init();
 
 	// Set all states to default
+	
     restart_game();
+	loadSave(savefile_num);
 }
+
+
 
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
