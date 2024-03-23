@@ -155,6 +155,12 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
     return true;
 }
 
+void Cutscene::remove_prev_assets() {
+    registry.CSTextbox.clear();
+    registry.enemyCS.clear();
+    registry.playerCS.clear();
+}
+
 bool Cutscene::set_visible(bool isVisible) {
     this->is_visible = isVisible;
     Entity& curr_screen_entity = registry.screenStates.entities[0];

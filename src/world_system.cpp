@@ -350,8 +350,8 @@ bool WorldSystem::render_set_start_screen() {
   	return true; // added to prevent error
 }
 
-// REQUIRES current scene NOT be boss cutscene
-// switch to boss cutscene
+// REQUIRES current scene NOT be cutscene
+// switch to cutscene
 bool WorldSystem::render_set_cutscene() {
 	gameInfo.curr_screen = Screen::CUTSCENE;
 	start.set_visible(false);
@@ -368,6 +368,8 @@ bool WorldSystem::render_set_cutscene() {
 	if (!registry.pauseEnemyTimers.has(player_sprite)) {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
+
+	cutscene.remove_prev_assets();
 
 	std::cout << "current screen: cutscene" << std::endl;
 	return true; // added to prevent error

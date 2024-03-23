@@ -36,6 +36,8 @@ class Cutscene {
         Cutscene();
         bool is_visible;
 
+        void remove_prev_assets();
+
         void init(GLFWwindow* window, RenderSystem* renderer);
 
         // Releases all associated resources
