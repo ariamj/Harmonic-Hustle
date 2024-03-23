@@ -33,6 +33,16 @@ const int NUM_UNIQUE_BATTLES = 4;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 
+// DEBUG MEMORY LEAKS
+// https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+_CrtMemState s1;
+_CrtMemState s2;
+
+
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
 }
@@ -342,6 +352,7 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	renderer->updateParticles(0.f);
 	renderer->particle_generators.clear();
 
 	// battle won
@@ -371,11 +382,24 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
+
+	// DEBUG MEMORY LEAKS
+	_CrtMemCheckpoint(&s2);
+	_CrtMemState s3;
+	if (_CrtMemDifference(&s3, &s1, &s2)) {
+		// s1,s2,s3 _CrtMemState hold memory information
+			// s1 snapshot is taken at battle.start
+			// s2 snapshot is taken here at battle.handle_battle_end
+		// s3 stores the difference between the two
+		// The output is in Output -> Debug for Visual Studio
+		_CrtMemDumpStatistics(&s3);
+	}
 }
 
 void Battle::start() {
 	// STRETCH: Have multiple different "enemies" (combination of music + notes) for each level
 	// Right now, it is 1:1 ratio, one enemy is one level
+	_CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing

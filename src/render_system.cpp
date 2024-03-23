@@ -409,7 +409,6 @@ void RenderSystem::createParticleGenerator(int particle_type_id, Entity associat
 	}
 	std::shared_ptr<ParticleGenerator> generator = std::make_shared<ParticleGenerator>(ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity));
 	particle_generators.push_back(generator);
-
 }
 
 void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
