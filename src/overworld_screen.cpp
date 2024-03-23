@@ -38,6 +38,10 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
+	// remove all text from last step
+	while (registry.texts.entities.size() > 0)
+		registry.remove_all_components_of(registry.texts.entities.back());
+
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
 
@@ -51,6 +55,12 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 				registry.remove_all_components_of(motions_registry.entities[i]);
 		}
 	}
+
+	Motion& playerMotion = registry.motions.get(*gameInfo.player_sprite);
+
+	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
+	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, glm::mat4(1.f), Screen::OVERWORLD, true );
+	
 
 	// // Spawn new enemies
 	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
@@ -67,14 +77,18 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
     for (Entity enemy : enemies) {
         int enemyLevel = registry.levels.get(enemy).level;
+		Motion& enemyMotion = registry.motions.get(enemy);
+		std::string levelText = "lvl " + std::to_string(enemyLevel);
         if (enemyLevel > playerLevel) {
             if (!registry.colours.has(enemy)) {
                 registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
             }
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::red, glm::mat4(1.f), Screen::OVERWORLD, true);
         } else {
             if (registry.colours.has(enemy)) {
                 registry.colours.remove(enemy);
             }
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, glm::mat4(1.f), Screen::OVERWORLD, true);
         }
     }
 
