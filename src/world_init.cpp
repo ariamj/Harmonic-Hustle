@@ -101,7 +101,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 150, 150 };
+	motion.velocity = { 0.f, 150.f };
 	motion.position = pos;
 	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
 
@@ -119,11 +119,8 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}
 	);
-	registry.particleEffects.emplace(entity);
 
-	// attach particle generator to note
-			
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL, entity);
+	registry.particleEffects.emplace(entity);
 
 	return entity;
 

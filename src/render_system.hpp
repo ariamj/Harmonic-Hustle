@@ -116,7 +116,7 @@ public:
 	// Particles
 	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
 
-	void createParticleGenerator(int particle_type_id, Entity entity);
+	void createParticleGenerator(int particle_type_id);
 	void updateParticles(float elapsed_ms_since_last_update);
 
 

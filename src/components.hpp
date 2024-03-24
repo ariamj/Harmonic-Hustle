@@ -54,7 +54,9 @@ struct BoxButton {
 
 struct ParticleEffect
 {
-	// std::shared_ptr<ParticleGenerator> generator = NULL;
+	int last_used_particle;
+	int min_index;
+	int max_index;
 };
 
 // Mesh datastructure for storing vertex and index buffers

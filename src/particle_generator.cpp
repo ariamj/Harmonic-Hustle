@@ -12,8 +12,8 @@
 #include <chrono>
 using Clock = std::chrono::high_resolution_clock;
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
-    : entity(entity), shaderProgram(shaderProgram), used_texture(used_texture)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture)
+    : shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
 }
@@ -67,7 +67,7 @@ void ParticleGenerator::Draw()
 
         // auto pre_render = Clock::now();
         // Instanced rendering call
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, amount);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, max_particles);
 
         // auto post_render = Clock::now();
         // std::chrono::duration<double> duration = post_render - pre_render;
@@ -106,14 +106,19 @@ void ParticleGenerator::init()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     // glBindVertexArray(0);
 
-    // create this->amount default particle instances
-    for (unsigned int i = 0; i < amount; ++i)
+    // 
+    for (int i = 0; i < max_particles; i++) {
         particles[i] = Particle();
+    }
+    initialized_entity_id = blocks[0];
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        blocks[i] = initialized_entity_id;
+    }
 
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -128,31 +133,29 @@ void ParticleGenerator::init()
     // Point aLife attribute to each Particle's life in particles array
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4)));
-    glVertexAttribDivisor(3, 1); // attribute at layout 2 is instanced
+    glVertexAttribDivisor(3, 1); // attribute at layout 3 is instanced
 
     // Point aScale attribute to each Particle's scale in particles array
-        // Point aLife attribute to each Particle's life in particles array
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
-    glVertexAttribDivisor(4, 1); // attribute at layout 2 is instanced
+    glVertexAttribDivisor(4, 1); // attribute at layout 4 is instanced
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 // stores the index of the last particle used (for quick access to next dead particle)
-unsigned int lastUsedParticle = 0;
-unsigned int ParticleGenerator::firstUnusedParticle()
+unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int begin, int end)
 {
     // first search from last used particle, this will usually return almost instantly
-    for (unsigned int i = lastUsedParticle; i < amount; ++i){
+    for (int i = lastUsedParticle; i < end; ++i){
         if (particles[i].life <= 0.0f){
             lastUsedParticle = i;
             return i;
         }
     }
     // otherwise, do a linear search
-    for (unsigned int i = 0; i < lastUsedParticle; ++i){
+    for (int i = begin; i < lastUsedParticle; ++i){
         if (particles[i].life <= 0.0f){
             lastUsedParticle = i;
             return i;
@@ -163,9 +166,21 @@ unsigned int ParticleGenerator::firstUnusedParticle()
     return 0;
 }
 
-void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
+void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::vec2 offset)
 {
     std::cout << "WARNING: Base class ParticleGenerator::respawnParticle has been called" << "\n";
     return; // should be overriden in subclasses 
 }
 
+int ParticleGenerator::findUnusedBlock()
+{
+    // Find an available block index and return it
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        // 0 when initialized, or free when previous Entity is no longer registered for particles
+        if (blocks[i] == 0 || !registry.particleEffects.has(blocks[i])) {
+            std::cout << "New block index:" << i << "\n";
+            return i;
+        }
+    }
+    return -1;
+}

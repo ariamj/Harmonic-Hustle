@@ -19,7 +19,7 @@ void main()
     // float scale = 10.0f;
     TexCoords = vertex.zw;
     ParticleColor = aColor;
-    if (aLife <= 0.f)
-        ParticleColor = vec4(0.f, 0.f, 0.f, 0.f);
+    // if (aLife <= 0.f)
+    //    ParticleColor = vec4(0.f, 0.f, 0.f, 0.f);
     gl_Position = projection * vec4((vertex.xy * aScale) + aOffset, 0.0, 1.0);
 }

@@ -351,8 +351,6 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
-	renderer->updateParticles(0.f);
-	renderer->particle_generators.clear();
 
 	// battle won
 	if (battleWon()) {
@@ -381,6 +379,9 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
+	renderer->updateParticles(0.f);
+	// TODO: Free generators (?) or does shared pointer handle it all
+	renderer->particle_generators.clear();
 
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
 	//_CrtMemCheckpoint(&s2);
@@ -389,6 +390,7 @@ void Battle::handle_battle_end() {
 
 	//	_CrtMemDumpStatistics(&s3);
 	//}
+	
 }
 
 void Battle::start() {
@@ -430,6 +432,9 @@ void Battle::start() {
 		RenderRequest& render = registry.renderRequests.get(e);
 		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
 	}
+
+	// Create generators for particles that appear in the battle scene
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
