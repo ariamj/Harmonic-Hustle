@@ -1,6 +1,7 @@
 // Header
 #include "world_system.hpp"
 #include "world_init.hpp"
+#include "serializer.hpp"
 
 // stlib
 #include <cassert>
@@ -8,6 +9,7 @@
 #include <iostream>
 #include "physics_system.hpp"
 #include <fstream>
+
 
 // Create the bug world
 WorldSystem::WorldSystem(){
@@ -83,35 +85,10 @@ GLFWwindow* WorldSystem::create_window() {
 	return window;
 }
 
-// load saved game state from save_<file number>.txt and return true if success
-// if file dne, make such a file and return false
-// saves to save_0 file
-bool loadSave(int file_number) {
-	std::string filename = "save_" + std::to_string(file_number) + ".txt";
-	FILE* fptr;
-	fptr = fopen(saves_path(filename).c_str(), "r");
-	if (fptr != NULL) {
-		// TODO: read game data from file
-		if (fscanf(fptr, "%d", &gameInfo.curr_level) == 1) {
-			printf("ok\n");
-			fclose(fptr);
-		}
-		else printf("something wrong\n");
-		
-		return true;
-	}
-	else {
-		std::ofstream MyFile(saves_path(filename));
-		// write to the file our initial state;
-		printf("Else\n");
-		// Close the file
-		MyFile.close();
-	}
-	return false;
-}
-
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
+
+	Serializer readerwriter = Serializer();
 
 	gameInfo.lane_1 = gameInfo.width / 2 - 300;
 	gameInfo.lane_2  = gameInfo.width / 2 - 100;
@@ -132,7 +109,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	// Set all states to default
 	
     restart_game();
-	loadSave(savefile_num);
+	readerwriter.save_game();
 }
 
 
