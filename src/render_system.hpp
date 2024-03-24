@@ -8,6 +8,7 @@
 #include "tiny_ecs.hpp"
 
 #include "particle_generator.hpp"
+#include "trail_particle_generator.hpp"
 
 #include <map>
 
@@ -113,9 +114,9 @@ public:
 	mat3 createProjectionMatrix();
 
 	// Particles
-	std::vector<ParticleGenerator*> particle_generators;
+	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
 
-	ParticleGenerator* createParticleGenerator(int particle_type_id, Entity entity);
+	void createParticleGenerator(int particle_type_id, Entity entity);
 	void updateParticles(float elapsed_ms_since_last_update);
 
 

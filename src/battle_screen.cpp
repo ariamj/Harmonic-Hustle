@@ -33,6 +33,15 @@ const int NUM_UNIQUE_BATTLES = 4;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 
+// DEBUG MEMORY LEAKS (WINDOWS ONLY)
+// https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
+//_CrtMemState s1;
+//_CrtMemState s2;
+
+
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
 }
@@ -342,6 +351,8 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	renderer->updateParticles(0.f);
+	renderer->particle_generators.clear();
 
 	// battle won
 	if (battleWon()) {
@@ -370,11 +381,19 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
+
+	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
+	//_CrtMemCheckpoint(&s2);
+	//_CrtMemState s3;
+	//if (_CrtMemDifference(&s3, &s1, &s2)) {
+
+	//	_CrtMemDumpStatistics(&s3);
+	//}
 }
 
 void Battle::start() {
-	// STRETCH: Have multiple different "enemies" (combination of music + notes) for each level
-	// Right now, it is 1:1 ratio, one enemy is one level
+	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
+	// _CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
@@ -641,9 +660,3 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 void Battle::handle_mouse_move(vec2 pos) {
     
 };
-
-// From https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/a-brief-introduction-to-lerp-r4954/
-// Linked on Canvas M1 requirements
-float Battle::lerp(float start, float end, float t) {
-	return start * (1-t) + end * t;
-}

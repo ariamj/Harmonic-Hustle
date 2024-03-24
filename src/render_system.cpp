@@ -5,6 +5,10 @@
 #include "tiny_ecs_registry.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#include "iostream"
+// stlib
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock;
 
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
@@ -335,6 +339,19 @@ void RenderSystem::draw()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
+	//auto pre_render = Clock::now();
+
+	// Particle rendering, behind associated entities. Updates happen in world_system step
+	for (auto generator : particle_generators) {
+		generator->Draw();
+	}
+	glBindVertexArray(vao);
+
+
+	// auto post_render = Clock::now();
+	// std::chrono::duration<double> duration = post_render - pre_render;
+	// std::cout << "Render:" << duration.count() << "\n";
+
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
@@ -345,12 +362,6 @@ void RenderSystem::draw()
 			}
 		}
 	}
-
-	// Particle rendering. Drawing needs to happen here. Updates happen in world_system step
-	for (auto generator : particle_generators) {
-		generator->Draw();
-	}
-
 
 	// Text-rendering
 
@@ -397,20 +408,16 @@ mat3 RenderSystem::createProjectionMatrix()
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-ParticleGenerator* RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
-	GLuint shaderProgram;
-	TEXTURE_ASSET_ID usedTexture;
-	int amount = 0;
+void RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
+	// int amount = 0;
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
-			shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
-			usedTexture = TEXTURE_ASSET_ID::TRAIL_PARTICLE;
-			amount = 500;
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::TRAIL_PARTICLE];
+			std::shared_ptr<TrailParticleGenerator> generator =
+				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture, associated_entity));
+			particle_generators.push_back(generator);
 	}
-	ParticleGenerator* generator = new ParticleGenerator(shaderProgram, usedTexture, amount, associated_entity);
-	particle_generators.push_back(generator);
-
-	return generator;
 }
 
 void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
@@ -419,13 +426,19 @@ void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
 	float dt = elapsed_ms_since_last_update / 1000.f;
 	for (auto generator : particle_generators) {
 		// ParticleEffect component signals entities that have particle generators
+		
+		if (generator == NULL) {
+			continue;
+		}
 		if (registry.particleEffects.has(generator->entity)) {
 			generator->Update(dt, new_particles, vec2(0.f, 0.f));
 		}
 		else {
 			// Remove generator and free memory
-			particle_generators.erase(std::remove(particle_generators.begin(), particle_generators.end(), generator), particle_generators.end());
-			delete(generator);
+			auto position = std::find(particle_generators.begin(), particle_generators.end(), generator);
+			if (position != particle_generators.end()) {
+				particle_generators.erase(position);
+			}
 		}
 	}
 }

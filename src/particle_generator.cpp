@@ -1,5 +1,4 @@
 
-
 /*******************************************************************
 ** This code is part of Breakout.
 **
@@ -10,32 +9,19 @@
 ******************************************************************/
 #include "particle_generator.hpp"
 #include "iostream"
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock;
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount, Entity entity)
-    : entity(entity), amount(amount), shaderProgram(shaderProgram), used_texture(used_texture)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
+    : entity(entity), shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
 }
 
 void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 offset)
 {
-    // add new particles 
-    for (unsigned int i = 0; i < newParticles; ++i)
-    {
-        int unusedParticle = firstUnusedParticle();
-        respawnParticle(particles[unusedParticle], offset);
-    }
-    // update all particles
-    for (unsigned int i = 0; i < amount; ++i)
-    {
-        Particle* p = &particles[i];
-        p->life -= dt; // reduce life
-        if (p->life > 0.0f)
-        {	// particle is alive, thus update
-            p->position += p->velocity * dt; 
-            p->color.a -= dt * 2.5;
-        }
-    }
+    std::cout << "WARNING: Base class ParticleGenerator::Update has been called" << "\n";
+    return; // should be overridden in subclasses
 }
 
 // render all particles
@@ -71,15 +57,21 @@ void ParticleGenerator::Draw()
         //     }
         // }        
 
-        glBindTexture(GL_TEXTURE_2D, (GLuint)used_texture);
+        glBindTexture(GL_TEXTURE_2D, used_texture);
         glBindVertexArray(vao);
 
         // Bind instanced VBO again to update values of particles
         glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(particles), particles);
 
+
+        // auto pre_render = Clock::now();
         // Instanced rendering call
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 500); // 500 triangles of 6 vertices each
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, amount);
+
+        // auto post_render = Clock::now();
+        // std::chrono::duration<double> duration = post_render - pre_render;
+        // std::cout << "Render:" << duration.count() << "\n";
 
         // Clean up
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -92,7 +84,6 @@ void ParticleGenerator::Draw()
 
 void ParticleGenerator::init()
 {
-
     // set up mesh and attribute properties
     unsigned int VBO;
     float particle_quad[] = {
@@ -122,6 +113,7 @@ void ParticleGenerator::init()
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -137,6 +129,12 @@ void ParticleGenerator::init()
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4)));
     glVertexAttribDivisor(3, 1); // attribute at layout 2 is instanced
+
+    // Point aScale attribute to each Particle's scale in particles array
+        // Point aLife attribute to each Particle's life in particles array
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
+    glVertexAttribDivisor(4, 1); // attribute at layout 2 is instanced
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -167,12 +165,7 @@ unsigned int ParticleGenerator::firstUnusedParticle()
 
 void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
 {
-    float random = ((rand() % 100) - 50) / 10.0f;
-    float rColor = 0.5f + ((rand() % 100) / 100.0f);
-    Motion& entity_motion = registry.motions.get(entity);
-    particle.position = entity_motion.position + random + offset;
-    particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
-    particle.life = 1.f;
-    particle.velocity = entity_motion.velocity * 0.1f;
+    std::cout << "WARNING: Base class ParticleGenerator::respawnParticle has been called" << "\n";
+    return; // should be overriden in subclasses 
 }
 

@@ -35,8 +35,9 @@ struct Particle {
     glm::vec2 velocity;
     glm::vec4 color;
     float     life;
+    glm::vec2 scale;
 
-    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f) { }
+    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(DEFAULT_PARTICLE_SCALE) { }
 };
 
 
@@ -47,29 +48,30 @@ class ParticleGenerator
 {
 public:
     // constructor
-    ParticleGenerator(GLuint shaderProgram, TEXTURE_ASSET_ID used_texture, unsigned int amount, Entity entity);
+    ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity);
     // update all particles
-    void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    virtual void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
     void Draw();
 
     Entity entity;
 private:
-    // state
-    Particle particles[500];
-    unsigned int amount;
-
     // render state
     GLuint shaderProgram;
-    TEXTURE_ASSET_ID used_texture;
+    GLuint used_texture;
+
     GLuint vao;
     GLuint instance_VBO;
     // initializes buffer and vertex attributes
     void init();
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
-    unsigned int firstUnusedParticle();
     // respawns particle
-    void respawnParticle(Particle &particle, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    virtual void respawnParticle(Particle &particle, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+protected: 
+    // state
+    int amount = 500; // hard-coded for now. 
+    Particle particles[500]; // hard-coded for now.
+    unsigned int firstUnusedParticle();
 };
 
 #endif
