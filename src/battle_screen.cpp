@@ -380,8 +380,8 @@ void Battle::handle_battle_end() {
 	}
 	gameInfo.curr_enemy = {};
 	renderer->updateParticles(0.f);
-	// TODO: Free generators (?) or does shared pointer handle it all
 	renderer->particle_generators.clear();
+
 
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
 	//_CrtMemCheckpoint(&s2);
@@ -395,7 +395,7 @@ void Battle::handle_battle_end() {
 
 void Battle::start() {
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
-	// _CrtMemCheckpoint(&s1);
+	 //_CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing

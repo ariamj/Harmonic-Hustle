@@ -37,7 +37,7 @@ struct Particle {
     float     life;
     glm::vec2 scale;
 
-    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(10.f) { }
+    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(DEFAULT_PARTICLE_SCALE) { }
 };
 
 
@@ -50,7 +50,7 @@ public:
     // constructor
     ParticleGenerator(GLuint shaderProgram, GLuint used_texture);
     // update all particles
-    virtual void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
     void Draw();
 
@@ -58,13 +58,12 @@ private:
     // render state
     GLuint shaderProgram;
     GLuint used_texture;
-
     GLuint vao;
     GLuint instance_VBO;
-    // initializes buffer and vertex attributes
+
     void init();
-    // respawns particle
-    virtual void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void updateEntities();
+
 protected: 
     // state
     static const int amount = 500; // hard-coded for now.
@@ -73,8 +72,12 @@ protected:
     Entity initialized_entity_id;
     Particle particles[max_particles];
     int findUnusedBlock();
-    // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactiv
     unsigned int firstUnusedParticle(int lastUsedParticle, int begin, int end);
+
+    // updates particles to achieve desired effects
+    virtual void updateParticleBehaviours(Particle* p, float dt);
+    // respawns particle
+    virtual void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
 
 #endif
