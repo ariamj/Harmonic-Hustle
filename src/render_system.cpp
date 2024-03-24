@@ -419,16 +419,3 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 			particle_generators.push_back(generator);
 	}
 }
-
-void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
-	// Update particles
-	int new_particles = 2;
-	float dt = elapsed_ms_since_last_update / 1000.f;
-	for (auto generator : particle_generators) {
-
-		// Generate particles of all types currently allocated
-		if (generator != NULL) {
-			generator->Update(dt, new_particles, vec2(0.f, 0.f));
-		}
-	}
-}

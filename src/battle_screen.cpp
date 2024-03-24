@@ -326,7 +326,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				}
 			}
 		}
-		renderer->updateParticles(elapsed_ms_since_last_update);
 	}
 	return true;
 };
@@ -379,7 +378,6 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
-	renderer->updateParticles(0.f);
 	renderer->particle_generators.clear();
 
 
