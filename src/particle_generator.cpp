@@ -130,15 +130,11 @@ void ParticleGenerator::init()
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2)));
     glVertexAttribDivisor(2, 1); // attribute at layout 2 is instanced
 
-    // Point aLife attribute to each Particle's life in particles array
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4)));
-    glVertexAttribDivisor(3, 1); // attribute at layout 3 is instanced
 
     // Point aScale attribute to each Particle's scale in particles array
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
-    glVertexAttribDivisor(4, 1); // attribute at layout 4 is instanced
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
+    glVertexAttribDivisor(3, 1); // attribute at layout 4 is instanced
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
