@@ -19,18 +19,18 @@ class Cutscene {
     //     bool is_game_over_finished = false;
 
         const std::string BOSS_DIALOGUE[4] = {
-            "hello",
-            "world",
-            "im",
-            "talking"
+            "you're gonna regret not turning off that music",
+            "this party will forever go on",
+            "we'll see about that",
+            "ya we will see about that..."
         };
 
         const std::string INTRO_DIALOGUE[5] = {
-            "hello",
-            "world",
-            "im",
-            "talking",
-            "ok"
+            "you've had that music blasting all night, can you turn it off?!",
+            "chill out bro, it's not even that late",
+            "this is the last time I'm gonna ask, turn it off or I'm coming over there!!!",
+            "kick rocks lady",
+            "alright thats it!!"
         };
 
         const int GAME_OVER_DIALOGUE_SENTENCES = 6;
