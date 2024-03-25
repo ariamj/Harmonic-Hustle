@@ -70,6 +70,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	// Load battle-specific data into BattleInfo structs
 	// OPTIMIZE: Read these from a file instead
 	std::vector<float> enemy0_timings = { 
+		// BACK AND FORTH
 		4.f, 5.f, 6.f, 6.5f, 7.f,
 		12.f, 13.f, 14.f, 14.5f, 15.f,
 		20.f, 21.f, 22.f, 22.5f, 23.f,
@@ -89,10 +90,14 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 
 	// Another battle
 	std::vector<float> enemy1_timings = { 
+		// BACK AND FORTH
 		8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 13.5f, 14.5f, 15.f,
 		24.f, 25.f, 26.f, 27.f, 28.f, 29.f, 29.5f, 30.5f, 31.f,
 		40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
 		56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f,
+		// BEAT RUSH
+		64.f, 65.f, 66.f, 67.f, 68.f, 69.f, 70.f, 71.f,
+		72.f, 73.f, 74.f, 75.f, 76.f, 77.f, 78.f, 79.f,
 		80.f, 81.f, 82.f, 83.f, 84.f, 85.f, 86.f, 87.f,
 		88.f, 89.f, 90.f, 91.f, 92.f, 93.f, 94.f, 95.f, 96.f, 97.f, 98.f, 99.f,
 		116.f, 118.f, 120.f, 122.f, 123.f, 130.f, 131.f,
@@ -110,22 +115,28 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 
 	// Another battle
 	std::vector<float> enemy2_timings = { 
+		// BACK AND FORTH
 		8.f, 8.5f, 9.f, 10.f, 11.f, 12.f, 12.5f, 13.f, 13.5f,
 		24.f, 24.5f, 25.f, 26.f, 27.f, 28.f, 28.5f, 29.f, 29.5f,
+
 		40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
 		56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f,
+
+		// UNISON
 		64.f, 64.5f, 65.f, 66.f, 67.f, 68.f, 68.5f, 69.f, 69.5f,
 		72.f, 72.5f, 73.f, 74.f, 75.f, 76.f, 76.5f, 77.f, 77.5f,
 		80.f, 80.5f, 81.f, 82.f, 83.f, 84.f, 84.5f, 85.f, 85.5f, 
 		88.f, 88.5f, 89.f, 90.f, 91.f, 92.f, 92.5f, 93.f, 93.5f,
 		94.5f, 95.f, 95.5f,
 
+		// BACK AND FORTH
 		104.f, 105.5f, 106.f, 107.5, 108.f, 109.f, 110.f, 110.5f, 111.f,
 		120.f, 121.5f, 122.f, 123.5f, 124.f, 125.f, 126.f, 126.5f, 127.f,
 
 		136.f, 137.f, 138.f, 139.f, 140.f, 141.f, 141.5f, 142.5f, 143.f,
 		152.f, 153.f, 154.f, 155.f, 156.f, 157.f, 157.5f, 158.5f, 159.f,
 
+		// UNISON
 		160.f, 161.f, 162.f, 163.f, 164.f, 165.f, 165.5f, 166.5f, 167.f,
 		168.f, 168.5f, 169.f, 170.f, 171.f, 172.f, 172.5f, 173.f, 173.5f,
 		176.f, 177.f, 178.f, 179.f, 180.f, 181.f, 181.5f, 182.5f, 183.f,
@@ -146,6 +157,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	// CODING AT ITS FINEST..... TRULY
 	// OPTIMIZE: Create "Rhythm" presets to reduce this workload to every line, rather than every note
 	std::vector<float> enemy3_timings = { 
+		// UNISON
 		4.f, 4.5f, 5.f, 5.5f, 6.f, 6.5f, 6.75f, 7.25f, 7.5f,
 		12.f, 12.5f, 13.f, 13.5f, 14.f, 14.5f, 14.75f, 15.25f, 15.5f,
 		20.f, 20.5f, 21.f, 21.5f, 22.f, 22.5f, 22.75f, 23.25f, 23.5f,
@@ -155,11 +167,13 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		40.f, 40.5f, 41.f, 41.5f, 42.f, 42.5f, 42.75f,
 		44.f, 44.5f, 45.f, 45.5f, 46.f, 46.5f, 46.75f, 
 
+		// BEAT RUSH
 		48.f, 48.5f, 49.f, 49.5f, 50.f, 50.5f, 51.f, 51.5f, 52.f, 52.5f, 53.f, 53.5f, 54.f, 54.5f, 55.f, 55.5f,
 		56.f, 56.5f, 57.f, 57.5f, 58.f, 58.5f, 59.f, 59.5f, 60.f, 60.5f, 61.f, 61.5f, 62.f, 62.5f, 63.f, 63.5f,
 		64.f, 64.5f, 65.f, 65.5f, 66.f, 66.5f, 67.f, 67.5f, 68.f, 68.5f, 69.f, 69.5f, 70.f, 70.5f, 71.f, 71.5f,
 		72.f, 72.5f, 73.f, 73.5f, 74.f, 74.5f, 75.f, 75.5f, 76.f, 76.5f, 77.f, 77.5f, 78.f, 78.5f, 79.f, 79.5f,
 
+		// UNISON
 		80.f, 80.5f, 81.f, 81.5f, 82.f, 82.5f, 82.75f, 83.25f, 83.5f,
 		85.5f, 86.f, 87.5f,
 		88.f, 88.5f, 89.f, 89.5f, 90.f, 90.5f, 90.75f, 91.25f, 91.5f,
@@ -168,11 +182,13 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		101.5f, 102.f, 103.5f,
 		104.f, 104.5, 105.f, 105.5, 106.f, 106.5, 106.75f, 107.25f, 107.5f,
 
+		// BEAT RUSH
 		128.f, 128.5f, 129.f, 129.5f, 130.f, 130.5, 131.f, 131.5f, 132.f, 132.5f, 133.f, 133.5f, 134.f, 134.5f, 135.f, 135.5f,
 		136.f, 136.5f, 137.f, 137.5f, 138.f, 138.5, 139.f, 139.5f, 140.f, 140.5f, 141.f, 141.5f, 142.f, 142.5f, 143.f, 143.5f,
 		144.f, 144.5f, 145.f, 145.5f, 146.f, 146.5f, 147.f, 147.5f, 148.f, 148.5f, 149.f, 149.5f, 150.f, 150.5f, 151.f, 151.5f,
 		152.f, 152.5f, 153.f, 153.5f, 154.f, 154.5f, 155.f, 155.5f, 156.f, 156.5f, 157.f, 157.5f, 158.f, 158.5f, 159.f, 159.5f,
 
+		// UNISON
 		160.f, 160.5f, 161.f, 161.5f, 162.f, 162.5f, 162.75f, 163.25f, 163.5f,
 		165.5f, 166.f, 166.5f, 167.f, 167.5f,
 		168.f, 168.5f, 169.f, 169.5f, 170.f, 170.5f, 170.75f, 171.25f, 171.5f,
