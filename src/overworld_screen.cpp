@@ -1,5 +1,5 @@
 #include "overworld_screen.hpp"
-
+#include "serializer.hpp"
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -11,6 +11,8 @@
 // const size_t MAX_ENEMIES = 2;
 // const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
+
+Serializer saver = Serializer();
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f) 
@@ -193,20 +195,27 @@ void handleDebugInput(int action) {
 }
 
 void Overworld::handle_key(int key, int scancode, int action, int mod) {
-    switch(key) {
-        case GLFW_KEY_W:
+	if (key == GLFW_KEY_S && action == GLFW_PRESS && (mod & GLFW_MOD_CONTROL)) {
+		printf("Ctrl+S detected, game saving");
+		saver.save_game();
+	}
+	else {
+		switch(key) {
+		case GLFW_KEY_W:
 		case GLFW_KEY_A:
 		case GLFW_KEY_S:
 		case GLFW_KEY_D:
-            handleMovementInput(action, key);
+			handleMovementInput(action, key);
 			break;
 		case GLFW_KEY_X:
 			// toggle debug
 			handleDebugInput(action);
-        default:
-            std::cout << "unhandled overworld key" << std::endl;
-            break;
-    }
+		default:
+			std::cout << "unhandled overworld key" << std::endl;
+			break;
+		}
+	}
+    
 };
 
 void Overworld::handle_mouse_move(vec2 pos) {

@@ -1,12 +1,15 @@
 // Header
 #include "world_system.hpp"
 #include "world_init.hpp"
+#include "serializer.hpp"
 
 // stlib
 #include <cassert>
 #include <sstream>
 #include <iostream>
 #include "physics_system.hpp"
+#include <fstream>
+
 
 // Create the bug world
 WorldSystem::WorldSystem(){
@@ -28,7 +31,7 @@ namespace {
 		fprintf(stderr, "%d: %s", error, desc);
 	}
 }
-
+int savefile_num = 0;
 // World initialization
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer
 GLFWwindow* WorldSystem::create_window() {
@@ -85,6 +88,8 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
+	Serializer readerwriter = Serializer();
+
 	gameInfo.lane_1 = gameInfo.width / 2 - 300;
 	gameInfo.lane_2  = gameInfo.width / 2 - 100;
 	gameInfo.lane_3 = gameInfo.width / 2 + 100;
@@ -103,7 +108,20 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	// Set all states to default
     restart_game();
+	if (readerwriter.load_game()) {
+		// remove initial enemies
+		for (auto e : registry.enemies.entities) {
+			registry.remove_all_components_of(e);
+		}
+		// repopulate with enemies from save file
+		for (auto& enemy : gameInfo.existing_enemy_info) {
+			createEnemy(renderer, vec2(enemy[0], enemy[1]), enemy[2]);
+		}
+	}
+	
 }
+
+
 
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
@@ -121,7 +139,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
-		if (!cutscene.is_intro_finished) {
+		if (!gameInfo.is_intro_finished) {
 			std::cout << "GO TO INTRO" << '\n';
 			render_set_cutscene();
 		}
@@ -141,7 +159,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		}
 
 		// go to boss cutscene
-		if (gameInfo.curr_level == 4 && !cutscene.is_boss_finished) {
+		if (gameInfo.curr_level == 4 && !gameInfo.is_boss_finished) {
 			render_set_cutscene();
 		}
 		return toReturn;
@@ -150,14 +168,14 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 		if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
-			cutscene.is_boss_finished = true;
+			gameInfo.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !cutscene.is_intro_finished) {
+		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !gameInfo.is_intro_finished) {
 			std::cout << "GO TO OVERWORLD" << std::endl;
-			cutscene.is_intro_finished = true;
+			gameInfo.is_intro_finished = true;
 			render_set_overworld_screen();
 		}
 		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -195,7 +213,6 @@ void WorldSystem::restart_game() {
 	
 	// create set number of enemies
 	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-
 	createEnemy(renderer, getRamdomEnemyPosition(), 1);
 	createEnemy(renderer, getRamdomEnemyPosition(), 1);
 	createEnemy(renderer, getRamdomEnemyPosition(), 1);
@@ -207,6 +224,7 @@ void WorldSystem::restart_game() {
 	createEnemy(renderer, getRamdomEnemyPosition(), 3);
 	createEnemy(renderer, getRamdomEnemyPosition(), 3);
 	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+	
 
 	checkEnemyPositions();
 
