@@ -38,14 +38,56 @@ Serializer::Serializer() {
 }
 
 // reader
+// load game state by creating enemies and player according to saved data
 bool Serializer::load_game() {
 	Json::CharReaderBuilder rbuilder;
-	return false;
+	std::string filename = "save_" + std::to_string(0) + ".json";
+	std::ifstream file(saves_path(filename));
+	if (!file.is_open()) {
+		// make the missing file.
+		printf("Couldn't open save file.\n");
+		std::ofstream MyFile(saves_path(filename));
+		printf("Created missing save file.\n");
+		// Close the file
+		MyFile.close();
+		return false;
+	}Json::Value root;
+		Json::CharReaderBuilder builder;
+
+	try {
+		
+		builder["collectComments"] = true;
+		JSONCPP_STRING errs;
+		if (!parseFromStream(builder, file, &root, &errs)) {
+			Json::StreamWriterBuilder writerBuilder;
+			std::string errsStr = Json::writeString(writerBuilder, errs);
+			printf("Failed to parse JSON: %s\n", errsStr.c_str());
+			return false;
+		}
+		file.close();
+		Entity e = registry.players.entities[0];
+		Motion& motion = registry.motions.get(e);
+
+		int lvl = root["player"]["level"].asInt();
+		registry.levels.get(*gameInfo.player_sprite).level = lvl;
+		gameInfo.curr_level = lvl;
+		motion.position = vec2(root["player"]["position"][0].asFloat(), root["player"]["position"][1].asFloat());
+		//printf("Hi %s\n", f.c_str());
+		//printf("fr: %f\n", fr);
+		printf("Goodday\n");
+		
+	}
+	catch (std::exception e) {
+		printf("Exception reading!\n");
+		return false;
+	}
+
+	return true;
 
 }
 
 // writer
-// need to save: 
+// saves the game state: 
 //		player: overworld position, current level
 //		enemies: overworld positions, levels
 bool Serializer::save_game() {
@@ -55,11 +97,8 @@ bool Serializer::save_game() {
 	Json::StreamWriterBuilder wBuilder;
 	
 	root["player"]["level"] = registry.levels.get(*gameInfo.player_sprite).level;
-	Json::Value subroot;
-	subroot.append(motion.position.x);
-	subroot.append(motion.position.y);
-	
-	root["player"]["position"] = subroot;
+	root["player"]["position"].append(motion.position.x);
+	root["player"]["position"].append(motion.position.y);
 	registry.list_all_components();
 	int count = 0;
 	for (int i = 0; i < registry.enemies.size(); i++) {
@@ -81,16 +120,13 @@ bool Serializer::save_game() {
 	// write to string
 	std::string document = Json::writeString(wBuilder, root);
 
-	// write string to file
+	// write to save_0 file (include option for multiple saves in future?)
 	std::string filename = "save_" + std::to_string(0) + ".json";
 	std::ofstream MyFile(saves_path(filename));
-
-	// write to the file our game state;
 	MyFile << document;
 
 	// Close the file
 	MyFile.close();
 
-	
-	return false;
+	return true;
 }
