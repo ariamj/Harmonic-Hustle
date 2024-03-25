@@ -178,7 +178,8 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE_SENTENCES) {
 			std::cout << "RESTART GAME" << std::endl;
 			gameInfo.is_game_over_finished = true;
-			restart_game();		
+			// restart_game();	
+			render_set_game_over_screen();
 		}
 		else if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1) && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
@@ -283,8 +284,8 @@ void WorldSystem::restart_game() {
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();
 	// render_set_battle_screen();
-	// render_set_start_screen();
-	render_set_game_over_screen();
+	render_set_start_screen();
+	// render_set_game_over_screen();
 }
 
 // Compute collisions between entities
