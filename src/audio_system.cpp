@@ -90,6 +90,14 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string hit_good = "hit_good.wav";
+	hit_good_SFX = Mix_LoadWAV(audio_path("hit_good.wav").c_str());
+	if (hit_good_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(hit_good).c_str());
+		return false;
+	}
+
 	std::string hit_perfect = "hit_perfect.wav";
 	hit_perfect_SFX = Mix_LoadWAV(audio_path("hit_perfect.wav").c_str());
 	if (hit_perfect_SFX == nullptr) { // add "%s\n" for each sound added
@@ -134,6 +142,11 @@ bool AudioSystem::playDroppedNote() {
 
 bool AudioSystem::playMissedNote() {
 	Mix_PlayChannel(-1, miss_SFX, 0);
+	return true;
+}
+
+bool AudioSystem::playHitGood() {
+	Mix_PlayChannel(-1, hit_good_SFX, 0);
 	return true;
 }
 

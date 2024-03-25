@@ -591,7 +591,7 @@ void Battle::handle_collisions() {
 					float note_y_pos = registry.motions.get(entity_other).position.y;
 					float lane_y_pos = lane_motion.position.y;
 					float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
-					float scoring_margin = 3.f;
+					float scoring_margin = 10.f;
 					if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
 						// set standing to Alright
 						standing = alright;
@@ -600,11 +600,13 @@ void Battle::handle_collisions() {
 					} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 								|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
 						// set standing to Good
+						audio->playHitGood();
 						standing = good;
 						good_counter++;
 						colour = GOOD_COLOUR;
 					} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 						// set standing to Perfect
+						audio->playHitPerfect();
 						standing = perfect;
 						perfect_counter++;
 						colour = PERFECT_COLOUR;
@@ -618,11 +620,7 @@ void Battle::handle_collisions() {
 				}
 			}
 		}
-		if (got_hit) {
-			
-			audio->playHitPerfect();
-		}
-		else {
+		if (!got_hit) {
 			audio->playMissedNote();
 		}
 	}
