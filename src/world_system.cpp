@@ -166,15 +166,14 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
     	return settings.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-		if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1)) {
+		if (cutscene.boss_dialogue_progress >= size(cutscene.BOSS_DIALOGUE)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			gameInfo.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !gameInfo.is_intro_finished) {
-			std::cout << "GO TO OVERWORLD" << std::endl;
+		else if ((cutscene.intro_dialogue_progress >= size(cutscene.INTRO_DIALOGUE)) && !gameInfo.is_intro_finished) {
 			gameInfo.is_intro_finished = true;
 			render_set_overworld_screen();
 		}
