@@ -17,7 +17,7 @@ WorldSystem::WorldSystem(){
 
 WorldSystem::~WorldSystem() {
     // Destory all created components
-
+	registry.clear_all_components();
 	// Close the window
 	glfwDestroyWindow(window);
 }
