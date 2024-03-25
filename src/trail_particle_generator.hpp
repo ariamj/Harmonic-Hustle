@@ -11,6 +11,6 @@ public:
     TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
 private:
     PARTICLE_TYPE_ID getType();
-    void updateParticleBehaviours(Particle* p, float dt);
-    void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset);
+    void updateParticleBehaviours(Particle& p, float dt) override;
+    void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset) override;
 };

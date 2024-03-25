@@ -433,4 +433,13 @@ void PhysicsSystem::updateParticles(RenderSystem* renderSystem, float elapsed_ms
 			generator->Update(dt, new_particles, vec2(0.f, 0.f));
 		}
 	}
+	// Step timers for timed particle entities
+	for (auto entity : registry.particleTimers.entities) {
+		ParticleTimer& timer = registry.particleTimers.get(entity);
+		timer.count_ms -= elapsed_ms;
+		if (timer.count_ms <= 0.f) {
+			registry.particleEffects.remove(entity);
+			registry.particleTimers.remove(entity);
+		}
+	}
 }

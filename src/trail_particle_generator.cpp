@@ -17,18 +17,18 @@ TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used
     // init is called in ParticleGenerator constructor
 }
 
-void TrailParticleGenerator::updateParticleBehaviours(Particle* p, float dt) {
-    p->life -= dt; // reduce life
-    if (p->life > 0.0f)
+void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
+    p.life -= dt; // reduce life
+    if (p.life > 0.0f)
     {	// particle is alive, thus update
-        p->position += p->velocity * dt;
-        p->color.a -= dt * 2.5;
-        p->scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 3.f, p->position.y / gameInfo.height));
+        p.position += p.velocity * dt;
+        p.color.a -= dt * 2.5;
+        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 3.f, p.position.y / gameInfo.height));
 
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
-        p->color.a = 0.f;
+        p.color.a = 0.f;
     }
 }
 
@@ -41,6 +41,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
+    particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 
 PARTICLE_TYPE_ID TrailParticleGenerator::getType() {

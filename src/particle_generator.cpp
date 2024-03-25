@@ -28,7 +28,9 @@ void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 of
         }
 
         if (!registry.particleEffects.has(entity)) {
-            // Clear block of particle data
+            // Clear the entity's previously assigned block of data
+            // Note that this also sets scale, color to 0...
+                // If particles not appearing, check that scale is set > 0, and color.a > 0
             memset(&particles[i * amount], 0.f, sizeof(Particle) * amount - 1);
             continue;
         }
@@ -47,7 +49,7 @@ void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 of
         // update all of a single entity's particles
         for (int i = particle_effect.min_index; i < particle_effect.max_index; i++)
         {
-            updateParticleBehaviours(&particles[i], dt);
+            updateParticleBehaviours(particles[i], dt);
         }
     }
     return;
@@ -87,7 +89,7 @@ void ParticleGenerator::updateEntities() {
     }
 }
 
-void ParticleGenerator::updateParticleBehaviours(Particle* p, float dt) {
+void ParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
     std::cout << "WARNING: Base class ParticleGenerator::updateParticleBehaviours has been called" << "\n";
     return; // should be overridden in subclasses
 }

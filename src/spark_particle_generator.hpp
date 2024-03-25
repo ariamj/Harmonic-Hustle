@@ -12,6 +12,6 @@ public:
 
     PARTICLE_TYPE_ID getType();
 private:
-    void updateParticleBehaviours(Particle* p, float dt);
-    void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset);
+    void updateParticleBehaviours(Particle& p, float dt) override;
+    void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset) override;
 };

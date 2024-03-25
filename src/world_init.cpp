@@ -460,10 +460,15 @@ Entity createSparks(vec2 pos) {
 
 	Motion& motion = registry.motions.emplace(entity);
 	motion.position = pos;
+	motion.velocity = {0.f, -50.f};
+
+	// Add timer to remove entity automatically
+	registry.particleTimers.emplace(entity);
 
 	// Give trail particles to entity
 	ParticleEffect& particles = registry.particleEffects.emplace(entity);
 	particles.type = PARTICLE_TYPE_ID::SPARK;
+	particles.max_particles = 20;
 
 	return entity;
 }

@@ -295,6 +295,15 @@ struct ParticleEffect
 	int min_index;
 	int max_index;
 	PARTICLE_TYPE_ID type;
+
+	// for non-continuous-spawning particles 
+	int spawned_particles = 0;
+	int max_particles = 500; // can be set on entity creation
+};
+
+struct ParticleTimer
+{
+	float count_ms = 1500.f;
 };
 
 struct RenderRequest {

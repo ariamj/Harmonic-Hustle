@@ -24,6 +24,10 @@ In `initializeParticleGenerators`: Set the particle shader program's projection 
 In `render_system.cpp`:
 In `createParticleGenerator`: Add a new case for the new particle type enum.
 
+In relevant scenes (currently only `battle_screen.cpp`):
+Call `renderer->createParticleGenerator(...)` with the desired particle type enum
+Call `renderer->particle_generators.clear()` before exiting the scene to free memory.
+
 
 IMPLEMENTATION
 In the new `xxxxx_particle_generator.cpp` file:
@@ -32,11 +36,16 @@ Override `getType` to return the correct `PARTICLE_TYPE_ID` enum.
 
 
 ATTACHING TO ENTITIES
-In `world_init.cpp` (and .hpp if necessary):
+In `world_init.cpp`:
 If NOT attaching particles to any existing entity:
-	Create a new function `createXXXXX` and declare it in the .hpp file
+	Create a new function `createXXXXX` and declare it in the `world_init.hpp` file
 In `createXXXXX` for the desired entity (or dummy entity):
 	Make sure the entity has both a `ParticleEffect` and a `Motion` component
-	Call `renderer->createParticleGenerator(...)` with the desired particle type enum and associated entity type
+	Make sure to set the `ParticleEffect.type` to the correct enum.
 
-To add particles to more entity types, simply call `renderer->createParticleGenerator(...)` as above when the entities are created.
+
+NOT WORKING?
+Make sure to remove entities from the particles registry at some point.
+	Examples: On collision, on leaving screen, on a timer (ParticleTimer component)
+	Otherwise, only MAX_PARTICLE_ENTITIES will have particles, and not any entities afterwards.
+If particles are not appearing, make sure that scale is not zero, and color.a is not zero on respawn

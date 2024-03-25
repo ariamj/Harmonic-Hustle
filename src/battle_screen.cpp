@@ -350,6 +350,10 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	// Delete any remaining sparks entities
+	for (auto entity : registry.particleEffects.entities) {
+		registry.remove_all_components_of(entity);
+	}
 
 	// battle won
 	if (battleWon()) {

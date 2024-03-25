@@ -354,7 +354,7 @@ void RenderSystem::draw()
 	//auto pre_render = Clock::now();
 
 	// Particle rendering, behind associated entities. Updates happen in world_system step
-	for (auto generator : particle_generators) {
+ 	for (auto generator : particle_generators) {
 		generator->Draw();
 	}
 	glBindVertexArray(vao);
@@ -420,6 +420,7 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 			std::shared_ptr<TrailParticleGenerator> generator =
 				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture));
 			particle_generators.push_back(generator);
+			return;
 		}
 		case (int)PARTICLE_TYPE_ID::SPARK:
 		{
@@ -428,6 +429,7 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 			std::shared_ptr<SparkParticleGenerator> generator =
 				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture));
 			particle_generators.push_back(generator);
+			return;
 		}
 	}
 }

@@ -77,7 +77,7 @@ protected:
     unsigned int firstUnusedParticle(int lastUsedParticle, int begin, int end);
 
     // updates particles to achieve desired effects
-    virtual void updateParticleBehaviours(Particle* p, float dt);
+    virtual void updateParticleBehaviours(Particle& p, float dt);
     // respawns particle
     virtual void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
