@@ -339,6 +339,18 @@ void RenderSystem::draw()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+
 	//auto pre_render = Clock::now();
 
 	// Particle rendering, behind associated entities. Updates happen in world_system step
@@ -352,16 +364,6 @@ void RenderSystem::draw()
 	// std::chrono::duration<double> duration = post_render - pre_render;
 	// std::cout << "Render:" << duration.count() << "\n";
 
-	for (Entity entity : registry.renderRequests.entities)
-	{
-		// render entity only if belongs to same screen as screen_state_entity
-		if (registry.screens.has(entity)) {
-			Screen entity_screen = registry.screens.get(entity);
-			if (entity_screen == curr_screen) {
-				drawTexturedMesh(entity, projection_2D);
-			}
-		}
-	}
 
 	// Text-rendering
 

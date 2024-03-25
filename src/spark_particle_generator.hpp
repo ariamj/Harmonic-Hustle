@@ -9,6 +9,8 @@ public:
     // subclass constructor
     // const int amount = 500;
     SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+
+    PARTICLE_TYPE_ID getType();
 private:
     void updateParticleBehaviours(Particle* p, float dt);
     void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset);

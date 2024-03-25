@@ -120,7 +120,9 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 		}
 	);
 
-	registry.particleEffects.emplace(entity);
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::TRAIL;
 
 	return entity;
 
@@ -451,4 +453,17 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	btn.text_colour = text_colour;
 
 	return btn_base;
+}
+
+Entity createSparks(vec2 pos) {
+	Entity entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::SPARK;
+
+	return entity;
 }

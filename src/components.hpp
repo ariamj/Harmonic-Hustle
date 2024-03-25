@@ -52,13 +52,6 @@ struct BoxButton {
 	glm::vec3 text_colour = vec3(0.f);
 };
 
-struct ParticleEffect
-{
-	int last_used_particle;
-	int min_index;
-	int max_index;
-};
-
 // Mesh datastructure for storing vertex and index buffers
 struct Mesh
 {
@@ -295,6 +288,14 @@ enum class PARTICLE_TYPE_ID {
 	PARTICLE_TYPE_COUNT = SPARK + 1
 };
 const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
+
+struct ParticleEffect
+{
+	int last_used_particle;
+	int min_index;
+	int max_index;
+	PARTICLE_TYPE_ID type;
+};
 
 struct RenderRequest {
 	TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;

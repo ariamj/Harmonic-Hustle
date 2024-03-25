@@ -42,3 +42,7 @@ void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
 }
+
+PARTICLE_TYPE_ID SparkParticleGenerator::getType() {
+    return PARTICLE_TYPE_ID::SPARK;
+}

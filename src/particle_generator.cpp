@@ -66,6 +66,12 @@ void ParticleGenerator::updateEntities() {
         // Assign entity to a block and initialize values
         if (!entity_found) {
             ParticleEffect& particle_effect = registry.particleEffects.get(entity);
+
+            // Verify that particle_effect matches this generator's type
+            if (particle_effect.type != getType()) {
+                continue;
+            }
+
             int free_block = findUnusedBlock();
             // if no free blocks were found, skip
             if (free_block == -1) {
@@ -234,4 +240,10 @@ int ParticleGenerator::findUnusedBlock()
         }
     }
     return -1;
+}
+
+PARTICLE_TYPE_ID ParticleGenerator::getType()
+{
+    std::cout << "WARNING: Base class ParticleGenerator::getType has been called" << "\n";
+    return PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT; // should be overriden in subclasses 
 }

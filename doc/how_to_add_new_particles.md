@@ -28,6 +28,7 @@ In `createParticleGenerator`: Add a new case for the new particle type enum.
 IMPLEMENTATION
 In the new `xxxxx_particle_generator.cpp` file:
 Override `updateParticleBehaviours` and `respawnParticles` to achieve the desired behaviour.
+Override `getType` to return the correct `PARTICLE_TYPE_ID` enum.
 
 
 ATTACHING TO ENTITIES

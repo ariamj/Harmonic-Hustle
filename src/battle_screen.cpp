@@ -433,6 +433,7 @@ void Battle::start() {
 
 	// Create generators for particles that appear in the battle scene
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
@@ -564,6 +565,7 @@ void Battle::handle_collisions() {
 						colour = PERFECT_COLOUR;
 					}
 					score += standing;
+					createSparks(registry.motions.get(entity_other).position);
 
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
@@ -571,11 +573,11 @@ void Battle::handle_collisions() {
 			}
 		}
 		if (got_hit) {
-			// TODO MUSIC: play sound for successful hit note
+			
 			audio->playHitPerfect();
 		}
 		else {
-			audio->playMissedNote(); // placeholder sound effect
+			audio->playMissedNote();
 		}
 	}
 	registry.collisions.clear();

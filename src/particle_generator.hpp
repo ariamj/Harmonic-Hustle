@@ -54,6 +54,8 @@ public:
     // render all particles
     void Draw();
 
+    virtual PARTICLE_TYPE_ID getType();
+
 private:
     // render state
     GLuint shaderProgram;
