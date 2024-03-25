@@ -17,6 +17,7 @@
 #ifndef PARTICLE_GENERATOR_H
 #define PARTICLE_GENERATOR_H
 #include <vector>
+#include <map>
 
 // Commented out includes from LearnOpenGL
 // #include <glad/glad.h>
@@ -27,7 +28,6 @@
 
 // #include <glm/glm.hpp>
 #include "../ext/glm/glm/glm.hpp"
-
 
 // Represents a single particle and its state
 struct Particle {
@@ -48,30 +48,38 @@ class ParticleGenerator
 {
 public:
     // constructor
-    ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity);
+    ParticleGenerator(GLuint shaderProgram, GLuint used_texture);
     // update all particles
-    virtual void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
     void Draw();
 
-    Entity entity;
+    virtual PARTICLE_TYPE_ID getType();
+
 private:
     // render state
     GLuint shaderProgram;
     GLuint used_texture;
-
     GLuint vao;
     GLuint instance_VBO;
-    // initializes buffer and vertex attributes
+
     void init();
-    // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
-    // respawns particle
-    virtual void respawnParticle(Particle &particle, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    void updateEntities();
+
 protected: 
     // state
-    int amount = 500; // hard-coded for now. 
-    Particle particles[500]; // hard-coded for now.
-    unsigned int firstUnusedParticle();
+    static const int amount = 500; // hard-coded for now.
+    static const int max_particles = amount * MAX_PARTICLE_ENTITIES;
+    Entity blocks[MAX_PARTICLE_ENTITIES];
+    Entity initialized_entity_id;
+    Particle particles[max_particles];
+    int findUnusedBlock();
+    unsigned int firstUnusedParticle(int lastUsedParticle, int begin, int end);
+
+    // updates particles to achieve desired effects
+    virtual void updateParticleBehaviours(Particle& p, float dt);
+    // respawns particle
+    virtual void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
 
 #endif

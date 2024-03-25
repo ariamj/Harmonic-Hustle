@@ -339,19 +339,6 @@ void RenderSystem::draw()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
-	//auto pre_render = Clock::now();
-
-	// Particle rendering, behind associated entities. Updates happen in world_system step
-	for (auto generator : particle_generators) {
-		generator->Draw();
-	}
-	glBindVertexArray(vao);
-
-
-	// auto post_render = Clock::now();
-	// std::chrono::duration<double> duration = post_render - pre_render;
-	// std::cout << "Render:" << duration.count() << "\n";
-
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
@@ -362,6 +349,21 @@ void RenderSystem::draw()
 			}
 		}
 	}
+
+
+	//auto pre_render = Clock::now();
+
+	// Particle rendering, behind associated entities. Updates happen in world_system step
+ 	for (auto generator : particle_generators) {
+		generator->Draw();
+	}
+	glBindVertexArray(vao);
+
+
+	// auto post_render = Clock::now();
+	// std::chrono::duration<double> duration = post_render - pre_render;
+	// std::cout << "Render:" << duration.count() << "\n";
+
 
 	// Text-rendering
 
@@ -408,37 +410,26 @@ mat3 RenderSystem::createProjectionMatrix()
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-void RenderSystem::createParticleGenerator(int particle_type_id, Entity associated_entity) {
+void RenderSystem::createParticleGenerator(int particle_type_id) {
 	// int amount = 0;
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
+		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::TRAIL_PARTICLE];
 			std::shared_ptr<TrailParticleGenerator> generator =
-				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture, associated_entity));
+				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture));
 			particle_generators.push_back(generator);
-	}
-}
-
-void RenderSystem::updateParticles(float elapsed_ms_since_last_update) {
-	// Update particles
-	int new_particles = 2;
-	float dt = elapsed_ms_since_last_update / 1000.f;
-	for (auto generator : particle_generators) {
-		// ParticleEffect component signals entities that have particle generators
-		
-		if (generator == NULL) {
-			continue;
+			return;
 		}
-		if (registry.particleEffects.has(generator->entity)) {
-			generator->Update(dt, new_particles, vec2(0.f, 0.f));
-		}
-		else {
-			// Remove generator and free memory
-			auto position = std::find(particle_generators.begin(), particle_generators.end(), generator);
-			if (position != particle_generators.end()) {
-				particle_generators.erase(position);
-			}
+		case (int)PARTICLE_TYPE_ID::SPARK:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SPARK_PARTICLE];
+			std::shared_ptr<SparkParticleGenerator> generator =
+				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+			return;
 		}
 	}
 }

@@ -326,7 +326,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				}
 			}
 		}
-		renderer->updateParticles(elapsed_ms_since_last_update);
 	}
 	return true;
 };
@@ -351,8 +350,10 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
-	renderer->updateParticles(0.f);
-	renderer->particle_generators.clear();
+	// Delete any remaining sparks entities
+	for (auto entity : registry.particleEffects.entities) {
+		registry.remove_all_components_of(entity);
+	}
 
 	// battle won
 	if (battleWon()) {
@@ -381,6 +382,8 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
+	renderer->particle_generators.clear();
+
 
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
 	//_CrtMemCheckpoint(&s2);
@@ -389,11 +392,12 @@ void Battle::handle_battle_end() {
 
 	//	_CrtMemDumpStatistics(&s3);
 	//}
+	
 }
 
 void Battle::start() {
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
-	// _CrtMemCheckpoint(&s1);
+	 //_CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
@@ -430,6 +434,10 @@ void Battle::start() {
 		RenderRequest& render = registry.renderRequests.get(e);
 		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
 	}
+
+	// Create generators for particles that appear in the battle scene
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
@@ -561,6 +569,7 @@ void Battle::handle_collisions() {
 						colour = PERFECT_COLOUR;
 					}
 					score += standing;
+					createSparks(registry.motions.get(entity_other).position);
 
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
@@ -568,11 +577,11 @@ void Battle::handle_collisions() {
 			}
 		}
 		if (got_hit) {
-			// TODO MUSIC: play sound for successful hit note
+			
 			audio->playHitPerfect();
 		}
 		else {
-			audio->playMissedNote(); // placeholder sound effect
+			audio->playMissedNote();
 		}
 	}
 	registry.collisions.clear();

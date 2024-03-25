@@ -9,18 +9,88 @@
 ******************************************************************/
 #include "particle_generator.hpp"
 #include "iostream"
-#include <chrono>
-using Clock = std::chrono::high_resolution_clock;
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, Entity entity)
-    : entity(entity), shaderProgram(shaderProgram), used_texture(used_texture)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture)
+    : shaderProgram(shaderProgram), used_texture(used_texture)
 {
     init();
 }
 
 void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 offset)
 {
-    std::cout << "WARNING: Base class ParticleGenerator::Update has been called" << "\n";
+    updateEntities();
+
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        Entity entity = blocks[i];
+
+        if (entity == initialized_entity_id) {
+            continue;
+        }
+
+        if (!registry.particleEffects.has(entity)) {
+            // Clear the entity's previously assigned block of data
+            // Note that this also sets scale, color to 0...
+                // If particles not appearing, check that scale is set > 0, and color.a > 0
+            memset(&particles[i * amount], 0.f, sizeof(Particle) * amount - 1);
+            continue;
+        }
+
+        ParticleEffect& particle_effect = registry.particleEffects.get(entity);
+
+        // add new particles 
+        for (unsigned int i = 0; i < newParticles; ++i)
+        {
+            int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
+                particle_effect.min_index, particle_effect.max_index);
+            particle_effect.last_used_particle = unusedParticle;
+            respawnParticle(particles[unusedParticle], entity, TRAIL_NOTE_OFFSET);
+        }
+
+        // update all of a single entity's particles
+        for (int i = particle_effect.min_index; i < particle_effect.max_index; i++)
+        {
+            updateParticleBehaviours(particles[i], dt);
+        }
+    }
+    return;
+}
+
+void ParticleGenerator::updateEntities() {
+    // Check for new entities with ParticleEffect since last update
+    for (auto entity : registry.particleEffects.entities) {
+        // Check if entity is current assigned to a block
+        bool entity_found = false;
+        for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+            if (blocks[i] == entity) {
+                entity_found = true;
+            }
+        }
+        // Assign entity to a block and initialize values
+        if (!entity_found) {
+            ParticleEffect& particle_effect = registry.particleEffects.get(entity);
+
+            // Verify that particle_effect matches this generator's type
+            if (particle_effect.type != getType()) {
+                continue;
+            }
+
+            int free_block = findUnusedBlock();
+            // if no free blocks were found, skip
+            if (free_block == -1) {
+                continue;
+            }
+
+            // set entity reference, and indices of shared particles array
+            blocks[free_block] = entity;
+            particle_effect.min_index = free_block * amount;
+            particle_effect.max_index = particle_effect.min_index + amount - 1;
+            particle_effect.last_used_particle = particle_effect.min_index;
+        }
+    }
+}
+
+void ParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
+    std::cout << "WARNING: Base class ParticleGenerator::updateParticleBehaviours has been called" << "\n";
     return; // should be overridden in subclasses
 }
 
@@ -64,14 +134,8 @@ void ParticleGenerator::Draw()
         glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(particles), particles);
 
-
-        // auto pre_render = Clock::now();
         // Instanced rendering call
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, amount);
-
-        // auto post_render = Clock::now();
-        // std::chrono::duration<double> duration = post_render - pre_render;
-        // std::cout << "Render:" << duration.count() << "\n";
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, max_particles);
 
         // Clean up
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -106,14 +170,19 @@ void ParticleGenerator::init()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     // glBindVertexArray(0);
 
-    // create this->amount default particle instances
-    for (unsigned int i = 0; i < amount; ++i)
+    // 
+    for (int i = 0; i < max_particles; i++) {
         particles[i] = Particle();
+    }
+    initialized_entity_id = blocks[0];
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        blocks[i] = initialized_entity_id;
+    }
 
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -125,34 +194,27 @@ void ParticleGenerator::init()
     glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2)));
     glVertexAttribDivisor(2, 1); // attribute at layout 2 is instanced
 
-    // Point aLife attribute to each Particle's life in particles array
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4)));
-    glVertexAttribDivisor(3, 1); // attribute at layout 2 is instanced
-
     // Point aScale attribute to each Particle's scale in particles array
-        // Point aLife attribute to each Particle's life in particles array
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
-    glVertexAttribDivisor(4, 1); // attribute at layout 2 is instanced
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(2 * sizeof(vec2) + sizeof(vec4) + sizeof(float)));
+    glVertexAttribDivisor(3, 1); // attribute at layout 3 is instanced
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 // stores the index of the last particle used (for quick access to next dead particle)
-unsigned int lastUsedParticle = 0;
-unsigned int ParticleGenerator::firstUnusedParticle()
+unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int begin, int end)
 {
     // first search from last used particle, this will usually return almost instantly
-    for (unsigned int i = lastUsedParticle; i < amount; ++i){
+    for (int i = lastUsedParticle; i < end; ++i){
         if (particles[i].life <= 0.0f){
             lastUsedParticle = i;
             return i;
         }
     }
     // otherwise, do a linear search
-    for (unsigned int i = 0; i < lastUsedParticle; ++i){
+    for (int i = begin; i < lastUsedParticle; ++i){
         if (particles[i].life <= 0.0f){
             lastUsedParticle = i;
             return i;
@@ -163,9 +225,27 @@ unsigned int ParticleGenerator::firstUnusedParticle()
     return 0;
 }
 
-void ParticleGenerator::respawnParticle(Particle &particle, glm::vec2 offset)
+void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::vec2 offset)
 {
     std::cout << "WARNING: Base class ParticleGenerator::respawnParticle has been called" << "\n";
     return; // should be overriden in subclasses 
 }
 
+int ParticleGenerator::findUnusedBlock()
+{
+    // Find an available block index and return it
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        // 0 when initialized, or free when previous Entity is no longer registered for particles
+        if (blocks[i] == 0 || !registry.particleEffects.has(blocks[i])) {
+            std::cout << "New block index:" << i << "\n";
+            return i;
+        }
+    }
+    return -1;
+}
+
+PARTICLE_TYPE_ID ParticleGenerator::getType()
+{
+    std::cout << "WARNING: Base class ParticleGenerator::getType has been called" << "\n";
+    return PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT; // should be overriden in subclasses 
+}

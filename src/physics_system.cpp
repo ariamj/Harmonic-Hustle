@@ -362,6 +362,9 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 }
 		 }
 	 }
+
+	 updateParticles(renderSystem, elapsed_ms);
+
 	 if (debugging.in_debug_mode) {
 		 for (int i = 0; i < motion_registry.components.size(); ++i) {
 			 Motion& motion = motion_registry.components[i];
@@ -418,4 +421,25 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 }
 		 }
 	 }
+}
+
+void PhysicsSystem::updateParticles(RenderSystem* renderSystem, float elapsed_ms) {
+	// Update particles
+	int new_particles = 2;
+	float dt = elapsed_ms / 1000.f;
+	for (auto generator : renderSystem->particle_generators) {
+		// Generate particles of all types currently allocated
+		if (generator != NULL) {
+			generator->Update(dt, new_particles, vec2(0.f, 0.f));
+		}
+	}
+	// Step timers for timed particle entities
+	for (auto entity : registry.particleTimers.entities) {
+		ParticleTimer& timer = registry.particleTimers.get(entity);
+		timer.count_ms -= elapsed_ms;
+		if (timer.count_ms <= 0.f) {
+			registry.particleEffects.remove(entity);
+			registry.particleTimers.remove(entity);
+		}
+	}
 }

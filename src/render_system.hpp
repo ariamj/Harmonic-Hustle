@@ -7,8 +7,8 @@
 #include "components.hpp"
 #include "tiny_ecs.hpp"
 
-#include "particle_generator.hpp"
 #include "trail_particle_generator.hpp"
+#include "spark_particle_generator.hpp"
 
 #include <map>
 
@@ -55,6 +55,7 @@ class RenderSystem {
 		textures_path("Boss-Protrait-Neutral.png"),
 		textures_path("Player-CS-Neutral.png"),
 		textures_path("CS-Text-Box.png"),
+		textures_path("Spark-Particle.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -70,7 +71,8 @@ class RenderSystem {
 		shader_path("judgement"),
 		shader_path("note"),
 		shader_path("font"),
-		shader_path("trailParticle")
+		shader_path("trailParticle"),
+		shader_path("sparkParticle")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;
@@ -116,8 +118,7 @@ public:
 	// Particles
 	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
 
-	void createParticleGenerator(int particle_type_id, Entity entity);
-	void updateParticles(float elapsed_ms_since_last_update);
+	void createParticleGenerator(int particle_type_id);
 
 
 private:

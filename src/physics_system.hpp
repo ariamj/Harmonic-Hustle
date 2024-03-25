@@ -11,6 +11,7 @@ class PhysicsSystem
 {
 public:
 	void step(float elapsed_ms, RenderSystem* renderSystem);
+	void updateParticles(RenderSystem* renderSystem, float elapsed_ms);
 
 	PhysicsSystem()
 	{
