@@ -438,8 +438,7 @@ void PhysicsSystem::updateParticles(RenderSystem* renderSystem, float elapsed_ms
 		ParticleTimer& timer = registry.particleTimers.get(entity);
 		timer.count_ms -= elapsed_ms;
 		if (timer.count_ms <= 0.f) {
-			registry.particleEffects.remove(entity);
-			registry.particleTimers.remove(entity);
+			registry.remove_all_components_of(entity);
 		}
 	}
 }
