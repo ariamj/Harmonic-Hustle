@@ -125,7 +125,7 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
-	int curr_level = 1;
+	int curr_level = 4; // 4 for testing; jumping to boss scene. Should be 1
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
 };
