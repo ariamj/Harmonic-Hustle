@@ -107,9 +107,18 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	audioSystem.init();
 
 	// Set all states to default
-	
     restart_game();
-	readerwriter.load_game();
+	if (readerwriter.load_game()) {
+		// remove initial enemies
+		for (auto e : registry.enemies.entities) {
+			registry.remove_all_components_of(e);
+		}
+		// repopulate with enemies from save file
+		for (auto& enemy : gameInfo.existing_enemy_info) {
+			createEnemy(renderer, vec2(enemy[0], enemy[1]), enemy[2]);
+		}
+	}
+	
 }
 
 
@@ -204,19 +213,17 @@ void WorldSystem::restart_game() {
 	
 	// create set number of enemies
 	// createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	if (gameInfo.is_new_game) {
-		createEnemy(renderer, getRamdomEnemyPosition(), 1);
-		createEnemy(renderer, getRamdomEnemyPosition(), 1);
-		createEnemy(renderer, getRamdomEnemyPosition(), 1);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
+	createEnemy(renderer, getRamdomEnemyPosition(), 1);
 
-		createEnemy(renderer, getRamdomEnemyPosition(), 2);
-		createEnemy(renderer, getRamdomEnemyPosition(), 2);
-		createEnemy(renderer, getRamdomEnemyPosition(), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
+	createEnemy(renderer, getRamdomEnemyPosition(), 2);
 
-		createEnemy(renderer, getRamdomEnemyPosition(), 3);
-		createEnemy(renderer, getRamdomEnemyPosition(), 3);
-		createEnemy(renderer, getRamdomEnemyPosition(), 3);
-	}
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
+	createEnemy(renderer, getRamdomEnemyPosition(), 3);
 	
 
 	checkEnemyPositions();

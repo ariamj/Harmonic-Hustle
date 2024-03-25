@@ -6,33 +6,6 @@
 #include "../ext/jsoncpp/json/json.h"
 
 
-// load saved game state from save_<file number>.txt and return true if success
-// if file dne, make such a file and return false
-// saves to save_0 file
-bool loadSave(int file_number) {
-	std::string filename = "save_" + std::to_string(file_number) + ".txt";
-	FILE* fptr;
-	fptr = fopen(saves_path(filename).c_str(), "r");
-	if (fptr != NULL) {
-		// TODO: read game data from file
-		if (fscanf(fptr, "%d", &gameInfo.curr_level) == 1) {
-			printf("ok\n");
-			fclose(fptr);
-		}
-		else printf("something wrong\n");
-
-		return true;
-	}
-	else {
-		std::ofstream MyFile(saves_path(filename));
-		// write to the file our initial state;
-		printf("Else\n");
-		// Close the file
-		MyFile.close();
-	}
-	return false;
-}
-
 Serializer::Serializer() {
 
 }
@@ -40,6 +13,7 @@ Serializer::Serializer() {
 // reader
 // load game state by creating enemies and player according to saved data
 bool Serializer::load_game() {
+
 	Json::CharReaderBuilder rbuilder;
 	std::string filename = "save_" + std::to_string(0) + ".json";
 	std::ifstream file(saves_path(filename));
@@ -51,8 +25,9 @@ bool Serializer::load_game() {
 		// Close the file
 		MyFile.close();
 		return false;
-	}Json::Value root;
-		Json::CharReaderBuilder builder;
+	}
+	Json::Value root;
+	Json::CharReaderBuilder builder;
 
 	try {
 		
@@ -60,8 +35,8 @@ bool Serializer::load_game() {
 		JSONCPP_STRING errs;
 		if (!parseFromStream(builder, file, &root, &errs)) {
 			Json::StreamWriterBuilder writerBuilder;
-			std::string errsStr = Json::writeString(writerBuilder, errs);
-			printf("Failed to parse JSON: %s\n", errsStr.c_str());
+			std::string errs_str = Json::writeString(writerBuilder, errs);
+			printf("JSON parsing failed: %s\n", errs_str.c_str());
 			return false;
 		}
 		file.close();
@@ -72,9 +47,25 @@ bool Serializer::load_game() {
 		registry.levels.get(*gameInfo.player_sprite).level = lvl;
 		gameInfo.curr_level = lvl;
 		motion.position = vec2(root["player"]["position"][0].asFloat(), root["player"]["position"][1].asFloat());
-		//printf("Hi %s\n", f.c_str());
-		//printf("fr: %f\n", fr);
-		printf("Goodday\n");
+		auto& enemiesData = gameInfo.existing_enemy_info;
+
+		Json::Value enemies = root["enemies"];
+		for (auto it = enemies.begin(); it != enemies.end(); ++it) {
+			
+			std::string enemyID = it.key().asString();
+
+			Json::Value position = (*it)["position"];
+			for (const auto& coord : position) {
+				float enemy_x = coord[0].asFloat();
+				float enemy_y = coord[1].asFloat();
+				int enemy_lvl = coord[2].asInt();
+				enemiesData.push_back({enemy_x, enemy_y, (float)enemy_lvl});
+				printf("Enemy's (x, y, level): (%.2f, %.2f, %.2f)\n", enemy_x, enemy_y, (float) enemy_lvl);
+			}
+		}
+
+		gameInfo.is_intro_finished = root["gameInfo"]["is_intro_finished"].asBool();
+		gameInfo.is_boss_finished = root["gameInfo"]["is_intro_finished"].asBool();
 		
 	}
 	catch (std::exception e) {
@@ -90,6 +81,7 @@ bool Serializer::load_game() {
 // saves the game state: 
 //		player: overworld position, current level
 //		enemies: overworld positions, levels
+
 bool Serializer::save_game() {
 	Entity e = registry.players.entities[0];
 	Motion& motion = registry.motions.get(e);
@@ -107,10 +99,11 @@ bool Serializer::save_game() {
 		const auto& pos = m.position;
 		auto& level = registry.levels.get(e).level;
 		std::string level_str = std::to_string(level);
-		Json::Value enemyPos;
-		enemyPos.append(pos.x);
-		enemyPos.append(pos.y);
-		root["enemies"][level_str]["position"].append(enemyPos);
+		Json::Value enemyInfo;
+		enemyInfo.append(pos.x);
+		enemyInfo.append(pos.y);
+		enemyInfo.append(level);
+		root["enemies"][level_str]["position"].append(enemyInfo);
 
 	}
 	root["gameInfo"]["is_intro_finished"] = gameInfo.is_intro_finished;

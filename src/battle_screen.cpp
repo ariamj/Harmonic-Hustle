@@ -7,6 +7,7 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
+#include "serializer.hpp"
 
 // consts for now;
 const size_t MAX_NOTES = 10;
@@ -32,6 +33,8 @@ float last_beat;
 const int NUM_UNIQUE_BATTLES = 4;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
+
+Serializer s = Serializer();
 
 Battle::Battle() {
     rng = std::default_random_engine(std::random_device()());
@@ -203,6 +206,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// next instruction
 		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+		// notify save
+		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 5)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
 	} else {
 		auto& motions_registry = registry.motions;
 
@@ -370,6 +376,10 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
+
+	// game auto saves after each battle:
+	s.save_game();
+	
 }
 
 void Battle::start() {

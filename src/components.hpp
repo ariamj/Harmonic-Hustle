@@ -136,7 +136,7 @@ struct GameInfo {
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;
-	bool is_new_game = true; // false if there is an existing save file with previous game data
+	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 };
 extern GameInfo gameInfo;
 
