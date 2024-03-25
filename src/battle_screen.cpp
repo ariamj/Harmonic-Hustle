@@ -7,7 +7,6 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
-#include "serializer.hpp"
 
 // consts for now;
 const size_t MAX_NOTES = 10;
@@ -53,11 +52,12 @@ Battle::~Battle() {
 
 };
 
-void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio) {
+void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
 	this->audio = audio;
+	this->saver = saver;
 
 	lanes[0] = gameInfo.lane_1;
     lanes[1] = gameInfo.lane_2;
@@ -468,6 +468,7 @@ void Battle::handle_battle_end() {
 		registry.renderRequests.remove(gameInfo.curr_enemy);
 
 	}
+	saver->save_game();
 	gameInfo.curr_enemy = {};
 }
 
@@ -488,8 +489,8 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil(num_notes * perfect / 2);
-	// score_threshold = 0;
+	// score_threshold = ceil(num_notes * perfect / 2);
+	score_threshold = 0;
 
 	// Reset counters
 	perfect_counter = 0;

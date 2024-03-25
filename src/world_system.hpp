@@ -104,6 +104,10 @@ private:
 	// };
 	MouseArea mouse_area = in_unclickable;
 
+
+	Serializer saver = Serializer();
+
+
 	// music references
 	// Mix_Music* background_music;
 

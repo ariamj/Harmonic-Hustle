@@ -1,7 +1,6 @@
 // Header
 #include "world_system.hpp"
 #include "world_init.hpp"
-#include "serializer.hpp"
 
 // stlib
 #include <cassert>
@@ -97,8 +96,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	gameInfo.curr_enemy = Entity{};
 
-	overworld.init(window, renderer_arg);
-	battle.init(window, renderer_arg, &audioSystem);
+	overworld.init(window, renderer_arg, &saver);
+	battle.init(window, renderer_arg, &audioSystem, &saver);
 	settings.init(window, renderer_arg);
 	start.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
@@ -108,6 +107,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	// Set all states to default
     restart_game();
+	// change this to load game on a button in start screen
 	if (readerwriter.load_game()) {
 		// remove initial enemies
 		for (auto e : registry.enemies.entities) {
@@ -512,10 +512,11 @@ void WorldSystem::handleEscInput(int action) {
 			}
 
 		}
-		else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-			battle.start();
-			render_set_battle_screen();
-		}
+		// disable help/settings during cutscenes
+		// else if (gameInfo.curr_screen == Screen::CUTSCENE) {
+		// 	battle.start();
+		// 	render_set_battle_screen();
+		// }
 	}
 }
 

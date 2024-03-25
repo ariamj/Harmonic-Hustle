@@ -1,5 +1,4 @@
 #pragma once
-#include "serializer.hpp"
 #include "world_system.hpp"
 #include <iostream>
 #include <fstream>
@@ -108,7 +107,6 @@ bool Serializer::save_game() {
 	}
 	root["gameInfo"]["is_intro_finished"] = gameInfo.is_intro_finished;
 	root["gameInfo"]["is_boss_finished"] = gameInfo.is_boss_finished;
-	
 
 	// write to string
 	std::string document = Json::writeString(wBuilder, root);
