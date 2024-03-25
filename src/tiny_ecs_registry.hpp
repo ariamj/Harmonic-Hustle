@@ -41,6 +41,7 @@ public:
 	ComponentContainer<CSText> CSTexts;
 	ComponentContainer<CSTextbox> CSTextbox;
 	ComponentContainer<BattleEnemy> battleEnemy;
+	ComponentContainer<ParticleTimer> particleTimers;
 	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -76,6 +77,7 @@ public:
 		registry_list.push_back(&CSTexts);
 		registry_list.push_back(&CSTextbox);
 		registry_list.push_back(&battleEnemy);
+		registry_list.push_back(&particleTimers);
 	}
 
 	void clear_all_components() {

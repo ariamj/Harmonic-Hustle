@@ -5,7 +5,6 @@
 #include "../ext/stb_image/stb_image.h"
 #include "screen.hpp"
 
-
 // Sets the brightness of the screen
 struct ScreenState
 {
@@ -51,11 +50,6 @@ struct BoxButton {
 	std::string text;
 	float text_scale = 1.f;
 	glm::vec3 text_colour = vec3(0.f);
-};
-
-struct ParticleEffect
-{
-
 };
 
 // Mesh datastructure for storing vertex and index buffers
@@ -254,7 +248,8 @@ enum class TEXTURE_ASSET_ID {
 	BATTLEBOSS = BOSS_CS + 1,
 	PLAYER_CS = BATTLEBOSS + 1,
 	BOX_CS = PLAYER_CS + 1,
-	TEXTURE_COUNT = BOX_CS + 1 // keep as last variable
+	SPARK_PARTICLE = BOX_CS + 1,
+	TEXTURE_COUNT = SPARK_PARTICLE +1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -271,7 +266,8 @@ enum class EFFECT_ASSET_ID {
 	NOTE = JUDGEMENT + 1,
 	FONT = NOTE + 1,
 	TRAIL_PARTICLE = FONT + 1,
-	EFFECT_COUNT = TRAIL_PARTICLE + 1 // keep as last variable
+	SPARK_PARTICLE = TRAIL_PARTICLE + 1,
+	EFFECT_COUNT = SPARK_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
@@ -291,9 +287,27 @@ const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
 enum class PARTICLE_TYPE_ID {
 	TRAIL = 0,
-	PARTICLE_TYPE_COUNT = TRAIL + 1
+	SPARK = TRAIL + 1,
+	PARTICLE_TYPE_COUNT = SPARK + 1
 };
 const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
+
+struct ParticleEffect
+{
+	int last_used_particle;
+	int min_index;
+	int max_index;
+	PARTICLE_TYPE_ID type;
+
+	// for non-continuous-spawning particles 
+	int spawned_particles = 0;
+	int max_particles = 500; // can be set on entity creation
+};
+
+struct ParticleTimer
+{
+	float count_ms = 1500.f;
+};
 
 struct RenderRequest {
 	TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;

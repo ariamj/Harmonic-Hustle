@@ -52,9 +52,10 @@ const float CHASE_TOTAL_VELOCITY = 50.f;
 const float RUN_AWAY_TOTAL_VELOCITY = 50.f;
 const float DEFAULT_ENEMY_VELOCITY = 50.f;
 
-
-// Interpolation constants, on range [0,1] 
-const float NOTE_POSITION_STEP_SIZE = 0.002f;
+// Particle-related
+const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
+const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 4);
+const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
 
 // FPS global set by main.cpp
 extern int FPS;
@@ -115,3 +116,5 @@ enum MouseArea {
 bool gl_has_errors();
 
 vec2 getRandomEnemyVelocity();
+
+float lerp(float start, float end, float t);

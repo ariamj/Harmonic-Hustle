@@ -101,7 +101,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 150, 150 };
+	motion.velocity = { 0.f, 150.f };
 	motion.position = pos;
 	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
 
@@ -119,11 +119,10 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 			GEOMETRY_BUFFER_ID::SPRITE,
 		}
 	);
-	registry.particleEffects.emplace(entity);
 
-	// attach particle generator to note
-			
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL, entity);
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::TRAIL;
 
 	return entity;
 
@@ -454,4 +453,22 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	btn.text_colour = text_colour;
 
 	return btn_base;
+}
+
+Entity createSparks(vec2 pos) {
+	Entity entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.velocity = {0.f, -50.f};
+
+	// Add timer to remove entity automatically
+	registry.particleTimers.emplace(entity);
+
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::SPARK;
+	particles.max_particles = 20;
+
+	return entity;
 }

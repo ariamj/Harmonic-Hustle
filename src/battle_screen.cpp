@@ -34,6 +34,15 @@ const int NUM_UNIQUE_BATTLES = 4;
 BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
 
 
+// DEBUG MEMORY LEAKS (WINDOWS ONLY)
+// https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
+//#define _CRTDBG_MAP_ALLOC
+//#include <stdlib.h>
+//#include <crtdbg.h>
+//_CrtMemState s1;
+//_CrtMemState s2;
+
+
 Serializer s = Serializer();
 
 Battle::Battle() {
@@ -323,7 +332,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				}
 			}
 		}
-		renderer->updateParticles(elapsed_ms_since_last_update);
 	}
 	return true;
 };
@@ -346,6 +354,10 @@ void Battle::handle_battle_end() {
 
 	// Delete any remaining note entities
 	for (auto entity : registry.notes.entities) {
+		registry.remove_all_components_of(entity);
+	}
+	// Delete any remaining sparks entities
+	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
 
@@ -376,15 +388,11 @@ void Battle::handle_battle_end() {
 
 	}
 	gameInfo.curr_enemy = {};
-
-	// game auto saves after each battle:
-	s.save_game();
-	
 }
 
 void Battle::start() {
-	// STRETCH: Have multiple different "enemies" (combination of music + notes) for each level
-	// Right now, it is 1:1 ratio, one enemy is one level
+	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
+	 //_CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
@@ -421,6 +429,10 @@ void Battle::start() {
 		RenderRequest& render = registry.renderRequests.get(e);
 		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
 	}
+
+	// Create generators for particles that appear in the battle scene
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
@@ -552,6 +564,7 @@ void Battle::handle_collisions() {
 						colour = PERFECT_COLOUR;
 					}
 					score += standing;
+					createSparks(registry.motions.get(entity_other).position);
 
 					registry.collisionTimers.emplace(entity_other);
 					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
@@ -559,11 +572,11 @@ void Battle::handle_collisions() {
 			}
 		}
 		if (got_hit) {
-			// TODO MUSIC: play sound for successful hit note
+			
 			audio->playHitPerfect();
 		}
 		else {
-			audio->playMissedNote(); // placeholder sound effect
+			audio->playMissedNote();
 		}
 	}
 	registry.collisions.clear();
@@ -651,9 +664,3 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 void Battle::handle_mouse_move(vec2 pos) {
     
 };
-
-// From https://www.gamedev.net/tutorials/programming/general-and-gameplay-programming/a-brief-introduction-to-lerp-r4954/
-// Linked on Canvas M1 requirements
-float Battle::lerp(float start, float end, float t) {
-	return start * (1-t) + end * t;
-}
