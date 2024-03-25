@@ -125,12 +125,14 @@ struct GameInfo {
 	float lane_3;
 	float lane_4;
 	Entity curr_enemy;
-	int curr_level = 3; // change to test a specific battle; should be 1
+	int curr_level = 1;
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;
+	bool is_game_over_finished = false;
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
+	bool gameIsOver = false;
 };
 extern GameInfo gameInfo;
 

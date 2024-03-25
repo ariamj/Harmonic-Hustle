@@ -146,6 +146,63 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
             Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
+    }else if (!gameInfo.is_game_over_finished) {
+         if (registry.enemyCS.components.size() == 0) {
+            Entity enemy = createCSEnemy(this->renderer, vec2(gameInfo.width - xDisplacement - 40.f, gameInfo.height / 2.f));
+            registry.enemyCS.emplace(enemy);
+        }
+
+        if (registry.playerCS.components.size() == 0) {
+            Entity player = createCSPlayer(this->renderer, vec2(xDisplacement, gameInfo.height / 2.f));
+            registry.playerCS.emplace(player);
+        }
+
+        if (registry.CSTextbox.components.size() == 0) {
+            Entity textbox = createCSTextbox(this->renderer, vec2(gameInfo.width / 2.f, gameInfo.height / 1.3));
+            registry.CSTextbox.emplace(textbox);
+        }
+
+        if ((game_over_dialogue_progress + 1) % 2 == 0) {
+            Entity e = registry.playerCS.entities[0];
+            Entity enemy = registry.enemyCS.entities[0];
+
+            if (!registry.colours.has(e)) {
+                registry.colours.insert(e, Colour::dark_gray);
+            }
+
+            if (registry.colours.has(enemy)) {
+                registry.colours.remove(enemy);
+            }
+        }
+        else {
+            Entity e = registry.enemyCS.entities[0];
+            Entity player = registry.playerCS.entities[0];
+
+            if (!registry.colours.has(e)) {
+                registry.colours.insert(e, Colour::dark_gray);
+            }
+
+            if (registry.colours.has(player)) {
+                registry.colours.remove(player);
+            }
+
+        }
+
+        if (registry.CSTexts.components.size() == 0) {
+            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            registry.CSTexts.emplace(text);
+
+            // continue text
+            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+        }
+        else {
+            for (auto& e : registry.CSTexts.entities) {
+                registry.texts.remove(e);
+            }
+
+            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            registry.CSTexts.emplace(text);
+        }
     }
 
     // Remove debug info from the last step
@@ -185,8 +242,10 @@ void Cutscene::handle_key(int key, int scancode, int action, int mod) {
                 if (!gameInfo.is_intro_finished) {
                     intro_dialogue_progress++;
                 }
-                else {
+                else if (!gameInfo.is_boss_finished) {
                     boss_dialogue_progress++;
+                } else {
+                    game_over_dialogue_progress++;
                 }
             }
             break;

@@ -15,7 +15,7 @@ const float PLAYER_SPEED = 200.f;
 Serializer saver = Serializer();
 
 Overworld::Overworld() 
-: next_enemy_spawn(0.f) 
+: next_enemy_spawn(0.f)
 {
     rng = std::default_random_engine(std::random_device()());
 }
@@ -39,11 +39,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	// Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
-
-	// remove all text from last step
-	while (registry.texts.entities.size() > 0)
-		registry.remove_all_components_of(registry.texts.entities.back());
-
+		
 	// Remove out of screen entities (Notes, etc.)
 	auto& motions_registry = registry.motions;
 

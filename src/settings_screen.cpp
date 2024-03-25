@@ -16,7 +16,7 @@ Settings::~Settings() {
 };
 
 void Settings::init(GLFWwindow* window, RenderSystem* renderer) {
-     is_visible = false;
+    is_visible = false;
     this->window = window;
     this->renderer = renderer;
 };

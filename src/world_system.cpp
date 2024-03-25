@@ -20,7 +20,7 @@ WorldSystem::WorldSystem(){
 
 WorldSystem::~WorldSystem() {
     // Destory all created components
-
+	registry.clear_all_components();
 	// Close the window
 	glfwDestroyWindow(window);
 }
@@ -143,6 +143,10 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			std::cout << "GO TO INTRO" << '\n';
 			render_set_cutscene();
 		}
+		if (gameInfo.curr_level == gameInfo.max_level) {
+			std::cout << "GO TO GAME OVER DIALOGUE" << '\n';
+			render_set_cutscene();
+		}
 		return overworld.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::BATTLE) {
 		bool song_playing = audioSystem.musicPlaying();
@@ -155,18 +159,27 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			// go to boss cutscene
+			if (gameInfo.curr_level == 4 && !gameInfo.is_boss_finished) {
+				render_set_cutscene();
+			}
+			if (gameInfo.curr_level == 4 && gameInfo.gameIsOver) {
+				render_set_cutscene();
+			}
 			render_set_overworld_screen();
-		}
-
-		// go to boss cutscene
-		if (gameInfo.curr_level == 4 && !gameInfo.is_boss_finished) {
-			render_set_cutscene();
 		}
 		return toReturn;
 	} else if (gameInfo.curr_screen == Screen::SETTINGS) {
     	return settings.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-		if (cutscene.boss_dialogue_progress >= size(cutscene.BOSS_DIALOGUE)) {
+		// add in a restart here for after game over dialogue
+
+		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE_SENTENCES) {
+			std::cout << "RESTART GAME" << std::endl;
+			gameInfo.is_game_over_finished = true;
+			restart_game();		
+		}
+		else if (cutscene.boss_dialogue_progress >= size(cutscene.BOSS_DIALOGUE) && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			gameInfo.is_boss_finished = true;
 			battle.start();
@@ -250,6 +263,17 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 
 	start.init_screen();
+	
+	// reset cut scene info
+	gameInfo.gameIsOver = false;
+	cutscene.boss_dialogue_progress = 0;
+	cutscene.intro_dialogue_progress = 0;
+	cutscene.game_over_dialogue_progress = 0;
+	gameInfo.is_boss_finished = false;
+	gameInfo.is_game_over_finished = false;
+	gameInfo.is_intro_finished = false;
+
+	gameInfo.curr_level = 1;
 
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();

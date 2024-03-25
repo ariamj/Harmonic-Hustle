@@ -8,6 +8,13 @@ Our game will have one primary zone resembling a city, with up to three differen
 
 ## Milestone requirements
 
+### M3
+| Requirement  | in game feature |
+| ------------- | ------------- |
+| Basic Creative component | Reloadability |
+| Basic Creative component  | Story elements (cutscenes) |
+| Advanced Creative component  | Particle system (note trails) |
+
 ### M2
 | Requirement  | in game feature |
 | ------------- | ------------- |
@@ -22,6 +29,6 @@ Our game will have one primary zone resembling a city, with up to three differen
 
 ## Video links:
 * M1 demo: https://www.youtube.com/watch?v=6NH76u7yUXw
-* M2 demo: 
+* M2 demo: https://www.youtube.com/watch?v=P_qFtmGFvA4
 
 
