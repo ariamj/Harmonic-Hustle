@@ -176,7 +176,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
 		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE_SENTENCES) {
 			std::cout << "RESTART GAME" << std::endl;
-			cutscene.is_game_over_finished = true;
+			gameInfo.is_game_over_finished = true;
 			restart_game();		
 		}
 		else if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1) && !gameInfo.gameIsOver) {
@@ -270,9 +270,11 @@ void WorldSystem::restart_game() {
 	cutscene.boss_dialogue_progress = 0;
 	cutscene.intro_dialogue_progress = 0;
 	cutscene.game_over_dialogue_progress = 0;
-	cutscene.is_boss_finished = false;
-	cutscene.is_game_over_finished = false;
-	cutscene.is_intro_finished = false;
+	gameInfo.is_boss_finished = false;
+	gameInfo.is_game_over_finished = false;
+	gameInfo.is_intro_finished = false;
+
+	gameInfo.curr_level = 1;
 
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();

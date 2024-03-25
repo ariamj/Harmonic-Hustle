@@ -146,7 +146,7 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
             Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
-    }else if (!is_game_over_finished) {
+    }else if (!gameInfo.is_game_over_finished) {
          if (registry.enemyCS.components.size() == 0) {
             Entity enemy = createCSEnemy(this->renderer, vec2(gameInfo.width - xDisplacement - 40.f, gameInfo.height / 2.f));
             registry.enemyCS.emplace(enemy);
@@ -242,7 +242,7 @@ void Cutscene::handle_key(int key, int scancode, int action, int mod) {
                 if (!gameInfo.is_intro_finished) {
                     intro_dialogue_progress++;
                 }
-                else if (!is_boss_finished) {
+                else if (!gameInfo.is_boss_finished) {
                     boss_dialogue_progress++;
                 } else {
                     game_over_dialogue_progress++;

@@ -488,7 +488,8 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil(num_notes * perfect / 2);
+	// score_threshold = ceil(num_notes * perfect / 2);
+	score_threshold = 0;
 
 	// Reset counters
 	perfect_counter = 0;
