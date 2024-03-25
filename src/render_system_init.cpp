@@ -508,10 +508,22 @@ void RenderSystem::initializeParticleGenerators()
 	// set projection matrix to all particle shader programs
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameInfo.width), static_cast<float>(gameInfo.height), 0.0f);
 	
-	GLuint trail_shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
-	glUseProgram(trail_shaderProgram);
-	GLint projection_uloc = glGetUniformLocation(trail_shaderProgram, "projection");
-	assert(projection_uloc > -1);
+	// reusable variable to hold a particle's shader program
+	GLuint shaderProgram;
+	GLuint projection_uloc;
+	
+	// Trail
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// Spark
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
 	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 

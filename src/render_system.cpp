@@ -412,10 +412,20 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 	// int amount = 0;
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
+		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::TRAIL_PARTICLE];
 			std::shared_ptr<TrailParticleGenerator> generator =
 				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture));
 			particle_generators.push_back(generator);
+		}
+		case (int)PARTICLE_TYPE_ID::SPARK:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SPARK_PARTICLE];
+			std::shared_ptr<SparkParticleGenerator> generator =
+				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+		}
 	}
 }
