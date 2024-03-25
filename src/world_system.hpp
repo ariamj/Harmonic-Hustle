@@ -16,6 +16,7 @@
 #include "battle_screen.hpp"
 #include "settings_screen.hpp"
 #include "start_screen.hpp"
+#include "game_over_screen.hpp"
 #include "audio_system.hpp"
 #include "cutscene.hpp"
 // #include "screen.hpp"
@@ -31,6 +32,7 @@ public:
 	Overworld overworld;
 	Settings settings;
 	Start start;
+	GameOver gameOver;
 	AudioSystem audioSystem;
 	Cutscene cutscene;
 	
@@ -64,6 +66,9 @@ private:
 	// sets the current scene to start screen
 	bool render_set_start_screen();
 
+	// sets the current scene to game over screen
+	bool render_set_game_over_screen();
+
   // sets to cut scene
 	bool render_set_cutscene();
 
@@ -75,6 +80,7 @@ private:
 	void handleBackspaceInput(int action);
 	void handleClickStartBtn();
 	void handleClickHelpBtn();
+	void handleClickRestartBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
