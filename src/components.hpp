@@ -128,6 +128,7 @@ struct GameInfo {
 	int curr_level = 1;
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
+	bool gameIsOver = false;
 };
 extern GameInfo gameInfo;
 

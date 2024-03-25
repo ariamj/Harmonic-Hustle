@@ -512,6 +512,7 @@ void Battle::start() {
 
 		RenderRequest& render = registry.renderRequests.get(e);
 		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
+		gameInfo.gameIsOver = true;
 	}
 
 	// Create generators for particles that appear in the battle scene
