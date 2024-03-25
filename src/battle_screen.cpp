@@ -489,6 +489,7 @@ void Battle::start() {
 	score = 0;
 	// Reset score threshold
 	score_threshold = ceil(num_notes * perfect / 2);
+	// score_threshold = 0;
 
 	// Reset counters
 	perfect_counter = 0;
@@ -507,6 +508,7 @@ void Battle::start() {
 
 		RenderRequest& render = registry.renderRequests.get(e);
 		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
+		gameInfo.gameIsOver = true;
 	}
 
 	// Create generators for particles that appear in the battle scene

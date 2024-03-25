@@ -11,6 +11,18 @@ AudioSystem::~AudioSystem() {
 		// Destroy music components
 	if (overworld_music != nullptr)
 		Mix_FreeMusic(overworld_music);
+	if(enemy_music[0] != nullptr) 
+		Mix_FreeMusic(enemy_music[0]);
+	if(enemy_music[1] != nullptr) 
+		Mix_FreeMusic(enemy_music[1]);
+	if(enemy_music[2] != nullptr) 
+		Mix_FreeMusic(enemy_music[2]);
+	if (drop_SFX != nullptr)
+		Mix_FreeChunk(drop_SFX);
+	if (overworld_music != nullptr)
+		Mix_FreeChunk(hit_perfect_SFX);
+	if (overworld_music != nullptr)
+		Mix_FreeChunk(miss_SFX);
 	Mix_CloseAudio();
 
 	return;

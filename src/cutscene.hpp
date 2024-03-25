@@ -13,7 +13,10 @@ class Cutscene {
     public:
         int boss_dialogue_progress = 0;
         int intro_dialogue_progress = 0;
-
+       int game_over_dialogue_progress = 0;
+    //     bool is_boss_finished = false;
+    //     bool is_intro_finished = false;
+    //     bool is_game_over_finished = false;
 
         const std::string BOSS_DIALOGUE[4] = {
             "hello",
@@ -28,6 +31,17 @@ class Cutscene {
             "im",
             "talking",
             "ok"
+        };
+
+        const int GAME_OVER_DIALOGUE_SENTENCES = 6;
+
+        const std::string GAME_OVER_DIALOGUE[6] = {
+            "I've done it! Now that you're defeated, GO AWAY!",
+            "I see that you've finally won against me... You can enjoy this moment of peace for now...",
+            "Hey, what do you mean for now?",
+            "You realize it's only been a night right?",
+            "...",
+            "See you tomorrow :)"
         };
 
         const std::string CONT_TEXT = "PRESS SPACE TO CONTINUE";
