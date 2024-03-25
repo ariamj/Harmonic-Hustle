@@ -32,7 +32,7 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
 
     float xDisplacement = CS_WIDTH * 3.f / 7.f;
 
-    if (!is_intro_finished) {
+    if (!gameInfo.is_intro_finished) {
         if (registry.enemyCS.components.size() == 0) {
             Entity enemy = createCSEnemy(this->renderer, vec2(gameInfo.width - xDisplacement - 40.f, gameInfo.height / 2.f));
             registry.enemyCS.emplace(enemy);
@@ -90,7 +90,7 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
             registry.CSTexts.emplace(text);
         }
     }
-    else if (!is_boss_finished) {
+    else if (!gameInfo.is_boss_finished) {
         if (registry.enemyCS.components.size() == 0) {
             Entity enemy = createCSEnemy(this->renderer, vec2(gameInfo.width - xDisplacement - 40.f, gameInfo.height / 2.f));
             registry.enemyCS.emplace(enemy);
@@ -239,7 +239,7 @@ void Cutscene::handle_key(int key, int scancode, int action, int mod) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 std::cout << "NEXT DIALOGUE" << std::endl;
-                if (!is_intro_finished) {
+                if (!gameInfo.is_intro_finished) {
                     intro_dialogue_progress++;
                 }
                 else if (!is_boss_finished) {
