@@ -134,6 +134,8 @@ struct GameInfo {
 	int curr_level = 1;
 	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
+	bool is_boss_finished = false;
+	bool is_intro_finished = false;
 };
 extern GameInfo gameInfo;
 

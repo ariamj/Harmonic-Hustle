@@ -110,6 +110,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	
     restart_game();
 	readerwriter.save_game();
+	//readerwriter.load_game();
 }
 
 
@@ -130,7 +131,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
-		if (!cutscene.is_intro_finished) {
+		if (!gameInfo.is_intro_finished) {
 			std::cout << "GO TO INTRO" << '\n';
 			render_set_cutscene();
 		}
@@ -150,7 +151,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		}
 
 		// go to boss cutscene
-		if (gameInfo.curr_level == 4 && !cutscene.is_boss_finished) {
+		if (gameInfo.curr_level == 4 && !gameInfo.is_boss_finished) {
 			render_set_cutscene();
 		}
 		return toReturn;
@@ -159,14 +160,14 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 		if (cutscene.boss_dialogue_progress >= (cutscene.BOSS_DIALOGUE->length() - 1)) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
-			cutscene.is_boss_finished = true;
+			gameInfo.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !cutscene.is_intro_finished) {
+		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE->length()) && !gameInfo.is_intro_finished) {
 			std::cout << "GO TO OVERWORLD" << std::endl;
-			cutscene.is_intro_finished = true;
+			gameInfo.is_intro_finished = true;
 			render_set_overworld_screen();
 		}
 		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);

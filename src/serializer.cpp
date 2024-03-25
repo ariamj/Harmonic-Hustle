@@ -45,24 +45,44 @@ bool Serializer::load_game() {
 }
 
 // writer
-// need to save: player level, player and enemy positions in overworld
+// need to save: 
+//		player: overworld position, current level
+//		enemies: overworld positions, levels
 bool Serializer::save_game() {
-	Json::Value root;
-	Json::StreamWriterBuilder wBuilder;
-	root["playerLevel"] = registry.levels.get(*gameInfo.player_sprite).level;
-	root["playerPosition"] = "one";	
-	registry.levels.get(*gameInfo.player_sprite).level = 4;
-	gameInfo.curr_level = 4;
-
 	Entity e = registry.players.entities[0];
 	Motion& motion = registry.motions.get(e);
+	Json::Value root;
+	Json::StreamWriterBuilder wBuilder;
+	
+	root["player"]["level"] = registry.levels.get(*gameInfo.player_sprite).level;
+	Json::Value subroot;
+	subroot.append(motion.position.x);
+	subroot.append(motion.position.y);
+	
+	root["player"]["position"] = subroot;
+	registry.list_all_components();
+	int count = 0;
+	for (int i = 0; i < registry.enemies.size(); i++) {
+		Entity e = registry.enemies.entities[i];
+		const auto& m = registry.motions.get(e);
+		const auto& pos = m.position;
+		auto& level = registry.levels.get(e).level;
+		std::string level_str = std::to_string(level);
+		Json::Value enemyPos;
+		enemyPos.append(pos.x);
+		enemyPos.append(pos.y);
+		root["enemies"][level_str]["position"].append(enemyPos);
+
+	}
+	root["gameInfo"]["is_intro_finished"] = gameInfo.is_intro_finished;
+	root["gameInfo"]["is_boss_finished"] = gameInfo.is_boss_finished;
+	
 
 	// write to string
 	std::string document = Json::writeString(wBuilder, root);
 
 	// write string to file
 	std::string filename = "save_" + std::to_string(0) + ".json";
-	FILE* fptr;
 	std::ofstream MyFile(saves_path(filename));
 
 	// write to the file our game state;
@@ -70,7 +90,6 @@ bool Serializer::save_game() {
 
 	// Close the file
 	MyFile.close();
-
 
 	
 	return false;
