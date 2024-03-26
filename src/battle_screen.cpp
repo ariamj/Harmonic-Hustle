@@ -500,12 +500,25 @@ void Battle::start() {
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
 	next_note_index = 1; // Set to 0 if using song position
 
-	if (gameInfo.curr_level == 4) {
-		Entity e = registry.battleEnemy.entities[0];
+	Entity e = registry.battleEnemy.entities[0];
+	RenderRequest& render = registry.renderRequests.get(e);
 
-		RenderRequest& render = registry.renderRequests.get(e);
-		render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
-		gameInfo.gameIsOver = true;
+	switch (gameInfo.curr_level) {
+		case 1:
+			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY;
+			break;
+		case 2:
+			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_DRUM;
+			break;
+		case 3:
+			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_MIC;
+			break;
+		case 4:
+			render.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS;
+			gameInfo.gameIsOver = true;
+			break;
+		default:
+			std::cout << "game level too high" << "\n";
 	}
 
 	// Create generators for particles that appear in the battle scene
