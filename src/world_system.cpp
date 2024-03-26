@@ -291,7 +291,8 @@ void WorldSystem::handle_collisions() {
 	switch(gameInfo.curr_screen) {
 		case Screen::OVERWORLD:
 			if (overworld.handle_collisions()) {
-				restart_game();
+				// transition to game over screen if collide with higher lvl enemy
+				render_set_game_over_screen();
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
 				battle.start();
 				render_set_battle_screen();
