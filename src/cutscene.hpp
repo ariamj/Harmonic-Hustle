@@ -15,14 +15,14 @@ class Cutscene {
         int intro_dialogue_progress = 0;
        int game_over_dialogue_progress = 0;
 
-        const std::string BOSS_DIALOGUE[4] = {
+        const std::vector<std::string> BOSS_DIALOGUE = {
             "you're gonna regret not turning off that music",
             "this party will forever go on",
             "we'll see about that",
             "ya we will see about that..."
         };
 
-        const std::string INTRO_DIALOGUE[5] = {
+        const std::vector<std::string> INTRO_DIALOGUE = {
             "you've had that music blasting all night, can you turn it off?!",
             "chill out bro, it's not even that late",
             "this is the last time I'm gonna ask, turn it off or I'm coming over there!!!",
@@ -30,13 +30,11 @@ class Cutscene {
             "alright thats it!!"
         };
 
-        const int GAME_OVER_DIALOGUE_SENTENCES = 6;
-
-        const std::string GAME_OVER_DIALOGUE[6] = {
-            "I've done it! Now that you're defeated, GO AWAY!",
-            "I see that you've finally won against me... You can enjoy this moment of peace for now...",
-            "Hey, what do you mean for now?",
-            "You realize it's only been a night right?",
+        const std::vector<std::string> GAME_OVER_DIALOGUE = {
+            "HA! how do you feel now that i've defeated you and all your minions??",
+            "...honestly just tired. you win. enjoy your moment of peace for now...",
+            "...Hey, what do you mean for now??",
+            "You realize it's only been one night right?",
             "...",
             "See you tomorrow :)"
         };

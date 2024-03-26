@@ -163,21 +163,21 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 		// add in a restart here for after game over dialogue
 
-		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE_SENTENCES) {
+		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE.size()) {
 			std::cout << "RESTART GAME" << std::endl;
 			gameInfo.is_game_over_finished = true;
 			restart_game();	
 			// overwrite prev save data since game is now finished	
 			saver.save_game();
 		}
-		else if (cutscene.boss_dialogue_progress >= size(cutscene.BOSS_DIALOGUE) && !gameInfo.gameIsOver) {
+		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			gameInfo.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		else if ((cutscene.intro_dialogue_progress >= size(cutscene.INTRO_DIALOGUE)) && !gameInfo.is_intro_finished) {
+		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE.size()) && !gameInfo.is_intro_finished) {
 			gameInfo.is_intro_finished = true;
 			render_set_overworld_screen();
 		}
