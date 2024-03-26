@@ -297,7 +297,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// notify save
-		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 5)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
 	} else {
 		auto& motions_registry = registry.motions;
 

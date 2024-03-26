@@ -100,6 +100,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	battle.init(window, renderer_arg, &audioSystem, &saver);
 	settings.init(window, renderer_arg);
 	start.init(window, renderer_arg);
+	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
 
 	// Moved into here from main
@@ -173,9 +174,9 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE.size()) {
 			std::cout << "RESTART GAME" << std::endl;
 			gameInfo.is_game_over_finished = true;
-			restart_game();	
 			// overwrite prev save data since game is now finished	
 			saver.save_game();
+      render_set_game_over_screen();
 		}
 		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
@@ -189,8 +190,10 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			render_set_overworld_screen();
 		}
 		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);
-	} else {
+	} else if (gameInfo.curr_screen == Screen::START) {
 		return start.handle_step(elapsed_ms_since_last_update, current_speed);
+	} else {
+		return gameOver.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
 
@@ -259,8 +262,6 @@ void WorldSystem::restart_game() {
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
 	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
-
-	start.init_screen();
 	
 	// reset cut scene info
 	gameInfo.gameIsOver = false;
@@ -273,10 +274,14 @@ void WorldSystem::restart_game() {
 
 	gameInfo.curr_level = 1;
 
+	start.init_screen();
+	gameOver.init_screen();
+
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();
 	// render_set_battle_screen();
 	render_set_start_screen();
+	// render_set_game_over_screen();
 }
 
 // Compute collisions between entities
@@ -309,6 +314,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	start.set_visible(false);
+	gameOver.set_visible(false);
 	settings.set_visible(false);
 	battle.set_visible(false);
 	cutscene.set_visible(false);
@@ -325,6 +331,7 @@ bool WorldSystem::render_set_overworld_screen() {
 bool WorldSystem::render_set_battle_screen() {
 	gameInfo.curr_screen = Screen::BATTLE;
 	start.set_visible(false);
+	gameOver.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	cutscene.set_visible(false);
@@ -348,6 +355,7 @@ bool WorldSystem::render_set_settings_screen() {
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	start.set_visible(false);
+	gameOver.set_visible(false);
 	cutscene.set_visible(false);
 	settings.set_visible(true);
 
@@ -374,6 +382,7 @@ bool WorldSystem::render_set_start_screen() {
 	battle.set_visible(false);
 	settings.set_visible(false);
   	cutscene.set_visible(false);
+	gameOver.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -389,11 +398,37 @@ bool WorldSystem::render_set_start_screen() {
   	return true; // added to prevent error
 }
 
+// REQUIRES current scene to NOT be game over screen
+// switch to game over screen
+bool WorldSystem::render_set_game_over_screen() {
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.curr_screen = Screen::GAMEOVER;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+  	cutscene.set_visible(false);
+	start.set_visible(false);
+	gameOver.set_visible(true);
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+  
+  	// don't restart the music if coming from help screen
+	if (prevScreen != Screen::SETTINGS)
+		audioSystem.playOverworld();
+
+	std::cout << "current screen: game over" << std::endl;
+  	return true; // added to prevent error
+}
+
 // REQUIRES current scene NOT be cutscene
 // switch to cutscene
 bool WorldSystem::render_set_cutscene() {
 	gameInfo.curr_screen = Screen::CUTSCENE;
 	start.set_visible(false);
+	gameOver.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -501,6 +536,9 @@ void WorldSystem::handleHInput(int action) {
 		} else if (gameInfo.curr_screen == Screen::START) {
 			gameInfo.prev_screen = Screen::START;
 			render_set_settings_screen();
+		} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+			gameInfo.prev_screen = Screen::GAMEOVER;
+			render_set_settings_screen();
 		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
 			// if curr screen is settings,
 			//		-> prev screen is overworld, just switch back
@@ -517,6 +555,8 @@ void WorldSystem::handleHInput(int action) {
 				std::cout << "current screen: battle" << std::endl;
 			} else if (gameInfo.prev_screen == Screen::START) {
 				render_set_start_screen();
+			} else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+				render_set_game_over_screen();
 			}
 
 		}
@@ -562,9 +602,19 @@ void WorldSystem::handleClickHelpBtn() {
 	// testButton(start.help_btn);
 
 	// To settings
-	if (gameInfo.curr_screen == Screen::START) {
-		gameInfo.prev_screen = Screen::START;
+	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER) {
+		gameInfo.prev_screen = gameInfo.curr_screen;
 		render_set_settings_screen();
+	}
+}
+
+void WorldSystem::handleClickRestartBtn() {
+	std::cout << "Clicked on 'RESTART" << std::endl;
+
+	// To Start
+	if (gameInfo.curr_screen == Screen::GAMEOVER) {
+		restart_game();
+		render_set_start_screen();
 	}
 }
 
@@ -666,6 +716,11 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
 				}
+			} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+				gameOver.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::START) {
+					render_set_start_screen();
+				}
 			}
 			else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 				cutscene.handle_key(key, scancode, action, mod);
@@ -706,6 +761,26 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		}
 		start.handle_mouse_move(mouse_area);
 	}
+
+	/* Game Over screen buttons*/
+	if (gameInfo.curr_screen == Screen::GAMEOVER) {
+		// START button
+		BoxAreaBound restart_btn_area = registry.boxAreaBounds.get(gameOver.restart_btn);
+		bool within_restart_btn_area = (xpos >= restart_btn_area.left) && (xpos <= restart_btn_area.right) && (ypos >= restart_btn_area.top - y_padding) && (ypos <= restart_btn_area.bottom - y_padding);
+		// HELP button
+		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(gameOver.help_btn);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		if (within_restart_btn_area) {
+			// std::cout << "in start button area" << std::endl;
+			mouse_area = in_restart_btn;
+		} else if (within_help_btn_area) {
+			// std::cout << "in help button area" << std::endl;
+			mouse_area = in_help_btn;
+		} else {
+			mouse_area = in_unclickable;
+		}
+		gameOver.handle_mouse_move(mouse_area);
+	}
 }
 
 void WorldSystem::on_mouse_button(int button, int action, int mods) {
@@ -718,6 +793,9 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 			case in_help_btn:
 				handleClickHelpBtn();
 				break;
+			case in_restart_btn:
+				handleClickRestartBtn();
+        break;
 			case in_load_btn:
 				handleClickLoadBtn();
 				break;
