@@ -119,4 +119,6 @@ private:
 
 	// Screen curr_scene;
 
+	bool show_fps = true;
+
 };

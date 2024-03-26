@@ -225,7 +225,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
 	std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
-	title_ss << " --- FPS: " << FPS;
 	// TODO: render score on screen instead
 	title_ss << " --- Score: " << score;
 	if (debugging.in_debug_mode) {

@@ -117,6 +117,13 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	while (registry.texts.entities.size() > 0)
 		registry.remove_all_components_of(registry.texts.entities.back());
 
+	// add FPS to screen
+
+	if (show_fps) {
+		std::string fpsString = "FPS: " + std::to_string(FPS);
+		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, glm::mat4(1.f), gameInfo.curr_screen, true);
+	}
+
 	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
 		// Help binding instruction
 		vec3 text_colour = Colour::theme_blue_1;
@@ -626,6 +633,12 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			// for testing purposes
 			if (action == GLFW_PRESS) {
 				render_set_cutscene();
+			}
+			break;
+		case GLFW_KEY_TAB:
+			// toggle show FPS on TAB key
+			if (action == GLFW_PRESS) {
+				show_fps = !show_fps;
 			}
 			break;
 		case GLFW_KEY_ESCAPE:
