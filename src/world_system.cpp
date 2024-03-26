@@ -619,6 +619,11 @@ void WorldSystem::handleClickRestartBtn() {
 }
 
 void WorldSystem::handleClickLoadBtn() {
+	// Load button is only located on start screen
+	if (gameInfo.curr_screen != Screen::START) {
+		return;
+	}
+
 	Serializer readerwriter = Serializer();
 	gameInfo.existing_enemy_info.clear();
 	// change this to load game on a button in start screen

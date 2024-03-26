@@ -561,10 +561,7 @@ void Battle::start() {
 
 	mode_index = 0;
 	next_mode_delay = 0.f;
-
-	enemy_index = 3;
-	num_notes = battleInfo[enemy_index].count_notes;
-
+	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
