@@ -25,6 +25,7 @@ float timing_offset = 1 - 1.f / 1.225f;
 
 // battle mode tracker
 int mode_index;
+float next_mode_delay;
 
 // battle-specific variables for readability, initialized in .start
 int enemy_index;
@@ -367,13 +368,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		float min_counter_ms = 3000.f;
 		next_note_spawn -= elapsed_ms_since_last_update;
 
+
 		// Update battle mode
-		if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
-			battleInfo[enemy_index].mode_timings[mode_index].first -= elapsed_ms_since_last_update;
-			std::pair<float, BattleMode> next_mode = battleInfo[enemy_index].mode_timings[mode_index];
-			if (next_mode.first <= 0.f) {
-				mode_index += 1;
-				switch (next_mode.second) {
+		next_mode_delay -= elapsed_ms_since_last_update;
+		if (next_mode_delay <= 0.f) {
+			if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
+				switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
 					case back_and_forth:
 						gameInfo.battleModeColor = {-1.f, 0.2f, 1.f, 0.f}; // no adjust
 						break;
@@ -385,6 +385,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						break;						
 				}
 			}
+			mode_index += 1;
+			next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
 		}
 
 		// Update song position every frame
@@ -556,7 +558,9 @@ void Battle::start() {
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
+
 	mode_index = 0;
+	next_mode_delay = 0.f;
 
 	enemy_index = 3;
 	num_notes = battleInfo[enemy_index].count_notes;
@@ -680,13 +684,12 @@ bool Battle::battleWon() {
 
 bool key_pressed = false;
 void Battle::handle_collisions() {
-
 	// Variables to store hits
 	std::vector<Entity> lane1_hits;
 	std::vector<Entity> lane2_hits;
 	std::vector<Entity> lane3_hits;
 	std::vector<Entity> lane4_hits;
-	auto lane_hits = {lane1_hits, lane2_hits, lane3_hits, lane4_hits};
+	auto lane_hits = {&lane1_hits, &lane2_hits, &lane3_hits, &lane4_hits};
 
 	// Loop over all collisions detected by the physics system
 	auto& collisionsRegistry = registry.collisions;
@@ -702,19 +705,19 @@ void Battle::handle_collisions() {
 
 			// Collect all successful matches
 				// Simple standing feedback using judgement line colour
-			if (d_key_pressed && lane == gameInfo.lane_1 && lane1_hits.size() == 0) {
+			if (d_key_pressed && lane == gameInfo.lane_1) {
 				lane1_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (f_key_pressed && lane == gameInfo.lane_2 && lane2_hits.size() == 0) {
+			else if (f_key_pressed && lane == gameInfo.lane_2) {
 				lane2_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (j_key_pressed && lane == gameInfo.lane_3 && lane3_hits.size() == 0) {
+			else if (j_key_pressed && lane == gameInfo.lane_3) {
 				lane3_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (k_key_pressed && lane == gameInfo.lane_4 && lane4_hits.size() == 0) {
+			else if (k_key_pressed && lane == gameInfo.lane_4) {
 				lane4_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
@@ -723,26 +726,35 @@ void Battle::handle_collisions() {
 
 	// For each lane, remove at most one note (for this frame)
 	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
-	for (auto hits : lane_hits) {
+	for (auto &hits : lane_hits) {
 		// Skip lanes which had no collisions
-		if (hits.size() == 0) {
+		if (hits->size() == 0) {
 			continue;
 		}
-		Entity lowest_note = hits[0];
+		Entity lowest_note = hits->at(0);
 		float greatest_y = registry.motions.get(lowest_note).position.y;
 		// Find the note with highest y value (furthest down the screen)
-		for (int i = 1; i < hits.size(); i++) {
-			float note_y = registry.motions.get(hits[i]).position.y;
-			if (note_y > greatest_y) {
-				greatest_y = note_y; 
-			}
+		for (int i = 1; i < hits->size(); i++) {
+			float note_y = registry.motions.get(hits->at(i)).position.y;
+			greatest_y = max(greatest_y, note_y);
+			lowest_note = hits->at(i);
 		}
 		registry.remove_all_components_of(lowest_note);
 		got_hit = 1;
 	}	
 
-	if (!got_hit) {
-		if (key_pressed) {
+	// Play audio only once per key press
+	if (key_pressed) {
+		if (got_hit) {
+			switch (standing) {
+				case perfect:
+					audio->playHitPerfect();
+					break;
+				default:
+					audio->playHitGood();
+					break;
+			}
+		} else {
 			audio->playMissedNote();
 		}
 	}
@@ -773,20 +785,17 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	// Determine standing
 	if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
 		// set standing to Alright
-		audio->playHitGood(); // TODO: add slightly more disappointing-sounding SFX
 		standing = alright;
 		alright_counter++;
 		colour = ALRIGHT_COLOUR;
 	} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 				|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
 		// set standing to Good
-		audio->playHitGood();
 		standing = good;
 		good_counter++;
 		colour = GOOD_COLOUR;
 	} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
-		audio->playHitPerfect();
 		standing = perfect;
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
@@ -800,7 +809,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 
 	// Clean up registry
 	// registry.collisionTimers.emplace(entity_other);
-	registry.remove_all_components_of(entity_other); // comment this line out if want node colour change
+	// registry.remove_all_components_of(entity_other); // comment this line out if want node colour change
 }
 
 // battle keys:

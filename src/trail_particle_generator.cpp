@@ -38,7 +38,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
-    particle.color = glm::vec4(rColor, rColor, rColor, 1.f);
+    particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
     particle.color += gameInfo.battleModeColor;
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
