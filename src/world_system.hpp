@@ -75,6 +75,7 @@ private:
 	void handleBackspaceInput(int action);
 	void handleClickStartBtn();
 	void handleClickHelpBtn();
+	void handleClickLoadBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);

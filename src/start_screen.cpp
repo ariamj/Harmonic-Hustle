@@ -32,22 +32,29 @@ void Start::init_screen() {
 
 void Start::renderButtons() {
 	vec2 main_menu_size = vec2(350.f, gameInfo.height/12.f);
+    vec2 new_game_btn_size = vec2(525.f, gameInfo.height/9.5f);
+    float new_game_y_padding = new_game_btn_size.y + 15.f;
 	float y_padding = main_menu_size.y + 15.f;
 	vec2 center_pos = vec2(gameInfo.width/2.f, gameInfo.height/2.f);
 	vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
 
 	// Start button
-	Entity start_shadow = createBox(shadow_pos, main_menu_size);
+	Entity start_shadow = createBox(shadow_pos, new_game_btn_size);
 	registry.screens.insert(start_shadow, Screen::START);
 	registry.colours.insert(start_shadow, Colour::theme_blue_3);
-	start_btn = createButton("START", center_pos, 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::START);
+	start_btn = createButton("NEW GAME", center_pos, 1.5f, new_game_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::START);
 	
+     // load from save button
+    Entity save_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos, main_menu_size);
+	registry.screens.insert(save_shadow, Screen::START);
+	registry.colours.insert(save_shadow, Colour::theme_blue_3);
+	load_from_save_btn = createButton("LOAD", center_pos + vec2(0, new_game_y_padding), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::START);
+
 	// Help button
-	Entity help_shadow = createBox(vec2(0, y_padding) + shadow_pos, main_menu_size);
+	Entity help_shadow = createBox(vec2(0, y_padding + y_padding+ 30.f) + shadow_pos, main_menu_size);
 	registry.screens.insert(help_shadow, Screen::START);
 	registry.colours.insert(help_shadow, Colour::theme_blue_3);
-	help_btn = createButton("HELP", center_pos + vec2(0, y_padding), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::START);
-	
+	help_btn = createButton("HELP", center_pos + vec2(0, y_padding + y_padding + 30.f), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::START);
 }
 
 bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -79,7 +86,7 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
 
             // Hover effect
             // NOTE: if lag happens, comment this part out
-            if ((text == "START" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn)) {
+            if ((text == "NEW GAME" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn) || (text == "LOAD" && mouse_area == in_load_btn)) {
                 text_colour = Colour::white;
             }
             createText(text, motion.position, btn.text_scale, text_colour, glm::mat4(1.f), Screen::START, true);

@@ -112,6 +112,7 @@ enum MouseArea {
 	in_unclickable,
 	in_start_btn,
 	in_help_btn,
+	in_load_btn
 };
 
 bool gl_has_errors();

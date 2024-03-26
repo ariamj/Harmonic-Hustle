@@ -457,17 +457,15 @@ void Battle::handle_battle_end() {
 
 		// increment player lvl
 		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
-
-		if (gameInfo.curr_level != gameInfo.max_level) {
-			registry.levels.get(*gameInfo.player_sprite).level++;
-		}
+		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
+		
 	// battle lost
 	} else {
 		// remove colllided with enemy (give player another chance)
 		registry.enemies.remove(gameInfo.curr_enemy);
 		registry.renderRequests.remove(gameInfo.curr_enemy);
-
 	}
+	std::cout <<"SAVING AFTER BATTLE" << std::endl;
 	saver->save_game();
 	gameInfo.curr_enemy = {};
 }
