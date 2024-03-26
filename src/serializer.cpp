@@ -1,5 +1,4 @@
 #pragma once
-#include "serializer.hpp"
 #include "world_system.hpp"
 #include <iostream>
 #include <fstream>
@@ -65,7 +64,9 @@ bool Serializer::load_game() {
 		}
 
 		gameInfo.is_intro_finished = root["gameInfo"]["is_intro_finished"].asBool();
-		gameInfo.is_boss_finished = root["gameInfo"]["is_intro_finished"].asBool();
+		gameInfo.is_boss_finished = root["gameInfo"]["is_boss_finished"].asBool();
+		gameInfo.is_game_over_finished = root["gameInfo"]["is_game_over_finished"].asBool();
+		gameInfo.gameIsOver = root["gameInfo"]["gameIsOver"].asBool();
 		
 	}
 	catch (std::exception e) {
@@ -108,7 +109,8 @@ bool Serializer::save_game() {
 	}
 	root["gameInfo"]["is_intro_finished"] = gameInfo.is_intro_finished;
 	root["gameInfo"]["is_boss_finished"] = gameInfo.is_boss_finished;
-	
+	root["gameInfo"]["is_game_over_finished"] = gameInfo.is_game_over_finished;
+	root["gameInfo"]["gameIsOver"] = gameInfo.gameIsOver;
 
 	// write to string
 	std::string document = Json::writeString(wBuilder, root);

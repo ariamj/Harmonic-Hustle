@@ -19,6 +19,7 @@
 using namespace glm;
 
 #include "tiny_ecs.hpp"
+#include "serializer.hpp"
 
 // Simple utility functions to avoid mistyping directory name
 // audio_path("audio.ogg") -> data/audio/audio.ogg
@@ -112,6 +113,7 @@ enum MouseArea {
 	in_start_btn,
 	in_help_btn,
 	in_restart_btn,
+	in_load_btn,
 };
 
 bool gl_has_errors();

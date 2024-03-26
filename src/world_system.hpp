@@ -77,10 +77,12 @@ private:
 	vec2 getRamdomEnemyPosition();
 
 	void handleEscInput(int action);
+	void handleHInput(int action);
 	void handleBackspaceInput(int action);
 	void handleClickStartBtn();
 	void handleClickHelpBtn();
 	void handleClickRestartBtn();
+	void handleClickLoadBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
@@ -110,6 +112,10 @@ private:
 	// };
 	MouseArea mouse_area = in_unclickable;
 
+
+	Serializer saver = Serializer();
+
+
 	// music references
 	// Mix_Music* background_music;
 
@@ -118,5 +124,7 @@ private:
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 
 	// Screen curr_scene;
+
+	bool show_fps = true;
 
 };
