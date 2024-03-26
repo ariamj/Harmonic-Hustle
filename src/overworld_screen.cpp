@@ -1,5 +1,4 @@
 #include "overworld_screen.hpp"
-#include "serializer.hpp"
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -12,8 +11,6 @@
 // const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
 
-Serializer saver = Serializer();
-
 Overworld::Overworld() 
 : next_enemy_spawn(0.f)
 {
@@ -24,16 +21,16 @@ Overworld::~Overworld() {
 
 };
 
-void Overworld::init(GLFWwindow* window, RenderSystem* renderer) {
+void Overworld::init(GLFWwindow* window, RenderSystem* renderer, Serializer* saver) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
+	this->saver = saver;
 };
 
 bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
-	title_ss << " --- FPS: " << FPS;
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -193,7 +190,7 @@ void handleDebugInput(int action) {
 void Overworld::handle_key(int key, int scancode, int action, int mod) {
 	if (key == GLFW_KEY_S && action == GLFW_PRESS && (mod & GLFW_MOD_CONTROL)) {
 		printf("Ctrl+S detected, game saving");
-		saver.save_game();
+		saver->save_game();
 	}
 	else {
 		switch(key) {

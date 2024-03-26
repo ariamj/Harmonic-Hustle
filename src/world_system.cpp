@@ -1,7 +1,6 @@
 // Header
 #include "world_system.hpp"
 #include "world_init.hpp"
-#include "serializer.hpp"
 
 // stlib
 #include <cassert>
@@ -88,7 +87,7 @@ GLFWwindow* WorldSystem::create_window() {
 void WorldSystem::init(RenderSystem* renderer_arg) {
 	this->renderer = renderer_arg;
 
-	Serializer readerwriter = Serializer();
+	// Serializer readerwriter = Serializer();
 
 	gameInfo.lane_1 = gameInfo.width / 2 - 300;
 	gameInfo.lane_2  = gameInfo.width / 2 - 100;
@@ -97,8 +96,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	gameInfo.curr_enemy = Entity{};
 
-	overworld.init(window, renderer_arg);
-	battle.init(window, renderer_arg, &audioSystem);
+	overworld.init(window, renderer_arg, &saver);
+	battle.init(window, renderer_arg, &audioSystem, &saver);
 	settings.init(window, renderer_arg);
 	start.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
@@ -108,17 +107,6 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 
 	// Set all states to default
     restart_game();
-	if (readerwriter.load_game()) {
-		// remove initial enemies
-		for (auto e : registry.enemies.entities) {
-			registry.remove_all_components_of(e);
-		}
-		// repopulate with enemies from save file
-		for (auto& enemy : gameInfo.existing_enemy_info) {
-			createEnemy(renderer, vec2(enemy[0], enemy[1]), enemy[2]);
-		}
-	}
-	
 }
 
 
@@ -129,13 +117,20 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	while (registry.texts.entities.size() > 0)
 		registry.remove_all_components_of(registry.texts.entities.back());
 
-	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS) {
+	// add FPS to screen
+
+	if (show_fps) {
+		std::string fpsString = "FPS: " + std::to_string(FPS);
+		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, glm::mat4(1.f), gameInfo.curr_screen, true);
+	}
+
+	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
 		// Help binding instruction
 		vec3 text_colour = Colour::theme_blue_1;
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[ESC]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+		createText("(?)[H]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -154,6 +149,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		// once song ends, display battle over overlay
 		// 		curr screen is set to overworld when battle is over and user presses SPACE
 		if (!song_playing) {
+			std::cout << "HEREEE" << std::endl;
 			battle.handle_battle_end();
 		} else {
 			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -174,19 +170,21 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	} else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 		// add in a restart here for after game over dialogue
 
-		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE_SENTENCES) {
+		if (cutscene.game_over_dialogue_progress >= cutscene.GAME_OVER_DIALOGUE.size()) {
 			std::cout << "RESTART GAME" << std::endl;
 			gameInfo.is_game_over_finished = true;
-			restart_game();		
+			restart_game();	
+			// overwrite prev save data since game is now finished	
+			saver.save_game();
 		}
-		else if (cutscene.boss_dialogue_progress >= size(cutscene.BOSS_DIALOGUE) && !gameInfo.gameIsOver) {
+		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			gameInfo.is_boss_finished = true;
 			battle.start();
 			render_set_battle_screen();
 			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
-		else if ((cutscene.intro_dialogue_progress >= size(cutscene.INTRO_DIALOGUE)) && !gameInfo.is_intro_finished) {
+		else if ((cutscene.intro_dialogue_progress >= cutscene.INTRO_DIALOGUE.size()) && !gameInfo.is_intro_finished) {
 			gameInfo.is_intro_finished = true;
 			render_set_overworld_screen();
 		}
@@ -471,12 +469,23 @@ void testButton(Entity& btn) {
 	}
 }
 
-// open pause menu or go back depending on game state
-// 		-> currently toggle help screen will only work in OVERWORLD
-//		TODO -> add in pause for battle?
+// exit game key
+// 	-> on exit, saves game and closes window
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
+		//only save if exit in overworld
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			saver.save_game();
+		}
+		glfwSetWindowShouldClose(window, 1);
+	}
+}
+
+// help key
+void WorldSystem::handleHInput(int action) {
+	if (action == GLFW_PRESS) {
+		std::cout << "H key press" << std::endl;
 
 		// if curr screen is overworld, switch to settings
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -511,10 +520,11 @@ void WorldSystem::handleEscInput(int action) {
 			}
 
 		}
-		else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-			battle.start();
-			render_set_battle_screen();
-		}
+		// disable help/settings during cutscenes
+		// else if (gameInfo.curr_screen == Screen::CUTSCENE) {
+		// 	battle.start();
+		// 	render_set_battle_screen();
+		// }
 	}
 }
 
@@ -558,6 +568,31 @@ void WorldSystem::handleClickHelpBtn() {
 	}
 }
 
+void WorldSystem::handleClickLoadBtn() {
+	Serializer readerwriter = Serializer();
+	gameInfo.existing_enemy_info.clear();
+	// change this to load game on a button in start screen
+	if (readerwriter.load_game()) {
+		// remove initial enemies
+		for (auto e : registry.enemies.entities) {
+			registry.remove_all_components_of(e);
+		}
+		// repopulate with enemies from save file
+		for (auto& enemy : gameInfo.existing_enemy_info) {
+			createEnemy(renderer, vec2(enemy[0], enemy[1]), enemy[2]);
+		}
+	}
+	// if there are no enemies and game is not over, switch to boss battle
+	if (gameInfo.existing_enemy_info.size() == 0) {
+		render_set_cutscene();
+	}
+
+	// To overworld
+	if (gameInfo.curr_screen == Screen::START) {
+		render_set_overworld_screen();
+	}
+}	
+
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 
@@ -600,8 +635,17 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				render_set_cutscene();
 			}
 			break;
+		case GLFW_KEY_TAB:
+			// toggle show FPS on TAB key
+			if (action == GLFW_PRESS) {
+				show_fps = !show_fps;
+			}
+			break;
 		case GLFW_KEY_ESCAPE:
 			handleEscInput(action);
+			break;
+		case GLFW_KEY_H: 
+			handleHInput(action);
 			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
@@ -644,12 +688,19 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		// HELP button
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
 		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		
+		// LOAD button
+		BoxAreaBound load_btn_area = registry.boxAreaBounds.get(start.load_from_save_btn);
+		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - y_padding) && (ypos <= load_btn_area.bottom - y_padding);
+		
 		if (within_start_btn_area) {
 			// std::cout << "in start button area" << std::endl;
 			mouse_area = in_start_btn;
 		} else if (within_help_btn_area) {
 			// std::cout << "in help button area" << std::endl;
 			mouse_area = in_help_btn;
+		} else if (within_load_btn_area) {
+			mouse_area = in_load_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
@@ -666,6 +717,9 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_help_btn:
 				handleClickHelpBtn();
+				break;
+			case in_load_btn:
+				handleClickLoadBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

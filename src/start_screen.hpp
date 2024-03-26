@@ -25,6 +25,7 @@ class Start {
         // buttons
         Entity start_btn;
 	    Entity help_btn;
+        Entity load_from_save_btn;
 
         // mouse area
         MouseArea mouse_area;
