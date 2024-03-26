@@ -133,6 +133,7 @@ struct GameInfo {
 	bool is_game_over_finished = false;
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
+	vec4 battleModeColor; 
 };
 extern GameInfo gameInfo;
 

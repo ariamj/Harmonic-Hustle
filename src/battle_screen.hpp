@@ -14,6 +14,7 @@ struct BattleInfo {
     float bpm;
     int count_notes;
     std::vector<float> note_timings;
+    std::vector<std::pair<float, BattleMode>> mode_timings;
 };
 
 class Battle {
