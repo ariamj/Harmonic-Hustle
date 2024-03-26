@@ -224,7 +224,7 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
+Entity createCSEnemy(RenderSystem* renderer, vec2 pos, Screen screen)
 {
 	auto entity = Entity();
 
@@ -240,7 +240,7 @@ Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, Screen::CUTSCENE);
+	registry.screens.insert(entity, screen);
 
 	// Create component
 	// registry.enemies.emplace(entity);
@@ -256,7 +256,7 @@ Entity createCSEnemy(RenderSystem* renderer, vec2 pos)
 	return entity;
 }
 
-Entity createCSPlayer(RenderSystem* renderer, vec2 pos)
+Entity createCSPlayer(RenderSystem* renderer, vec2 pos, Screen screen)
 {
 	auto entity = Entity();
 
@@ -272,7 +272,7 @@ Entity createCSPlayer(RenderSystem* renderer, vec2 pos)
 	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
 
 	// screen entity exists in
-	registry.screens.insert(entity, Screen::CUTSCENE);
+	registry.screens.insert(entity, screen);
 
 	// Create component
 	// registry.enemies.emplace(entity);

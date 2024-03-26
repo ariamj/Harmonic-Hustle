@@ -26,7 +26,6 @@ void Cutscene::init(GLFWwindow* window, RenderSystem* renderer) {
 bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Cutscene";
-	title_ss << " --- FPS: " << FPS;
 
     glfwSetWindowTitle(window, title_ss.str().c_str());
 

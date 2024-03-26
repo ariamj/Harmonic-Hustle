@@ -27,7 +27,7 @@ class Battle {
             missed = -5
         };
 
-        void init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio);
+        void init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver);
 
         // Releases all associated resources
         ~Battle();
@@ -88,4 +88,6 @@ class Battle {
         float countdownTimer_ms;
 
         GLFWwindow* window;
+
+        Serializer* saver;
 };

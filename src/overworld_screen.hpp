@@ -14,7 +14,7 @@ class Overworld {
         Overworld();
         bool is_visible;
 
-        void init(GLFWwindow* window, RenderSystem* renderer);
+        void init(GLFWwindow* window, RenderSystem* renderer, Serializer* saver);
 
         // Releases all associated resources
         ~Overworld();
@@ -42,4 +42,6 @@ class Overworld {
         Entity player_sprite;
 
         GLFWwindow* window;
+
+        Serializer* saver;
 };

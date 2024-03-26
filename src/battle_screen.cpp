@@ -7,7 +7,6 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
-#include "serializer.hpp"
 
 // consts for now;
 const size_t MAX_NOTES = 10;
@@ -53,11 +52,12 @@ Battle::~Battle() {
 
 };
 
-void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio) {
+void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
 	this->audio = audio;
+	this->saver = saver;
 
 	lanes[0] = gameInfo.lane_1;
     lanes[1] = gameInfo.lane_2;
@@ -225,7 +225,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
 	std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
-	title_ss << " --- FPS: " << FPS;
 	// TODO: render score on screen instead
 	title_ss << " --- Score: " << score;
 	if (debugging.in_debug_mode) {
@@ -298,7 +297,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// notify save
-		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 5)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
 	} else {
 		auto& motions_registry = registry.motions;
 
@@ -458,17 +457,16 @@ void Battle::handle_battle_end() {
 
 		// increment player lvl
 		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
-
-		if (gameInfo.curr_level != gameInfo.max_level) {
-			registry.levels.get(*gameInfo.player_sprite).level++;
-		}
+		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
+		
 	// battle lost
 	} else {
 		// remove colllided with enemy (give player another chance)
 		registry.enemies.remove(gameInfo.curr_enemy);
 		registry.renderRequests.remove(gameInfo.curr_enemy);
-
 	}
+	std::cout <<"SAVING AFTER BATTLE" << std::endl;
+	saver->save_game();
 	gameInfo.curr_enemy = {};
 }
 

@@ -4,10 +4,10 @@
 #include "common.hpp"
 #include "render_system.hpp"
 
-class Start {
+class GameOver {
     public:
-        Start();
-        ~Start();
+        GameOver();
+        ~GameOver();
 
         void init(GLFWwindow* window, RenderSystem* renderer);
         void init_screen();
@@ -23,9 +23,8 @@ class Start {
         void handle_mouse_move(MouseArea mouse_area);
 
         // buttons
-        Entity start_btn;
+        Entity restart_btn;
 	    Entity help_btn;
-        Entity load_from_save_btn;
 
         // mouse area
         MouseArea mouse_area;
