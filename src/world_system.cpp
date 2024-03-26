@@ -117,13 +117,13 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 	while (registry.texts.entities.size() > 0)
 		registry.remove_all_components_of(registry.texts.entities.back());
 
-	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS) {
+	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
 		// Help binding instruction
 		vec3 text_colour = Colour::theme_blue_1;
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[ESC]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+		createText("(?)[H]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -462,12 +462,23 @@ void testButton(Entity& btn) {
 	}
 }
 
-// open pause menu or go back depending on game state
-// 		-> currently toggle help screen will only work in OVERWORLD
-//		TODO -> add in pause for battle?
+// exit game key
+// 	-> on exit, saves game and closes window
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
+		//only save if exit in overworld
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			saver.save_game();
+		}
+		glfwSetWindowShouldClose(window, 1);
+	}
+}
+
+// help key
+void WorldSystem::handleHInput(int action) {
+	if (action == GLFW_PRESS) {
+		std::cout << "H key press" << std::endl;
 
 		// if curr screen is overworld, switch to settings
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -619,6 +630,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			break;
 		case GLFW_KEY_ESCAPE:
 			handleEscInput(action);
+			break;
+		case GLFW_KEY_H: 
+			handleHInput(action);
 			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
