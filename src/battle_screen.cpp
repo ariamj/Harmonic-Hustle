@@ -338,8 +338,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Spawning notes based on elapsed time
 		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
 			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
-
+			// createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			createNote(renderer, vec2(lanes[1], 0.f));
 			if (next_note_index < num_notes) {
 				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
 				next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
@@ -599,66 +599,79 @@ bool Battle::battleWon() {
 }
 
 bool key_pressed = false;
-//TODO: change color of note and play event sound
 void Battle::handle_collisions() {
-	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
-	if (key_pressed) {
-		// Loop over all collisions detected by the physics system
-		auto& collisionsRegistry = registry.collisions;
-		for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
-			// The entity and its collider
-			Entity entity = collisionsRegistry.entities[i];
-			Entity entity_other = collisionsRegistry.components[i].other;
-			
-			// check if judgment line
-			if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
-				Motion lane_motion = registry.motions.get(entity);
-				float lane = lane_motion.position.x;
-				// Key - Judgment line collision checker:
-				if ((d_key_pressed && lane == gameInfo.lane_1) || (f_key_pressed && lane == gameInfo.lane_2) 
-						|| (j_key_pressed && lane == gameInfo.lane_3) || (k_key_pressed && lane == gameInfo.lane_4)) {
-					got_hit = 1; // did not miss the note
-					// Determine score standing
-					// Simple standing feedback using judgement line colour
-					vec3& colour = registry.colours.get(entity);
-					JudgementLine judgement_line = registry.judgmentLine.get(entity);
-					float note_y_pos = registry.motions.get(entity_other).position.y;
-					float lane_y_pos = lane_motion.position.y;
-					float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
-					float scoring_margin = 5.f;
-					if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
-						// set standing to Alright
-						audio->playHitGood(); // TODO: add slightly more disappointing-sounding SFX
-						standing = alright;
-						alright_counter++;
-						colour = ALRIGHT_COLOUR;
-					} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
-								|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
-						// set standing to Good
-						audio->playHitGood();
-						standing = good;
-						good_counter++;
-						colour = GOOD_COLOUR;
-					} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
-						// set standing to Perfect
-						audio->playHitPerfect();
-						standing = perfect;
-						perfect_counter++;
-						colour = PERFECT_COLOUR;
-					}
+	// We only care about collisions when a key is pressed
+	if (!key_pressed) {
+		return;
+	}
 
-					score += standing;
-					createSparks(registry.motions.get(entity_other).position);
+	// Variables to store hits
+	std::vector<Entity> lane1_hits;
+	std::vector<Entity> lane2_hits;
+	std::vector<Entity> lane3_hits;
+	std::vector<Entity> lane4_hits;
+	auto lane_hits = {lane1_hits, lane2_hits, lane3_hits, lane4_hits};
 
-					registry.collisionTimers.emplace(entity_other);
-					registry.remove_all_components_of(entity_other);	// comment this line out if want node colour change
-				}
+	// Loop over all collisions detected by the physics system
+	auto& collisionsRegistry = registry.collisions;
+	for (uint i = 0; i < collisionsRegistry.components.size(); i++) {
+		// The entity and its collider
+		Entity entity = collisionsRegistry.entities[i];
+		Entity entity_other = collisionsRegistry.components[i].other;
+		
+		// Check for judgment/note collisions specifically
+		if (registry.judgmentLine.has(entity) && registry.notes.has(entity_other)) {
+			Motion& lane_motion = registry.motions.get(entity);
+			float lane = lane_motion.position.x;
+
+			// Collect all successful matches
+				// Simple standing feedback using judgement line colour
+			if (d_key_pressed && lane == gameInfo.lane_1 && lane1_hits.size() == 0) {
+				lane1_hits.push_back(entity_other);
+				handle_note_hit(entity, entity_other);
+			}
+			else if (f_key_pressed && lane == gameInfo.lane_2 && lane2_hits.size() == 0) {
+				lane2_hits.push_back(entity_other);
+				handle_note_hit(entity, entity_other);
+			}
+			else if (j_key_pressed && lane == gameInfo.lane_3 && lane3_hits.size() == 0) {
+				lane3_hits.push_back(entity_other);
+				handle_note_hit(entity, entity_other);
+			}
+			else if (k_key_pressed && lane == gameInfo.lane_4 && lane4_hits.size() == 0) {
+				lane4_hits.push_back(entity_other);
+				handle_note_hit(entity, entity_other);
 			}
 		}
-		if (!got_hit) {
+	}
+
+	// For each lane, remove at most one note (for this frame)
+	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
+	for (auto hits : lane_hits) {
+		// Skip lanes which had no collisions
+		if (hits.size() == 0) {
+			continue;
+		}
+		Entity lowest_note = hits[0];
+		float greatest_y = registry.motions.get(lowest_note).position.y;
+		// Find the note with highest y value (furthest down the screen)
+		for (int i = 1; i < hits.size(); i++) {
+			float note_y = registry.motions.get(hits[i]).position.y;
+			if (note_y > greatest_y) {
+				greatest_y = note_y; 
+			}
+		}
+		registry.remove_all_components_of(lowest_note);
+		got_hit = 1;
+	}	
+
+	if (!got_hit) {
+		if (key_pressed) {
 			audio->playMissedNote();
 		}
 	}
+
+	// Reset collisions and key presses
 	registry.collisions.clear();
 	key_pressed = false;
 	d_key_pressed = false;
@@ -666,6 +679,53 @@ void Battle::handle_collisions() {
 	j_key_pressed = false;
 	k_key_pressed = false;
 };
+
+void Battle::handle_note_hit(Entity entity, Entity entity_other) {
+	// Variables to determine score standing
+	Motion& lane_motion = registry.motions.get(entity);
+	float note_y_pos = registry.motions.get(entity_other).position.y;
+	float lane_y_pos = lane_motion.position.y;
+	float scoring_margin = 5.f;
+
+	// Sizing
+	JudgementLine judgement_line = registry.judgmentLine.get(entity);
+	float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+
+	// Colour
+	vec3& colour = registry.colours.get(entity);
+	
+	// Determine standing
+	if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
+		// set standing to Alright
+		audio->playHitGood(); // TODO: add slightly more disappointing-sounding SFX
+		standing = alright;
+		alright_counter++;
+		colour = ALRIGHT_COLOUR;
+	} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
+				|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
+		// set standing to Good
+		audio->playHitGood();
+		standing = good;
+		good_counter++;
+		colour = GOOD_COLOUR;
+	} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
+		// set standing to Perfect
+		audio->playHitPerfect();
+		standing = perfect;
+		perfect_counter++;
+		colour = PERFECT_COLOUR;
+	}
+
+	// Update score
+	score += standing;
+
+	// Render particles
+	createSparks(registry.motions.get(entity_other).position);
+
+	// Clean up registry
+	// registry.collisionTimers.emplace(entity_other);
+	registry.remove_all_components_of(entity_other); // comment this line out if want node colour change
+}
 
 // battle keys:
 // DFJK -> rhythm
