@@ -129,45 +129,37 @@ bool AudioSystem::LoadFiles() {
 	return true; // Successfully loaded all files
 }
 
-bool AudioSystem::playOverworld() {
+int AudioSystem::playOverworld() {
 	// Use "Music" type and associated methods for background music (allegedly higher quality)
 		// Will Use "Chunk" type for short SFX snippets later on
-	Mix_PlayMusic(overworld_music, -1);
-	fprintf(stderr, "Playing background music\n");
-
 	current_music = overworld_music;
-	return true;
+	return Mix_PlayMusic(overworld_music, -1);
 }
 
-bool AudioSystem::playBattle(int enemy_id) {
+int AudioSystem::playBattle(int enemy_id) {
 	// enemy_music is a vector of audio file data
 	// Mix_PlayMusic(enemy_music[enemy_id], -1);
-	Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
 	current_music = enemy_music[enemy_id];
-	return true;
+	return Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
 }
 
-bool AudioSystem::playDroppedNote() {
-	Mix_PlayChannel(-1, drop_SFX, 0);
-	return true;
+int AudioSystem::playDroppedNote() {
+	return Mix_PlayChannel(-1, drop_SFX, 0);
 }
 
-bool AudioSystem::playMissedNote() {
-	Mix_PlayChannel(-1, miss_SFX, 0);
-	return true;
+int AudioSystem::playMissedNote() {
+	return Mix_PlayChannel(-1, miss_SFX, 0);
 }
 
-bool AudioSystem::playHitGood() {
-	Mix_PlayChannel(-1, hit_good_SFX, 0);
-	return true;
+int AudioSystem::playHitGood() {
+	return Mix_PlayChannel(-1, hit_good_SFX, 0);
 }
 
-bool AudioSystem::playHitPerfect() {
-	Mix_PlayChannel(-1, hit_perfect_SFX, 0);
-	return true;
+int AudioSystem::playHitPerfect() {
+	return Mix_PlayChannel(-1, hit_perfect_SFX, 0);
 }
 
-bool AudioSystem::musicPlaying() {
+int AudioSystem::musicPlaying() {
 	// return 1 if music still playing, 0 otherwise
 	return Mix_PlayingMusic();
 }
@@ -176,12 +168,10 @@ float AudioSystem::getSongPosition() {
 	return Mix_GetMusicPosition(current_music);
 }
 
-bool AudioSystem::pauseMusic() {
+void AudioSystem::pauseMusic() {
 	Mix_PauseMusic();
-	return true;
 }
 
-bool AudioSystem::resumeMusic() {
+void AudioSystem::resumeMusic() {
 	Mix_ResumeMusic();
-	return true;
 }

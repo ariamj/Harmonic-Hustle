@@ -16,20 +16,20 @@ public:
 
 	bool init();
 
-	bool playOverworld();
-	bool playBattle(int enemy_id);
+	int playOverworld();
+	int playBattle(int enemy_id);
 
-	bool playDroppedNote();
-	bool playMissedNote();
+	int playDroppedNote();
+	int playMissedNote();
 
-	bool playHitGood();
-	bool playHitPerfect();
+	int playHitGood();
+	int playHitPerfect();
 
-	bool musicPlaying();
+	int musicPlaying();
 	float getSongPosition();
 
-	bool pauseMusic();
-	bool resumeMusic();
+	void pauseMusic();
+	void resumeMusic();
 
 private:
 	bool LoadFiles();
