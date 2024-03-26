@@ -395,8 +395,8 @@ void RenderSystem::draw()
 	auto t8 = Clock::now();
 	float text_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t8 - t7)).count() / 1000;
 
-	std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
-		<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
+	// std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
+	// 	<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
 
 	// Truely render to the screen
 

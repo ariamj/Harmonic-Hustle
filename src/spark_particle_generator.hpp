@@ -9,9 +9,9 @@ public:
     // subclass constructor
     // const int amount = 500;
     SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture);
-
-    PARTICLE_TYPE_ID getType();
+    ~SparkParticleGenerator() {};
 private:
+    PARTICLE_TYPE_ID getType() override;
     void updateParticleBehaviours(Particle& p, float dt) override;
     void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset) override;
 };

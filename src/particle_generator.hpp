@@ -28,6 +28,7 @@
 
 // #include <glm/glm.hpp>
 #include "../ext/glm/glm/glm.hpp"
+#include "iostream"
 
 // Represents a single particle and its state
 struct Particle {
@@ -37,7 +38,7 @@ struct Particle {
     float     life;
     glm::vec2 scale;
 
-    Particle() : position(0.0f), velocity(0.0f), color(1.0f), life(0.0f), scale(DEFAULT_PARTICLE_SCALE) { }
+    Particle() : position(0.0f), velocity(0.0f), color(0.0f), life(0.0f), scale(DEFAULT_PARTICLE_SCALE) { }
 };
 
 
@@ -55,6 +56,7 @@ public:
     void Draw();
 
     virtual PARTICLE_TYPE_ID getType();
+    virtual ~ParticleGenerator() {}
 
 private:
     // render state

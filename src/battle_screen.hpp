@@ -49,6 +49,7 @@ class Battle {
 
         // Check for collisions
         void handle_collisions();
+        void handle_note_hit(Entity entity, Entity entity_other);
 
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);

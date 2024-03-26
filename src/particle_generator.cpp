@@ -237,7 +237,6 @@ int ParticleGenerator::findUnusedBlock()
     for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
         // 0 when initialized, or free when previous Entity is no longer registered for particles
         if (blocks[i] == 0 || !registry.particleEffects.has(blocks[i])) {
-            std::cout << "New block index:" << i << "\n";
             return i;
         }
     }
