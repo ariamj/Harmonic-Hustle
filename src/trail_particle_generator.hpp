@@ -10,7 +10,7 @@ public:
     // const int amount = 500;
     TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
 private:
-    PARTICLE_TYPE_ID getType();
+    PARTICLE_TYPE_ID getType() override;
     void updateParticleBehaviours(Particle& p, float dt) override;
     void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset) override;
 };
