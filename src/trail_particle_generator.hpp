@@ -9,6 +9,7 @@ public:
     // subclass constructor
     // const int amount = 500;
     TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    ~TrailParticleGenerator() {};
 private:
     PARTICLE_TYPE_ID getType() override;
     void updateParticleBehaviours(Particle& p, float dt) override;

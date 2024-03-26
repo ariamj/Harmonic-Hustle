@@ -28,6 +28,7 @@
 
 // #include <glm/glm.hpp>
 #include "../ext/glm/glm/glm.hpp"
+#include "iostream"
 
 // Represents a single particle and its state
 struct Particle {
@@ -55,6 +56,7 @@ public:
     void Draw();
 
     virtual PARTICLE_TYPE_ID getType();
+    virtual ~ParticleGenerator() {}
 
 private:
     // render state

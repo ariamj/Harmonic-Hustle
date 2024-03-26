@@ -9,6 +9,7 @@ public:
     // subclass constructor
     // const int amount = 500;
     SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    ~SparkParticleGenerator() {};
 private:
     PARTICLE_TYPE_ID getType() override;
     void updateParticleBehaviours(Particle& p, float dt) override;

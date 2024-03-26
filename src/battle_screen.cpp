@@ -315,15 +315,16 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// - Slightly less accurate spawning compared to using elapsed time
 			// + Safeguards against any delay in starting the music
 		// Could still be useful for visual FX that happen periodically
-		conductor.song_position = audio->getSongPosition();
+
+		// conductor.song_position = audio->getSongPosition();
 		// std::cout << conductor.song_position << "\n";
 
+		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
-		if (conductor.song_position > last_beat + conductor.crotchet) {
-			// TODO (?): Initiate some visual FX on every beat of song
-			std::cout << "Beat detected" << "\n";
-			last_beat += conductor.crotchet;
-		}
+		//if (conductor.song_position > last_beat + conductor.crotchet) {
+			// std::cout << "Beat detected" << "\n";
+			// last_beat += conductor.crotchet;
+		//}
 
 		// Spawning notes based on song position
 		/*
@@ -338,8 +339,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Spawning notes based on elapsed time
 		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
 			// spawn notes in the four lanes
-			// createNote(renderer, vec2(lanes[rand() % 4], 0.f));
-			createNote(renderer, vec2(lanes[1], 0.f));
+			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+
 			if (next_note_index < num_notes) {
 				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
 				next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
@@ -496,8 +497,6 @@ void Battle::start() {
     good_counter = 0;
     alright_counter = 0;
     missed_counter = 0;
-
-	std::cout << "Starting battle against enemy index: " << enemy_index << "\n";
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
@@ -766,7 +765,7 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
 					gameInfo.curr_screen = Screen::OVERWORLD;
-					std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
+					// std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
 				}
 				break;
 			default:
