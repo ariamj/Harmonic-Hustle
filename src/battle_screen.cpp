@@ -371,22 +371,22 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// Update battle mode
 		next_mode_delay -= elapsed_ms_since_last_update;
-		if (next_mode_delay <= 0.f) {
-			if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
-				switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
-					case back_and_forth:
-						gameInfo.battleModeColor = {-1.f, 0.2f, 1.f, 0.f}; // no adjust
-						break;
-					case beat_rush:
-						gameInfo.battleModeColor = {1.5f, -0.2f, -0.2f, -0.2f}; // adjust to red
-						break;
-					case unison:
-						gameInfo.battleModeColor = {1.f, -0.2f, -1.f, 0.f}; // adjust to orange
-						break;						
-				}
+		if (next_mode_delay <= 0.f && mode_index < battleInfo[enemy_index].mode_timings.size()) {
+			switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
+				case back_and_forth:
+					gameInfo.battleModeColor = {-1.f, 0.2f, 1.f, 0.f}; // no adjust
+					break;
+				case beat_rush:
+					gameInfo.battleModeColor = {1.5f, -0.2f, -0.2f, -0.2f}; // adjust to red
+					break;
+				case unison:
+					gameInfo.battleModeColor = {1.f, -0.2f, -1.f, 0.f}; // adjust to orange
+					break;						
 			}
 			mode_index += 1;
-			next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
+			if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
+				next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
+			}
 		}
 
 		// Update song position every frame
