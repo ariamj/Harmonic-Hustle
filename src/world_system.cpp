@@ -619,6 +619,11 @@ void WorldSystem::handleClickRestartBtn() {
 }
 
 void WorldSystem::handleClickLoadBtn() {
+	// Load button is only located on start screen
+	if (gameInfo.curr_screen != Screen::START) {
+		return;
+	}
+
 	Serializer readerwriter = Serializer();
 	gameInfo.existing_enemy_info.clear();
 	// change this to load game on a button in start screen
@@ -707,7 +712,9 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
-				battle.handle_key(key, scancode, action, mod);
+				if (action == GLFW_PRESS) {
+					battle.handle_key(key, scancode, action, mod);
+				}
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
 				}

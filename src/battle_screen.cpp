@@ -21,6 +21,11 @@ float note_travel_time = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
+float timing_offset = 1 - 1.f / 1.225f;
+
+// battle mode tracker
+int mode_index;
+float next_mode_delay;
 
 // battle-specific variables for readability, initialized in .start
 int enemy_index;
@@ -66,7 +71,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 
 	// Used to spawn notes relative to judgment line instead of window height
 		// Divide by 1000.f if using song position
-	spawn_offset = -(note_travel_time - (note_travel_time * (1 - 1.f / 1.225f)));
+	spawn_offset = -(note_travel_time - (note_travel_time * (timing_offset)));
 
 	float bpm_ratio;
 
@@ -86,6 +91,17 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	battleInfo[k].bpm = 130.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
+
+	battleInfo[k].mode_timings = {
+		{0.f, back_and_forth}
+	};
+
+	for (int i = 0; i < battleInfo[k].mode_timings.size(); i++) {
+		float time = battleInfo[k].mode_timings[i].first;
+		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		battleInfo[k].mode_timings[i].first = converted_timing;
+	}
+
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
@@ -103,6 +119,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		72.f, 73.f, 74.f, 75.f, 76.f, 77.f, 78.f, 79.f,
 		80.f, 81.f, 82.f, 83.f, 84.f, 85.f, 86.f, 87.f,
 		88.f, 89.f, 90.f, 91.f, 92.f, 93.f, 94.f, 95.f, 96.f, 97.f, 98.f, 99.f,
+		// BACK AND FORTH
 		116.f, 118.f, 120.f, 122.f, 123.f, 130.f, 131.f,
 		148.f, 150.f, 152.f, 154.f, 156.f, 158.f, 159.f 
 	};
@@ -111,6 +128,18 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	battleInfo[k].bpm = 184.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
+
+	battleInfo[k].mode_timings = {
+		{0.f, back_and_forth}, 
+		{64.f, beat_rush},
+		{112.f - 64.f, back_and_forth}}; // earlier due to pause in music
+
+	for (int i = 1; i < battleInfo[k].mode_timings.size(); i++) {
+		float time = battleInfo[k].mode_timings[i].first;
+		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		battleInfo[k].mode_timings[i].first = converted_timing;
+	}
+
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
@@ -151,6 +180,19 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	battleInfo[k].bpm = 152.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
+
+	battleInfo[k].mode_timings = {
+		{0.f, back_and_forth}, 
+		{64.f, unison},
+		{100.f - 64.f, back_and_forth},
+		{160.f - 100.f, unison}};
+
+	for (int i = 0; i < battleInfo[k].mode_timings.size(); i++) {
+		float time = battleInfo[k].mode_timings[i].first;
+		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		battleInfo[k].mode_timings[i].first = converted_timing;
+	}
+
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
@@ -160,11 +202,13 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	// CODING AT ITS FINEST..... TRULY
 	// OPTIMIZE: Create "Rhythm" presets to reduce this workload to every line, rather than every note
 	std::vector<float> enemy3_timings = { 
-		// UNISON
+		// BACK AND FORTH
 		4.f, 4.5f, 5.f, 5.5f, 6.f, 6.5f, 6.75f, 7.25f, 7.5f,
 		12.f, 12.5f, 13.f, 13.5f, 14.f, 14.5f, 14.75f, 15.25f, 15.5f,
 		20.f, 20.5f, 21.f, 21.5f, 22.f, 22.5f, 22.75f, 23.25f, 23.5f,
 		28.f, 28.5f, 29.f, 29.5f, 30.f, 30.25f, 30.5f, 30.75f, 31.25f, 31.5f,
+
+		// UNISON
 		32.f, 32.5f, 33.f, 33.5f, 34.f, 34.5f, 34.75f,
 		36.f, 36.5f, 37.f, 37.5f, 38.f, 38.5f, 38.75f,
 		40.f, 40.5f, 41.f, 41.5f, 42.f, 42.5f, 42.75f,
@@ -215,6 +259,22 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	battleInfo[k].bpm = 128.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
+
+	battleInfo[k].mode_timings = {
+		{0.f, back_and_forth}, 
+		{32.f, unison},
+		{48.f - 32.f, beat_rush},
+		{80.f - 48.f, unison},
+		{124.f - 80.f, beat_rush}, // earlier due to pause in music
+		{160.f - 124.f, unison}
+	};
+
+	for (int i = 0; i < battleInfo[k].mode_timings.size(); i++) {
+		float time = battleInfo[k].mode_timings[i].first;
+		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		battleInfo[k].mode_timings[i].first = converted_timing;
+	}
+
 	for (int i = 0; i < battleInfo[k].count_notes; i++) {
 		float converted_timing = (1000.f * enemy3_timings[i] / bpm_ratio) + spawn_offset;
 		battleInfo[k].note_timings.push_back(converted_timing);
@@ -308,6 +368,27 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		float min_counter_ms = 3000.f;
 		next_note_spawn -= elapsed_ms_since_last_update;
 
+
+		// Update battle mode
+		next_mode_delay -= elapsed_ms_since_last_update;
+		if (next_mode_delay <= 0.f) {
+			if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
+				switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
+					case back_and_forth:
+						gameInfo.battleModeColor = {-1.f, 0.2f, 1.f, 0.f}; // no adjust
+						break;
+					case beat_rush:
+						gameInfo.battleModeColor = {1.5f, -0.2f, -0.2f, -0.2f}; // adjust to red
+						break;
+					case unison:
+						gameInfo.battleModeColor = {1.f, -0.2f, -1.f, 0.f}; // adjust to orange
+						break;						
+				}
+			}
+			mode_index += 1;
+			next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
+		}
+
 		// Update song position every frame
 		// SADNESS: Only changes in value every 5-8 frames :( 
 			// - Notes will stutter if used for interpolation every frame
@@ -380,7 +461,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
 				// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-				motion.scale_factor = lerp(1.0, 2.5, motion.progress);
+				motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, motion.progress);
 			}
 		}
 
@@ -478,6 +559,9 @@ void Battle::start() {
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
 
+	mode_index = 0;
+	next_mode_delay = 0.f;
+	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
@@ -610,17 +694,12 @@ bool Battle::battleWon() {
 
 bool key_pressed = false;
 void Battle::handle_collisions() {
-	// We only care about collisions when a key is pressed
-	if (!key_pressed) {
-		return;
-	}
-
 	// Variables to store hits
 	std::vector<Entity> lane1_hits;
 	std::vector<Entity> lane2_hits;
 	std::vector<Entity> lane3_hits;
 	std::vector<Entity> lane4_hits;
-	auto lane_hits = {lane1_hits, lane2_hits, lane3_hits, lane4_hits};
+	auto lane_hits = {&lane1_hits, &lane2_hits, &lane3_hits, &lane4_hits};
 
 	// Loop over all collisions detected by the physics system
 	auto& collisionsRegistry = registry.collisions;
@@ -636,19 +715,19 @@ void Battle::handle_collisions() {
 
 			// Collect all successful matches
 				// Simple standing feedback using judgement line colour
-			if (d_key_pressed && lane == gameInfo.lane_1 && lane1_hits.size() == 0) {
+			if (d_key_pressed && lane == gameInfo.lane_1) {
 				lane1_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (f_key_pressed && lane == gameInfo.lane_2 && lane2_hits.size() == 0) {
+			else if (f_key_pressed && lane == gameInfo.lane_2) {
 				lane2_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (j_key_pressed && lane == gameInfo.lane_3 && lane3_hits.size() == 0) {
+			else if (j_key_pressed && lane == gameInfo.lane_3) {
 				lane3_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
-			else if (k_key_pressed && lane == gameInfo.lane_4 && lane4_hits.size() == 0) {
+			else if (k_key_pressed && lane == gameInfo.lane_4) {
 				lane4_hits.push_back(entity_other);
 				handle_note_hit(entity, entity_other);
 			}
@@ -657,26 +736,35 @@ void Battle::handle_collisions() {
 
 	// For each lane, remove at most one note (for this frame)
 	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
-	for (auto hits : lane_hits) {
+	for (auto &hits : lane_hits) {
 		// Skip lanes which had no collisions
-		if (hits.size() == 0) {
+		if (hits->size() == 0) {
 			continue;
 		}
-		Entity lowest_note = hits[0];
+		Entity lowest_note = hits->at(0);
 		float greatest_y = registry.motions.get(lowest_note).position.y;
 		// Find the note with highest y value (furthest down the screen)
-		for (int i = 1; i < hits.size(); i++) {
-			float note_y = registry.motions.get(hits[i]).position.y;
-			if (note_y > greatest_y) {
-				greatest_y = note_y; 
-			}
+		for (int i = 1; i < hits->size(); i++) {
+			float note_y = registry.motions.get(hits->at(i)).position.y;
+			greatest_y = max(greatest_y, note_y);
+			lowest_note = hits->at(i);
 		}
 		registry.remove_all_components_of(lowest_note);
 		got_hit = 1;
 	}	
 
-	if (!got_hit) {
-		if (key_pressed) {
+	// Play audio only once per key press
+	if (key_pressed) {
+		if (got_hit) {
+			switch (standing) {
+				case perfect:
+					audio->playHitPerfect();
+					break;
+				default:
+					audio->playHitGood();
+					break;
+			}
+		} else {
 			audio->playMissedNote();
 		}
 	}
@@ -707,20 +795,17 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	// Determine standing
 	if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
 		// set standing to Alright
-		audio->playHitGood(); // TODO: add slightly more disappointing-sounding SFX
 		standing = alright;
 		alright_counter++;
 		colour = ALRIGHT_COLOUR;
 	} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 				|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
 		// set standing to Good
-		audio->playHitGood();
 		standing = good;
 		good_counter++;
 		colour = GOOD_COLOUR;
 	} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
-		audio->playHitPerfect();
 		standing = perfect;
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
@@ -734,7 +819,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 
 	// Clean up registry
 	// registry.collisionTimers.emplace(entity_other);
-	registry.remove_all_components_of(entity_other); // comment this line out if want node colour change
+	// registry.remove_all_components_of(entity_other); // comment this line out if want node colour change
 }
 
 // battle keys:

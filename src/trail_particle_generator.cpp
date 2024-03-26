@@ -23,7 +23,7 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
     {	// particle is alive, thus update
         p.position += p.velocity * dt;
         p.color.a -= dt * 2.5;
-        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, 3.f, p.position.y / gameInfo.height));
+        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
 
     }
     else {
@@ -38,7 +38,8 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
-    particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
+    particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
+    particle.color += gameInfo.battleModeColor;
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
     particle.scale = DEFAULT_PARTICLE_SCALE;

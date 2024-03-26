@@ -50,6 +50,7 @@ void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
     particle.color = glm::vec4(rColor, rColor, rColor, 1.0f);
+    particle.color += gameInfo.battleModeColor;
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity;
     particle.scale = DEFAULT_PARTICLE_SCALE;

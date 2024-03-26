@@ -46,6 +46,7 @@ const float CS_WIDTH = 850.f;
 const float CS_HEIGHT = 1350.f;
 const float NOTE_WIDTH = 0.6f * 165.f;
 const float NOTE_HEIGHT = 0.6f * 165.f;
+const float NOTE_MAX_SCALE_FACTOR = 2.5f;
 // const float CHASE_PLAYER_RADIUS = 300.f;
 // const float RUN_AWAY_RADIUS = 300.f;
 const float PLAYER_ENEMY_RADIUS = 300.f;
@@ -55,7 +56,7 @@ const float DEFAULT_ENEMY_VELOCITY = 50.f;
 
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
-const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 4);
+const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
 const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
 
 // FPS global set by main.cpp
@@ -114,6 +115,14 @@ enum MouseArea {
 	in_help_btn,
 	in_restart_btn,
 	in_load_btn,
+};
+
+// Modes of note timings
+enum BattleMode {
+    back_and_forth = 1, // listen and copy
+    beat_rush = 2, // non-stop equal separation
+    unison = 3	// press at the same time as you hear it.
+				// player should have encountered rhythm before
 };
 
 bool gl_has_errors();
