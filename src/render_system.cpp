@@ -334,9 +334,17 @@ void RenderSystem::draw()
 	// }
 
 	glBindVertexArray(vao);
+
+	auto t1 = Clock::now();
+
 	drawToScreen();
 
+	auto t2 = Clock::now();
+	float to_screen_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
 
+
+
+	auto t3 = Clock::now();
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
 	for (Entity entity : registry.renderRequests.entities)
@@ -350,20 +358,20 @@ void RenderSystem::draw()
 		}
 	}
 
+	auto t4 = Clock::now();
+	float mesh_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3)).count() / 1000;
 
-	//auto pre_render = Clock::now();
 
+
+	auto t5 = Clock::now();
 	// Particle rendering, behind associated entities. Updates happen in world_system step
  	for (auto generator : particle_generators) {
 		generator->Draw();
 	}
 	glBindVertexArray(vao);
 
-
-	// auto post_render = Clock::now();
-	// std::chrono::duration<double> duration = post_render - pre_render;
-	// std::cout << "Render:" << duration.count() << "\n";
-
+	auto t6 = Clock::now();
+	float particle_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t6 - t5)).count() / 1000;
 
 	// Text-rendering
 
@@ -377,12 +385,18 @@ void RenderSystem::draw()
 	// trans = glm::rotate(trans, glm::radians(window.rotation), glm::vec3(0.0, 0.0, 1.0));
 	// trans = glm::scale(trans, glm::vec3(0.5, 0.5, 1.0));
 
+	auto t7 = Clock::now();
 	for (Entity entity : registry.texts.entities) {
 		Text text_e = registry.texts.get(entity);
 		if (text_e.screen == curr_screen) {
 			renderText(text_e.text, text_e.position.x, text_e.position.y, text_e.scale, text_e.colour, text_e.trans, text_e.center_pos);
 		}
 	}
+	auto t8 = Clock::now();
+	float text_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t8 - t7)).count() / 1000;
+
+	std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
+		<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
 
 	// Truely render to the screen
 
