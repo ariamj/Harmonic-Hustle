@@ -17,14 +17,13 @@ void GameOver::init(GLFWwindow* window, RenderSystem* renderer) {
 }
 
 void GameOver::init_screen() {
-    createCSPlayer(renderer, vec2(gameInfo.width/8.f, gameInfo.height/2.f), Screen::GAMEOVER);
-    
     title_1_pos = vec2(gameInfo.width/2.f, gameInfo.height/8.f);
     // title "banner"
     Entity banner_1 = createBox(title_1_pos, vec2(950.f, 100.f));
     registry.screens.insert(banner_1, Screen::GAMEOVER);
     registry.colours.insert(banner_1, Colour::white);
 
+    createCSPlayer(renderer, vec2(gameInfo.width/16.f, gameInfo.height/2.f), Screen::GAMEOVER);
     createCSEnemy(renderer, vec2(gameInfo.width*7/8.f, gameInfo.height/2.f), Screen::GAMEOVER);
 
     renderButtons();
