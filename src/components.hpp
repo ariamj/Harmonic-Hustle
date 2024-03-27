@@ -5,7 +5,6 @@
 #include "../ext/stb_image/stb_image.h"
 #include "screen.hpp"
 
-
 // Sets the brightness of the screen
 struct ScreenState
 {
@@ -24,6 +23,33 @@ struct TexturedVertex
 {
 	vec3 position;
 	vec2 texcoord;
+};
+
+struct Character {
+	unsigned int TextureID;  // ID handle of the glyph texture
+	glm::ivec2   Size;       // Size of glyph
+	glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
+	unsigned int Advance;    // Offset to advance to next glyph
+	char character;
+};
+
+struct Text
+{
+	// Text to be rendered
+	std::string text;
+	vec2 position = { 0.f, 0.f };
+	float scale = 1.f;
+	glm::vec3 colour = { 1.f, 1.f, 1.f };
+	glm::mat4 trans = glm::mat4(1.f);
+	Screen screen = Screen::OVERWORLD;
+	bool center_pos;
+};
+
+struct BoxButton {
+	Entity button_base;
+	std::string text;
+	float text_scale = 1.f;
+	glm::vec3 text_colour = vec3(0.f);
 };
 
 // Mesh datastructure for storing vertex and index buffers
@@ -61,6 +87,10 @@ struct Enemy
 
 };
 
+struct BattleEnemy {
+
+};
+
 // for keeping beat
 // https://fizzd.notion.site/How-To-Make-A-Rhythm-Game-Technical-Guide-ed09f5e09752451f97501ebddf68cf8a
 struct Conductor
@@ -70,6 +100,7 @@ struct Conductor
 	float offset;
 	float song_position;
 };
+extern Conductor conductor;
 
 // the area in which we gotta hit the notes
 struct JudgementLine
@@ -83,10 +114,9 @@ struct JudgementLineTimer
 	float count_ms = 200;
 };
 
-// used to manage the different screens (????)
-// the scene that the entity exists in
 struct GameInfo {
 	Screen curr_screen;
+	Screen prev_screen; // to handle resume correct screen after pausing
 	std::shared_ptr<Entity> player_sprite;
 	int height;
 	int width;
@@ -96,8 +126,14 @@ struct GameInfo {
 	float lane_4;
 	Entity curr_enemy;
 	int curr_level = 1;
-	int max_level = 3;
+	int max_level = 4;
 	bool victory = false; // True for testing; should be initialized to false
+	bool is_boss_finished = false;
+	bool is_intro_finished = false;
+	bool is_game_over_finished = false;
+	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
+	bool gameIsOver = false;
+	vec4 battleModeColor; 
 };
 extern GameInfo gameInfo;
 
@@ -108,6 +144,22 @@ struct BattleProfile {
 struct Scene
 {
 	Screen scene;
+};
+
+struct PlayerCS {
+
+};
+
+struct EnemyCS {
+
+};
+
+struct CSText {
+	int progress = 0;
+};
+
+struct CSTextbox {
+
 };
 
 struct IsChasing {
@@ -194,7 +246,15 @@ enum class TEXTURE_ASSET_ID {
 	NOTE = JUDGEMENT + 1,
 	OVERWORLD_BG = NOTE + 1,
 	HELP_BG = OVERWORLD_BG + 1,
-	TEXTURE_COUNT = HELP_BG + 1 // keep as last variable
+	TRAIL_PARTICLE = HELP_BG + 1,
+	BOSS_CS = TRAIL_PARTICLE + 1,
+	BATTLEBOSS = BOSS_CS + 1,
+	PLAYER_CS = BATTLEBOSS + 1,
+	BOX_CS = PLAYER_CS + 1,
+	SPARK_PARTICLE = BOX_CS + 1,
+	BATTLEENEMY_DRUM = SPARK_PARTICLE + 1,
+	BATTLEENEMY_MIC = BATTLEENEMY_DRUM + 1,
+	TEXTURE_COUNT = BATTLEENEMY_MIC +1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -209,7 +269,10 @@ enum class EFFECT_ASSET_ID {
 	ENVIRONMENT = TEXTURED + 1,
 	JUDGEMENT = ENVIRONMENT + 1,
 	NOTE = JUDGEMENT + 1,
-	EFFECT_COUNT = NOTE + 1 // keep as last variable
+	FONT = NOTE + 1,
+	TRAIL_PARTICLE = FONT + 1,
+	SPARK_PARTICLE = TRAIL_PARTICLE + 1,
+	EFFECT_COUNT = SPARK_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
@@ -222,9 +285,34 @@ enum class GEOMETRY_BUFFER_ID {
 	BOX = DEBUG_LINE + 1,
 	CIRCLE_OUTLINE = BOX + 1,
 	DOT = CIRCLE_OUTLINE + 1,
-	GEOMETRY_COUNT = DOT + 1 // keep as last variable
+	FONT = DOT + 1,
+	GEOMETRY_COUNT = FONT + 1 // keep as last variable
 };
 const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
+
+enum class PARTICLE_TYPE_ID {
+	TRAIL = 0,
+	SPARK = TRAIL + 1,
+	PARTICLE_TYPE_COUNT = SPARK + 1
+};
+const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
+
+struct ParticleEffect
+{
+	int last_used_particle;
+	int min_index;
+	int max_index;
+	PARTICLE_TYPE_ID type;
+
+	// for non-continuous-spawning particles 
+	int spawned_particles = 0;
+	int max_particles = 500; // can be set on entity creation
+};
+
+struct ParticleTimer
+{
+	float count_ms = 1500.f;
+};
 
 struct RenderRequest {
 	TEXTURE_ASSET_ID used_texture = TEXTURE_ASSET_ID::TEXTURE_COUNT;

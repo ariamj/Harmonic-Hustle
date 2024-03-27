@@ -7,6 +7,11 @@
 #include "components.hpp"
 #include "tiny_ecs.hpp"
 
+#include "trail_particle_generator.hpp"
+#include "spark_particle_generator.hpp"
+
+#include <map>
+
 // System responsible for setting up OpenGL and for rendering all the
 // visual entities in the game
 class RenderSystem {
@@ -44,7 +49,15 @@ class RenderSystem {
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
-		textures_path("Help-Screen-Background.png")
+		textures_path("Help-Screen-Background.png"),
+		textures_path("Trail-Particle.png"),
+		textures_path("Boss-CS-Neutral.png"),
+		textures_path("Boss-Portrait-Neutral.png"),
+		textures_path("Player-CS-Neutral.png"),
+		textures_path("CS-Text-Box.png"),
+		textures_path("Spark-Particle.png"),
+		textures_path("Enemy-Drum-Portrait.png"),
+		textures_path("Enemy-Mic-Portrait.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -58,7 +71,10 @@ class RenderSystem {
 		shader_path("textured"),
 		shader_path("environment"),
 		shader_path("judgement"),
-		shader_path("note")
+		shader_path("note"),
+		shader_path("font"),
+		shader_path("trailParticle"),
+		shader_path("sparkParticle")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;
@@ -66,10 +82,14 @@ class RenderSystem {
 	std::array<Mesh, geometry_count> meshes;
 
 public:
+	std::map<char, Character> m_ftCharacters;
+
 	// Initialize the window
 	bool init(GLFWwindow* window);
 
-	template <class T>
+    bool fontInit(GLFWwindow& window, const std::string& font_filename, unsigned int font_default_size);
+
+    template <class T>
 	void bindVBOandIBO(GEOMETRY_BUFFER_ID gid, std::vector<T> vertices, std::vector<uint16_t> indices);
 
 	void initializeGlTextures();
@@ -85,13 +105,23 @@ public:
 	// shader
 	bool initScreenTexture();
 
+	void initializeParticleGenerators();
+
 	// Destroy resources associated to one or all entities created by the system
 	~RenderSystem();
 
 	// Draw all entities
 	void draw();
 
+	void renderText(const std::string& text, float x, float y, float scale, const glm::vec3& color, const glm::mat4& trans = glm::mat4(1.f), bool center_pos = true);
+
 	mat3 createProjectionMatrix();
+
+	// Particles
+	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
+
+	void createParticleGenerator(int particle_type_id);
+
 
 private:
 	// Internal drawing functions for each entity type
@@ -105,6 +135,11 @@ private:
 	GLuint frame_buffer;
 	GLuint off_screen_render_buffer_color;
 	GLuint off_screen_render_buffer_depth;
+
+	GLuint vao;
+	GLuint m_font_VAO;
+	GLuint m_font_VBO;
+	GLuint m_font_shaderProgram;
 
 	Entity screen_state_entity;
 };

@@ -32,6 +32,16 @@ public:
 	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
+	ComponentContainer<Text> texts;
+	ComponentContainer<BoxButton> boxButtons;
+	ComponentContainer<ParticleEffect> particleEffects;
+	ComponentContainer<BoxAreaBound> boxAreaBounds;
+	ComponentContainer<EnemyCS> enemyCS;
+	ComponentContainer<PlayerCS> playerCS;
+	ComponentContainer<CSText> CSTexts;
+	ComponentContainer<CSTextbox> CSTextbox;
+	ComponentContainer<BattleEnemy> battleEnemy;
+	ComponentContainer<ParticleTimer> particleTimers;
 	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -58,6 +68,16 @@ public:
 		registry_list.push_back(&judgmentLineTimers);
 		registry_list.push_back(&colours);
 		registry_list.push_back(&debugComponents);
+		registry_list.push_back(&texts);
+		registry_list.push_back(&boxButtons);
+		registry_list.push_back(&particleEffects);
+		registry_list.push_back(&boxAreaBounds);
+		registry_list.push_back(&enemyCS);
+		registry_list.push_back(&playerCS);
+		registry_list.push_back(&CSTexts);
+		registry_list.push_back(&CSTextbox);
+		registry_list.push_back(&battleEnemy);
+		registry_list.push_back(&particleTimers);
 	}
 
 	void clear_all_components() {

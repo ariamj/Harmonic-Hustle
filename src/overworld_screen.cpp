@@ -1,5 +1,4 @@
 #include "overworld_screen.hpp"
-
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -8,12 +7,12 @@
 #include "tiny_ecs_registry.hpp"
 
 // Game configuration
-const size_t MAX_ENEMIES = 2;
-const size_t ENEMY_DELAY_MS = 5000 * 3;
-const float PLAYER_SPEED = 100.f;
+// const size_t MAX_ENEMIES = 2;
+// const size_t ENEMY_DELAY_MS = 5000 * 3;
+const float PLAYER_SPEED = 200.f;
 
 Overworld::Overworld() 
-: next_enemy_spawn(0.f) 
+: next_enemy_spawn(0.f)
 {
     rng = std::default_random_engine(std::random_device()());
 }
@@ -22,16 +21,16 @@ Overworld::~Overworld() {
 
 };
 
-void Overworld::init(GLFWwindow* window, RenderSystem* renderer) {
+void Overworld::init(GLFWwindow* window, RenderSystem* renderer, Serializer* saver) {
     is_visible = false;
     this->window = window;
     this->renderer = renderer;
+	this->saver = saver;
 };
 
 bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
-	title_ss << " --- FPS: " << FPS;
 	glfwSetWindowTitle(window, title_ss.str().c_str());
 
 	// Remove debug info from the last step
@@ -52,6 +51,12 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		}
 	}
 
+	Motion& playerMotion = registry.motions.get(*gameInfo.player_sprite);
+
+	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
+	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, glm::mat4(1.f), Screen::OVERWORLD, true );
+	
+
 	// // Spawn new enemies
 	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
 	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
@@ -67,14 +72,18 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
     for (Entity enemy : enemies) {
         int enemyLevel = registry.levels.get(enemy).level;
+		Motion& enemyMotion = registry.motions.get(enemy);
+		std::string levelText = "lvl " + std::to_string(enemyLevel);
         if (enemyLevel > playerLevel) {
             if (!registry.colours.has(enemy)) {
                 registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
             }
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::red, glm::mat4(1.f), Screen::OVERWORLD, true);
         } else {
             if (registry.colours.has(enemy)) {
                 registry.colours.remove(enemy);
             }
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, glm::mat4(1.f), Screen::OVERWORLD, true);
         }
     }
 
@@ -88,10 +97,10 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     }
 
 	// Process the player state
-	assert(registry.screenStates.components.size() <= 1);
-	ScreenState &screen = registry.screenStates.components[0];
+	// assert(registry.screenStates.components.size() <= 1);
+	// ScreenState &screen = registry.screenStates.components[0];
 
-	float min_counter_ms = 3000.f;
+	// float min_counter_ms = 3000.f;
 
     return true;
 };
@@ -120,7 +129,7 @@ bool Overworld::handle_collisions() {
 
         // if collision between player and enemy, switch to battle scene, remove enemy
         if (registry.players.has(entity) && registry.enemies.has(entity_other)) {
-            int enemyLevel = registry.levels.get(entity_other).level;
+            // int enemyLevel = registry.levels.get(entity_other).level;
 
             // if collision is between enemy with level <= player level
             //      set curr enemy and switch to battle scene
@@ -179,20 +188,27 @@ void handleDebugInput(int action) {
 }
 
 void Overworld::handle_key(int key, int scancode, int action, int mod) {
-    switch(key) {
-        case GLFW_KEY_W:
+	if (key == GLFW_KEY_S && action == GLFW_PRESS && (mod & GLFW_MOD_CONTROL)) {
+		printf("Ctrl+S detected, game saving");
+		saver->save_game();
+	}
+	else {
+		switch(key) {
+		case GLFW_KEY_W:
 		case GLFW_KEY_A:
 		case GLFW_KEY_S:
 		case GLFW_KEY_D:
-            handleMovementInput(action, key);
+			handleMovementInput(action, key);
 			break;
 		case GLFW_KEY_X:
 			// toggle debug
 			handleDebugInput(action);
-        default:
-            std::cout << "unhandled overworld key" << std::endl;
-            break;
-    }
+		default:
+			std::cout << "unhandled overworld key" << std::endl;
+			break;
+		}
+	}
+    
 };
 
 void Overworld::handle_mouse_move(vec2 pos) {

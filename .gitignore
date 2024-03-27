@@ -18,3 +18,5 @@ data/.DS_Store
 
 # Other files/folders
 ext/project_path.hpp
+
+data/saves/*

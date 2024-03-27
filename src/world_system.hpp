@@ -15,7 +15,10 @@
 #include "overworld_screen.hpp"
 #include "battle_screen.hpp"
 #include "settings_screen.hpp"
+#include "start_screen.hpp"
+#include "game_over_screen.hpp"
 #include "audio_system.hpp"
+#include "cutscene.hpp"
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -28,9 +31,11 @@ public:
 	Battle battle;
 	Overworld overworld;
 	Settings settings;
+	Start start;
+	GameOver gameOver;
 	AudioSystem audioSystem;
+	Cutscene cutscene;
 	
-
 	// Creates a window
 	GLFWwindow* create_window();
 
@@ -58,15 +63,31 @@ private:
 	// sets the current scene to settings/help
 	bool render_set_settings_screen();
 
+	// sets the current scene to start screen
+	bool render_set_start_screen();
+
+	// sets the current scene to game over screen
+	bool render_set_game_over_screen();
+
+  // sets to cut scene
+	bool render_set_cutscene();
+
 	void checkEnemyPositions();
 
 	vec2 getRamdomEnemyPosition();
 
 	void handleEscInput(int action);
+	void handleHInput(int action);
+	void handleBackspaceInput(int action);
+	void handleClickStartBtn();
+	void handleClickHelpBtn();
+	void handleClickRestartBtn();
+	void handleClickLoadBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
 	void on_mouse_move(vec2 pos);
+	void on_mouse_button(int button, int action, int mods);
 
 	// restart level
 	void restart_game();
@@ -83,13 +104,27 @@ private:
 	Entity battle_enemy_sprite;
 	Entity judgement_line_sprite;
 
+	// buttons
+	// enum MouseArea {
+	// 	in_unclickable,
+	// 	in_start_btn,
+	// 	in_help_btn,
+	// };
+	MouseArea mouse_area = in_unclickable;
+
+
+	Serializer saver = Serializer();
+
+
 	// music references
-	Mix_Music* background_music;
+	// Mix_Music* background_music;
 
 	// C++ random number generator
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 
 	// Screen curr_scene;
+
+	bool show_fps = true;
 
 };

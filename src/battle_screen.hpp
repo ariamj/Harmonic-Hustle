@@ -8,11 +8,13 @@
 #include <random>
 
 #include "render_system.hpp"
+#include "audio_system.hpp"
 
 struct BattleInfo {
     float bpm;
     int count_notes;
     std::vector<float> note_timings;
+    std::vector<std::pair<float, BattleMode>> mode_timings;
 };
 
 class Battle {
@@ -26,26 +28,29 @@ class Battle {
             missed = -5
         };
 
-        void init(GLFWwindow* window, RenderSystem* renderer);
+        void init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver);
 
         // Releases all associated resources
         ~Battle();
 
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
-        float lerp(float start, float end, float t);
 
         void handle_battle_end();
 
         // Setters
         void start();
 
+        bool set_pause(bool isPaused);
+
         bool set_visible(bool isVisible);
 
         void setBattleIsOver(bool isOver);
+        bool battleWon();
 
         // Check for collisions
         void handle_collisions();
+        void handle_note_hit(Entity entity, Entity entity_other);
 
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
@@ -57,6 +62,7 @@ class Battle {
 
          // game state
         RenderSystem* renderer;
+        AudioSystem* audio;
         //float current_speed;
         float next_note_spawn;
         Entity player_battle_sprite;
@@ -66,12 +72,23 @@ class Battle {
         bool j_key_pressed = false;
         bool k_key_pressed = false;
         Standing standing;
+        int perfect_counter = 0;
+        int good_counter = 0;
+        int alright_counter = 0;
+        int missed_counter = 0;
         float score = 0;
         float score_threshold = 200.f; // TODO: load info from enemy battle sprite
 
         float lanes[4] = {0, 0, 0, 0};
+        Entity gameOverPopUpOverlay;
 
         bool battle_is_over = false;
+        
+        // set to true once player resumes game from pause
+        bool in_countdown = false;
+        float countdownTimer_ms;
 
         GLFWwindow* window;
+
+        Serializer* saver;
 };

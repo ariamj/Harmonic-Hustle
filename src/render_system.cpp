@@ -4,6 +4,12 @@
 
 #include "tiny_ecs_registry.hpp"
 
+#include <glm/gtc/type_ptr.hpp>
+#include "iostream"
+// stlib
+#include <chrono>
+using Clock = std::chrono::high_resolution_clock;
+
 void RenderSystem::drawTexturedMesh(Entity entity,
 									const mat3 &projection)
 {
@@ -159,17 +165,17 @@ void RenderSystem::drawToScreen()
 		index_buffers[(GLuint)GEOMETRY_BUFFER_ID::SCREEN_TRIANGLE]); // Note, GL_ELEMENT_ARRAY_BUFFER associates
 																	 // indices to the bound GL_ARRAY_BUFFER
 	gl_has_errors();
-	const GLuint wind_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
+	const GLuint env_program = effects[(GLuint)EFFECT_ASSET_ID::ENVIRONMENT];
 	// Set clock
-	GLuint time_uloc = glGetUniformLocation(wind_program, "time");
-	// GLuint dead_timer_uloc = glGetUniformLocation(wind_program, "darken_screen_factor");
+	GLuint time_uloc = glGetUniformLocation(env_program, "time");
+	GLuint darken_screen_uloc = glGetUniformLocation(env_program, "darken_screen_factor");
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	ScreenState &screen = registry.screenStates.get(screen_state_entity);
-	// glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
+	glUniform1f(darken_screen_uloc, screen.darken_screen_factor);
 	gl_has_errors();
 	// Set the vertex position and vertex texture coordinates (both stored in the
 	// same VBO)
-	GLint in_position_loc = glGetAttribLocation(wind_program, "in_position");
+	GLint in_position_loc = glGetAttribLocation(env_program, "in_position");
 	glEnableVertexAttribArray(in_position_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void *)0);
 	gl_has_errors();
@@ -179,7 +185,7 @@ void RenderSystem::drawToScreen()
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
-	if (curr_screen == OVERWORLD) {
+	if (curr_screen == OVERWORLD || curr_screen == START) {
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -201,6 +207,93 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 }
 
+void RenderSystem::renderText(const std::string& text, float x, float y,
+		float scale, const glm::vec3& color,
+		const glm::mat4& trans, bool center_pos) {
+
+	// activate the shaders!
+	glUseProgram(m_font_shaderProgram);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	unsigned int textColor_location =
+		glGetUniformLocation(
+			m_font_shaderProgram,
+			"textColor"
+		);
+	assert(textColor_location >= 0);
+	glUniform3f(textColor_location, color.x, color.y, color.z);
+
+	auto transform_location = glGetUniformLocation(
+		m_font_shaderProgram,
+		"transform"
+	);
+	assert(transform_location > -1);
+	glUniformMatrix4fv(transform_location, 1, GL_FALSE, glm::value_ptr(trans));
+
+	glBindVertexArray(m_font_VAO);
+
+	float textWidth = 0.f;
+	float textHeight = 0.f;
+	std::string::const_iterator text_c;
+	for (text_c = text.begin(); text_c != text.end(); text_c++) {
+		Character text_ch = m_ftCharacters[*text_c];
+		textWidth += text_ch.Advance >> 6;
+		textHeight = max(textHeight, (float)text_ch.Size.y);
+	}
+	if (center_pos) {
+		// Adjust xpos to be center of text
+		x -= textWidth * scale / 2.f;
+	}
+	y = gameInfo.height - y - ((textHeight / 2.f) * scale);
+
+	// iterate through all characters
+	std::string::const_iterator c;
+	for (c = text.begin(); c != text.end(); c++)
+	{
+		Character ch = m_ftCharacters[*c];
+
+		float xpos = x + ch.Bearing.x * scale;
+		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+		float w = ch.Size.x * scale;
+		float h = ch.Size.y * scale;
+
+		// update VBO for each character
+		float vertices[6][4] = {
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos,     ypos,       0.0f, 1.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+			{ xpos + w, ypos + h,   1.0f, 0.0f }
+		};
+
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+
+		// update content of VBO memory
+		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+	}
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Rebind VAO
+	glBindVertexArray(vao);
+}
+
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void RenderSystem::draw()
@@ -218,7 +311,9 @@ void RenderSystem::draw()
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
 	// glClearColor(0.032, 0.139, 0.153, 1.0); // background colour
-	glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	// glClearColor(0.048, 0.184, 0.201, 1.0); // background colour
+	vec3 bckgd_colour = Colour::theme_blue_3;
+	glClearColor(bckgd_colour.x, bckgd_colour.y, bckgd_colour.z, 1.0); // background colour
 	glClearDepth(10.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_BLEND);
@@ -238,8 +333,18 @@ void RenderSystem::draw()
 	// 	drawTexturedMesh(entity, projection_2D);
 	// }
 
+	glBindVertexArray(vao);
+
+	auto t1 = Clock::now();
+
 	drawToScreen();
 
+	auto t2 = Clock::now();
+	float to_screen_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
+
+
+
+	auto t3 = Clock::now();
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 
 	for (Entity entity : registry.renderRequests.entities)
@@ -252,6 +357,46 @@ void RenderSystem::draw()
 			}
 		}
 	}
+
+	auto t4 = Clock::now();
+	float mesh_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3)).count() / 1000;
+
+
+
+	auto t5 = Clock::now();
+	// Particle rendering, behind associated entities. Updates happen in world_system step
+ 	for (auto generator : particle_generators) {
+		generator->Draw();
+	}
+	glBindVertexArray(vao);
+
+	auto t6 = Clock::now();
+	float particle_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t6 - t5)).count() / 1000;
+
+	// Text-rendering
+
+	// Font matrix transformation
+	// glm::mat4 trans = glm::mat4(1.0f);
+
+	// Font matrix rotation
+	// trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+	// trans = glm::scale(trans, glm::vec3(0.25, 0.25, 1.0));
+	// trans = glm::mat4(1.0f);
+	// trans = glm::rotate(trans, glm::radians(window.rotation), glm::vec3(0.0, 0.0, 1.0));
+	// trans = glm::scale(trans, glm::vec3(0.5, 0.5, 1.0));
+
+	auto t7 = Clock::now();
+	for (Entity entity : registry.texts.entities) {
+		Text text_e = registry.texts.get(entity);
+		if (text_e.screen == curr_screen) {
+			renderText(text_e.text, text_e.position.x, text_e.position.y, text_e.scale, text_e.colour, text_e.trans, text_e.center_pos);
+		}
+	}
+	auto t8 = Clock::now();
+	float text_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t8 - t7)).count() / 1000;
+
+	// std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
+	// 	<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
 
 	// Truely render to the screen
 
@@ -277,4 +422,28 @@ mat3 RenderSystem::createProjectionMatrix()
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
+}
+
+void RenderSystem::createParticleGenerator(int particle_type_id) {
+	// int amount = 0;
+	switch (particle_type_id) {
+		case (int)PARTICLE_TYPE_ID::TRAIL:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::TRAIL_PARTICLE];
+			std::shared_ptr<TrailParticleGenerator> generator =
+				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+			return;
+		}
+		case (int)PARTICLE_TYPE_ID::SPARK:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SPARK_PARTICLE];
+			std::shared_ptr<SparkParticleGenerator> generator =
+				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+			return;
+		}
+	}
 }
