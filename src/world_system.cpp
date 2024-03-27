@@ -639,8 +639,12 @@ void WorldSystem::handleClickLoadBtn() {
 			createEnemy(renderer, vec2(enemy[0], enemy[1]), enemy[2]);
 		}
 	}
+
+	if (gameInfo.gameIsOver) {
+		restart_game();
+	}
 	// if there are no enemies and game is not over, switch to boss battle
-	if (gameInfo.existing_enemy_info.size() == 0) {
+	else if (gameInfo.existing_enemy_info.size() == 0) {
 		render_set_cutscene();
 	}
 
