@@ -75,6 +75,7 @@ struct Motion {
 struct Note
 {
 	bool pressed = false;
+	float spawn_time;
 };
 
 struct Player

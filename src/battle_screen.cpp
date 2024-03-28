@@ -17,11 +17,15 @@ const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 // the time it should take for note to fall from top to bottom
+// TODO: Allow calibration via difficulty setting
 float note_travel_time = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-float timing_offset = 1 - 1.f / 1.225f;
+// TODO: Allow calibration by player. Higher value -> Correct timing feels more "above" judgment line
+float adjust_offset = 0.025f; // default from testing manually.
+float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
+float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
 // battle mode tracker
 int mode_index;
@@ -366,8 +370,48 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// ScreenState& screen = registry.screenStates.components[0];
 
 		float min_counter_ms = 3000.f;
-		next_note_spawn -= elapsed_ms_since_last_update;
 
+		// FAILED ATTEMPT TO IMPROVE TIMING
+		//// Error correction based on actual audio time
+		//// Check if song position has changed since last frame (it only changes every 5-8 frames)
+		//float new_song_position = audio->getSongPosition();
+
+		//if (new_song_position > conductor.song_position) {
+		//	// Calculate the error between elapsed time and actual song position
+		//	float adjusted_elapsed_ms = new_song_position * 1000.f - (total_elapsed_ms + elapsed_ms_since_last_update);
+
+		//	std::cout << "Elapsed:" << total_elapsed_ms + elapsed_ms_since_last_update << ", Song position:" << new_song_position << ", Adjusted:" << adjusted_elapsed_ms << "\n";
+
+		//	if (adjusted_elapsed_ms > 0) {
+		//		// The song is AHEAD of elapsed time calculations (player feels that correct timing is above the line)
+		//		// "Fast-forward" all elapsed_time manually
+
+		//		total_elapsed_ms = new_song_position * 1000.f; //add or not? "this frame" included?
+		//		elapsed_ms_since_last_update = adjusted_elapsed_ms;
+		//		std::cout << "Adjusted total elapsed:" << total_elapsed_ms << "\n";
+		//	} else {
+		//		// The song is BEHIND of elapsed time calculations (player feels that correct timing is below the line)
+		//		// Stall this frame
+		//		// conductor.song_position += elapsed_ms_since_last_update;
+		//	}
+		//}
+		//else {
+		//	// Increment total battle music time
+		//	total_elapsed_ms += elapsed_ms_since_last_update;
+		//}
+
+		float new_song_position = audio->getSongPosition() * 1000.f;
+		if (new_song_position > conductor.song_position) {
+			conductor.song_position = new_song_position;
+		}
+		else {
+			conductor.song_position += elapsed_ms_since_last_update;
+		}
+
+		std::cout << "Conductor:" << conductor.song_position << "\n";
+
+
+		next_note_spawn -= elapsed_ms_since_last_update;
 
 		// Update battle mode
 		next_mode_delay -= elapsed_ms_since_last_update;
@@ -396,40 +440,37 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// + Safeguards against any delay in starting the music
 		// Could still be useful for visual FX that happen periodically
 
-		// conductor.song_position = audio->getSongPosition();
-		// std::cout << conductor.song_position << "\n";
-
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
-		//if (conductor.song_position > last_beat + conductor.crotchet) {
-			// std::cout << "Beat detected" << "\n";
-			// last_beat += conductor.crotchet;
-		//}
+		if (conductor.song_position > last_beat + conductor.crotchet) {
+			 std::cout << "Beat detected" << "\n";
+			 last_beat += conductor.crotchet;
+		}
 
 		// Spawning notes based on song position
-		/*
 		if (next_note_index < num_notes) {
-			if (conductor.song_position > battleInfo[enemy_index].note_timings[next_note_index]) {
-				createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index];
+			if (conductor.song_position >= note_spawn_time) {
+				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
 				next_note_index += 1;
 			}
 		}
-		*/
-		
-		// Spawning notes based on elapsed time
-		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
-			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 
-			if (next_note_index < num_notes) {
-				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
-				next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
-								- battleInfo[enemy_index].note_timings[next_note_index - 1]
-								+ next_note_spawn;
-			}
+		//
+		//// Spawning notes based on elapsed time
+		//if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
+		//	// spawn notes in the four lanes
+		//	createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 
-			next_note_index += 1;
-		}
+		//	if (next_note_index < num_notes) {
+		//		// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
+		//		next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
+		//						- battleInfo[enemy_index].note_timings[next_note_index - 1]
+		//						+ next_note_spawn;
+		//	}
+
+		//	next_note_index += 1;
+		//}
 
 		// Remove entities that leave the screen below
 		// Iterate backwards to be able to remove without unterfering with the next object to visit
@@ -448,21 +489,33 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} 
 
-		// update notes positions
-		for (int i = 0; i < registry.motions.components.size(); ++i) {
-			Motion& motion = registry.motions.components[i];
+		//// update notes positions
+		//for (int i = 0; i < registry.motions.components.size(); ++i) {
+		//	Motion& motion = registry.motions.components[i];
 
-			if (registry.notes.has(motions_registry.entities[i])) {
-				// Increment progress on range [0,1]
-				float progress_step = elapsed_ms_since_last_update / note_travel_time;
-				motion.progress = min(1.f, motion.progress + progress_step);
+		//	if (registry.notes.has(motions_registry.entities[i])) {
+		//		// Increment progress on range [0,1]
+		//		float progress_step = elapsed_ms_since_last_update / note_travel_time;
+		//		motion.progress = min(1.f, motion.progress + progress_step);
 
-					// Interpolate note position from top to bottom of screen
-					motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
+		//		// Interpolate note position from top to bottom of screen
+		//		motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
-				// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-				motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, motion.progress);
+		//		// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
+		//		motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, motion.progress);
+		//	}
+		//}
+
+		// Update note positions based on conductor time
+		for (auto entity : registry.notes.entities) {
+			if (!registry.motions.has(entity)) {
+				continue;
 			}
+			Note& note = registry.notes.get(entity);
+			Motion& motion = registry.motions.get(entity);
+
+			motion.position.y = lerp(0.0, float(gameInfo.height), (conductor.song_position - note.spawn_time) / note_travel_time);
+			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, (conductor.song_position - note.spawn_time) / note_travel_time);	
 		}
 
 		// collision timers
@@ -563,6 +616,7 @@ void Battle::start() {
 	next_mode_delay = 0.f;
 	
 	// Set Conductor variables
+	conductor.song_position = 0.f;
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
 	conductor.offset = 0.f; // unused right now.
@@ -582,7 +636,7 @@ void Battle::start() {
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
-	next_note_index = 1; // Set to 0 if using song position
+	next_note_index = 0; // 0 for song_position based, 1 for elapsed_time based
 
 	Entity e = registry.battleEnemy.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);
@@ -792,25 +846,25 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	// Colour
 	vec3& colour = registry.colours.get(entity);
 	
-	// Determine standing
-	if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
-		// set standing to Alright
-		standing = alright;
-		alright_counter++;
-		colour = ALRIGHT_COLOUR;
-	} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
-				|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
-		// set standing to Good
-		standing = good;
-		good_counter++;
-		colour = GOOD_COLOUR;
-	} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
+	if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
 		standing = perfect;
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
+	}	// Determine standing
+	else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
+		|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
+		// set standing to Good
+		standing = good;
+		good_counter++;
+		colour = GOOD_COLOUR;
 	}
-
+	else {
+		// set standing to Alright
+		standing = alright;
+		alright_counter++;
+		colour = ALRIGHT_COLOUR;
+	}
 	// Update score
 	score += standing;
 
