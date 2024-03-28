@@ -7,6 +7,9 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
+#include "chrono"
+
+using Clock = std::chrono::high_resolution_clock;
 
 // consts for now;
 const size_t MAX_NOTES = 10;
@@ -408,9 +411,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
-		std::cout << "Conductor:" << conductor.song_position << "\n";
-
-
 		next_note_spawn -= elapsed_ms_since_last_update;
 
 		// Update battle mode
@@ -443,7 +443,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
 		if (conductor.song_position > last_beat + conductor.crotchet) {
-			 std::cout << "Beat detected" << "\n";
+			 // std::cout << "Beat detected" << "\n";
 			 last_beat += conductor.crotchet;
 		}
 
@@ -823,8 +823,7 @@ void Battle::handle_collisions() {
 		}
 	}
 
-	// Reset collisions and key presses
-	registry.collisions.clear();
+	// Reset key presses
 	key_pressed = false;
 	d_key_pressed = false;
 	f_key_pressed = false;

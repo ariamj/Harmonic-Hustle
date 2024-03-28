@@ -401,7 +401,8 @@ void RenderSystem::draw()
 	// Truely render to the screen
 
 	// flicker-free display with a double buffer
-	glfwSwapBuffers(window);
+	// glfwSwapInterval(0) // Disable VSync which improved FPS-based profiling, but didn't actually improve performance
+	glfwSwapBuffers(window); // 
 	gl_has_errors();
 }
 

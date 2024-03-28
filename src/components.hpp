@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "../ext/stb_image/stb_image.h"
 #include "screen.hpp"
+#include "chrono"
 
 // Sets the brightness of the screen
 struct ScreenState
@@ -135,6 +136,7 @@ struct GameInfo {
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
 	vec4 battleModeColor; 
+	std::chrono::steady_clock::time_point pre_poll_time;
 };
 extern GameInfo gameInfo;
 
