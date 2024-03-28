@@ -372,12 +372,9 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 		 }
 	 }
 
-
-
-
 	 auto t2 = Clock::now();
 	 float draw_total_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
-	 std::cout << "All motions:" << draw_total_ms << "\n";
+	 // std::cout << "All motions:" << draw_total_ms << "\n";
 
 	 updateParticles(renderSystem, elapsed_ms);
 

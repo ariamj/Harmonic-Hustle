@@ -405,8 +405,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		//	total_elapsed_ms += elapsed_ms_since_last_update;
 		//}
 
-		std::cout << elapsed_ms_since_last_update << "\n";
-
 		float new_song_position = audio->getSongPosition() * 1000.f;
 		if (new_song_position > conductor.song_position) {
 			conductor.song_position = new_song_position;
@@ -436,13 +434,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
 			}
 		}
-
-		// Update song position every frame
-		// SADNESS: Only changes in value every 5-8 frames :( 
-			// - Notes will stutter if used for interpolation every frame
-			// - Slightly less accurate spawning compared to using elapsed time
-			// + Safeguards against any delay in starting the music
-		// Could still be useful for visual FX that happen periodically
 
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
