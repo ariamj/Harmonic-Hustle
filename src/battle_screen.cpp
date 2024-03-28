@@ -19,14 +19,16 @@ const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
+const float SCORING_LEEWAY = 17.f; // approx. one frame at 60 FPS
+
 // the time it should take for note to fall from top to bottom
 // TODO: Allow calibration via difficulty setting
 float note_travel_time = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-// TODO: Allow calibration by player. Higher value -> Correct timing feels more "above" judgment line
-float adjust_offset = 0.025f; // default from testing manually.
+// TODO: Allow calibration by player. Higher value -> Later timing; Lower value -> Earlier timing
+float adjust_offset = 0.03f; // default from testing manually.
 float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
 float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
@@ -402,6 +404,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		//	// Increment total battle music time
 		//	total_elapsed_ms += elapsed_ms_since_last_update;
 		//}
+
+		std::cout << elapsed_ms_since_last_update << "\n";
 
 		float new_song_position = audio->getSongPosition() * 1000.f;
 		if (new_song_position > conductor.song_position) {
@@ -838,7 +842,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	Motion& lane_motion = registry.motions.get(entity);
 	float note_y_pos = registry.motions.get(entity_other).position.y;
 	float lane_y_pos = lane_motion.position.y;
-	float scoring_margin = 5.f;
+	float scoring_margin = (SCORING_LEEWAY / note_travel_time) * gameInfo.height;
 
 	// Sizing
 	JudgementLine judgement_line = registry.judgmentLine.get(entity);
