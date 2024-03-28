@@ -575,6 +575,8 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	// Remove particle generators
+	renderer->particle_generators.clear();
 
 	// battle won
 	if (battleWon()) {
