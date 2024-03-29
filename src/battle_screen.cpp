@@ -20,7 +20,7 @@ const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 const float APPROX_FRAME_DURATION = 16.6f;
-const float SCORING_LEEWAY = 1.f * APPROX_FRAME_DURATION; // higher is easier to score better
+const float SCORING_LEEWAY = 1.2f * APPROX_FRAME_DURATION; // higher is easier to score better
 
 // the time it should take for note to fall from top to bottom
 // TODO: Allow calibration via difficulty setting
@@ -794,21 +794,18 @@ void Battle::handle_collisions() {
 		if (hits->size() == 0) {
 			continue;
 		}
+
 		Entity lowest_note = hits->at(0);
 		float greatest_y = registry.motions.get(lowest_note).position.y;
-
-		std::cout << "Initializing Entity: " << lowest_note << " with Y value:" << greatest_y << "\n";
 		// Find the note with highest y value (furthest down the screen)
 		for (int i = 1; i < hits->size(); i++) {
 			float note_y = registry.motions.get(hits->at(i)).position.y;
-			
+
 			if (note_y > greatest_y) {
 				greatest_y = note_y;
 				lowest_note = hits->at(i);
 			}
 		}
-
-		std::cout << "Removing Entity: " << lowest_note<< " with Y value:" << greatest_y << "\n";
 
 		registry.remove_all_components_of(lowest_note);
 		got_hit = 1;
