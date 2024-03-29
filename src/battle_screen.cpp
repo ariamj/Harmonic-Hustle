@@ -29,7 +29,7 @@ float note_travel_time = 2000.f;
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
 // TODO: Allow calibration by player.
-float adjust_offset = 0.03f; // default from testing manually.
+float adjust_offset = 0.00f; // default from testing manually.
 float adjust_increment = 0.002f; // very small changes are impactful
 float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
 float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
@@ -100,6 +100,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	int k = 0;
 	battleInfo[k].count_notes = enemy0_timings.size();
 	battleInfo[k].bpm = 130.f;
+	battleInfo[k].metadata_offset = 0.06f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -137,6 +138,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 1;
 	battleInfo[k].count_notes = enemy1_timings.size();
 	battleInfo[k].bpm = 184.f;
+	battleInfo[k].metadata_offset = 0.0675f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -189,6 +191,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 2;
 	battleInfo[k].count_notes = enemy2_timings.size();
 	battleInfo[k].bpm = 152.f;
+	battleInfo[k].metadata_offset = 0.05f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -268,6 +271,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 3;
 	battleInfo[k].count_notes = enemy3_timings.size();
 	battleInfo[k].bpm = 128.f;
+	battleInfo[k].metadata_offset = 0.07f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -378,42 +382,21 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		float min_counter_ms = 3000.f;
 
-		// FAILED ATTEMPT TO IMPROVE TIMING
-		//// Error correction based on actual audio time
-		//// Check if song position has changed since last frame (it only changes every 5-8 frames)
-		//float new_song_position = audio->getSongPosition();
+		// Update song position 
+		float new_song_position = audio->getSongPosition() * 1000.f - conductor.offset;
+		std::cout << "Considering new song position:" << new_song_position;
 
-		//if (new_song_position > conductor.song_position) {
-		//	// Calculate the error between elapsed time and actual song position
-		//	float adjusted_elapsed_ms = new_song_position * 1000.f - (total_elapsed_ms + elapsed_ms_since_last_update);
-
-		//	std::cout << "Elapsed:" << total_elapsed_ms + elapsed_ms_since_last_update << ", Song position:" << new_song_position << ", Adjusted:" << adjusted_elapsed_ms << "\n";
-
-		//	if (adjusted_elapsed_ms > 0) {
-		//		// The song is AHEAD of elapsed time calculations (player feels that correct timing is above the line)
-		//		// "Fast-forward" all elapsed_time manually
-
-		//		total_elapsed_ms = new_song_position * 1000.f; //add or not? "this frame" included?
-		//		elapsed_ms_since_last_update = adjusted_elapsed_ms;
-		//		std::cout << "Adjusted total elapsed:" << total_elapsed_ms << "\n";
-		//	} else {
-		//		// The song is BEHIND of elapsed time calculations (player feels that correct timing is below the line)
-		//		// Stall this frame
-		//		// conductor.song_position += elapsed_ms_since_last_update;
-		//	}
-		//}
-		//else {
-		//	// Increment total battle music time
-		//	total_elapsed_ms += elapsed_ms_since_last_update;
-		//}
-
-		float new_song_position = audio->getSongPosition() * 1000.f;
+		std::cout << "... Conductor song position changed from:" << conductor.song_position;
 		if (new_song_position > conductor.song_position) {
 			conductor.song_position = new_song_position;
 		}
-		else {
+		// Check for negative (due to offset) to prevent elapsed_ms from taking over
+		else if (new_song_position > 0.f) {
+			// Use elapsed-time when consecutive queries return same value
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
+
+		std::cout << " to:" << conductor.song_position << "\n";
 
 		next_note_spawn -= elapsed_ms_since_last_update;
 
@@ -615,10 +598,10 @@ void Battle::start() {
 	next_mode_delay = 0.f;
 	
 	// Set Conductor variables
-	conductor.song_position = 0.f;
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
-	conductor.offset = 0.f; // unused right now.
+	conductor.offset = battleInfo[enemy_index].metadata_offset;
+	conductor.song_position = 0.f; //what should this be?
 	last_beat = 0.f; // moving reference point
 
 	// Reset score
