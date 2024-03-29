@@ -7,6 +7,9 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
+#include "chrono"
+
+using Clock = std::chrono::high_resolution_clock;
 
 // consts for now;
 const size_t MAX_NOTES = 10;
@@ -16,12 +19,20 @@ const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
+const float APPROX_FRAME_DURATION = 16.6f;
+const float SCORING_LEEWAY = 1.2f * APPROX_FRAME_DURATION; // higher is easier to score better
+
 // the time it should take for note to fall from top to bottom
+// TODO: Allow calibration via difficulty setting
 float note_travel_time = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-float timing_offset = 1 - 1.f / 1.225f;
+// TODO: Allow calibration by player.
+float adjust_offset = 0.00f; // default from testing manually.
+float adjust_increment = 0.002f; // very small changes are impactful
+float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
+float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
 // battle mode tracker
 int mode_index;
@@ -89,6 +100,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	int k = 0;
 	battleInfo[k].count_notes = enemy0_timings.size();
 	battleInfo[k].bpm = 130.f;
+	battleInfo[k].metadata_offset = 0.06f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -126,6 +138,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 1;
 	battleInfo[k].count_notes = enemy1_timings.size();
 	battleInfo[k].bpm = 184.f;
+	battleInfo[k].metadata_offset = 0.0675f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -178,6 +191,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 2;
 	battleInfo[k].count_notes = enemy2_timings.size();
 	battleInfo[k].bpm = 152.f;
+	battleInfo[k].metadata_offset = 0.05f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -257,6 +271,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	k = 3;
 	battleInfo[k].count_notes = enemy3_timings.size();
 	battleInfo[k].bpm = 128.f;
+	battleInfo[k].metadata_offset = 0.07f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -366,8 +381,24 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// ScreenState& screen = registry.screenStates.components[0];
 
 		float min_counter_ms = 3000.f;
-		next_note_spawn -= elapsed_ms_since_last_update;
 
+		// Update song position 
+		float new_song_position = audio->getSongPosition() * 1000.f - conductor.offset;
+		std::cout << "Considering new song position:" << new_song_position;
+
+		std::cout << "... Conductor song position changed from:" << conductor.song_position;
+		if (new_song_position > conductor.song_position) {
+			conductor.song_position = new_song_position;
+		}
+		// Check for negative (due to offset) to prevent elapsed_ms from taking over
+		else if (new_song_position > 0.f) {
+			// Use elapsed-time when consecutive queries return same value
+			conductor.song_position += elapsed_ms_since_last_update;
+		}
+
+		std::cout << " to:" << conductor.song_position << "\n";
+
+		next_note_spawn -= elapsed_ms_since_last_update;
 
 		// Update battle mode
 		next_mode_delay -= elapsed_ms_since_last_update;
@@ -389,47 +420,37 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		}
 
-		// Update song position every frame
-		// SADNESS: Only changes in value every 5-8 frames :( 
-			// - Notes will stutter if used for interpolation every frame
-			// - Slightly less accurate spawning compared to using elapsed time
-			// + Safeguards against any delay in starting the music
-		// Could still be useful for visual FX that happen periodically
-
-		// conductor.song_position = audio->getSongPosition();
-		// std::cout << conductor.song_position << "\n";
-
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
-		//if (conductor.song_position > last_beat + conductor.crotchet) {
-			// std::cout << "Beat detected" << "\n";
-			// last_beat += conductor.crotchet;
-		//}
+		if (conductor.song_position > last_beat + conductor.crotchet) {
+			 // std::cout << "Beat detected" << "\n";
+			 last_beat += conductor.crotchet;
+		}
 
 		// Spawning notes based on song position
-		/*
 		if (next_note_index < num_notes) {
-			if (conductor.song_position > battleInfo[enemy_index].note_timings[next_note_index]) {
-				createNote(renderer, vec2(lanes[rand() % 4], 0.f));
+			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index];
+			if (conductor.song_position >= note_spawn_time) {
+				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
 				next_note_index += 1;
 			}
 		}
-		*/
-		
-		// Spawning notes based on elapsed time
-		if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
-			// spawn notes in the four lanes
-			createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 
-			if (next_note_index < num_notes) {
-				// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
-				next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
-								- battleInfo[enemy_index].note_timings[next_note_index - 1]
-								+ next_note_spawn;
-			}
+		//
+		//// Spawning notes based on elapsed time
+		//if (registry.notes.components.size() < MAX_NOTES && next_note_spawn < 0.f && next_note_index <= num_notes) {
+		//	// spawn notes in the four lanes
+		//	createNote(renderer, vec2(lanes[rand() % 4], 0.f));
 
-			next_note_index += 1;
-		}
+		//	if (next_note_index < num_notes) {
+		//		// set next timer, subtracting the "overshot" time (next_note_spawn <= 0.f) during this frame
+		//		next_note_spawn = battleInfo[enemy_index].note_timings[next_note_index]
+		//						- battleInfo[enemy_index].note_timings[next_note_index - 1]
+		//						+ next_note_spawn;
+		//	}
+
+		//	next_note_index += 1;
+		//}
 
 		// Remove entities that leave the screen below
 		// Iterate backwards to be able to remove without unterfering with the next object to visit
@@ -448,21 +469,33 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} 
 
-		// update notes positions
-		for (int i = 0; i < registry.motions.components.size(); ++i) {
-			Motion& motion = registry.motions.components[i];
+		//// update notes positions
+		//for (int i = 0; i < registry.motions.components.size(); ++i) {
+		//	Motion& motion = registry.motions.components[i];
 
-			if (registry.notes.has(motions_registry.entities[i])) {
-				// Increment progress on range [0,1]
-				float progress_step = elapsed_ms_since_last_update / note_travel_time;
-				motion.progress = min(1.f, motion.progress + progress_step);
+		//	if (registry.notes.has(motions_registry.entities[i])) {
+		//		// Increment progress on range [0,1]
+		//		float progress_step = elapsed_ms_since_last_update / note_travel_time;
+		//		motion.progress = min(1.f, motion.progress + progress_step);
 
-					// Interpolate note position from top to bottom of screen
-					motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
+		//		// Interpolate note position from top to bottom of screen
+		//		motion.position.y = lerp(0.0, float(gameInfo.height), motion.progress);
 
-				// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
-				motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, motion.progress);
+		//		// Interpolate note size, increasing from top (1x) to bottom (2.5x) of screen
+		//		motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, motion.progress);
+		//	}
+		//}
+
+		// Update note positions based on conductor time
+		for (auto entity : registry.notes.entities) {
+			if (!registry.motions.has(entity)) {
+				continue;
 			}
+			Note& note = registry.notes.get(entity);
+			Motion& motion = registry.motions.get(entity);
+
+			motion.position.y = lerp(0.0, float(gameInfo.height), (conductor.song_position - note.spawn_time) / note_travel_time);
+			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, (conductor.song_position - note.spawn_time) / note_travel_time);	
 		}
 
 		// collision timers
@@ -522,6 +555,8 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	// Remove particle generators
+	renderer->particle_generators.clear();
 
 	// battle won
 	if (battleWon()) {
@@ -565,7 +600,8 @@ void Battle::start() {
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
-	conductor.offset = 0.f; // unused right now.
+	conductor.offset = battleInfo[enemy_index].metadata_offset;
+	conductor.song_position = 0.f; //what should this be?
 	last_beat = 0.f; // moving reference point
 
 	// Reset score
@@ -582,7 +618,7 @@ void Battle::start() {
 
 	// TODO: Account for when note spawns are negative (before music starts)
 	next_note_spawn = battleInfo[enemy_index].note_timings[0];
-	next_note_index = 1; // Set to 0 if using song position
+	next_note_index = 0; // 0 for song_position based, 1 for elapsed_time based
 
 	Entity e = registry.battleEnemy.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);
@@ -741,14 +777,19 @@ void Battle::handle_collisions() {
 		if (hits->size() == 0) {
 			continue;
 		}
+
 		Entity lowest_note = hits->at(0);
 		float greatest_y = registry.motions.get(lowest_note).position.y;
 		// Find the note with highest y value (furthest down the screen)
 		for (int i = 1; i < hits->size(); i++) {
 			float note_y = registry.motions.get(hits->at(i)).position.y;
-			greatest_y = max(greatest_y, note_y);
-			lowest_note = hits->at(i);
+
+			if (note_y > greatest_y) {
+				greatest_y = note_y;
+				lowest_note = hits->at(i);
+			}
 		}
+
 		registry.remove_all_components_of(lowest_note);
 		got_hit = 1;
 	}	
@@ -769,8 +810,7 @@ void Battle::handle_collisions() {
 		}
 	}
 
-	// Reset collisions and key presses
-	registry.collisions.clear();
+	// Reset key presses
 	key_pressed = false;
 	d_key_pressed = false;
 	f_key_pressed = false;
@@ -783,7 +823,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	Motion& lane_motion = registry.motions.get(entity);
 	float note_y_pos = registry.motions.get(entity_other).position.y;
 	float lane_y_pos = lane_motion.position.y;
-	float scoring_margin = 5.f;
+	float scoring_margin = (SCORING_LEEWAY / note_travel_time) * gameInfo.height;
 
 	// Sizing
 	JudgementLine judgement_line = registry.judgmentLine.get(entity);
@@ -792,25 +832,25 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	// Colour
 	vec3& colour = registry.colours.get(entity);
 	
-	// Determine standing
-	if ((note_y_pos < lane_y_pos - judgement_line_half_height) || (note_y_pos > lane_y_pos + judgement_line_half_height)) {
-		// set standing to Alright
-		standing = alright;
-		alright_counter++;
-		colour = ALRIGHT_COLOUR;
-	} else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
-				|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
-		// set standing to Good
-		standing = good;
-		good_counter++;
-		colour = GOOD_COLOUR;
-	} else if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
+	if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
 		standing = perfect;
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
+	}	// Determine standing
+	else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
+		|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
+		// set standing to Good
+		standing = good;
+		good_counter++;
+		colour = GOOD_COLOUR;
 	}
-
+	else {
+		// set standing to Alright
+		standing = alright;
+		alright_counter++;
+		colour = ALRIGHT_COLOUR;
+	}
 	// Update score
 	score += standing;
 

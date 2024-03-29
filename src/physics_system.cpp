@@ -2,6 +2,9 @@
 #include "physics_system.hpp"
 #include "world_init.hpp"
 
+#include "chrono"
+using Clock = std::chrono::high_resolution_clock;
+
 #include <iostream>
 #include <map>
 
@@ -186,13 +189,16 @@ const float WALK_CYCLE_SPEED = 0.15;
 	float left2 = center2x - displacement;
 	float right2 = center2x + displacement;
 
+	// for allowing notes to be collided with slightly more above/below lines
+	float extra_vertical_multiplier = 1.1f;
+
 	float center1y = motion1.position.y;
-	float top1 = center1y - displacement;
-	float bottom1 = center1y + displacement;
+	float top1 = center1y - displacement * extra_vertical_multiplier;
+	float bottom1 = center1y +  displacement * extra_vertical_multiplier;
 
 	float center2y = motion2.position.y;
-	float top2 = center2y - displacement;
-	float bottom2 = center2y + displacement;
+	float top2 = center2y - displacement * extra_vertical_multiplier;
+	float bottom2 = center2y + displacement * extra_vertical_multiplier;
 
 	// horizontal: top1 < bottom2 && top2 < bottom1
 	if (top1 < bottom2 && top2 < bottom1) {
@@ -240,6 +246,8 @@ const float WALK_CYCLE_SPEED = 0.15;
 
 void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 {
+	// Clear all collisions from previous step
+	registry.collisions.clear();
 
 	 // Move entities
 	 auto& motion_registry = registry.motions;
@@ -307,6 +315,10 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 		}
 	 }
 
+
+
+	 auto t1 = Clock::now();
+
 	 // Check for collisions between all moving entities
 	 for (uint i = 0; i < motion_registry.components.size(); i++)
 	 {
@@ -362,6 +374,10 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 			 }
 		 }
 	 }
+
+	 auto t2 = Clock::now();
+	 float draw_total_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
+	 // std::cout << "All motions:" << draw_total_ms << "\n";
 
 	 updateParticles(renderSystem, elapsed_ms);
 

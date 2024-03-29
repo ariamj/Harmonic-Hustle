@@ -92,7 +92,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	return entity;
 }
 
-Entity createNote(RenderSystem* renderer, vec2 pos) {
+Entity createNote(RenderSystem* renderer, vec2 pos, float t_min) {
 	auto entity = Entity();
 	// Store a reference to the potentially re-used mesh object
 	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
@@ -109,7 +109,10 @@ Entity createNote(RenderSystem* renderer, vec2 pos) {
 	registry.screens.insert(entity, Screen::BATTLE);
 
 	// Create component
-	registry.notes.emplace(entity);
+	Note& note = registry.notes.emplace(entity);
+	// For interpolation based on absolute song time
+	note.spawn_time = t_min;
+
 	registry.colours.insert(entity, { 1.f, 1.f, 1.f });
 	registry.renderRequests.insert(
 		entity,
