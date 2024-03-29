@@ -20,7 +20,7 @@ const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
 const float APPROX_FRAME_DURATION = 16.6f;
-const float SCORING_LEEWAY = 1.5 * APPROX_FRAME_DURATION; // higher is easier to score better
+const float SCORING_LEEWAY = 1.f * APPROX_FRAME_DURATION; // higher is easier to score better
 
 // the time it should take for note to fall from top to bottom
 // TODO: Allow calibration via difficulty setting
@@ -28,9 +28,9 @@ float note_travel_time = 2000.f;
 
 // rhythmic input timing variables, initialized in .init
 float spawn_offset; 
-// TODO: Allow calibration by player. Higher value -> Later timing; Lower value -> Earlier timing
+// TODO: Allow calibration by player.
 float adjust_offset = 0.03f; // default from testing manually.
-float adjust_increment = 0.01f;
+float adjust_increment = 0.002f; // very small changes are impactful
 float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
 float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
@@ -448,7 +448,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		if (next_note_index < num_notes) {
 			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index];
 			if (conductor.song_position >= note_spawn_time) {
-				createNote(renderer, vec2(lanes[0], 0.f), note_spawn_time);
+				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
 				next_note_index += 1;
 			}
 		}
@@ -609,9 +609,6 @@ void Battle::start() {
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
-	num_notes = battleInfo[enemy_index].count_notes;
-
-	enemy_index = 2;
 	num_notes = battleInfo[enemy_index].count_notes;
 
 	mode_index = 0;
@@ -799,12 +796,20 @@ void Battle::handle_collisions() {
 		}
 		Entity lowest_note = hits->at(0);
 		float greatest_y = registry.motions.get(lowest_note).position.y;
+
+		std::cout << "Initializing Entity: " << lowest_note << " with Y value:" << greatest_y << "\n";
 		// Find the note with highest y value (furthest down the screen)
 		for (int i = 1; i < hits->size(); i++) {
 			float note_y = registry.motions.get(hits->at(i)).position.y;
-			greatest_y = max(greatest_y, note_y);
-			lowest_note = hits->at(i);
+			
+			if (note_y > greatest_y) {
+				greatest_y = note_y;
+				lowest_note = hits->at(i);
+			}
 		}
+
+		std::cout << "Removing Entity: " << lowest_note<< " with Y value:" << greatest_y << "\n";
+
 		registry.remove_all_components_of(lowest_note);
 		got_hit = 1;
 	}	

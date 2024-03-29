@@ -189,13 +189,16 @@ const float WALK_CYCLE_SPEED = 0.15;
 	float left2 = center2x - displacement;
 	float right2 = center2x + displacement;
 
+	// for allowing notes to be collided with slightly more above/below lines
+	float extra_vertical_multiplier = 1.1f;
+
 	float center1y = motion1.position.y;
-	float top1 = center1y - displacement;
-	float bottom1 = center1y + displacement;
+	float top1 = center1y - displacement * extra_vertical_multiplier;
+	float bottom1 = center1y +  displacement * extra_vertical_multiplier;
 
 	float center2y = motion2.position.y;
-	float top2 = center2y - displacement;
-	float bottom2 = center2y + displacement;
+	float top2 = center2y - displacement * extra_vertical_multiplier;
+	float bottom2 = center2y + displacement * extra_vertical_multiplier;
 
 	// horizontal: top1 < bottom2 && top2 < bottom1
 	if (top1 < bottom2 && top2 < bottom1) {
