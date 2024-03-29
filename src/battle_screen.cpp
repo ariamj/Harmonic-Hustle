@@ -19,7 +19,8 @@ const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
 const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
 const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
-const float SCORING_LEEWAY = 17.f; // approx. one frame at 60 FPS
+const float APPROX_FRAME_DURATION = 16.6f;
+const float SCORING_LEEWAY = 1.5 * APPROX_FRAME_DURATION; // higher is easier to score better
 
 // the time it should take for note to fall from top to bottom
 // TODO: Allow calibration via difficulty setting
@@ -29,6 +30,7 @@ float note_travel_time = 2000.f;
 float spawn_offset; 
 // TODO: Allow calibration by player. Higher value -> Later timing; Lower value -> Earlier timing
 float adjust_offset = 0.03f; // default from testing manually.
+float adjust_increment = 0.01f;
 float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
 float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
@@ -446,7 +448,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		if (next_note_index < num_notes) {
 			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index];
 			if (conductor.song_position >= note_spawn_time) {
-				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
+				createNote(renderer, vec2(lanes[0], 0.f), note_spawn_time);
 				next_note_index += 1;
 			}
 		}
@@ -607,6 +609,9 @@ void Battle::start() {
 
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
+	num_notes = battleInfo[enemy_index].count_notes;
+
+	enemy_index = 2;
 	num_notes = battleInfo[enemy_index].count_notes;
 
 	mode_index = 0;
