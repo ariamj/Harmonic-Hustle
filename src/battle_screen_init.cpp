@@ -81,6 +81,7 @@ bool Battle::loadLevelFromFile(int index) {
                         // Read each note's spawn time
                         NoteInfo noteInfo;
                         noteInfo.spawn_time = timings["spawn_time"].asFloat();
+						noteInfo.quantity = timings["quantity"].asInt();
 
                         // Add note info to this rhythm
                         note_infos.push_back(noteInfo);
@@ -108,7 +109,11 @@ bool Battle::loadLevelFromFile(int index) {
 				for (NoteInfo rhythm_note : rhythm_note_infos) {
 					NoteInfo converted_note_info;
 					converted_note_info.spawn_time = start_time + rhythm_note.spawn_time;
-					notes_to_add.push_back(converted_note_info);
+
+					// Add duplicate copies for multiple notes
+					for (int i = 0; i < rhythm_note.quantity; i++) {
+						notes_to_add.push_back(converted_note_info);
+					}
 				}
 
 				// Append new notes temporary data structure holding note info
@@ -139,11 +144,11 @@ bool Battle::loadLevelFromFile(int index) {
 			convertBeatsToMilliseconds(&mode_timings, battleInfo[battle_index].bpm / 60.f);
 
 			// Note timings
-			battleInfo[battle_index].note_timings = battle_note_info;
-			battleInfo[battle_index].count_notes = battleInfo[battle_index].note_timings.size();
+			battleInfo[battle_index].notes = battle_note_info;
+			battleInfo[battle_index].count_notes = battleInfo[battle_index].notes.size();
 
 			// Mode timings
-  			battleInfo[battle_index].mode_timings = mode_timings;
+  			battleInfo[battle_index].modes = mode_timings;
         }
 
 	}

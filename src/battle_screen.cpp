@@ -113,18 +113,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// Update song position 
 		float new_song_position = audio->getSongPosition() * 1000.f - conductor.offset;
-
+		// Check if song position has udpated (it doesn't update every frame)
 		if (new_song_position > conductor.song_position) {
 			conductor.song_position = new_song_position;
 		}
-		// Check for negative (due to offset) to prevent elapsed_ms from taking over
+		// Guard against negative (due to metadata offset) to prevent elapsed time from taking over
 		else if (new_song_position > 0.f) {
 			// Use elapsed-time when consecutive queries return same value
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
 		// TODO (?): Initiate some visual FX on every beat of song
-		// Track each beat of song
+		// Track each beat of song 
 		if (conductor.song_position > last_beat + conductor.crotchet) {
 			 // std::cout << "Beat detected" << "\n";
 			 last_beat += conductor.crotchet;
@@ -132,10 +132,29 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// Spawning notes based on song position
 		if (next_note_index < num_notes) {
-			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index].spawn_time;
-			if (conductor.song_position >= note_spawn_time) {
-				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
-				next_note_index += 1;
+			int num_columns = 4; // Hard-coded to represent four columns
+
+			// Peek ahead to spawn multiple notes
+			int multiple_note_index = min(next_note_index + num_columns - 1, num_notes);
+
+			// Create a small vector of available columns to spawn notes in
+			std::vector<int> lane_indices;
+			for (int i = 0; i < num_columns; i++) {
+				lane_indices.push_back(i);
+			}
+
+			// Randomly shuffle lane indices
+			std::random_shuffle(lane_indices.begin(), lane_indices.end());
+
+			// Spawn in order of shuffled lane indices
+			int k = 0;
+			for (int i = next_note_index; i < multiple_note_index; i++) {
+				float note_spawn_time = battleInfo[enemy_index].notes[i].spawn_time;
+				if (conductor.song_position >= note_spawn_time) {
+					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note_spawn_time);
+					next_note_index += 1;
+				}
+				k += 1;
 			}
 		}
 
@@ -169,10 +188,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 
 		// Update battle mode based on conductor time
-		if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
-			float mode_change_time = battleInfo[enemy_index].mode_timings[mode_index].first;
+		if (mode_index < battleInfo[enemy_index].modes.size()) {
+			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
 			if (conductor.song_position >= mode_change_time) {
-				switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
+				switch (battleInfo[enemy_index].modes[mode_index].second) {
 				case back_and_forth:
 					gameInfo.battleModeColor = { -1.f, 0.2f, 1.f, 0.f }; // no adjust
 					break;
@@ -282,12 +301,10 @@ void Battle::start() {
 	// Local variables to improve readability
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
 	num_notes = battleInfo[enemy_index].count_notes;
-
-	mode_index = 0;
 	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
-	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm;
+	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm * 1000.f;
 	conductor.offset = battleInfo[enemy_index].metadata_offset;
 	conductor.song_position = 0.f;
 	last_beat = 0.f; // moving reference point
@@ -305,6 +322,7 @@ void Battle::start() {
 
 	// TODO (?): Account for when note spawns are negative (before music starts)
 	next_note_index = 0;
+	mode_index = 0;
 
 	Entity e = registry.battleEnemy.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);

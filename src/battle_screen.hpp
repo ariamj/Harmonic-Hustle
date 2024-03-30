@@ -12,14 +12,15 @@
 
 struct NoteInfo {
     float spawn_time;
+    int quantity;
 };
 
 struct BattleInfo {
     float bpm;
     float metadata_offset;
     int count_notes;
-    std::vector<NoteInfo> note_timings;
-    std::vector<std::pair<float, BattleMode>> mode_timings;
+    std::vector<NoteInfo> notes;
+    std::vector<std::pair<float, BattleMode>> modes;
 };
 
 class Battle {
@@ -98,16 +99,18 @@ class Battle {
 
         Serializer* saver;
     private:
-    // rhythmic input timing variables, initialized in .init
-    // consts for now;
+        // Helpers for loading level data from file
         bool loadAllLevelData();
         bool loadLevelFromFile(int enemy_index);
         int convertDifficultyToInt(std::string difficulty);
         void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
-        const size_t MAX_NOTES = 10;
-        // const size_t NOTE_SPAWN_DELAY = 2000;
+
+        static const size_t MAX_NOTES = 10;
+        static const int NUM_UNIQUE_BATTLES = 4;
+        static const int NUM_DIFFICULTY_MODES = 2;
+
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
         const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
         const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
@@ -117,8 +120,6 @@ class Battle {
         const float SCORING_LEEWAY = 1.2f * APPROX_FRAME_DURATION; // higher is easier to score better
 
         // Enemy-specific battle information
-        static const int NUM_UNIQUE_BATTLES = 4;
-        static const int NUM_DIFFICULTY_MODES = 2;
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
 
         // the time it should take for note to fall from top to bottom
@@ -127,8 +128,8 @@ class Battle {
         float spawn_offset; 
 
         // TODO: Allow calibration by player.
-        float adjust_offset = 0.00f; // default from testing manually.
-        float adjust_increment = 0.002f; // very small changes are impactful
+        float adjust_offset = 0.00f;
+        float adjust_increment = 0.005f; // very small changes are impactful
         float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
         float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
