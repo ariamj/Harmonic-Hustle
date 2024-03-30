@@ -29,45 +29,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	int k = 0;
 
 	// Another battle
-	std::vector<float> enemy1_timings = { 
-		// BACK AND FORTH
-		8.f, 9.f, 10.f, 11.f, 12.f, 13.f, 13.5f, 14.5f, 15.f,
-		24.f, 25.f, 26.f, 27.f, 28.f, 29.f, 29.5f, 30.5f, 31.f,
-		40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
-		56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f,
-		// BEAT RUSH
-		64.f, 65.f, 66.f, 67.f, 68.f, 69.f, 70.f, 71.f,
-		72.f, 73.f, 74.f, 75.f, 76.f, 77.f, 78.f, 79.f,
-		80.f, 81.f, 82.f, 83.f, 84.f, 85.f, 86.f, 87.f,
-		88.f, 89.f, 90.f, 91.f, 92.f, 93.f, 94.f, 95.f, 96.f, 97.f, 98.f, 99.f,
-		// BACK AND FORTH
-		116.f, 118.f, 120.f, 122.f, 123.f, 130.f, 131.f,
-		148.f, 150.f, 152.f, 154.f, 156.f, 158.f, 159.f 
-	};
-	k = 1;
-	battleInfo[k].count_notes = enemy1_timings.size();
-	battleInfo[k].bpm = 184.f;
-	battleInfo[k].metadata_offset = 0.0675f * 1000.f;
-
-	bpm_ratio = battleInfo[k].bpm / 60.f;
-
-	battleInfo[k].mode_timings = {
-		{0.f, back_and_forth}, 
-		{64.f, beat_rush},
-		{112.f - 64.f, back_and_forth}}; // earlier due to pause in music
-
-	for (int i = 1; i < battleInfo[k].mode_timings.size(); i++) {
-		float time = battleInfo[k].mode_timings[i].first;
-		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
-		battleInfo[k].mode_timings[i].first = converted_timing;
-	}
-
-	//for (int i = 0; i < battleInfo[k].count_notes; i++) {
-	//	float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
-	//	battleInfo[k].note_timings.push_back(converted_timing);
-	//}
-
-	// Another battle
 	std::vector<float> enemy2_timings = { 
 		// BACK AND FORTH
 		8.f, 8.5f, 9.f, 10.f, 11.f, 12.f, 12.5f, 13.f, 13.5f,

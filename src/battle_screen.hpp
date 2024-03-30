@@ -132,13 +132,10 @@ class Battle {
         float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
         float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
-        // battle mode tracker
-        int mode_index;
-        float next_mode_delay;
-
         // battle-specific variables for readability, initialized in .start
         int enemy_index;
         int num_notes;
         int next_note_index;
+        int mode_index;
         float last_beat;
 };

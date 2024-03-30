@@ -123,26 +123,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
-		// Update battle mode
-		next_mode_delay -= elapsed_ms_since_last_update;
-		if (next_mode_delay <= 0.f && mode_index < battleInfo[enemy_index].mode_timings.size()) {
-			switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
-				case back_and_forth:
-					gameInfo.battleModeColor = {-1.f, 0.2f, 1.f, 0.f}; // no adjust
-					break;
-				case beat_rush:
-					gameInfo.battleModeColor = {1.5f, -0.2f, -0.2f, -0.2f}; // adjust to red
-					break;
-				case unison:
-					gameInfo.battleModeColor = {1.f, -0.2f, -1.f, 0.f}; // adjust to orange
-					break;						
-			}
-			mode_index += 1;
-			if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
-				next_mode_delay += battleInfo[enemy_index].mode_timings[mode_index].first;
-			}
-		}
-
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song
 		if (conductor.song_position > last_beat + conductor.crotchet) {
@@ -186,6 +166,25 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 			motion.position.y = lerp(0.0, float(gameInfo.height), (conductor.song_position - note.spawn_time) / note_travel_time);
 			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, (conductor.song_position - note.spawn_time) / note_travel_time);	
+		}
+
+		// Update battle mode based on conductor time
+		if (mode_index < battleInfo[enemy_index].mode_timings.size()) {
+			float mode_change_time = battleInfo[enemy_index].mode_timings[mode_index].first;
+			if (conductor.song_position >= mode_change_time) {
+				switch (battleInfo[enemy_index].mode_timings[mode_index].second) {
+				case back_and_forth:
+					gameInfo.battleModeColor = { -1.f, 0.2f, 1.f, 0.f }; // no adjust
+					break;
+				case beat_rush:
+					gameInfo.battleModeColor = { 1.5f, -0.2f, -0.2f, -0.2f }; // adjust to red
+					break;
+				case unison:
+					gameInfo.battleModeColor = { 1.f, -0.2f, -1.f, 0.f }; // adjust to orange
+					break;
+				}
+				mode_index += 1;
+			}
 		}
 
 		// collision timers
@@ -285,7 +284,6 @@ void Battle::start() {
 	num_notes = battleInfo[enemy_index].count_notes;
 
 	mode_index = 0;
-	next_mode_delay = 0.f;
 	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
