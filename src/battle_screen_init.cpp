@@ -143,7 +143,7 @@ bool Battle::loadLevelFromFile(int index) {
 			battleInfo[battle_index].count_notes = battleInfo[battle_index].note_timings.size();
 
 			// Mode timings
-			battleInfo[battle_index].mode_timings = mode_timings;
+  			battleInfo[battle_index].mode_timings = mode_timings;
         }
 
 	}

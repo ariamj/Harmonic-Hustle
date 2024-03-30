@@ -677,14 +677,14 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 						render_set_battle_screen();
 						break;
 					case Screen::BATTLE:
-					default:
 						// pressing 'C' during battle immedidately ends battle, for testing
 						// added guard to prevent pressing when battle is already over
 						if (!battle.battle_is_over) {
+							battle.score = 9999; // auto-win
 							battle.handle_battle_end();
 						}
-
-						// render_set_overworld_screen();
+						break;
+					default:
 						break;
 				};
 			}
