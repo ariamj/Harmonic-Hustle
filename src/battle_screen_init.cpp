@@ -1,5 +1,7 @@
 #include "battle_screen.hpp"
-
+#include <iostream>
+#include <fstream>
+#include "../ext/jsoncpp/json/json.h"
 
 
 void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver) {
@@ -20,6 +22,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 
 	float bpm_ratio;
 
+    loadAllLevelData();
 	// Load battle-specific data into BattleInfo structs
 	// OPTIMIZE: Read these from a file instead
 	std::vector<float> enemy0_timings = { 
@@ -33,8 +36,8 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	};
 	int k = 0;
 	battleInfo[k].count_notes = enemy0_timings.size();
-	battleInfo[k].bpm = 130.f;
-	battleInfo[k].metadata_offset = 0.06f * 1000.f;
+	// battleInfo[k].bpm = 130.f;
+	// battleInfo[k].metadata_offset = 0.06f * 1000.f;
 
 	bpm_ratio = battleInfo[k].bpm / 60.f;
 
@@ -230,3 +233,100 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	}
 
 };
+
+bool Battle::loadAllLevelData() {
+
+    for (int i = 0; i < NUM_UNIQUE_BATTLES; i++) {
+        loadLevelFromFile(i);
+    }
+
+    return true;
+}
+
+bool Battle::loadLevelFromFile(int index) {
+    // Create file name string
+    std::string file_name;
+    file_name = "enemy" + std::to_string(index) + ".json";
+
+    // Attempt to open the file
+	std::ifstream file(levels_path(file_name));
+    if (!file.is_open()) {
+		printf("Enemy data file not found.\n");
+        return false;
+	}
+
+    // Attempt to parse JSON
+	Json::Value root;
+	Json::CharReaderBuilder builder;
+
+	try {
+		
+		builder["collectComments"] = true;
+		JSONCPP_STRING errs;
+		if (!parseFromStream(builder, file, &root, &errs)) {
+			Json::StreamWriterBuilder writerBuilder;
+			std::string errs_str = Json::writeString(writerBuilder, errs);
+			printf("JSON parsing failed: %s\n", errs_str.c_str());
+			return false;
+		}
+		file.close();
+
+        auto beatmaps = root["beatmaps"];
+
+        for (auto beatmap : beatmaps) {
+            int difficulty = convertDifficultyToInt(beatmap["difficulty"].asString());
+            int battle_index = index * (difficulty + 1);
+
+            beatmap.getMemberNames();
+
+            // Load offset and BPM
+            battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
+            battleInfo[battle_index].bpm = root["bpm"].asFloat();
+
+            std::map<std::string, std::vector<NoteInfo>> temp_rhythms;
+
+            // Parse each rhythm
+            for (auto rhythms : beatmap["rhythms"]) {
+                // Each rhythm has an identifier name
+                for (auto name : rhythms.getMemberNames()) {
+                    auto rhythm_data = rhythms[name];
+                    // Associate note timings with this rhythm
+                    std::vector<NoteInfo> note_infos;
+                    for (auto timings : rhythm_data["note_timings"]) {
+                        // Read each note's spawn time
+                        NoteInfo noteInfo;
+                        noteInfo.spawn_time = timings["spawn_time"].asFloat();
+
+                        // Add note info to this rhythm
+                        note_infos.push_back(noteInfo);
+                    }
+                    // Map rhythm name to note infos
+                    temp_rhythms[name] = note_infos;
+                }
+            }
+
+
+
+
+    
+        }
+
+	}
+	catch (std::exception e) {
+		printf("Exception reading!\n");
+		return false;
+	}
+
+	return true;
+}
+
+int Battle::convertDifficultyToInt(std::string difficulty) {
+    if (difficulty == "normal") {
+        return 0;
+    } else if (difficulty == "hard") {
+        return 1;
+    } else {
+        printf("Invalid difficulty in JSON\n");
+        return -1;
+    }
+}

@@ -10,10 +10,14 @@
 #include "render_system.hpp"
 #include "audio_system.hpp"
 
+struct NoteInfo {
+    float spawn_time;
+};
+
 struct BattleInfo {
     float bpm;
-    int count_notes;
     float metadata_offset;
+    int count_notes;
     std::vector<float> note_timings;
     std::vector<std::pair<float, BattleMode>> mode_timings;
 };
@@ -96,6 +100,9 @@ class Battle {
     private:
     // rhythmic input timing variables, initialized in .init
     // consts for now;
+        bool loadAllLevelData();
+        bool loadLevelFromFile(int enemy_index);
+        int convertDifficultyToInt(std::string difficulty);
         const size_t MAX_NOTES = 10;
         // const size_t NOTE_SPAWN_DELAY = 2000;
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
@@ -108,7 +115,8 @@ class Battle {
 
         // Enemy-specific battle information
         static const int NUM_UNIQUE_BATTLES = 4;
-        BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
+        static const int NUM_DIFFICULTY_MODES = 2;
+        BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
 
         // the time it should take for note to fall from top to bottom
         // TODO: Allow calibration via difficulty setting
