@@ -39,18 +39,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 	// battleInfo[k].bpm = 130.f;
 	// battleInfo[k].metadata_offset = 0.06f * 1000.f;
 
-	bpm_ratio = battleInfo[k].bpm / 60.f;
-
-	battleInfo[k].mode_timings = {
-		{0.f, back_and_forth}
-	};
-
-	for (int i = 0; i < battleInfo[k].mode_timings.size(); i++) {
-		float time = battleInfo[k].mode_timings[i].first;
-		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
-		battleInfo[k].mode_timings[i].first = converted_timing;
-	}
-
 	// Another battle
 	std::vector<float> enemy1_timings = { 
 		// BACK AND FORTH
@@ -238,6 +226,8 @@ bool Battle::loadAllLevelData() {
     return true;
 }
 
+// Load data for a single level from a JSON file
+// Adapted from serializer.cpp
 bool Battle::loadLevelFromFile(int index) {
     // Create file name string
     std::string file_name;
@@ -340,6 +330,7 @@ bool Battle::loadLevelFromFile(int index) {
 
 			// Must be done after loading bpm
 			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
+			convertBeatsToMilliseconds(&mode_timings, battleInfo[battle_index].bpm / 60.f);
 
 			// Note timings
 			battleInfo[battle_index].note_timings = battle_note_info;
@@ -374,6 +365,14 @@ void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float
 	for (int i = 0; i < note_infos->size(); i++) {
 		float converted_timing = (1000.f * note_infos->at(i).spawn_time / bpm_ratio) + spawn_offset;
 		note_infos->at(i).spawn_time = converted_timing;
+	}
+}
+
+void Battle::convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>> *mode_timings, float bpm_ratio) {
+	for (int i = 0; i < mode_timings->size(); i++) {
+		float time = mode_timings->at(i).first;
+		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		mode_timings->at(i).first = converted_timing;
 	}
 }
 

@@ -86,8 +86,9 @@
                             {"spawn_time": 0.0, "input": "tap", "quantity": 1},
                             {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
                             {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
-                            {"spawn_time": 2.5, "input": "tap", "quantity": 1}, 
-                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.5, "input": "tap", "quantity": 1}
                         ],                    
                         "color":
                         [
