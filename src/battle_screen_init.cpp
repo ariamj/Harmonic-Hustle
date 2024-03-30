@@ -272,10 +272,6 @@ bool Battle::loadLevelFromFile(int index) {
             int difficulty = convertDifficultyToInt(beatmap["difficulty"].asString());
             int battle_index = index + (difficulty * NUM_UNIQUE_BATTLES);
 
-            // Load offset and BPM
-            battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
-            battleInfo[battle_index].bpm = root["bpm"].asFloat();
-
             std::map<std::string, std::vector<NoteInfo>> temp_rhythms;
 
             // Parse each rhythm into temporary data structure
@@ -302,7 +298,7 @@ bool Battle::loadLevelFromFile(int index) {
 
 			for (auto rhythm_timing_pair : beatmap["rhythm_timings"]) {
 				auto rhythm_names = rhythm_timing_pair.getMemberNames();
-				assert(rhythm_names.size() == 1); // There should only be one id
+				assert(rhythm_names.size() == 1); // There must be exactly be one rhythm id
 				auto rhythm_id = rhythm_names[0];
 
 				// Retrieve temp rhythm data constructed previously
@@ -323,11 +319,34 @@ bool Battle::loadLevelFromFile(int index) {
 				battle_note_info.insert(battle_note_info.end(), notes_to_add.begin(), notes_to_add.end());
 			}
 
+			std::vector<std::pair<float, BattleMode>> mode_timings;
+
+			for (auto mode_timing_pair : beatmap["mode_timings"]) {
+				auto mode_names = mode_timing_pair.getMemberNames();
+				assert(mode_names.size() >= 1); // There must be at least one mode
+
+				for (auto mode : mode_names) {
+					std::pair<float, BattleMode> mode_timing;
+					mode_timing.first = mode_timing_pair[mode].asFloat();
+					mode_timing.second = convertStringToBattleMode(mode);
+					mode_timings.push_back(mode_timing);
+				}
+			}
+
+			// Set game-persistent battle info using parsed data
+			// Offset and BPM
+			battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
+			battleInfo[battle_index].bpm = root["bpm"].asFloat();
+
+			// Must be done after loading bpm
 			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
 
-			// Set game-persistent battle info
+			// Note timings
 			battleInfo[battle_index].note_timings = battle_note_info;
 			battleInfo[battle_index].count_notes = battleInfo[battle_index].note_timings.size();
+
+			// Mode timings
+			battleInfo[battle_index].mode_timings = mode_timings;
         }
 
 	}
@@ -355,5 +374,21 @@ void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float
 	for (int i = 0; i < note_infos->size(); i++) {
 		float converted_timing = (1000.f * note_infos->at(i).spawn_time / bpm_ratio) + spawn_offset;
 		note_infos->at(i).spawn_time = converted_timing;
+	}
+}
+
+BattleMode Battle::convertStringToBattleMode(std::string mode_string) {
+	if (mode_string == "bnf") {
+		return back_and_forth;
+	}
+	else if (mode_string == "beat_rush") {
+		return beat_rush;
+	}
+	else if (mode_string == "unison") {
+		return unison;
+	}
+	else {
+		printf("Invalid mode in JSON; returning back_and_forth as default");
+		return back_and_forth;
 	}
 }

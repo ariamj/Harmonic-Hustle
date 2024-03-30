@@ -104,6 +104,7 @@ class Battle {
         bool loadLevelFromFile(int enemy_index);
         int convertDifficultyToInt(std::string difficulty);
         void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
+        BattleMode convertStringToBattleMode(std::string mode_string);
         const size_t MAX_NOTES = 10;
         // const size_t NOTE_SPAWN_DELAY = 2000;
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
