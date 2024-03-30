@@ -164,7 +164,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// Spawning notes based on song position
 		if (next_note_index < num_notes) {
-			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index];
+			float note_spawn_time = battleInfo[enemy_index].note_timings[next_note_index].spawn_time;
 			if (conductor.song_position >= note_spawn_time) {
 				createNote(renderer, vec2(lanes[rand() % 4], 0.f), note_spawn_time);
 				next_note_index += 1;
@@ -352,7 +352,7 @@ void Battle::start() {
     missed_counter = 0;
 
 	// TODO: Account for when note spawns are negative (before music starts)
-	next_note_spawn = battleInfo[enemy_index].note_timings[0];
+	next_note_spawn = battleInfo[enemy_index].note_timings[0].spawn_time;
 	next_note_index = 0; // 0 for song_position based, 1 for elapsed_time based
 
 	Entity e = registry.battleEnemy.entities[0];

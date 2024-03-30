@@ -51,11 +51,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		battleInfo[k].mode_timings[i].first = converted_timing;
 	}
 
-	for (int i = 0; i < battleInfo[k].count_notes; i++) {
-		float converted_timing = (1000.f * enemy0_timings[i] / bpm_ratio) + spawn_offset;
-		battleInfo[k].note_timings.push_back(converted_timing);
-	}
-
 	// Another battle
 	std::vector<float> enemy1_timings = { 
 		// BACK AND FORTH
@@ -90,10 +85,10 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		battleInfo[k].mode_timings[i].first = converted_timing;
 	}
 
-	for (int i = 0; i < battleInfo[k].count_notes; i++) {
-		float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
-		battleInfo[k].note_timings.push_back(converted_timing);
-	}
+	//for (int i = 0; i < battleInfo[k].count_notes; i++) {
+	//	float converted_timing = (1000.f * enemy1_timings[i] / bpm_ratio) + spawn_offset;
+	//	battleInfo[k].note_timings.push_back(converted_timing);
+	//}
 
 	// Another battle
 	std::vector<float> enemy2_timings = { 
@@ -144,10 +139,10 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		battleInfo[k].mode_timings[i].first = converted_timing;
 	}
 
-	for (int i = 0; i < battleInfo[k].count_notes; i++) {
-		float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
-		battleInfo[k].note_timings.push_back(converted_timing);
-	}
+	//for (int i = 0; i < battleInfo[k].count_notes; i++) {
+	//	float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
+	//	battleInfo[k].note_timings.push_back(converted_timing);
+	//}
 
 	// Boss battle
 	// CODING AT ITS FINEST..... TRULY
@@ -227,10 +222,10 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 		battleInfo[k].mode_timings[i].first = converted_timing;
 	}
 
-	for (int i = 0; i < battleInfo[k].count_notes; i++) {
-		float converted_timing = (1000.f * enemy3_timings[i] / bpm_ratio) + spawn_offset;
-		battleInfo[k].note_timings.push_back(converted_timing);
-	}
+	//for (int i = 0; i < battleInfo[k].count_notes; i++) {
+	//	float converted_timing = (1000.f * enemy3_timings[i] / bpm_ratio) + spawn_offset;
+	//	battleInfo[k].note_timings.push_back(converted_timing);
+	//}
 
 };
 
@@ -275,9 +270,7 @@ bool Battle::loadLevelFromFile(int index) {
 
         for (auto beatmap : beatmaps) {
             int difficulty = convertDifficultyToInt(beatmap["difficulty"].asString());
-            int battle_index = index * (difficulty + 1);
-
-            beatmap.getMemberNames();
+            int battle_index = index + (difficulty * NUM_UNIQUE_BATTLES);
 
             // Load offset and BPM
             battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
@@ -285,7 +278,7 @@ bool Battle::loadLevelFromFile(int index) {
 
             std::map<std::string, std::vector<NoteInfo>> temp_rhythms;
 
-            // Parse each rhythm
+            // Parse each rhythm into temporary data structure
             for (auto rhythms : beatmap["rhythms"]) {
                 // Each rhythm has an identifier name
                 for (auto name : rhythms.getMemberNames()) {
@@ -305,10 +298,36 @@ bool Battle::loadLevelFromFile(int index) {
                 }
             }
 
+			std::vector<NoteInfo> battle_note_info;
 
+			for (auto rhythm_timing_pair : beatmap["rhythm_timings"]) {
+				auto rhythm_names = rhythm_timing_pair.getMemberNames();
+				assert(rhythm_names.size() == 1); // There should only be one id
+				auto rhythm_id = rhythm_names[0];
 
+				// Retrieve temp rhythm data constructed previously
+				std::vector<NoteInfo> rhythm_note_infos = temp_rhythms[rhythm_id];
 
-    
+				// Get the start time of the rhythm in music
+				float start_time = rhythm_timing_pair[rhythm_id].asFloat();
+
+				std::vector<NoteInfo> notes_to_add;
+				// Compute spawn times, using start time as the reference point
+				for (NoteInfo rhythm_note : rhythm_note_infos) {
+					NoteInfo converted_note_info;
+					converted_note_info.spawn_time = start_time + rhythm_note.spawn_time;
+					notes_to_add.push_back(converted_note_info);
+				}
+
+				// Append new notes temporary data structure holding note info
+				battle_note_info.insert(battle_note_info.end(), notes_to_add.begin(), notes_to_add.end());
+			}
+
+			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
+
+			// Set game-persistent battle info
+			battleInfo[battle_index].note_timings = battle_note_info;
+			battleInfo[battle_index].count_notes = battleInfo[battle_index].note_timings.size();
         }
 
 	}
@@ -329,4 +348,12 @@ int Battle::convertDifficultyToInt(std::string difficulty) {
         printf("Invalid difficulty in JSON\n");
         return -1;
     }
+}
+
+// Convert 0-indexed metronome-based beats to timings in milliseconds
+void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float bpm_ratio) {
+	for (int i = 0; i < note_infos->size(); i++) {
+		float converted_timing = (1000.f * note_infos->at(i).spawn_time / bpm_ratio) + spawn_offset;
+		note_infos->at(i).spawn_time = converted_timing;
+	}
 }

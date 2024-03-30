@@ -18,7 +18,7 @@ struct BattleInfo {
     float bpm;
     float metadata_offset;
     int count_notes;
-    std::vector<float> note_timings;
+    std::vector<NoteInfo> note_timings;
     std::vector<std::pair<float, BattleMode>> mode_timings;
 };
 
@@ -103,6 +103,7 @@ class Battle {
         bool loadAllLevelData();
         bool loadLevelFromFile(int enemy_index);
         int convertDifficultyToInt(std::string difficulty);
+        void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
         const size_t MAX_NOTES = 10;
         // const size_t NOTE_SPAWN_DELAY = 2000;
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
