@@ -25,19 +25,8 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
     loadAllLevelData();
 	// Load battle-specific data into BattleInfo structs
 	// OPTIMIZE: Read these from a file instead
-	std::vector<float> enemy0_timings = { 
-		// BACK AND FORTH
-		4.f, 5.f, 6.f, 6.5f, 7.f,
-		12.f, 13.f, 14.f, 14.5f, 15.f,
-		20.f, 21.f, 22.f, 22.5f, 23.f,
-		28.f, 29.f, 30.f, 30.5f, 31.f,
-		40.f, 41.f, 42.f, 43.f, 44.f, 45.5f,
-		56.f, 57.f, 58.f, 59.f, 60.f, 61.5f 
-	};
+
 	int k = 0;
-	battleInfo[k].count_notes = enemy0_timings.size();
-	// battleInfo[k].bpm = 130.f;
-	// battleInfo[k].metadata_offset = 0.06f * 1000.f;
 
 	// Another battle
 	std::vector<float> enemy1_timings = { 
