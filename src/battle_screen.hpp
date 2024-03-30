@@ -52,6 +52,7 @@ class Battle {
         // Check for collisions
         void handle_collisions();
         void handle_note_hit(Entity entity, Entity entity_other);
+        void handleRhythmInput(int action, int key);
 
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
@@ -92,4 +93,41 @@ class Battle {
         GLFWwindow* window;
 
         Serializer* saver;
+    private:
+    // rhythmic input timing variables, initialized in .init
+    // consts for now;
+        const size_t MAX_NOTES = 10;
+        // const size_t NOTE_SPAWN_DELAY = 2000;
+        const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
+        const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
+        const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
+        const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
+
+        const float APPROX_FRAME_DURATION = 16.6f;
+        const float SCORING_LEEWAY = 1.2f * APPROX_FRAME_DURATION; // higher is easier to score better
+
+        // Enemy-specific battle information
+        static const int NUM_UNIQUE_BATTLES = 4;
+        BattleInfo battleInfo[NUM_UNIQUE_BATTLES];
+
+        // the time it should take for note to fall from top to bottom
+        // TODO: Allow calibration via difficulty setting
+        float note_travel_time = 2000.f;
+        float spawn_offset; 
+
+        // TODO: Allow calibration by player.
+        float adjust_offset = 0.00f; // default from testing manually.
+        float adjust_increment = 0.002f; // very small changes are impactful
+        float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
+        float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
+
+        // battle mode tracker
+        int mode_index;
+        float next_mode_delay;
+
+        // battle-specific variables for readability, initialized in .start
+        int enemy_index;
+        int num_notes;
+        int next_note_index;
+        float last_beat;
 };
