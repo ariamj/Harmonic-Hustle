@@ -28,60 +28,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
 
 	int k = 0;
 
-	// Another battle
-	std::vector<float> enemy2_timings = { 
-		// BACK AND FORTH
-		8.f, 8.5f, 9.f, 10.f, 11.f, 12.f, 12.5f, 13.f, 13.5f,
-		24.f, 24.5f, 25.f, 26.f, 27.f, 28.f, 28.5f, 29.f, 29.5f,
-
-		40.f, 41.f, 42.f, 43.f, 44.f, 45.f, 45.5f, 46.5f, 47.f,
-		56.f, 57.f, 58.f, 59.f, 60.f, 61.f, 61.5f, 62.5f, 63.f,
-
-		// UNISON
-		64.f, 64.5f, 65.f, 66.f, 67.f, 68.f, 68.5f, 69.f, 69.5f,
-		72.f, 72.5f, 73.f, 74.f, 75.f, 76.f, 76.5f, 77.f, 77.5f,
-		80.f, 80.5f, 81.f, 82.f, 83.f, 84.f, 84.5f, 85.f, 85.5f, 
-		88.f, 88.5f, 89.f, 90.f, 91.f, 92.f, 92.5f, 93.f, 93.5f,
-		94.5f, 95.f, 95.5f,
-
-		// BACK AND FORTH
-		104.f, 105.5f, 106.f, 107.5, 108.f, 109.f, 110.f, 110.5f, 111.f,
-		120.f, 121.5f, 122.f, 123.5f, 124.f, 125.f, 126.f, 126.5f, 127.f,
-
-		136.f, 137.f, 138.f, 139.f, 140.f, 141.f, 141.5f, 142.5f, 143.f,
-		152.f, 153.f, 154.f, 155.f, 156.f, 157.f, 157.5f, 158.5f, 159.f,
-
-		// UNISON
-		160.f, 161.f, 162.f, 163.f, 164.f, 165.f, 165.5f, 166.5f, 167.f,
-		168.f, 168.5f, 169.f, 170.f, 171.f, 172.f, 172.5f, 173.f, 173.5f,
-		176.f, 177.f, 178.f, 179.f, 180.f, 181.f, 181.5f, 182.5f, 183.f,
-		184.f, 184.5f, 185.f, 186.f, 187.f, 188.f, 188.5f, 189.f, 189.5f, 
-		190.5, 191.f, 191.5f
-	};
-	k = 2;
-	battleInfo[k].count_notes = enemy2_timings.size();
-	battleInfo[k].bpm = 152.f;
-	battleInfo[k].metadata_offset = 0.05f * 1000.f;
-
-	bpm_ratio = battleInfo[k].bpm / 60.f;
-
-	battleInfo[k].mode_timings = {
-		{0.f, back_and_forth}, 
-		{64.f, unison},
-		{100.f - 64.f, back_and_forth},
-		{160.f - 100.f, unison}};
-
-	for (int i = 0; i < battleInfo[k].mode_timings.size(); i++) {
-		float time = battleInfo[k].mode_timings[i].first;
-		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
-		battleInfo[k].mode_timings[i].first = converted_timing;
-	}
-
-	//for (int i = 0; i < battleInfo[k].count_notes; i++) {
-	//	float converted_timing = (1000.f * enemy2_timings[i] / bpm_ratio) + spawn_offset;
-	//	battleInfo[k].note_timings.push_back(converted_timing);
-	//}
-
 	// Boss battle
 	// CODING AT ITS FINEST..... TRULY
 	// OPTIMIZE: Create "Rhythm" presets to reduce this workload to every line, rather than every note
