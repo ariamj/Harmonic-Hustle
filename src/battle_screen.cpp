@@ -8,6 +8,7 @@
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
 #include "chrono"
+#include <algorithm>
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -148,7 +149,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 
 			// Randomly shuffle lane indices
-			std::random_shuffle(lane_indices.begin(), lane_indices.end());
+			std::shuffle(lane_indices.begin(), lane_indices.end(), random_generator);
 
 			// Spawn in order of shuffled lane indices
 			int k = 0;
@@ -269,6 +270,12 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	// Reset judgment line colours
+	for (auto entity : registry.judgmentLine.entities) {
+		vec3& colour = registry.colours.get(entity);
+		colour = vec3(1.f);
+	}
+
 	// Remove particle generators
 	renderer->particle_generators.clear();
 
@@ -636,7 +643,7 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 				std::cout << "unhandled key" << std::endl;
 				break;
 		}
-	} else {
+	} else if (!in_countdown) {
 		 switch(key) {
 			case GLFW_KEY_D:
 				d_key_pressed = true;

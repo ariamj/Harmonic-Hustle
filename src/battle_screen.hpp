@@ -141,4 +141,8 @@ class Battle {
         int next_note_index;
         int mode_index;
         float last_beat;
+
+        // random generation
+        // https://stackoverflow.com/a/69815862
+        std::mt19937 random_generator = std::mt19937{std::random_device{}()};
 };
