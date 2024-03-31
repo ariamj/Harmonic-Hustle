@@ -110,7 +110,7 @@
             [
                 { "bnf": 0.0 },
                 { "unison": 64.0 },
-                { "back_and_forth": 104.0 },
+                { "back_and_forth": 100.0 },
                 { "unison": 160.0 }
             ]
         },
@@ -221,7 +221,7 @@
             [
                 { "bnf": 0.0 },
                 { "unison": 64.0 },
-                { "back_and_forth": 104.0 },
+                { "back_and_forth": 100.0 },
                 { "unison": 160.0 }
             ]
         }

@@ -118,7 +118,7 @@ class Battle {
         const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
         const float APPROX_FRAME_DURATION = 16.6f;
-        const float LEEWAY_FRAMES = 1.5f;
+        const float LEEWAY_FRAMES = 2.f;
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
 
         // Enemy-specific battle information

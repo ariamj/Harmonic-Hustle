@@ -311,7 +311,7 @@ void Battle::start() {
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm * 1000.f;
-	conductor.offset = battleInfo[enemy_index].metadata_offset;
+	conductor.offset = battleInfo[enemy_index].metadata_offset + gameInfo.timing_adjustment;
 	conductor.song_position = 0.f;
 	last_beat = 0.f; // moving reference point
 
@@ -668,6 +668,9 @@ void Battle::handle_mouse_move(vec2 pos) {
     
 };
 
+// Calculate recommended timing adjustment (in ms) for player
+	// Only works for small adjustments (note is within collision range)
+	// Based on the center of judgment lines
 float Battle::calculate_adjustment() {
 	std::cout << "EARLY: " << count_early << ", LATE:" << count_late << std::endl;
 
@@ -700,3 +703,4 @@ float Battle::calculate_adjustment() {
 
 	return adjustment;
 }
+
