@@ -295,8 +295,8 @@ void WorldSystem::handle_collisions() {
 				restart_game();
 				render_set_game_over_screen();
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
-				battle.start();
 				render_set_battle_screen();
+				battle.start();
 			}
 			break;
 		default:
@@ -673,8 +673,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (action == GLFW_PRESS) {
 				switch (gameInfo.curr_screen) {
 					case Screen::OVERWORLD:
-						battle.start();
 						render_set_battle_screen();
+						battle.start();
 						break;
 					case Screen::BATTLE:
 						// pressing 'C' during battle immedidately ends battle, for testing

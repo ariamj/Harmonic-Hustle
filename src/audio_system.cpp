@@ -34,7 +34,7 @@ bool AudioSystem::init() {
 		fprintf(stderr, "Failed to initialize SDL Audio");
 		return false;
 	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) == -1) {
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}

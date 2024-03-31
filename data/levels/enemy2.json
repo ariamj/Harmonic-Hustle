@@ -1,5 +1,5 @@
 {
-    "metadata_offset": 50.0,
+    "metadata_offset": 57.28,
     "bpm": 152.0,
     "beatmaps":
     [
@@ -110,7 +110,7 @@
             [
                 { "bnf": 0.0 },
                 { "unison": 64.0 },
-                { "back_and_forth": 112.0 },
+                { "back_and_forth": 104.0 },
                 { "unison": 160.0 }
             ]
         },
@@ -221,7 +221,7 @@
             [
                 { "bnf": 0.0 },
                 { "unison": 64.0 },
-                { "back_and_forth": 112.0 },
+                { "back_and_forth": 104.0 },
                 { "unison": 160.0 }
             ]
         }

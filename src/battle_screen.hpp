@@ -106,6 +106,7 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
+        float calculate_adjustment();
 
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
@@ -117,7 +118,8 @@ class Battle {
         const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
         const float APPROX_FRAME_DURATION = 16.6f;
-        const float SCORING_LEEWAY = 1.2f * APPROX_FRAME_DURATION; // higher is easier to score better
+        const float LEEWAY_FRAMES = 1.5f;
+        const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
 
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
