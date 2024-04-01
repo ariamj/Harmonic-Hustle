@@ -11,7 +11,6 @@
 
 using Clock = std::chrono::high_resolution_clock;
 
-
 // DEBUG MEMORY LEAKS (WINDOWS ONLY)
 // https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
 //#define _CRTDBG_MAP_ALLOC
@@ -60,6 +59,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 
+	if (registry.combos.components.size() == 0) {
+		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 20.f), 1.f, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+		registry.combos.emplace(c);
+	}
+
 	if (in_countdown) {
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game
@@ -103,8 +107,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		createText(std::to_string(alright_counter), vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_yellow, glm::mat4(1.f), Screen::BATTLE, true);
 		createText(std::to_string(missed_counter), vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
 
+		// Combo
+		createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 4)), 1.f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
 		// next instruction
-		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 6)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// notify savenext_note_spawn
 		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
@@ -320,6 +327,9 @@ void Battle::start() {
     alright_counter = 0;
     missed_counter = 0;
 
+	combo = 0;
+	max_combo = 0;
+
 	// TODO (?): Account for when note spawns are negative (before music starts)
 	next_note_index = 0;
 	mode_index = 0;
@@ -514,6 +524,11 @@ void Battle::handle_collisions() {
 		}
 	}
 
+	if (key_pressed && !got_hit) {
+		max_combo = max_combo > combo ? max_combo : combo;
+		combo = 0;
+	}
+
 	// Reset key presses
 	key_pressed = false;
 	d_key_pressed = false;
@@ -541,6 +556,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		standing = perfect;
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
+		combo++;
 	}	// Determine standing
 	else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 		|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
@@ -548,12 +564,14 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		standing = good;
 		good_counter++;
 		colour = GOOD_COLOUR;
+		combo++;
 	}
 	else {
 		// set standing to Alright
 		standing = alright;
 		alright_counter++;
 		colour = ALRIGHT_COLOUR;
+		combo++;
 	}
 	// Update score
 	score += standing;
