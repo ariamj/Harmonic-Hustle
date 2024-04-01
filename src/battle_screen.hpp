@@ -86,6 +86,9 @@ class Battle {
         float score = 0;
         float score_threshold = 200.f; // TODO: load info from enemy battle sprite
 
+        int combo = 0;
+        int max_combo = 0;
+
         float lanes[4] = {0, 0, 0, 0};
         Entity gameOverPopUpOverlay;
 
