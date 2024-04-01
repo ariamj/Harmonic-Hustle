@@ -167,19 +167,19 @@ float walk_cycle = 0.f;
 const float WALK_CYCLE_SPEED = 0.15;
 
 // Returns the local bounding coordinates scaled by the current size of the entity
- vec2 get_bounding_box(const Motion& motion)
- {
- 	// abs is to avoid negative scale due to the facing direction.
-	// TODO: Keep region constant while increasing scale of note? (smaller -> bigger from top to bottom of screen)
-		// This current implementation will increase collision region as note gets bigger
- 	return { abs(motion.scale.x), abs(motion.scale.y) };
- }
+vec2 get_bounding_box(const Motion& motion)
+{
+// abs is to avoid negative scale due to the facing direction.
+// TODO: Keep region constant while increasing scale of note? (smaller -> bigger from top to bottom of screen)
+	// This current implementation will increase collision region as note gets bigger
+	return { abs(motion.scale.x), abs(motion.scale.y) };
+}
 
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You can
 // surely implement a more accurate detection
- bool collides(const Motion& motion1, const Motion& motion2)
- {
+bool collides(const Motion& motion1, const Motion& motion2)
+{
 	float center1x = motion1.position.x;
 	float displacement = 30.f;
 	float left1 = center1x - displacement;
@@ -208,41 +208,41 @@ const float WALK_CYCLE_SPEED = 0.15;
 		}
 	}
 
-	return false;
+return false;
 
- 	// vec2 dp = motion1.position - motion2.position;
- 	// float dist_squared = dot(dp,dp);
- 	// const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
- 	// const float other_r_squared = dot(other_bonding_box, other_bonding_box);
- 	// const vec2 my_bonding_box = get_bounding_box(motion2) / 10.f;
- 	// const float my_r_squared = dot(my_bonding_box, my_bonding_box);
- 	// const float r_squared = max(other_r_squared, my_r_squared);
- 	// if (dist_squared < r_squared)
- 	// 	return true;
+// vec2 dp = motion1.position - motion2.position;
+// float dist_squared = dot(dp,dp);
+// const vec2 other_bonding_box = get_bounding_box(motion1) / 10.f;
+// const float other_r_squared = dot(other_bonding_box, other_bonding_box);
+// const vec2 my_bonding_box = get_bounding_box(motion2) / 10.f;
+// const float my_r_squared = dot(my_bonding_box, my_bonding_box);
+// const float r_squared = max(other_r_squared, my_r_squared);
+// if (dist_squared < r_squared)
+// 	return true;
 
- 	// return false;
- }
+// return false;
+}
 
 
- void handleWalkAnimation() {
-	 Entity e = registry.players.entities[0];
-	 RenderRequest& r = registry.renderRequests.get(e);
+void handleWalkAnimation() {
+	Entity e = registry.players.entities[0];
+	RenderRequest& r = registry.renderRequests.get(e);
 
-	 walk_cycle += WALK_CYCLE_SPEED;
+	walk_cycle += WALK_CYCLE_SPEED;
 
-	 if (walk_cycle <= 1.f) {
-		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F1;
-	 }
-	 else if (walk_cycle > 1.f && walk_cycle <= 2.f) {
-		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F2;
-	 }
-	 else if (walk_cycle > 2.f && walk_cycle <= 3.f) {
-		 r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F3;
-	 }
-	 else {
-		 walk_cycle = 0.f;
-	 }
- }
+	if (walk_cycle <= 1.f) {
+		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F1;
+	}
+	else if (walk_cycle > 1.f && walk_cycle <= 2.f) {
+		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F2;
+	}
+	else if (walk_cycle > 2.f && walk_cycle <= 3.f) {
+		r.used_texture = TEXTURE_ASSET_ID::PLAYER_WALK_F3;
+	}
+	else {
+		walk_cycle = 0.f;
+	}
+}
 
 void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 {
@@ -250,27 +250,26 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 	registry.collisions.clear();
 
 	 // Move entities
-	 auto& motion_registry = registry.motions;
-	 for(uint i = 0; i< motion_registry.size(); i++)
-	 {
-		 Motion& motion = motion_registry.components[i];
-		 Entity entity = motion_registry.entities[i];
+	auto& motion_registry = registry.motions;
+	for(uint i = 0; i< motion_registry.size(); i++) {
+		Motion& motion = motion_registry.components[i];
+		Entity entity = motion_registry.entities[i];
 
-		 float step_seconds = elapsed_ms / 1000.f;
+		float step_seconds = elapsed_ms / 1000.f;
 
 		// move player
-		 if (registry.players.has(entity)) {
-			 if (motion.velocity[0] != 0 || motion.velocity[1] != 0) handleWalkAnimation();
+		if (registry.players.has(entity)) {
+			if (motion.velocity[0] != 0 || motion.velocity[1] != 0) handleWalkAnimation();
 
-			 if ((motion.velocity[0] < 0 && motion.position[0] > PLAYER_HEIGHT / 2.f) || (motion.velocity[0] > 0 && motion.position[0] < (gameInfo.width - PLAYER_WIDTH / 2.f))) {
-				motion.position[0] = motion.position[0] + (step_seconds * motion.velocity[0]);
-			 }
-			 
-			 if ((motion.velocity[1] < 0 && motion.position[1] > PLAYER_HEIGHT / 2.f) || (motion.velocity[1] > 0 && motion.position[1] < (gameInfo.height - PLAYER_HEIGHT / 2.f))) {
-				motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
-			 }
-		 }
-		 // move enemies
+			if ((motion.velocity[0] < 0 && motion.position[0] > PLAYER_HEIGHT / 2.f) || (motion.velocity[0] > 0 && motion.position[0] < (gameInfo.width - PLAYER_WIDTH / 2.f))) {
+			motion.position[0] = motion.position[0] + (step_seconds * motion.velocity[0]);
+			}
+			
+			if ((motion.velocity[1] < 0 && motion.position[1] > PLAYER_HEIGHT / 2.f) || (motion.velocity[1] > 0 && motion.position[1] < (gameInfo.height - PLAYER_HEIGHT / 2.f))) {
+			motion.position[1] = motion.position[1] + (step_seconds * motion.velocity[1]);
+			}
+		}
+		// move enemies
 		if (registry.enemies.has(entity) && !registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
 			
 			float xChange = step_seconds * motion.velocity.x;
@@ -313,12 +312,125 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 				}
 			}
 		}
-	 }
+	}
 
+	// auto t1 = Clock::now();
 
+	// Check for specific collisions 
+	switch (gameInfo.curr_screen) {
+		case OVERWORLD:
+			check_collisions_between_player_and_enemies(elapsed_ms, renderSystem);
+			break;
+		case BATTLE:
+			check_collisions_between_notes_and_judgments(elapsed_ms, renderSystem);
+			break;
+		default:
+			break;
+	}
+	// check_collisions_between_all_motions(elapsed_ms, renderSystem);
 
-	 auto t1 = Clock::now();
+	// auto t2 = Clock::now();
+	// float collisions_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
+	// std::cout << "Checking collisions time:" << collisions_ms << "\n";
 
+	updateParticles(renderSystem, elapsed_ms);
+
+	if (debugging.in_debug_mode) {
+		for (int i = 0; i < motion_registry.components.size(); ++i) {
+			Motion& motion = motion_registry.components[i];
+			Entity& entity = motion_registry.entities[i];
+			float line_thickness = 3.f;
+			if (registry.enemies.has(entity) || registry.players.has(entity)) {
+			// create a dot in the motion.positin for ai debugging
+			createDot(motion.position, vec2{8, 8});
+
+				vec2 bb = get_bounding_box(motion);
+				createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line1
+				createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line2
+				createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line3
+				createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line4
+			}
+			// Note center lines for scoring
+			if (registry.notes.has(entity)) {
+			createLine(motion.position, vec2(motion.scale.x, line_thickness), Screen::BATTLE);
+			}
+			// Judgement line center line for scoring
+			if (registry.judgmentLine.has(entity)) {
+			// center line
+			createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
+			vec2 bb = get_bounding_box(motion);
+			JudgementLine judgement_line = registry.judgmentLine.get(entity);
+			// top
+			createLine(motion.position - vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
+			// bottom
+			createLine(motion.position + vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
+			}
+
+			// mesh
+			if (registry.players.has(entity)) {
+
+			// player radius for enemy ai debugging
+			createCircleOutline(motion.position, PLAYER_ENEMY_RADIUS);
+
+				// visualize mesh
+				Transform transform;
+				transform.translate(motion.position);
+				transform.rotate(motion.angle);
+				transform.scale(motion.scale);
+				mat3 projection = renderSystem->createProjectionMatrix();
+				Mesh& mesh = *(registry.meshPtrs.get(entity));
+			//  float left_vertex_bound = 1, right_vertex_bound = -1, top_vertex_bound = -1, bot_vertex_bound = 1;
+				// visualize the boundary vertices of the mesh
+				for (auto& index : boundary_indices) {
+					auto& v = mesh.vertices[index];
+					auto world_v = projection * transform.mat * vec3(v.position.x, v.position.y, 1.f);
+					// vertex
+					createLine(vec2({ ((world_v.x + 1) / 2.f) * gameInfo.width, (1 - ((world_v.y + 1) / 2.f)) * gameInfo.height }),
+						vec2({ motion.scale.x / 30, motion.scale.x / 30 }));
+				}
+			}
+		}
+	}
+}
+
+// Check for collisions sbetween player and enemies
+void PhysicsSystem::check_collisions_between_player_and_enemies(float elapsed_ms, RenderSystem* renderSystem) {
+	Entity player = registry.players.entities[0];
+	Motion& player_motion = registry.motions.get(player);
+	for (auto enemy : registry.enemies.entities) {
+		Motion& enemy_motion = registry.motions.get(enemy);
+		Mesh* m_i = registry.meshPtrs.get(player);
+
+		if (boundary_indices.size() < 1) {
+			fill_mesh_boundary_edge(*m_i);
+		}
+
+		// do mesh-line collision
+		if (collides_mesh_line(*m_i, player_motion, enemy_motion)) {
+			registry.collisions.emplace_with_duplicates(player, enemy);
+			registry.collisions.emplace_with_duplicates(enemy, player);
+		}
+	}
+}
+
+// Check for collisions between judgment lines and notes
+void PhysicsSystem::check_collisions_between_notes_and_judgments(float elapsed_ms, RenderSystem* renderSystem) {
+	for (auto judgment : registry.judgmentLine.entities) {
+		Motion& judgment_motion = registry.motions.get(judgment);
+		for (auto note : registry.notes.entities) {
+			Motion& note_motion = registry.motions.get(note);
+			if (collides(judgment_motion, note_motion))
+			{
+				registry.collisions.emplace_with_duplicates(judgment, note);
+				registry.collisions.emplace_with_duplicates(note, judgment);
+			}
+		}
+	}
+}
+
+// Original implementation
+void PhysicsSystem::check_collisions_between_all_motions(float elapsed_ms, RenderSystem* renderSystem) {
+	auto& motion_registry = registry.motions;	
 	 // Check for collisions between all moving entities
 	 for (uint i = 0; i < motion_registry.components.size(); i++)
 	 {
@@ -370,69 +482,6 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 					 // We are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity
 					 registry.collisions.emplace_with_duplicates(entity_i, entity_j);
 					 registry.collisions.emplace_with_duplicates(entity_j, entity_i);
-				 }
-			 }
-		 }
-	 }
-
-	 auto t2 = Clock::now();
-	 float draw_total_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
-	 // std::cout << "All motions:" << draw_total_ms << "\n";
-
-	 updateParticles(renderSystem, elapsed_ms);
-
-	 if (debugging.in_debug_mode) {
-		 for (int i = 0; i < motion_registry.components.size(); ++i) {
-			 Motion& motion = motion_registry.components[i];
-			 Entity& entity = motion_registry.entities[i];
-			 float line_thickness = 3.f;
-			 if (registry.enemies.has(entity) || registry.players.has(entity)) {
-				// create a dot in the motion.positin for ai debugging
-				createDot(motion.position, vec2{8, 8});
-
-				 vec2 bb = get_bounding_box(motion);
-				 createLine(motion.position + vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line1
-				 createLine(motion.position - vec2(bb.x / 2, 0.0), vec2(line_thickness, bb.y)); //line2
-				 createLine(motion.position + vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line3
-				 createLine(motion.position - vec2(0.0, bb.y / 2), vec2(bb.x, line_thickness)); //line4
-			 }
-			 // Note center lines for scoring
-			 if (registry.notes.has(entity)) {
-				createLine(motion.position, vec2(motion.scale.x, line_thickness), Screen::BATTLE);
-			 }
-			 // Judgement line center line for scoring
-			 if (registry.judgmentLine.has(entity)) {
-				// center line
-				createLine(motion.position, vec2(motion.scale.x * 0.8f, line_thickness), Screen::BATTLE);
-				vec2 bb = get_bounding_box(motion);
-				JudgementLine judgement_line = registry.judgmentLine.get(entity);
-				// top
-				createLine(motion.position - vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
-				// bottom
-				createLine(motion.position + vec2(0.f, bb.y * judgement_line.actual_img_scale_factor), vec2(bb.x * 0.8f, line_thickness), Screen::BATTLE);
-			 }
-
-			 // mesh
-			 if (registry.players.has(entity)) {
-
-				// player radius for enemy ai debugging
-				createCircleOutline(motion.position, PLAYER_ENEMY_RADIUS);
-
-				 // visualize mesh
-				 Transform transform;
-				 transform.translate(motion.position);
-				 transform.rotate(motion.angle);
-				 transform.scale(motion.scale);
-				 mat3 projection = renderSystem->createProjectionMatrix();
-				 Mesh& mesh = *(registry.meshPtrs.get(entity));
-				//  float left_vertex_bound = 1, right_vertex_bound = -1, top_vertex_bound = -1, bot_vertex_bound = 1;
-				 // visualize the boundary vertices of the mesh
-				 for (auto& index : boundary_indices) {
-					 auto& v = mesh.vertices[index];
-					 auto world_v = projection * transform.mat * vec3(v.position.x, v.position.y, 1.f);
-					 // vertex
-					 createLine(vec2({ ((world_v.x + 1) / 2.f) * gameInfo.width, (1 - ((world_v.y + 1) / 2.f)) * gameInfo.height }),
-						 vec2({ motion.scale.x / 30, motion.scale.x / 30 }));
 				 }
 			 }
 		 }
