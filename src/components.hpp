@@ -158,10 +158,14 @@ struct EnemyCS {
 };
 
 struct CSText {
-	int progress = 0;
+
 };
 
 struct CSTextbox {
+
+};
+
+struct BattleCombo {
 
 };
 
