@@ -248,8 +248,8 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	}
 	y = gameInfo.height - y - ((textHeight / 2.f) * scale);
 
-	// Build an array of character-specific data 
-	CharacterRequest character_requests[text.size()];
+	// Build an array of character-specific data
+	CharacterRequest character_requests[MAX_TEXT_LENGTH];
 
 	// iterate through all characters
 	std::string::const_iterator c;
@@ -314,15 +314,13 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	glBufferData(GL_ARRAY_BUFFER, text.size() * sizeof(CharacterRequest), character_requests, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
 
-	int index = 0;
-	for (auto cr : character_requests) {
+	for (int i = 0; i < text.size(); i++) {
 		// Manage a pointer instead of calling glSubBufferData repeatedly
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)(index * sizeof(CharacterRequest)));
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)(i * sizeof(CharacterRequest)));
 		// render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, cr.TextureID);
+		glBindTexture(GL_TEXTURE_2D, character_requests[i].TextureID);
 		// render quad
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		index += 1;
 	}
 
 	// Cleanup
