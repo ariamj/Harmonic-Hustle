@@ -268,7 +268,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 
 		for (int i = 0; i < NUM_LANES; i++) {
-			lane_hold[i] = max(lane_hold[i] - adjusted_elapsed_time, -1.0f);
+			if (lane_hold[i] > 0.f) {
+				// Player successfully held for full duration
+				lane_hold[i] -= adjusted_elapsed_time;
+				if (lane_hold[i] < 0.f) {
+					audio->playHitPerfect();
+				}
+			}
 		}
 	}
 	return true;
@@ -713,7 +719,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			d_key_pressed = false;
 			d_key_held = false;
 			std::cout << "D key released\n";
-			if (lane_hold[0] > 0.f) {
+			if (lane_hold[0] > HOLD_DURATION_LEEWAY) {
 				audio->playMissedNote();
 				lane_hold[0] = NO_DURATION; // only miss once
 			}
@@ -722,7 +728,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			f_key_pressed = false;
 			f_key_held = false;
 			std::cout << "F key released\n";
-			if (lane_hold[1] > 0.f) {
+			if (lane_hold[1] > HOLD_DURATION_LEEWAY) {
 				audio->playMissedNote();
 				lane_hold[1] = NO_DURATION;
 			}
@@ -731,7 +737,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			j_key_pressed = false;
 			j_key_held = false;
 			std::cout << "J key released\n";
-			if (lane_hold[2] > 0.f) {
+			if (lane_hold[2] > HOLD_DURATION_LEEWAY) {
 				audio->playMissedNote();
 				lane_hold[2] = NO_DURATION;
 			}
@@ -740,7 +746,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			k_key_pressed = false;
 			k_key_held = false;
 			std::cout << "K key released\n";
-			if (lane_hold[3] > 0.f) {
+			if (lane_hold[3] > HOLD_DURATION_LEEWAY) {
 				audio->playMissedNote();
 				lane_hold[3] = NO_DURATION;
 			}

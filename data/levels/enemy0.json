@@ -12,11 +12,11 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": 2.0, "quantity": 1},
-                            {"spawn_time": 1.0, "duration": 2.0, "quantity": 1}, 
-                            {"spawn_time": 2.0, "duration": 2.0, "quantity": 1}, 
-                            {"spawn_time": 2.5, "duration": 2.0, "quantity": 1}, 
-                            {"spawn_time": 3.0, "duration": 2.0, "quantity": 1}
+                            {"spawn_time": 0.0, "duration": 3.0, "quantity": 1},
+                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.5, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}
                         ],                    
                         "color":
                         [
