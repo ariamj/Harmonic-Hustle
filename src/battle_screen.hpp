@@ -79,6 +79,10 @@ class Battle {
         bool f_key_pressed = false;
         bool j_key_pressed = false;
         bool k_key_pressed = false;
+        bool d_key_held = false;
+        bool f_key_held = false;
+        bool j_key_held = false;
+        bool k_key_held = false;
         Standing standing;
         int perfect_counter = 0;
         int good_counter = 0;
@@ -151,7 +155,8 @@ class Battle {
 
         // held note trackers
         float NO_DURATION = -1.0f;
-        float lane_held[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
+        float lane_locked[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
+        float lane_hold[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
 
         // random generation
         // https://stackoverflow.com/a/69815862

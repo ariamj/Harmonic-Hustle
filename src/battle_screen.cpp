@@ -156,7 +156,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			std::vector<int> lane_indices;
 			for (int i = 0; i < NUM_LANES; i++) {
 				// Disallow spawning notes during held note durations
-				if (lane_held[i] < 0.f) {
+				if (lane_locked[i] < 0.f) {
 					lane_indices.push_back(i);
 				}
 			}
@@ -171,10 +171,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			for (int k = 0; k < lane_indices.size(); k++) {
 				NoteInfo note = battleInfo[enemy_index].notes[next_note_index];
 				if (conductor.song_position >= note.spawn_time) {
-					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time);
+					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time, note.duration);
 					next_note_index += 1;
 					// Set duration 
-					lane_held[lane_indices[k]] = note.duration;
+					lane_locked[lane_indices[k]] = note.duration;
 				}
 				if (next_note_index >= multiple_note_index) {
 					break;
@@ -185,7 +185,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Decrease durations of held lanes
 		for (int i = 0; i < NUM_LANES; i++) {
 			// Prevent underflow
-			lane_held[i] = max(lane_held[i] - adjusted_elapsed_time, NO_DURATION);
+			lane_locked[i] = max(lane_locked[i] - adjusted_elapsed_time, NO_DURATION);
 		}
 
 		// Remove entities that leave the screen below
@@ -265,6 +265,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					registry.judgmentLineTimers.remove(line);
 				}
 			}
+		}
+
+		for (int i = 0; i < NUM_LANES; i++) {
+			lane_hold[i] = max(lane_hold[i] - adjusted_elapsed_time, -1.0f);
 		}
 	}
 	return true;
@@ -524,7 +528,10 @@ void Battle::handle_collisions() {
 
 	// For each lane, remove at most one note (for this frame)
 	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
+	int lane_index = -1;
 	for (auto &hits : lane_hits) {
+
+		lane_index += 1;
 		// Skip lanes which had no collisions
 		if (hits->size() == 0) {
 			continue;
@@ -542,7 +549,26 @@ void Battle::handle_collisions() {
 			}
 		}
 
+		// Retrieve information about duration before removing notehead from registry
+		float hold_duration = -1.0f;
+		vec2 position = vec2(0.f);
+		if (registry.notes.has(lowest_note)) {
+			Note& note = registry.notes.get(lowest_note);
+			hold_duration = note.duration;
+			Motion& motion = registry.motions.get(lowest_note);
+			position = motion.position;
+		}
+
+		// Now manage held notes (which does not affect regular note behaviour above)
+		if (hold_duration > 0.f) {
+			// Spawn a new entity with a duration
+			createNoteDuration(renderer, position, hold_duration);
+			lane_hold[lane_index] = hold_duration;
+		}
+
 		registry.remove_all_components_of(lowest_note);
+
+
 		got_hit = 1;
 	}	
 
@@ -640,8 +666,28 @@ void Battle::handleRhythmInput(int action, int key) {
 	// auto& collisionsRegistry = registry.collisions;
 	// auto& collisionsTimerRegistry = registry.collisionTimers;
 	if (action == GLFW_PRESS) {
+		switch (key) {
+			case GLFW_KEY_D:
+				d_key_pressed = true;
+				d_key_held = true;
+				break;
+			case GLFW_KEY_F:
+				f_key_pressed = true;
+				f_key_held = true;
+				break;
+			case GLFW_KEY_J:
+				j_key_pressed = true;
+				j_key_held = true;
+				break;
+			case GLFW_KEY_K:
+				k_key_pressed = true;
+				k_key_held = true;
+				break;
+			default:
+				break;
+		}
         // std::cout << "rhythm input: " << key << std::endl;
-		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
+		if (d_key_pressed || f_key_pressed || j_key_pressed || k_key_pressed) {
 			key_pressed = true;
 			// Change judgment line colour on input
 			ComponentContainer<Motion> motion_container = registry.motions;
@@ -658,6 +704,51 @@ void Battle::handleRhythmInput(int action, int key) {
 					}
 			}
 		}
+	}
+	// RELEASE (relevant for held notes)
+	// If there is a held note, releasing early should be treated as missing a note
+	else if (action == GLFW_RELEASE) {
+		switch (key) {
+		case GLFW_KEY_D:
+			d_key_pressed = false;
+			d_key_held = false;
+			std::cout << "D key released\n";
+			if (lane_hold[0] > 0.f) {
+				audio->playMissedNote();
+				lane_hold[0] = NO_DURATION; // only miss once
+			}
+			break;
+		case GLFW_KEY_F:
+			f_key_pressed = false;
+			f_key_held = false;
+			std::cout << "F key released\n";
+			if (lane_hold[1] > 0.f) {
+				audio->playMissedNote();
+				lane_hold[1] = NO_DURATION;
+			}
+			break;
+		case GLFW_KEY_J:
+			j_key_pressed = false;
+			j_key_held = false;
+			std::cout << "J key released\n";
+			if (lane_hold[2] > 0.f) {
+				audio->playMissedNote();
+				lane_hold[2] = NO_DURATION;
+			}
+			break;
+		case GLFW_KEY_K:
+			k_key_pressed = false;
+			k_key_held = false;
+			std::cout << "K key released\n";
+			if (lane_hold[3] > 0.f) {
+				audio->playMissedNote();
+				lane_hold[3] = NO_DURATION;
+			}
+			break;
+		default:
+			break;
+		}
+
 	}
 }
 
@@ -683,19 +774,9 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 	} else if (!in_countdown) {
 		 switch(key) {
 			case GLFW_KEY_D:
-				d_key_pressed = true;
-				handleRhythmInput(action, key);
-				break;
 			case GLFW_KEY_F:
-				f_key_pressed = true;
-				handleRhythmInput(action, key);
-				break;
 			case GLFW_KEY_J:
-				j_key_pressed = true;
-				handleRhythmInput(action, key);
-				break;
 			case GLFW_KEY_K:
-				k_key_pressed = true;
 				handleRhythmInput(action, key);
 				break;
 			case GLFW_KEY_X:

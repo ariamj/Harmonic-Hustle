@@ -92,7 +92,7 @@ Entity createEnemy(RenderSystem* renderer, vec2 pos, int level)
 	return entity;
 }
 
-Entity createNote(RenderSystem* renderer, vec2 pos, float t_min) {
+Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float duration) {
 	auto entity = Entity();
 	// Store a reference to the potentially re-used mesh object
 	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
@@ -111,7 +111,8 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float t_min) {
 	// Create component
 	Note& note = registry.notes.emplace(entity);
 	// For interpolation based on absolute song time
-	note.spawn_time = t_min;
+	note.spawn_time = spawn_time;
+	note.duration = duration;
 
 	registry.colours.insert(entity, { 1.f, 1.f, 1.f });
 	registry.renderRequests.insert(
@@ -123,12 +124,33 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float t_min) {
 		}
 	);
 
+	// TODO: Depending on duration, choose different particle type?
+
 	// Give trail particles to entity
 	ParticleEffect& particles = registry.particleEffects.emplace(entity);
 	particles.type = PARTICLE_TYPE_ID::TRAIL;
 
 	return entity;
 
+}
+
+Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration) {
+	auto entity = Entity();
+
+	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0.f, 150.f };
+	motion.position = pos;
+	motion.scale = vec2({ NOTE_WIDTH, NOTE_HEIGHT });
+
+	// screen entity exists in
+	registry.screens.insert(entity, Screen::BATTLE);
+
+	NoteDuration& note_duration = registry.noteDurations.emplace(entity);
+	note_duration.count_ms = duration;
+
+	return entity;
 }
 
 Entity createBattlePlayer(RenderSystem* renderer, vec2 pos)

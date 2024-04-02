@@ -34,7 +34,9 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos);
 // judgement line
 Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 // notes
-Entity createNote(RenderSystem* renderer, vec2 pos, float t_min);
+Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float duration);
+// note duration
+Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration);
 // a red line for debugging purposes
 Entity createLine(vec2 position, vec2 size, Screen screen = Screen::OVERWORLD);
 // an empty white box

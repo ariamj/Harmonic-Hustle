@@ -718,9 +718,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
-				if (action == GLFW_PRESS) {
-					battle.handle_key(key, scancode, action, mod);
-				}
+				battle.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
 				}

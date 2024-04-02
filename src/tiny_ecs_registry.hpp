@@ -22,6 +22,7 @@ public:
 	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Note> notes;
+	ComponentContainer<NoteDuration> noteDurations;
 	ComponentContainer<Player> players;
 	ComponentContainer<Enemy> enemies;
 	ComponentContainer<Conductor> conductors;
@@ -59,6 +60,7 @@ public:
 		registry_list.push_back(&battleOverPopUpParts);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&notes);
+		registry_list.push_back(&noteDurations);
 		registry_list.push_back(&players);
 		registry_list.push_back(&enemies);
 		registry_list.push_back(&conductors);
