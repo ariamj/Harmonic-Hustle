@@ -686,11 +686,11 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 				handleDebug(action);
 				break;
 			case GLFW_KEY_MINUS:
-				gameInfo.frames_adjustment -= 0.25f;
+				gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
 				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
 				break;
 			case GLFW_KEY_EQUAL:
-				gameInfo.frames_adjustment += 0.25f;
+				gameInfo.frames_adjustment = min(gameInfo.frames_adjustment + 0.25f, MAX_FRAMES_ADJUSTMENT);
 				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
 			default:
 				std::cout << "unhandled key" << std::endl;

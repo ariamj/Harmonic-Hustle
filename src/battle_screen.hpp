@@ -123,6 +123,8 @@ class Battle {
         const float APPROX_FRAME_DURATION = 16.6f;
         const float LEEWAY_FRAMES = 2.f;
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
+        const float MIN_FRAMES_ADJUSTMENT = -5.f;
+        const float MAX_FRAMES_ADJUSTMENT = 5.f;
 
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
