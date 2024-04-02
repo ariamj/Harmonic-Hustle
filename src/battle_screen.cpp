@@ -174,7 +174,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time, note.duration);
 					next_note_index += 1;
 					// Set duration 
-					lane_locked[lane_indices[k]] = note.duration;
+					lane_locked[lane_indices[k]] = note.duration + conductor.crotchet / 4.f;
 				}
 				if (next_note_index >= multiple_note_index) {
 					break;

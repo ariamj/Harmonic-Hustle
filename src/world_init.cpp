@@ -127,8 +127,10 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 	// TODO: Depending on duration, choose different particle type?
 
 	// Give trail particles to entity
-	ParticleEffect& particles = registry.particleEffects.emplace(entity);
-	particles.type = PARTICLE_TYPE_ID::TRAIL;
+	if (duration > 0.f) {
+		ParticleEffect& particles = registry.particleEffects.emplace(entity);
+		particles.type = PARTICLE_TYPE_ID::TRAIL;
+	} 
 
 	return entity;
 
