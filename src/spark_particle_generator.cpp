@@ -17,6 +17,37 @@ SparkParticleGenerator::SparkParticleGenerator(GLuint shaderProgram, GLuint used
     // init is called in ParticleGenerator constructor
 }
 
+void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        Entity entity = blocks[i];
+
+        if (entity == initialized_entity_id) {
+            continue;
+        }
+
+        if (!registry.particleEffects.has(entity)) {
+            continue;
+        }
+
+        ParticleEffect& particle_effect = registry.particleEffects.get(entity);
+
+        // add new particles 
+        for (unsigned int i = 0; i < newParticles; ++i)
+        {
+            int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
+                particle_effect.min_index, particle_effect.max_index);
+            particle_effect.last_used_particle = unusedParticle;
+            respawnParticle(particles[unusedParticle], entity, TRAIL_NOTE_OFFSET);
+        }
+    }
+
+    // update all of a single entity's particles
+    for (int i = 0; i < max_particles; i++)
+    {
+        updateParticleBehaviours(particles[i], dt);
+    }
+}
+
 void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
     p.life -= dt; // reduce life
     if (p.life > 0.0f)

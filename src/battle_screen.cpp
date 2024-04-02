@@ -196,11 +196,15 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			if (motion.position.y + abs(motion.scale.y) > gameInfo.height+50.f) {
 				// remove missed notes and play missed note sound
 				if (registry.notes.has(motions_registry.entities[i])) {
-					audio->playDroppedNote();
-					standing = missed;
-					missed_counter++;
-					score += standing;
-					registry.remove_all_components_of(motions_registry.entities[i]);
+					Note& note = registry.notes.get(motions_registry.entities[i]);
+					// Only remove note if it is not a held note, or is currently being held
+					if (!note.pressed) {
+						audio->playDroppedNote();
+						standing = missed;
+						missed_counter++;
+						score += standing;
+						registry.remove_all_components_of(motions_registry.entities[i]);
+					}
 				}
 			}
 		} 
@@ -268,13 +272,17 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		}
 
 		for (int i = 0; i < NUM_LANES; i++) {
-			if (lane_hold[i] > 0.f) {
-				// Player successfully held for full duration
-				lane_hold[i] -= adjusted_elapsed_time;
-				if (lane_hold[i] < 0.f) {
-					audio->playHitPerfect();
+			if (registry.notes.has(lane_hold[i])) {
+				Note& note = registry.notes.get(lane_hold[i]);
+				if (note.duration > 0.f) {
+					// Player successfully held for full duration
+					note.duration -= adjusted_elapsed_time;
+					if (note.duration < 0.f) {
+						audio->playHitPerfect();
+					}
 				}
 			}
+
 		}
 	}
 	return true;
@@ -556,25 +564,22 @@ void Battle::handle_collisions() {
 		}
 
 		// Retrieve information about duration before removing notehead from registry
-		float hold_duration = -1.0f;
-		vec2 position = vec2(0.f);
 		if (registry.notes.has(lowest_note)) {
 			Note& note = registry.notes.get(lowest_note);
-			hold_duration = note.duration;
 			Motion& motion = registry.motions.get(lowest_note);
-			position = motion.position;
+
+			// Now manage held notes (which does not affect regular note behaviour above)
+			if (note.duration > 0.f) {
+				lane_hold[lane_index] = lowest_note;
+				note.pressed = true;
+				// Remove the note head visual
+				registry.renderRequests.remove(lowest_note);
+			}
+			else {
+				registry.remove_all_components_of(lowest_note);
+			}
 		}
-
-		// Now manage held notes (which does not affect regular note behaviour above)
-		if (hold_duration > 0.f) {
-			// Spawn a new entity with a duration
-			createNoteDuration(renderer, position, hold_duration);
-			lane_hold[lane_index] = hold_duration;
-		}
-
-		registry.remove_all_components_of(lowest_note);
-
-
+		
 		got_hit = 1;
 	}	
 
@@ -719,36 +724,54 @@ void Battle::handleRhythmInput(int action, int key) {
 			d_key_pressed = false;
 			d_key_held = false;
 			std::cout << "D key released\n";
-			if (lane_hold[0] > HOLD_DURATION_LEEWAY) {
-				audio->playMissedNote();
-				lane_hold[0] = NO_DURATION; // only miss once
+			if (registry.notes.has(lane_hold[0])) {
+				Note& note = registry.notes.get(lane_hold[0]);
+				if (note.duration > HOLD_DURATION_LEEWAY) {
+					audio->playMissedNote();
+					note.duration = NO_DURATION; // only miss once
+					registry.remove_all_components_of(lane_hold[0]);
+				}
 			}
 			break;
 		case GLFW_KEY_F:
 			f_key_pressed = false;
 			f_key_held = false;
 			std::cout << "F key released\n";
-			if (lane_hold[1] > HOLD_DURATION_LEEWAY) {
-				audio->playMissedNote();
-				lane_hold[1] = NO_DURATION;
+			if (registry.notes.has(lane_hold[1])) {
+				Note& note = registry.notes.get(lane_hold[1]);
+				if (note.duration > HOLD_DURATION_LEEWAY) {
+					audio->playMissedNote();
+					note.duration = NO_DURATION; // only miss once
+					registry.remove_all_components_of(lane_hold[1]);
+				}
 			}
 			break;
 		case GLFW_KEY_J:
 			j_key_pressed = false;
 			j_key_held = false;
 			std::cout << "J key released\n";
-			if (lane_hold[2] > HOLD_DURATION_LEEWAY) {
-				audio->playMissedNote();
-				lane_hold[2] = NO_DURATION;
+			if (registry.notes.has(lane_hold[2])) {
+				Note& note = registry.notes.get(lane_hold[2]);
+				if (note.duration > HOLD_DURATION_LEEWAY) {
+					audio->playMissedNote();
+					note.duration = NO_DURATION; // only miss once
+
+					registry.remove_all_components_of(lane_hold[2]);
+				}
 			}
 			break;
 		case GLFW_KEY_K:
 			k_key_pressed = false;
 			k_key_held = false;
 			std::cout << "K key released\n";
-			if (lane_hold[3] > HOLD_DURATION_LEEWAY) {
-				audio->playMissedNote();
-				lane_hold[3] = NO_DURATION;
+			if (registry.notes.has(lane_hold[3])) {
+				Note& note = registry.notes.get(lane_hold[3]);
+				if (note.duration > HOLD_DURATION_LEEWAY) {
+					audio->playMissedNote();
+					note.duration = NO_DURATION; // only miss once
+
+					registry.remove_all_components_of(lane_hold[3]);
+				}
 			}
 			break;
 		default:

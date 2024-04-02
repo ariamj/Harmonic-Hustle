@@ -157,7 +157,7 @@ class Battle {
         // held note trackers
         float NO_DURATION = -1.0f;
         float lane_locked[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
-        float lane_hold[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
+        Entity lane_hold[4];
 
         // random generation
         // https://stackoverflow.com/a/69815862

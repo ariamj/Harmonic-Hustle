@@ -19,40 +19,14 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture)
 void ParticleGenerator::Update(float dt, unsigned int newParticles, glm::vec2 offset)
 {
     updateEntities();
+    updateParticles(dt, newParticles, offset);
+}
 
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
-        Entity entity = blocks[i];
-
-        if (entity == initialized_entity_id) {
-            continue;
-        }
-
-        if (!registry.particleEffects.has(entity)) {
-            // Clear the entity's previously assigned block of data
-            // Note that this also sets scale, color to 0...
-                // If particles not appearing, check that scale is set > 0, and color.a > 0
-            memset(&particles[i * amount], 0.f, sizeof(Particle) * amount - 1);
-            continue;
-        }
-
-        ParticleEffect& particle_effect = registry.particleEffects.get(entity);
-
-        // add new particles 
-        for (unsigned int i = 0; i < newParticles; ++i)
-        {
-            int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
-                particle_effect.min_index, particle_effect.max_index);
-            particle_effect.last_used_particle = unusedParticle;
-            respawnParticle(particles[unusedParticle], entity, TRAIL_NOTE_OFFSET);
-        }
-
-        // update all of a single entity's particles
-        for (int i = particle_effect.min_index; i < particle_effect.max_index; i++)
-        {
-            updateParticleBehaviours(particles[i], dt);
-        }
-    }
-    return;
+void ParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
+    std::cout << "WARNING: Base class ParticleGenerator::updateParticles has been called" << "\n";
+    // New particles should be spawned if appropriate
+    // Behaviour of particles should be update
+    return; // should be overridden in subclasses
 }
 
 void ParticleGenerator::updateEntities() {
@@ -87,11 +61,6 @@ void ParticleGenerator::updateEntities() {
             particle_effect.last_used_particle = particle_effect.min_index;
         }
     }
-}
-
-void ParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
-    std::cout << "WARNING: Base class ParticleGenerator::updateParticleBehaviours has been called" << "\n";
-    return; // should be overridden in subclasses
 }
 
 // render all particles
@@ -223,12 +192,6 @@ unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int be
     // all particles are taken, override the first one (note that if it repeatedly hits this case, more particles should be reserved)
     lastUsedParticle = begin;
     return begin;
-}
-
-void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::vec2 offset)
-{
-    std::cout << "WARNING: Base class ParticleGenerator::respawnParticle has been called" << "\n";
-    return; // should be overriden in subclasses 
 }
 
 int ParticleGenerator::findUnusedBlock()
