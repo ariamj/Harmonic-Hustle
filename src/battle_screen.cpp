@@ -197,7 +197,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			Note& note = registry.notes.get(entity);
 			Motion& motion = registry.motions.get(entity);
 
-			float progress = (conductor.song_position - note.spawn_time - gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
+			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
 			motion.position.y = lerp(0.0, float(gameInfo.height), progress);
 			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, progress);	
 		}
@@ -686,11 +686,11 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 				handleDebug(action);
 				break;
 			case GLFW_KEY_MINUS:
-				gameInfo.frames_adjustment += 0.25f;
+				gameInfo.frames_adjustment -= 0.25f;
 				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
 				break;
 			case GLFW_KEY_EQUAL:
-				gameInfo.frames_adjustment -= 0.25f;
+				gameInfo.frames_adjustment += 0.25f;
 				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
 			default:
 				std::cout << "unhandled key" << std::endl;
