@@ -54,7 +54,7 @@
             ],
             "mode_timings": 
             [
-                {"bnf": 0.0}
+                {"back_and_forth": 0.0}
             ]
         },
         {
@@ -108,7 +108,7 @@
             ],
             "mode_timings": 
             [
-                {"bnf": 0.0}
+                {"back_and_forth": 0.0}
             ]
         }
     ]

@@ -135,7 +135,7 @@ class Battle {
         // TODO: Allow calibration by player.
         float adjust_offset = 0.00f;
         float adjust_increment = 0.005f; // very small changes are impactful
-        float timing_offset = 1 - (1.f / (1.2f + adjust_offset)); // coupled with judgment_y_pos in createJudgmentLine
+        float timing_offset = 1 - (1.f / 1.2f); // coupled with judgment_y_pos in createJudgmentLine
         float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
         // battle-specific variables for readability, initialized in .start

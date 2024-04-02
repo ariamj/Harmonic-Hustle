@@ -226,7 +226,7 @@
             ],
             "mode_timings": 
             [
-                { "bnf": 0.0 },
+                { "back_and_forth": 0.0 },
                 { "unison": 32.0 },
                 { "beat_rush": 48.0 },
                 { "unison": 80.0 },
@@ -457,7 +457,7 @@
             ],
             "mode_timings": 
             [
-                { "bnf": 0.0 },
+                { "back_and_forth": 0.0 },
                 { "unison": 32.0 },
                 { "beat_rush": 48.0 },
                 { "unison": 80.0 },
