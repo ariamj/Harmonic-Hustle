@@ -154,7 +154,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// Create a small vector of available columns to spawn notes in
 			std::vector<int> lane_indices;
 			for (int i = 0; i < num_columns; i++) {
-				lane_indices.push_back(0);
+				lane_indices.push_back(i);
 			}
 
 			// Randomly shuffle lane indices

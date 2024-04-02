@@ -221,8 +221,8 @@ unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int be
         }
     }
     // all particles are taken, override the first one (note that if it repeatedly hits this case, more particles should be reserved)
-    lastUsedParticle = 0;
-    return 0;
+    lastUsedParticle = begin;
+    return begin;
 }
 
 void ParticleGenerator::respawnParticle(Particle &particle, Entity entity, glm::vec2 offset)
