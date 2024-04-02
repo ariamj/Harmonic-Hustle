@@ -45,6 +45,7 @@ const float PORTRAIT_WIDTH = 3 * 165.f;
 const float PORTRAIT_HEIGHT = 3 * 165.f;
 const float CS_WIDTH = 850.f;
 const float CS_HEIGHT = 1350.f;
+const int MAX_TEXT_LENGTH = 255;
 const float NOTE_WIDTH = 0.6f * 165.f;
 const float NOTE_HEIGHT = 0.6f * 165.f;
 const float NOTE_MAX_SCALE_FACTOR = 2.5f;

@@ -8,8 +8,15 @@
 #include "tiny_ecs_registry.hpp"
 #include <audio_system.hpp>
 #include "chrono"
+#include <algorithm>
 
 using Clock = std::chrono::high_resolution_clock;
+
+
+int count_late = 0;
+int count_early = 0;
+float total_late_distance = 0;
+float total_early_distance = 0;
 
 // DEBUG MEMORY LEAKS (WINDOWS ONLY)
 // https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
@@ -151,7 +158,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 
 			// Randomly shuffle lane indices
-			std::random_shuffle(lane_indices.begin(), lane_indices.end());
+			std::shuffle(lane_indices.begin(), lane_indices.end(), random_generator);
 
 			// Spawn in order of shuffled lane indices
 			int k = 0;
@@ -255,7 +262,9 @@ void Battle::handle_battle_end() {
 	// replay current lvl battle music for the battle over popup
 	audio->playBattle(enemy_index);
 
-	std::cout << "Battle over popup: press SPACE to continue" << std::endl;
+	// Calculate a recommended calibration for timing for player
+	float timing_adjustment = calculate_adjustment();
+
 	// Only process events once
 	if (battle_is_over) {
 		return;
@@ -270,6 +279,12 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
+	// Reset judgment line colours
+	for (auto entity : registry.judgmentLine.entities) {
+		vec3& colour = registry.colours.get(entity);
+		colour = vec3(1.f);
+	}
+
 	// Remove particle generators
 	renderer->particle_generators.clear();
 
@@ -312,7 +327,7 @@ void Battle::start() {
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm * 1000.f;
-	conductor.offset = battleInfo[enemy_index].metadata_offset;
+	conductor.offset = battleInfo[enemy_index].metadata_offset + gameInfo.timing_adjustment;
 	conductor.song_position = 0.f;
 	last_beat = 0.f; // moving reference point
 
@@ -333,6 +348,12 @@ void Battle::start() {
 	// TODO (?): Account for when note spawns are negative (before music starts)
 	next_note_index = 0;
 	mode_index = 0;
+
+	// Fine-tuning timing
+	count_late = 0;
+	count_early = 0;
+	total_late_distance = 0;
+	total_early_distance = 0;
 
 	Entity e = registry.battleEnemy.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);
@@ -573,6 +594,18 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		colour = ALRIGHT_COLOUR;
 		combo++;
 	}
+
+	// Tracking information to recommend timing adjustments
+	float displacement = note_y_pos - lane_y_pos;
+	if (displacement >= 0.f) {
+		count_late += 1;
+		total_late_distance += displacement;
+	}
+	else {
+		count_early += 1;
+		total_early_distance += displacement;
+	}
+
 	// Update score
 	score += standing;
 
@@ -630,7 +663,7 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 				std::cout << "unhandled key" << std::endl;
 				break;
 		}
-	} else {
+	} else if (!in_countdown) {
 		 switch(key) {
 			case GLFW_KEY_D:
 				d_key_pressed = true;
@@ -661,3 +694,40 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 void Battle::handle_mouse_move(vec2 pos) {
     
 };
+
+// Calculate recommended timing adjustment (in ms) for player
+	// Only works for small adjustments (note is within collision range)
+	// Based on the center of judgment lines
+float Battle::calculate_adjustment() {
+	std::cout << "EARLY: " << count_early << ", LATE:" << count_late << std::endl;
+
+	int total_count = count_early + count_late;
+	float avg_early_distance;
+	float avg_late_distance;
+
+	if (count_early > 0) {
+		avg_early_distance = total_early_distance / (float)count_early;
+	}
+	else {
+		avg_early_distance = 0.f;
+	}
+
+
+	if (count_late > 0) {
+		avg_late_distance = total_late_distance / (float)count_late;
+	}
+	else {
+		avg_late_distance = 0.f;
+	}
+
+	float weighted_avg_early_distance = avg_early_distance * count_early / (total_count);
+	float weighted_avg_late_distance = avg_late_distance * count_late / (total_count);
+
+	float avg_error_distance = weighted_avg_early_distance + weighted_avg_late_distance;
+	float adjustment = avg_error_distance / gameInfo.height * note_travel_time;
+
+	std::cout << "Recommended ms adjustment:" << adjustment << " ms\n";
+
+	return adjustment;
+}
+

@@ -248,11 +248,18 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	}
 	y = gameInfo.height - y - ((textHeight / 2.f) * scale);
 
+	// Build an array of character-specific data
+	CharacterRequest character_requests[MAX_TEXT_LENGTH];
+
 	// iterate through all characters
 	std::string::const_iterator c;
+	int i = 0;
 	for (c = text.begin(); c != text.end(); c++)
 	{
+		CharacterRequest character_request;
+
 		Character ch = m_ftCharacters[*c];
+		character_request.TextureID = ch.TextureID;
 
 		float xpos = x + ch.Bearing.x * scale;
 		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -261,32 +268,63 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 		float h = ch.Size.y * scale;
 
 		// update VBO for each character
-		float vertices[6][4] = {
-			{ xpos,     ypos + h,   0.0f, 0.0f },
-			{ xpos,     ypos,       0.0f, 1.0f },
-			{ xpos + w, ypos,       1.0f, 1.0f },
+		// float vertices[6][4] = {
+		// 	{ xpos,     ypos + h,   0.0f, 0.0f },
+		// 	{ xpos,     ypos,       0.0f, 1.0f },
+		// 	{ xpos + w, ypos,       1.0f, 1.0f },
 
-			{ xpos,     ypos + h,   0.0f, 0.0f },
-			{ xpos + w, ypos,       1.0f, 1.0f },
-			{ xpos + w, ypos + h,   1.0f, 0.0f }
-		};
+		// 	{ xpos,     ypos + h,   0.0f, 0.0f },
+		// 	{ xpos + w, ypos,       1.0f, 1.0f },
+		// 	{ xpos + w, ypos + h,   1.0f, 0.0f }
+		// };
 
-		// render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+		// Assignment operator didn't work... there must be a better way to do this
+		character_request.vertices[0][0] = xpos;
+		character_request.vertices[0][1] = ypos + h;
+		character_request.vertices[0][2] = 0.0f;
+		character_request.vertices[0][3] = 0.0f;
+		character_request.vertices[1][0] = xpos;
+		character_request.vertices[1][1] = ypos;
+		character_request.vertices[1][2] = 0.0f;
+		character_request.vertices[1][3] = 1.0f;
+		character_request.vertices[2][0] = xpos + w;
+		character_request.vertices[2][1] = ypos;
+		character_request.vertices[2][2] = 1.0f;
+		character_request.vertices[2][3] = 1.0f;
+		character_request.vertices[3][0] = xpos;
+		character_request.vertices[3][1] = ypos + h;
+		character_request.vertices[3][2] = 0.0f;
+		character_request.vertices[3][3] = 0.0f;
+		character_request.vertices[4][0] = xpos + w;
+		character_request.vertices[4][1] = ypos;
+		character_request.vertices[4][2] = 1.0f;
+		character_request.vertices[4][3] = 1.0f;
+		character_request.vertices[5][0] = xpos + w;
+		character_request.vertices[5][1] = ypos + h;
+		character_request.vertices[5][2] = 1.0f;
+		character_request.vertices[5][3] = 0.0f;
 
-		// update content of VBO memory
-		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		// render quad
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+		character_requests[i] = character_request;
+		
+		i += 1;
+		x += (ch.Advance >> 6) * scale;
 	}
 
+	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+	glBufferData(GL_ARRAY_BUFFER, text.size() * sizeof(CharacterRequest), character_requests, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+
+	for (int i = 0; i < text.size(); i++) {
+		// Manage a pointer instead of calling glSubBufferData repeatedly
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)(i * sizeof(CharacterRequest)));
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, character_requests[i].TextureID);
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	// Cleanup
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -395,8 +433,14 @@ void RenderSystem::draw()
 	auto t8 = Clock::now();
 	float text_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t8 - t7)).count() / 1000;
 
-	// std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
-	// 	<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
+	// Create a vector of all every character -> its vertices and glyph texture ID
+	// Buffer ALL the data, once per frame
+	// For each character, bind texture and draw it
+	std::vector<CharacterRequest> character_requests; 
+
+
+	std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
+		<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
 
 	// Truely render to the screen
 
