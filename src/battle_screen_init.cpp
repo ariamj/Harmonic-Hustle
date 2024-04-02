@@ -82,6 +82,7 @@ bool Battle::loadLevelFromFile(int index) {
                         NoteInfo noteInfo;
                         noteInfo.spawn_time = timings["spawn_time"].asFloat();
 						noteInfo.quantity = timings["quantity"].asInt();
+						noteInfo.duration = timings["duration"].asFloat();
 
                         // Add note info to this rhythm
                         note_infos.push_back(noteInfo);

@@ -13,6 +13,7 @@
 struct NoteInfo {
     float spawn_time;
     int quantity;
+    float duration;
 };
 
 struct BattleInfo {
