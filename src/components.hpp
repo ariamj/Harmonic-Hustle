@@ -78,6 +78,7 @@ struct Note
 	bool pressed = false;
 	float spawn_time;
 	float duration = -1.0f;
+	float curr_duration = -1.0f;
 };
 
 struct NoteDuration

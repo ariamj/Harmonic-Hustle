@@ -113,6 +113,7 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 	// For interpolation based on absolute song time
 	note.spawn_time = spawn_time;
 	note.duration = duration;
+	note.curr_duration = duration;
 
 	registry.colours.insert(entity, { 1.f, 1.f, 1.f });
 	registry.renderRequests.insert(
@@ -125,7 +126,6 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 	);
 
 	// TODO: Depending on duration, choose different particle type?
-
 	// Give trail particles to entity
 	if (duration > 0.f) {
 		ParticleEffect& particles = registry.particleEffects.emplace(entity);

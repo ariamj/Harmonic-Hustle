@@ -60,20 +60,25 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         p.position += p.velocity * dt;
         if (registry.notes.has(entity)) {
             Note& note = registry.notes.get(entity);
-            // Do not render particles below judgment line if note is pressed
-            if (note.pressed) {
-                if (p.position.y >= 1 / 1.2f * gameInfo.height) {
-                    p.color.a = 0.f;
+            // Manage particles for held-notes
+            if (note.duration > 0.f) {
+                if (note.pressed) {
+                    if (p.position.y >= 1 / 1.2f * gameInfo.height) {
+                        p.color.a = 0.f;
+                    }
+                    else {
+                        float random = ((rand() % 100) - 50) * 1.8f;
+                        p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
+                        p.position += p.velocity * dt;
+                        p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
+                    }
                 }
                 else {
-                    float random = ((rand() % 100) - 50) * 1.8f;
-                    p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
-                    p.position += p.velocity * dt;
                     p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
                 }
             }
             else {
-                p.color.a -= dt * 1000.f / (note.duration);
+                p.color.a -= dt * 2.5f;
             }
         }
         else {
@@ -99,17 +104,6 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
     particle.scale = DEFAULT_PARTICLE_SCALE;
-
-    if (registry.notes.has(entity)) {
-        Note& note = registry.notes.get(entity);
-        // Do not render particles below judgment line if note is pressed
-        if (note.pressed) {
-            particle.velocity = entity_motion.velocity * 20.f;
-        }
-        else {
-
-        }
-    }
 }
 
 PARTICLE_TYPE_ID TrailParticleGenerator::getType() {
