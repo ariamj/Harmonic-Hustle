@@ -112,6 +112,7 @@ class Battle {
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
 
+        static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
         static const int NUM_DIFFICULTY_MODES = 2;
@@ -147,6 +148,10 @@ class Battle {
         int next_note_index;
         int mode_index;
         float last_beat;
+
+        // held note trackers
+        float NO_DURATION = -1.0f;
+        float lane_held[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
 
         // random generation
         // https://stackoverflow.com/a/69815862

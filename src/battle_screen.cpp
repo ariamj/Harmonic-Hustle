@@ -125,10 +125,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	} else {
 		auto& motions_registry = registry.motions;
 
+		float adjusted_elapsed_time = elapsed_ms_since_last_update;
 		// Update song position 
 		float new_song_position = audio->getSongPosition() * 1000.f - conductor.offset;
 		// Check if song position has udpated (it doesn't update every frame)
 		if (new_song_position > conductor.song_position) {
+			adjusted_elapsed_time = new_song_position - conductor.song_position;
 			conductor.song_position = new_song_position;
 		}
 		// Guard against negative (due to metadata offset) to prevent elapsed time from taking over
@@ -136,6 +138,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			// Use elapsed-time when consecutive queries return same value
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
+
 
 		// TODO (?): Initiate some visual FX on every beat of song
 		// Track each beat of song 
@@ -146,30 +149,43 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// Spawning notes based on song position
 		if (next_note_index < num_notes) {
-			int num_columns = 4; // Hard-coded to represent four columns
-
 			// Peek ahead to spawn multiple notes
-			int multiple_note_index = min(next_note_index + num_columns - 1, num_notes);
+			int multiple_note_index = min(next_note_index + NUM_LANES - 1, num_notes);
 
 			// Create a small vector of available columns to spawn notes in
 			std::vector<int> lane_indices;
-			for (int i = 0; i < num_columns; i++) {
-				lane_indices.push_back(i);
+			for (int i = 0; i < NUM_LANES; i++) {
+				// Disallow spawning notes during held note durations
+				if (lane_held[i] < 0.f) {
+					lane_indices.push_back(i);
+				}
 			}
 
 			// Randomly shuffle lane indices
 			std::shuffle(lane_indices.begin(), lane_indices.end(), random_generator);
 
 			// Spawn in order of shuffled lane indices
-			int k = 0;
-			for (int i = next_note_index; i < multiple_note_index; i++) {
-				float note_spawn_time = battleInfo[enemy_index].notes[i].spawn_time;
-				if (conductor.song_position - gameInfo.frames_adjustment >= note_spawn_time) {
-					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note_spawn_time);
+				// With held notes, there may no longer be a lane available
+				// This should NOT happen if the beatmap is well-designed
+				// If notes spawn suddenly in the middle of screen, then there is an error in beatmap design
+			for (int k = 0; k < lane_indices.size(); k++) {
+				NoteInfo note = battleInfo[enemy_index].notes[next_note_index];
+				if (conductor.song_position >= note.spawn_time) {
+					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time);
 					next_note_index += 1;
+					// Set duration 
+					lane_held[lane_indices[k]] = note.duration;
 				}
-				k += 1;
+				if (next_note_index >= multiple_note_index) {
+					break;
+				}
 			}
+		}
+
+		// Decrease durations of held lanes
+		for (int i = 0; i < NUM_LANES; i++) {
+			// Prevent underflow
+			lane_held[i] = max(lane_held[i] - adjusted_elapsed_time, NO_DURATION);
 		}
 
 		// Remove entities that leave the screen below

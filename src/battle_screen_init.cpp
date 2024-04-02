@@ -68,6 +68,10 @@ bool Battle::loadLevelFromFile(int index) {
             int difficulty = convertDifficultyToInt(beatmap["difficulty"].asString());
             int battle_index = index + (difficulty * NUM_UNIQUE_BATTLES);
 
+			// Offset and BPM
+			battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
+			battleInfo[battle_index].bpm = root["bpm"].asFloat();
+
             std::map<std::string, std::vector<NoteInfo>> temp_rhythms;
 
             // Parse each rhythm into temporary data structure
@@ -78,7 +82,7 @@ bool Battle::loadLevelFromFile(int index) {
                     // Associate note timings with this rhythm
                     std::vector<NoteInfo> note_infos;
                     for (auto timings : rhythm_data["note_timings"]) {
-                        // Read each note's spawn time
+                        // Read each note's data within a defined rhythm
                         NoteInfo noteInfo;
                         noteInfo.spawn_time = timings["spawn_time"].asFloat();
 						noteInfo.quantity = timings["quantity"].asInt();
@@ -108,8 +112,11 @@ bool Battle::loadLevelFromFile(int index) {
 				std::vector<NoteInfo> notes_to_add;
 				// Compute spawn times, using start time as the reference point
 				for (NoteInfo rhythm_note : rhythm_note_infos) {
+					// Set each note's data based on defined rhythm
 					NoteInfo converted_note_info;
 					converted_note_info.spawn_time = start_time + rhythm_note.spawn_time;
+					converted_note_info.quantity = 1; // push back multiple copies instead
+					converted_note_info.duration = rhythm_note.duration * 60.f / battleInfo[battle_index].bpm * 1000.f;
 
 					// Add duplicate copies for multiple notes
 					for (int i = 0; i < rhythm_note.quantity; i++) {
@@ -136,9 +143,6 @@ bool Battle::loadLevelFromFile(int index) {
 			}
 
 			// Set game-persistent battle info using parsed data
-			// Offset and BPM
-			battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
-			battleInfo[battle_index].bpm = root["bpm"].asFloat();
 
 			// Must be done after loading bpm
 			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
