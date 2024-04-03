@@ -279,6 +279,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					note.curr_duration -= adjusted_elapsed_time;
 					if (note.curr_duration < 0.f) {
 						audio->playHitPerfect();
+						Motion& motion = registry.motions.get(lane_hold[i]);
+						createSparks(vec2(motion.position.x, 1/1.2 * gameInfo.height));
 						registry.remove_all_components_of(lane_hold[i]);
 					}
 				}
