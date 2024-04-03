@@ -278,6 +278,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					// Player successfully held for full duration
 					note.curr_duration -= adjusted_elapsed_time;
 					if (note.curr_duration < 0.f) {
+						audio->stopHoldNote(i);
 						audio->playHitPerfect();
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSparks(vec2(motion.position.x, 1/1.2 * gameInfo.height));
@@ -288,7 +289,6 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 								registry.judgmentLineTimers.emplace_with_duplicates(entity);
 							}
 						}
-
 						registry.remove_all_components_of(lane_hold[i]);
 
 					}
@@ -584,6 +584,7 @@ void Battle::handle_collisions() {
 			if (note.duration > 0.f) {
 				lane_hold[lane_index] = lowest_note;
 				note.pressed = true;
+				std::cout << audio->playHoldNote(lane_index) << "\n";
 				// Remove the note head visual
 				registry.renderRequests.remove(lowest_note);
 			}
@@ -739,6 +740,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			if (registry.notes.has(lane_hold[0])) {
 				Note& note = registry.notes.get(lane_hold[0]);
 				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
+					audio->stopHoldNote(0);
 					audio->playMissedNote();
 					note.curr_duration = NO_DURATION; // only miss once
 					registry.remove_all_components_of(lane_hold[0]);
@@ -752,6 +754,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			if (registry.notes.has(lane_hold[1])) {
 				Note& note = registry.notes.get(lane_hold[1]);
 				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
+					audio->stopHoldNote(1);
 					audio->playMissedNote();
 					note.curr_duration = NO_DURATION; // only miss once
 					registry.remove_all_components_of(lane_hold[1]);
@@ -765,9 +768,9 @@ void Battle::handleRhythmInput(int action, int key) {
 			if (registry.notes.has(lane_hold[2])) {
 				Note& note = registry.notes.get(lane_hold[2]);
 				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
+					audio->stopHoldNote(2);
 					audio->playMissedNote();
 					note.curr_duration = NO_DURATION; // only miss once
-
 					registry.remove_all_components_of(lane_hold[2]);
 				}
 			}
@@ -779,6 +782,7 @@ void Battle::handleRhythmInput(int action, int key) {
 			if (registry.notes.has(lane_hold[3])) {
 				Note& note = registry.notes.get(lane_hold[3]);
 				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
+					audio->stopHoldNote(3);
 					audio->playMissedNote();
 					note.curr_duration = NO_DURATION; // only miss once
 					registry.remove_all_components_of(lane_hold[3]);

@@ -38,6 +38,8 @@ bool AudioSystem::init() {
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}
+	// Increase number of channels (default is only 8)
+	Mix_AllocateChannels(16);
 
 	LoadFiles();
 	// Play overworld by default on game initialization.
@@ -125,6 +127,14 @@ bool AudioSystem::LoadFiles() {
 			audio_path(miss).c_str());
 		return false;
 	}
+	
+	std::string hold = "hold.wav";
+	hold_SFX = Mix_LoadWAV(audio_path(hold).c_str());
+	if (hold_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(hold).c_str());
+		return false;
+	}
 
 	return true; // Successfully loaded all files
 }
@@ -141,6 +151,14 @@ int AudioSystem::playBattle(int enemy_id) {
 	// Mix_PlayMusic(enemy_music[enemy_id], -1);
 	current_music = enemy_music[enemy_id];
 	return Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
+}
+
+int AudioSystem::playHoldNote(int channel_offset) {
+	return Mix_PlayChannel(8 + channel_offset, hold_SFX, 0);
+}
+
+int AudioSystem::stopHoldNote(int channel_offset) {
+	return Mix_FadeOutChannel(8 + channel_offset, HOLD_SFX_FADE_MS);
 }
 
 int AudioSystem::playDroppedNote() {

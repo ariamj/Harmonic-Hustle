@@ -19,6 +19,8 @@ public:
 	int playOverworld();
 	int playBattle(int enemy_id);
 
+	int playHoldNote(int channel_offset);
+	int stopHoldNote(int channel_offset);
 	int playDroppedNote();
 	int playMissedNote();
 
@@ -32,6 +34,9 @@ public:
 	void resumeMusic();
 
 private:
+
+	// How long it should take for held-note SFX to fade out
+	const float HOLD_SFX_FADE_MS = 200.f;
 	bool LoadFiles();
 
 	Mix_Music* current_music;
@@ -42,5 +47,6 @@ private:
 	Mix_Chunk* hit_good_SFX;
 	Mix_Chunk* hit_perfect_SFX;
 	Mix_Chunk* miss_SFX;
+	Mix_Chunk* hold_SFX;
 
 };
