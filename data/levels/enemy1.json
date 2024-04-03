@@ -1,5 +1,5 @@
 {
-    "metadata_offset": 49.13,
+    "metadata_offset": 55.0,
     "bpm": 184.0,
     "beatmaps":
     [
@@ -118,7 +118,7 @@
             ],
             "mode_timings": 
             [
-                { "bnf": 0.0 },
+                { "back_and_forth": 0.0 },
                 { "beat_rush": 64.0 },
                 { "back_and_forth": 112.0 }
             ]
@@ -219,7 +219,7 @@
             ],
             "mode_timings": 
             [
-                { "bnf": 0.0 },
+                { "back_and_forth": 0.0 },
                 { "beat_rush": 64.0 },
                 { "back_and_forth": 112.0 }
             ]

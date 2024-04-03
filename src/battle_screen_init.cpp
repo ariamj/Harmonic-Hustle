@@ -188,7 +188,7 @@ void Battle::convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>
 }
 
 BattleMode Battle::convertStringToBattleMode(std::string mode_string) {
-	if (mode_string == "bnf") {
+	if (mode_string == "back_and_forth") {
 		return back_and_forth;
 	}
 	else if (mode_string == "beat_rush") {
@@ -198,7 +198,7 @@ BattleMode Battle::convertStringToBattleMode(std::string mode_string) {
 		return unison;
 	}
 	else {
-		printf("Invalid mode in JSON; returning back_and_forth as default");
+		printf("Invalid mode in JSON; returning back_and_forth as default\n");
 		return back_and_forth;
 	}
 }

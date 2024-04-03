@@ -164,7 +164,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			int k = 0;
 			for (int i = next_note_index; i < multiple_note_index; i++) {
 				float note_spawn_time = battleInfo[enemy_index].notes[i].spawn_time;
-				if (conductor.song_position >= note_spawn_time) {
+				if (conductor.song_position - gameInfo.frames_adjustment >= note_spawn_time) {
 					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note_spawn_time);
 					next_note_index += 1;
 				}
@@ -197,8 +197,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			Note& note = registry.notes.get(entity);
 			Motion& motion = registry.motions.get(entity);
 
-			motion.position.y = lerp(0.0, float(gameInfo.height), (conductor.song_position - note.spawn_time) / note_travel_time);
-			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, (conductor.song_position - note.spawn_time) / note_travel_time);	
+			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
+			motion.position.y = lerp(0.0, float(gameInfo.height), progress);
+			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, progress);	
 		}
 
 		// Update battle mode based on conductor time
@@ -263,7 +264,7 @@ void Battle::handle_battle_end() {
 	audio->playBattle(enemy_index);
 
 	// Calculate a recommended calibration for timing for player
-	float timing_adjustment = calculate_adjustment();
+	// float adjustment = calculate_adjustment();
 
 	// Only process events once
 	if (battle_is_over) {
@@ -327,7 +328,7 @@ void Battle::start() {
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
 	conductor.crotchet = 60.f / battleInfo[enemy_index].bpm * 1000.f;
-	conductor.offset = battleInfo[enemy_index].metadata_offset + gameInfo.timing_adjustment;
+	conductor.offset = battleInfo[enemy_index].metadata_offset;
 	conductor.song_position = 0.f;
 	last_beat = 0.f; // moving reference point
 
@@ -623,7 +624,7 @@ void Battle::handleRhythmInput(int action, int key) {
 	// auto& collisionsRegistry = registry.collisions;
 	// auto& collisionsTimerRegistry = registry.collisionTimers;
 	if (action == GLFW_PRESS) {
-        std::cout << "rhythm input: " << key << std::endl;
+        // std::cout << "rhythm input: " << key << std::endl;
 		if (key == GLFW_KEY_D || key == GLFW_KEY_F || key == GLFW_KEY_J || key == GLFW_KEY_K) {
 			key_pressed = true;
 			// Change judgment line colour on input
@@ -684,6 +685,13 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 			case GLFW_KEY_X:
 				handleDebug(action);
 				break;
+			case GLFW_KEY_MINUS:
+				gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
+				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
+				break;
+			case GLFW_KEY_EQUAL:
+				gameInfo.frames_adjustment = min(gameInfo.frames_adjustment + 0.25f, MAX_FRAMES_ADJUSTMENT);
+				std::cout << "New timing adjustment: " << gameInfo.frames_adjustment << " frames\n"; 
 			default:
 				std::cout << "unhandled key" << std::endl;
 				break;
@@ -720,13 +728,17 @@ float Battle::calculate_adjustment() {
 		avg_late_distance = 0.f;
 	}
 
+	if (count_late + count_early == 0) {
+		return 0.f;
+	}
+
 	float weighted_avg_early_distance = avg_early_distance * count_early / (total_count);
 	float weighted_avg_late_distance = avg_late_distance * count_late / (total_count);
 
 	float avg_error_distance = weighted_avg_early_distance + weighted_avg_late_distance;
 	float adjustment = avg_error_distance / gameInfo.height * note_travel_time;
 
-	std::cout << "Recommended ms adjustment:" << adjustment << " ms\n";
+	std::cout << "Recommended adjustment: " << adjustment << " ms\n";
 
 	return adjustment;
 }
