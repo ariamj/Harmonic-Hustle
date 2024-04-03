@@ -20,3 +20,4 @@ data/.DS_Store
 ext/project_path.hpp
 
 data/saves/*
+!data/saves/.gitkeep
