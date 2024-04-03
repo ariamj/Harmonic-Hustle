@@ -281,7 +281,16 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						audio->playHitPerfect();
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSparks(vec2(motion.position.x, 1/1.2 * gameInfo.height));
+						for (auto entity : registry.judgmentLine.entities) {
+							if (motion.position.x == registry.motions.get(entity).position.x) {
+								vec3& colour = registry.colours.get(entity);
+								colour = PERFECT_COLOUR;
+								registry.judgmentLineTimers.emplace_with_duplicates(entity);
+							}
+						}
+
 						registry.remove_all_components_of(lane_hold[i]);
+
 					}
 				}
 			}
