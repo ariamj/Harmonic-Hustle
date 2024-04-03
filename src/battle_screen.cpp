@@ -93,6 +93,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Get sizing of battle over overlay
 		Motion overlay_motion = registry.motions.get(gameOverPopUpOverlay);
 		float score_x_spacing = overlay_motion.scale.x/8.f;
+
 		if (battleWon()) {
 			createText("Congratulations!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 			createText("Enemy has been defeated", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
@@ -289,6 +290,11 @@ void Battle::handle_battle_end() {
 	// Remove particle generators
 	renderer->particle_generators.clear();
 
+	Entity enemy = registry.battleEnemy.entities[0];
+	RenderRequest& render_enemny = registry.renderRequests.get(enemy);
+	Entity player = registry.battlePlayer.entities[0];
+	RenderRequest& render_player = registry.renderRequests.get(player);
+
 	// battle won
 	if (battleWon()) {
 		// remove all lower lvl enemies
@@ -302,12 +308,51 @@ void Battle::handle_battle_end() {
 			}
 		}
 
+		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_WIN;
+
+		switch (gameInfo.curr_level) {
+		case 1:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_LOSE;
+			break;
+		case 2:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_DRUM_LOSE;
+			break;
+		case 3:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_MIC_LOSE;
+			break;
+		case 4:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS_LOSE;
+			break;
+		default:
+			std::cout << "game level too high" << "\n";
+		}
+
 		// increment player lvl
 		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
 		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
 		
 	// battle lost
 	} else {
+
+		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_LOSE;
+
+		switch (gameInfo.curr_level) {
+		case 1:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_WIN;
+			break;
+		case 2:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_DRUM_WIN;
+			break;
+		case 3:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_MIC_WIN;
+			break;
+		case 4:
+			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEBOSS_WIN;
+			break;
+		default:
+			std::cout << "game level too high" << "\n";
+		}
+
 		// remove colllided with enemy (give player another chance)
 		registry.enemies.remove(gameInfo.curr_enemy);
 		registry.renderRequests.remove(gameInfo.curr_enemy);
