@@ -50,7 +50,7 @@ class RenderSystem {
 		textures_path("Enemy-Drum.png"),
 		textures_path("Enemy-Mic.png"),
 		textures_path("Player-Portrait-Neutral.png"),
-		textures_path("Enemy-Portrait-Neutral.png"),
+		textures_path("Enemy-Guitar-Portrait.png"),
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
@@ -62,7 +62,17 @@ class RenderSystem {
 		textures_path("CS-Text-Box.png"),
 		textures_path("Spark-Particle.png"),
 		textures_path("Enemy-Drum-Portrait.png"),
-		textures_path("Enemy-Mic-Portrait.png")
+		textures_path("Enemy-Mic-Portrait.png"),
+		textures_path("Enemy-Drum-Portrait-Win.png"),
+		textures_path("Enemy-Mic-Portrait-Win.png"),
+		textures_path("Enemy-Guitar-Portrait-Win.png"),
+		textures_path("Boss-Portrait-Win.png"),
+		textures_path("Player-Portrait-Win.png"),
+		textures_path("Enemy-Drum-Portrait-Lose.png"),
+		textures_path("Enemy-Mic-Portrait-Lose.png"),
+		textures_path("Enemy-Guitar-Portrait-Lose.png"),
+		textures_path("Boss-Portrait-Lose.png"),
+		textures_path("Player-Portrait-Lose.png")
 	};
 
 	std::array<GLuint, effect_count> effects;

@@ -255,6 +255,7 @@ void WorldSystem::restart_game() {
     battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement - 20.f, gameInfo.height - xDisplacement - 20.f });
 
 	registry.battleEnemy.emplace(battle_enemy_sprite);
+	registry.battlePlayer.emplace(battle_player_sprite);
 
 	// hard coded values for now
 	float judgement_line_y_pos = gameInfo.height / 1.2;
