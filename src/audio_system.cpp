@@ -34,7 +34,7 @@ bool AudioSystem::init() {
 		fprintf(stderr, "Failed to initialize SDL Audio");
 		return false;
 	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) == -1) {
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}
@@ -64,7 +64,7 @@ bool AudioSystem::LoadFiles() {
 	enemy_music.push_back(enemy0_music);
 	
 
-	std::string enemy1_file = "enemy1.1.wav";
+	std::string enemy1_file = "enemy1.wav";
 	Mix_Music* enemy1_music = Mix_LoadMUS(audio_path(enemy1_file).c_str());
 	if (enemy1_music == nullptr) { // add "%s\n" for each sound added
 		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",

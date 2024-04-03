@@ -1,0 +1,228 @@
+{
+    "metadata_offset": 55.0,
+    "bpm": 184.0,
+    "beatmaps":
+    [
+        {
+            "difficulty": "normal",
+            "rhythms": 
+            [
+                {
+                    "A": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.5, "input": "tap", "quantity": 1},
+                            {"spawn_time": 6.5, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "B": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 6.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "C": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "D": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 6.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 14.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 15.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "E": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 6.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 8.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 10.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 11.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                }
+            ],
+            "rhythm_timings": [
+                { "A": 8.0 },
+                { "A": 24.0 },
+                { "A": 40.0 },
+                { "A": 56.0 },
+                { "B": 64.0 },
+                { "B": 72.0 },
+                { "B": 80.0 },
+                { "B": 88.0 },
+                { "C": 96.0 },
+                { "D": 116.0 },
+                { "E": 148.0 }
+            ],
+            "mode_timings": 
+            [
+                { "back_and_forth": 0.0 },
+                { "beat_rush": 64.0 },
+                { "back_and_forth": 112.0 }
+            ]
+        },
+        {
+            "difficulty": "hard",
+            "rhythms": 
+            [
+                {
+                    "A": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.5, "input": "tap", "quantity": 1},
+                            {"spawn_time": 6.5, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "B": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 6.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "C": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "D": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 6.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 7.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 14.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 15.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                }
+            ],
+            "rhythm_timings": [
+                { "A": 8.0 },
+                { "A": 24.0 },
+                { "A": 40.0 },
+                { "A": 56.0 },
+                { "B": 64.0 },
+                { "B": 72.0 },
+                { "B": 80.0 },
+                { "B": 88.0 },
+                { "C": 96.0 },
+                { "D": 116.0 },
+                { "D": 148.0 }
+            ],
+            "mode_timings": 
+            [
+                { "back_and_forth": 0.0 },
+                { "beat_rush": 64.0 },
+                { "back_and_forth": 112.0 }
+            ]
+        }
+    ]
+}

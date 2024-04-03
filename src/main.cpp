@@ -49,7 +49,7 @@ int main() {
     auto t = Clock::now();
     while (!world.is_over()) {
         // Processes system messages, if this wasn't present the window would become unresponsive
-		glfwPollEvents();
+         glfwPollEvents();
 
         // Calculating elapsed times in milliseconds from the previous iteration
 		auto now = Clock::now();
@@ -60,6 +60,7 @@ int main() {
 
 
         // Real version
+
         world.step(elapsed_ms);
         ai_system.step(elapsed_ms);
         physics.step(elapsed_ms, &renderSystem);
@@ -92,7 +93,11 @@ int main() {
         //auto post_render = Clock::now();
         //float render_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(post_render - pre_render)).count() / 1000;
 
-        //std::cout << "World: " << world_ms << ", Physics:" << physics_ms << ", Render:" << render_ms << "\n";
+
+        //float total_ms = render_ms + collisions_ms + physics_ms + world_ms + ai_ms;
+        //std::cout << "World: " << world_ms << ", AI:" << ai_ms << ", Physics:" << physics_ms << ", Render:" << render_ms
+        //    << ", Collisions: " << collisions_ms << "Total:" <<  total_ms << "\n";
+
 
         frames += 1;
         ms_count += elapsed_ms;

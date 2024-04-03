@@ -1,0 +1,115 @@
+{
+    "metadata_offset": 54.125,
+    "bpm": 130.0,
+    "beatmaps":
+    [
+        {
+            "difficulty": "normal",
+            "rhythms": 
+            [
+                {
+                    "A": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.5, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "B": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.5, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                }
+            ],
+            "rhythm_timings": 
+            [
+                {"A": 4.0},
+                {"A": 12.0},
+                {"A": 20.0},
+                {"A": 28.0},
+                {"B": 40.0},
+                {"B": 56.0}
+            ],
+            "mode_timings": 
+            [
+                {"back_and_forth": 0.0}
+            ]
+        },
+        {
+            "difficulty": "hard",
+            "rhythms": 
+            [
+                {
+                    "A": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.5, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "B": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 1.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 2.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 3.0, "input": "tap", "quantity": 1}, 
+                            {"spawn_time": 4.0, "input": "tap", "quantity": 1},
+                            {"spawn_time": 5.5, "input": "tap", "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                }
+            ],
+            "rhythm_timings": 
+            [
+                {"A": 4.0},
+                {"A": 12.0},
+                {"A": 20.0},
+                {"A": 28.0},
+                {"B": 40.0},
+                {"B": 56.0}
+            ],
+            "mode_timings": 
+            [
+                {"back_and_forth": 0.0}
+            ]
+        }
+    ]
+}

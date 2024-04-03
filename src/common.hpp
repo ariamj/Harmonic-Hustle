@@ -31,6 +31,7 @@ inline std::string textures_path(const std::string& name) {return data_path() + 
 inline std::string audio_path(const std::string& name) {return data_path() + "/audio/" + std::string(name);};
 inline std::string mesh_path(const std::string& name) {return data_path() + "/meshes/" + std::string(name);};
 inline std::string saves_path(const std::string& name) { return data_path() + "/saves/" + std::string(name); };
+inline std::string levels_path(const std::string& name) { return data_path() + "/levels/" + std::string(name); };
 
 // const int window_width_px = 1680;
 // const int window_height_px = 1050;
@@ -44,6 +45,7 @@ const float PORTRAIT_WIDTH = 3 * 165.f;
 const float PORTRAIT_HEIGHT = 3 * 165.f;
 const float CS_WIDTH = 850.f;
 const float CS_HEIGHT = 1350.f;
+const int MAX_TEXT_LENGTH = 255;
 const float NOTE_WIDTH = 0.6f * 165.f;
 const float NOTE_HEIGHT = 0.6f * 165.f;
 const float NOTE_MAX_SCALE_FACTOR = 2.5f;
@@ -57,7 +59,7 @@ const float DEFAULT_ENEMY_VELOCITY = 50.f;
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
 const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
-const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
+const int MAX_PARTICLE_ENTITIES = 20; // coupled with notes for now
 
 // FPS global set by main.cpp
 extern int FPS;

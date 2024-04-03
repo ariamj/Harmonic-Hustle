@@ -12,6 +12,11 @@
 
 #include <map>
 
+struct CharacterRequest {
+	float vertices[6][4];
+	unsigned int TextureID;
+};
+
 // System responsible for setting up OpenGL and for rendering all the
 // visual entities in the game
 class RenderSystem {
