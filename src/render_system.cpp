@@ -234,6 +234,8 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 
 	glBindVertexArray(m_font_VAO);
 
+	scale = scale * 0.85;
+
 	float textWidth = 0.f;
 	float textHeight = 0.f;
 	std::string::const_iterator text_c;
