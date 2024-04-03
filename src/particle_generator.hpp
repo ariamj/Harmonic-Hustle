@@ -74,7 +74,7 @@ protected:
     static const int max_particles = amount * MAX_PARTICLE_ENTITIES;
     Entity blocks[MAX_PARTICLE_ENTITIES];
     Entity initialized_entity_id;
-    Particle particles[max_particles];
+    std::vector<Particle> particles;
     int findUnusedBlock();
     unsigned int firstUnusedParticle(int lastUsedParticle, int begin, int end);
 

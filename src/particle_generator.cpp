@@ -101,7 +101,7 @@ void ParticleGenerator::Draw()
 
         // Bind instanced VBO again to update values of particles
         glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(particles), particles);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, particles.size() * sizeof(Particle), &particles[0]);
 
         // Instanced rendering call
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, max_particles);
@@ -140,8 +140,10 @@ void ParticleGenerator::init()
     // glBindVertexArray(0);
 
     // 
+
     for (int i = 0; i < max_particles; i++) {
-        particles[i] = Particle();
+        int size = particles.size();
+        particles.push_back(Particle());
     }
     initialized_entity_id = blocks[0];
     for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
@@ -151,7 +153,7 @@ void ParticleGenerator::init()
     // Generate instance VBO
     glGenBuffers(1, &instance_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, instance_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(particles), particles, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), &particles[0], GL_STATIC_DRAW);
 
     // Point aOffset attribute to each Particle's position in particles array
     glEnableVertexAttribArray(1);
@@ -177,14 +179,14 @@ unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int be
 {
     // first search from last used particle, this will usually return almost instantly
     for (int i = lastUsedParticle; i < end; ++i){
-        if (particles[i].life <= 0.0f){
+        if (particles[i].life <= 0.0f) {
             lastUsedParticle = i;
             return i;
         }
     }
     // otherwise, do a linear search
     for (int i = begin; i < lastUsedParticle; ++i){
-        if (particles[i].life <= 0.0f){
+        if (particles[i].life <= 0.0f) {
             lastUsedParticle = i;
             return i;
         }
