@@ -428,6 +428,11 @@ void Battle::start() {
 
 	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
+
+	// pause for 3 sec upon entering battle
+	audio->pauseMusic();
+	in_countdown = true;
+	countdownTimer_ms = 3000;
 }
 
 // if isPaused = true, pause music

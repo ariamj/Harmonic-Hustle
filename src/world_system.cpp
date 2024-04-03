@@ -681,7 +681,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 						// pressing 'C' during battle immedidately ends battle, for testing
 						// added guard to prevent pressing when battle is already over
 						if (!battle.battle_is_over) {
-							battle.score = 9999; // auto-win
+							// battle.score = 9999; // auto-win
 							battle.handle_battle_end();
 						}
 						break;
