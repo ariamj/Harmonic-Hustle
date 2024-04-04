@@ -69,11 +69,11 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
 
     vec2 shadow_offset = vec2(10.f);
     // title - shadow
-    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
-    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
+    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::START, true);
+    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::START, true);
     // title
-    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
-    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
+    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::START, true);
+    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, Screen::START, true);
     
     // Render all button texts
     for (Entity entity : registry.boxButtons.entities) {
@@ -88,11 +88,11 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
             if ((text == "NEW GAME" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn) || (text == "LOAD" && mouse_area == in_load_btn)) {
                 text_colour = Colour::white;
             }
-            createText(text, motion.position, btn.text_scale, text_colour, glm::mat4(1.f), Screen::START, true);
+            createText(text, motion.position, btn.text_scale, text_colour, Screen::START, true);
         }
     }
 
-    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, glm::mat4(1.f), Screen::START, true);
+    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::START, true);
 
     // Debug
     if (debugging.in_debug_mode) {

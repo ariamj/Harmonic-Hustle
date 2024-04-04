@@ -122,7 +122,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
 	if (show_fps) {
 		std::string fpsString = "FPS: " + std::to_string(FPS);
-		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, glm::mat4(1.f), gameInfo.curr_screen, true);
+		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, gameInfo.curr_screen, true);
 	}
 
 	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
@@ -131,7 +131,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[H]", vec2(10.f, 25.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+		createText("(?)[H]", vec2(10.f, 25.f), 0.75f, text_colour, gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -218,7 +218,7 @@ void WorldSystem::restart_game() {
 
 	// Title
 	// TODO: put onto some sort of splash screen
-	// createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::OVERWORLD);
+	// createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::OVERWORLD);
 
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
@@ -246,7 +246,7 @@ void WorldSystem::restart_game() {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 
-	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::BATTLE);
+	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::BATTLE);
 
 	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
 	float yDisplacement = PORTRAIT_HEIGHT / 2;

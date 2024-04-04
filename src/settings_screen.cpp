@@ -31,7 +31,7 @@ bool Settings::handle_step(float elapsed_ms_since_last_update, float current_spe
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
-    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, glm::mat4(1.f), Screen::SETTINGS, false);
+    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false);
 
     return true;
 }
