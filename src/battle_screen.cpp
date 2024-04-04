@@ -117,6 +117,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		//		if countdown is done, resume the game
 		//		else render the countdown number on screen
 		countdownTimer_ms -= elapsed_ms_since_last_update;
+		
+		// TODO: Scale countdown length to BPM of song
+		// TODO: Play some sort of countdown SFX on each countdown beat (% BPM)
 
 		// if battle hasn't started, play music from beginning, else resume
 		if (countdownTimer_ms <= 0) {
@@ -251,6 +254,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						standing = missed;
 						missed_counter++;
 						score += standing;
+						combo = 0;
 						registry.remove_all_components_of(motions_registry.entities[i]);
 					}
 				}
@@ -365,6 +369,9 @@ void Battle::handle_battle_end() {
 		return;
 	}
 	setBattleIsOver(true);
+
+	// Update combo one last time
+	max_combo = max_combo > combo ? max_combo : combo;
 
 	// Delete any remaining note entities
 	for (auto entity : registry.notes.entities) {
@@ -519,7 +526,12 @@ void Battle::start() {
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
-	audio->playBattle(enemy_index); // switch to battle music
+	// Audio now starts at the end of countdown
+	// TODO: Add some "waiting" music maybe
+	audio->pauseMusic();
+	// audio->playBattle(enemy_index); // switch to battle music
+
+	// Set flag
 	setBattleIsOver(false);
 
 	// pause for 3 sec on battle start -> should show after reminder pop up exits
