@@ -20,6 +20,7 @@ public:
 	ComponentContainer<BattleProfile> battleProfiles;
 	ComponentContainer<PauseEnemyTimer> pauseEnemyTimers;
 	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
+	ComponentContainer<BattleReminderPopUp> battleReminderPopUpParts;
 	ComponentContainer<Motion> motions;
 	ComponentContainer<Note> notes;
 	ComponentContainer<NoteDuration> noteDurations;
@@ -59,6 +60,7 @@ public:
 		registry_list.push_back(&battleProfiles);
 		registry_list.push_back(&pauseEnemyTimers);
 		registry_list.push_back(&battleOverPopUpParts);
+		registry_list.push_back(&battleReminderPopUpParts);
 		registry_list.push_back(&motions);
 		registry_list.push_back(&notes);
 		registry_list.push_back(&noteDurations);
