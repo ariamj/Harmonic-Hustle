@@ -138,7 +138,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			if (time == 0) {
 				audio->playCountdownHigh();
 			}
-			else if (time > COUNTDOWN_NUM_BEATS && time % 2 == 1 || time < COUNTDOWN_NUM_BEATS) {
+			else if ((time > COUNTDOWN_NUM_BEATS && time % 2 == 1)|| time < COUNTDOWN_NUM_BEATS) {
 				audio->playCountdownLow();
 			}
 		}
@@ -149,7 +149,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			in_countdown = false;
 			if (just_exited_reminder) {
 				just_exited_reminder = false;
-				audio->playBattle(enemy_index); // switch to battle music
+				audio->playBattle(enemy_index % NUM_UNIQUE_BATTLES); // switch to battle music
 			} else {
 				audio->resumeMusic();
 			}
@@ -494,7 +494,8 @@ void Battle::start() {
 	 //_CrtMemCheckpoint(&s1);
 
 	// Local variables to improve readability
-	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
+	 // -1 for 0-indexing
+	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
 	num_notes = battleInfo[enemy_index].count_notes;
 	
 	// Set Conductor variables

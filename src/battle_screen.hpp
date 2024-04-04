@@ -122,7 +122,7 @@ class Battle {
         static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
-        static const int NUM_DIFFICULTY_MODES = 2;
+        static const int NUM_DIFFICULTY_MODES = 3;
 
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
         const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };

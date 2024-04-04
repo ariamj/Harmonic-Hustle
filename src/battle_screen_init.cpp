@@ -166,10 +166,13 @@ bool Battle::loadLevelFromFile(int index) {
 }
 
 int Battle::convertDifficultyToInt(std::string difficulty) {
+	if (difficulty == "easy") {
+		return 0;
+	}
     if (difficulty == "normal") {
-        return 0;
-    } else if (difficulty == "hard") {
         return 1;
+    } else if (difficulty == "hard") {
+        return 2;
     } else {
         printf("Invalid difficulty in JSON\n");
         return -1;
