@@ -7,17 +7,17 @@
 ** Creative Commons, either version 4 of the License, or (at your
 ** option) any later version.
 ******************************************************************/
-#include "spark_particle_generator.hpp"
+#include "smoke_particle_generator.hpp"
 #include "iostream"
 
 
-SparkParticleGenerator::SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture)
+SmokeParticleGenerator::SmokeParticleGenerator(GLuint shaderProgram, GLuint used_texture)
     : ParticleGenerator(shaderProgram, used_texture)
 {
     // init is called in ParticleGenerator constructor
 }
 
-void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
+void SmokeParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
     for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
         Entity entity = blocks[i];
 
@@ -48,7 +48,7 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
     }
 }
 
-void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
+void SmokeParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
     p.life -= dt; // reduce life
     if (p.life > 0.0f)
     {	// particle is alive, thus update
@@ -62,14 +62,14 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
     }
 }
 
-void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
+void SmokeParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
     if (!registry.particleEffects.has(entity)) {
         return;
     }
     ParticleEffect& effect = registry.particleEffects.get(entity);
 
-    // Sparks should not continuously respawn like the trail particles did
+    // Smoke should not continuously respawn like the trail particles did
     if (effect.spawned_particles >= effect.max_particles) {
         return;
     }
@@ -87,6 +87,6 @@ void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 
-PARTICLE_TYPE_ID SparkParticleGenerator::getType() {
-    return PARTICLE_TYPE_ID::SPARK;
+PARTICLE_TYPE_ID SmokeParticleGenerator::getType() {
+    return PARTICLE_TYPE_ID::SMOKE;
 }

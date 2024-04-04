@@ -355,7 +355,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						audio->stopHoldNote(i);
 						audio->playHitPerfect();
 						Motion& motion = registry.motions.get(lane_hold[i]);
-						createSparks(vec2(motion.position.x, 1/1.2 * gameInfo.height));
+						createSmoke(vec2(motion.position.x, 1/1.2 * gameInfo.height));
 						// Find the corresponding judgment line and set colour
 						for (auto entity : registry.judgmentLine.entities) {
 							if (motion.position.x == registry.motions.get(entity).position.x) {
@@ -404,7 +404,7 @@ void Battle::handle_battle_end() {
 	for (auto entity : registry.notes.entities) {
 		registry.remove_all_components_of(entity);
 	}
-	// Delete any remaining sparks entities
+	// Delete any remaining smoke entities
 	for (auto entity : registry.particleEffects.entities) {
 		registry.remove_all_components_of(entity);
 	}
@@ -551,7 +551,7 @@ void Battle::start() {
 
 	// Create generators for particles that appear in the battle scene
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SMOKE);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
 
 	// Enemy battle music now starts at the end of countdown
@@ -843,7 +843,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	score += standing;
 
 	// Render particles
-	createSparks(registry.motions.get(entity_other).position);
+	createSmoke(registry.motions.get(entity_other).position);
 
 	// Clean up registry
 	// registry.collisionTimers.emplace(entity_other);

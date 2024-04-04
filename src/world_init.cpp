@@ -483,7 +483,7 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	return btn_base;
 }
 
-Entity createSparks(vec2 pos) {
+Entity createSmoke(vec2 pos) {
 	Entity entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
@@ -495,7 +495,7 @@ Entity createSparks(vec2 pos) {
 
 	// Give trail particles to entity
 	ParticleEffect& particles = registry.particleEffects.emplace(entity);
-	particles.type = PARTICLE_TYPE_ID::SPARK;
+	particles.type = PARTICLE_TYPE_ID::SMOKE;
 	particles.max_particles = 20;
 
 	return entity;
