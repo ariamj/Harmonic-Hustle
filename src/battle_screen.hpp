@@ -20,6 +20,7 @@ struct BattleInfo {
     float bpm;
     float metadata_offset;
     int count_notes;
+    int count_held_notes;
     std::vector<NoteInfo> notes;
     std::vector<std::pair<float, BattleMode>> modes;
 };
@@ -116,13 +117,14 @@ class Battle {
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
         void setReminderPopUp();
+        void setJudgmentLineColour(int lane_index, vec3 colour);
         void handle_exit_reminder();
         void handle_note_release(int lane_index);
 
         static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
-        static const int NUM_DIFFICULTY_MODES = 2;
+        static const int NUM_DIFFICULTY_MODES = 3;
 
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
         const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };

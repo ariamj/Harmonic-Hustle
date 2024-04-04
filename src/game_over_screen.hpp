@@ -35,5 +35,5 @@ class GameOver {
         GLFWwindow* window;
 
         vec2 title_1_pos;
-        vec2 title_2_pos;
+        // vec2 title_2_pos;
 };
