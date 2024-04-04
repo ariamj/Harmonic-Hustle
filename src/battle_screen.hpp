@@ -13,6 +13,7 @@
 struct NoteInfo {
     float spawn_time;
     int quantity;
+    float duration;
 };
 
 struct BattleInfo {
@@ -78,6 +79,10 @@ class Battle {
         bool f_key_pressed = false;
         bool j_key_pressed = false;
         bool k_key_pressed = false;
+        bool d_key_held = false;
+        bool f_key_held = false;
+        bool j_key_held = false;
+        bool k_key_held = false;
         Standing standing;
         int perfect_counter = 0;
         int good_counter = 0;
@@ -109,6 +114,7 @@ class Battle {
         void setReminderPopUp();
         void handle_exit_reminder();
 
+        static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
         static const int NUM_DIFFICULTY_MODES = 2;
@@ -123,6 +129,7 @@ class Battle {
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
         const float MIN_FRAMES_ADJUSTMENT = -5.f;
         const float MAX_FRAMES_ADJUSTMENT = 5.f;
+        const float HOLD_DURATION_LEEWAY = 0.9f;
 
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
@@ -144,6 +151,11 @@ class Battle {
         int next_note_index;
         int mode_index;
         float last_beat;
+
+        // held note trackers
+        float NO_DURATION = -1.0f;
+        float lane_locked[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
+        Entity lane_hold[4];
 
         // random generation
         // https://stackoverflow.com/a/69815862

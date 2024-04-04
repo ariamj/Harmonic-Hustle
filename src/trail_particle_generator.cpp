@@ -17,14 +17,75 @@ TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used
     // init is called in ParticleGenerator constructor
 }
 
-void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt) {
+void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
+    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        Entity entity = blocks[i];
+
+        if (entity == initialized_entity_id) {
+            continue;
+        }
+
+        if (!registry.particleEffects.has(entity)) {
+            // Clear the entity's previously assigned block of data
+            // Note that this also sets scale, color to 0...
+                // If particles not appearing, check that scale is set > 0, and color.a > 0
+            memset(&particles[i * amount], 0.f, sizeof(Particle) * amount - 1);
+            continue;
+        }
+
+        ParticleEffect& particle_effect = registry.particleEffects.get(entity);
+
+        // add new particles 
+        newParticles = 4;
+        for (unsigned int i = 0; i < newParticles; ++i)
+        {
+            int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
+                particle_effect.min_index, particle_effect.max_index);
+            particle_effect.last_used_particle = unusedParticle;
+            respawnParticle(particles[unusedParticle], entity, TRAIL_NOTE_OFFSET);
+        }
+
+        // update all of a single entity's particles
+        for (int i = particle_effect.min_index; i < particle_effect.max_index; i++)
+        {
+            updateParticleBehaviours(particles[i], dt, entity);
+        }
+    }
+}
+
+
+void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
     p.life -= dt; // reduce life
     if (p.life > 0.0f)
     {	// particle is alive, thus update
         p.position += p.velocity * dt;
-        p.color.a -= dt * 2.5;
+        if (registry.notes.has(entity)) {
+            Note& note = registry.notes.get(entity);
+            // Manage particles for held-notes
+            if (note.duration > 0.f) {
+                if (note.pressed) {
+                    if (p.position.y >= 1 / 1.2f * gameInfo.height) {
+                        p.color.a = 0.f;
+                    }
+                    else {
+                        float random = ((rand() % 100) - 50) * 1.8f;
+                        p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
+                        p.position += p.velocity * dt;
+                        p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
+                    }
+                }
+                else {
+                    p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
+                }
+            }
+            else {
+                p.color.a -= dt * 2.5f;
+            }
+        }
+        else {
+            p.color.a -= dt * 2.5;
+        }
         p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
-
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
@@ -38,6 +99,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
+
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
     particle.color += gameInfo.battleModeColor;
     particle.life = 1.f;

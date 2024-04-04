@@ -59,7 +59,7 @@ const float DEFAULT_ENEMY_VELOCITY = 50.f;
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
 const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
-const int MAX_PARTICLE_ENTITIES = 20; // coupled with notes for now
+const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
 
 // FPS global set by main.cpp
 extern int FPS;
@@ -95,6 +95,7 @@ namespace Colour {
 	static const vec3 gray = { 0.5, 0.5, 0.5 };
 	static const vec3 dark_gray = { 0.25, 0.25, 0.25 };
 	static const vec3 white = { 1.0, 1.0, 1.0 };
+	static const vec3 khaki = vec3(240,230,140) / vec3(255);
 
 	// game theme colours
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue

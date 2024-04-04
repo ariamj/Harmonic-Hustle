@@ -12,6 +12,7 @@ public:
     ~SparkParticleGenerator() {};
 private:
     PARTICLE_TYPE_ID getType() override;
-    void updateParticleBehaviours(Particle& p, float dt) override;
-    void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset) override;
+    void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) override;
+    void updateParticleBehaviours(Particle& p, float dt);
+    void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset);
 };
