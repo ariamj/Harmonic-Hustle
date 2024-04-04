@@ -81,33 +81,36 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	if (in_reminder) {
 		// render help text with simple instructions
 
-		float reminderTextYPos = gameInfo.height / 3.5f;
+		float reminderTextYPos = gameInfo.height / 3.7f;
 		float reminderTextXPos = gameInfo.width / 2.f;
-		createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.9f, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
 
 		reminderTextYPos += 60.f;
-		createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.6f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
 
-		reminderTextYPos += 50.f;
-		createText("use keys", vec2(reminderTextXPos - 55.f, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		reminderTextYPos += 45.f;
+		createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// reminderTextYPos += 50.f;
-		createText("D F J K", vec2(reminderTextXPos +  55.f, reminderTextYPos), 0.4f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
 
 		reminderTextYPos += 40.f;
-		createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		reminderTextYPos += 40.f;
-		createText("try to hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 		
 		//// space for help images
 		reminderTextYPos += 170.f;
-		createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
-		createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 285.f, reminderTextYPos), 0.4f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+		reminderTextYPos += 40.f;
+		createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
-		reminderTextYPos += 60.f;
-		createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.6f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
+		createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 55.f;
+		createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
 
 	} else if (in_countdown) {
 		// if in countdown mode, update the timer
@@ -542,7 +545,7 @@ void Battle::setReminderPopUp() {
 	registry.screens.insert(reminderBoxTop, Screen::BATTLE);
 
 	float imgXPos = gameInfo.width / 2.f;
-	float imgYPos = gameInfo.height / 2.f + 65.f;
+	float imgYPos = gameInfo.height / 2.f + 45.f;
 
 	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
 	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
@@ -559,7 +562,7 @@ void Battle::setReminderPopUp() {
 // if isPaused = false, set to in countdown mode and reset timer
 //		-> requires prev screen to NOT be battle if resuming
 bool Battle::set_pause(bool isPaused) {
-	if (isPaused) {
+	if (isPaused && !in_reminder) {
 		audio->pauseMusic();
 	} else {
 		in_countdown = true;
@@ -939,7 +942,8 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 	if (in_reminder) {
 		switch (key) {
 			case GLFW_KEY_SPACE: // remove all reminder pop up parts
-				handle_exit_reminder();
+				if (action == GLFW_PRESS)
+					handle_exit_reminder();
 		}
 		
 	} else if (battle_is_over) {
