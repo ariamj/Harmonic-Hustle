@@ -289,8 +289,9 @@ enum class TEXTURE_ASSET_ID {
 	NOTE_EXAMPLE_ABOVE = BATTLEPLAYER_LOSE + 1,
 	NOTE_EXAMPLE_ON = NOTE_EXAMPLE_ABOVE + 1,
 	NOTE_EXAMPLE_HIT = NOTE_EXAMPLE_ON + 1,
+	FLAME_PARTICLE = NOTE_EXAMPLE_HIT + 1,
 
-	TEXTURE_COUNT = NOTE_EXAMPLE_HIT +1 // keep as last variable
+	TEXTURE_COUNT = FLAME_PARTICLE +1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -308,7 +309,8 @@ enum class EFFECT_ASSET_ID {
 	FONT = NOTE + 1,
 	TRAIL_PARTICLE = FONT + 1,
 	SPARK_PARTICLE = TRAIL_PARTICLE + 1,
-	EFFECT_COUNT = SPARK_PARTICLE + 1 // keep as last variable
+	FLAME_PARTICLE = SPARK_PARTICLE + 1,
+	EFFECT_COUNT = FLAME_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
 
@@ -329,7 +331,8 @@ const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 enum class PARTICLE_TYPE_ID {
 	TRAIL = 0,
 	SPARK = TRAIL + 1,
-	PARTICLE_TYPE_COUNT = SPARK + 1
+	FLAME = SPARK + 1,
+	PARTICLE_TYPE_COUNT = FLAME + 1
 };
 const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
 

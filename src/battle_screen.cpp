@@ -546,6 +546,7 @@ void Battle::start() {
 	// Create generators for particles that appear in the battle scene
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
 
 	// Audio now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe

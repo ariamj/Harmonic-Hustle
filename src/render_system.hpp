@@ -9,6 +9,7 @@
 
 #include "trail_particle_generator.hpp"
 #include "spark_particle_generator.hpp"
+#include "flame_particle_generator.hpp"
 
 #include <map>
 
@@ -75,7 +76,8 @@ class RenderSystem {
 		textures_path("Player-Portrait-Lose.png"),
 		textures_path("NoteExampleAbove.png"),
 		textures_path("NoteExampleOn.png"),
-		textures_path("NoteExampleHit.png")
+		textures_path("NoteExampleHit.png"),
+		textures_path("Flame-Particle.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -92,7 +94,8 @@ class RenderSystem {
 		shader_path("note"),
 		shader_path("font"),
 		shader_path("trailParticle"),
-		shader_path("sparkParticle")
+		shader_path("sparkParticle"),
+		shader_path("flameParticle")
 	};
 
 	std::array<GLuint, geometry_count> vertex_buffers;
