@@ -116,10 +116,32 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game
 		//		else render the countdown number on screen
+		float previous_ms = countdownTimer_ms;
 		countdownTimer_ms -= elapsed_ms_since_last_update;
-		
-		// TODO: Scale countdown length to BPM of song
-		// TODO: Play some sort of countdown SFX on each countdown beat (% BPM)
+
+		int previous_time = (int)(previous_ms / conductor.crotchet);
+		int time = (int)(countdownTimer_ms / conductor.crotchet);
+
+		std::string countdown_text = "READY";
+
+		if (time < COUNTDOWN_NUM_BEATS) {
+			if (time <= 0) {
+				countdown_text = "FIGHT!";
+			}
+			else {
+				countdown_text = std::to_string(time);
+			}
+		}
+
+		// Play SFX on value change
+		if (previous_time != time) {
+			if (time == 0) {
+				audio->playCountdownHigh();
+			}
+			else if (time > COUNTDOWN_NUM_BEATS && time % 2 == 1 || time < COUNTDOWN_NUM_BEATS) {
+				audio->playCountdownLow();
+			}
+		}
 
 		// if battle hasn't started, play music from beginning, else resume
 		if (countdownTimer_ms <= 0) {
@@ -133,8 +155,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} else {
 			// render count down text
-			int time = (int) (countdownTimer_ms / 1000) + 1;
-			createText(std::to_string(time), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, glm::mat4(1.f), Screen::BATTLE, true);
+			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, glm::mat4(1.f), Screen::BATTLE, true);
 		}
 	} else if (battle_is_over) {
 		//TODO render in text that has:
@@ -536,7 +557,7 @@ void Battle::start() {
 
 	// pause for 3 sec on battle start -> should show after reminder pop up exits
 	in_countdown = true;
-	countdownTimer_ms = 3000;
+	countdownTimer_ms = COUNTDOWN_TOTAL_BEATS * conductor.crotchet;
 
 	// add the reminder pop up parts to screen
 	setReminderPopUp();

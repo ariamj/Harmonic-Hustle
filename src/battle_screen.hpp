@@ -131,6 +131,9 @@ class Battle {
         const float MAX_FRAMES_ADJUSTMENT = 5.f;
         const float HOLD_DURATION_LEEWAY = 0.9f;
 
+        const int COUNTDOWN_TOTAL_BEATS = 8;
+        const int COUNTDOWN_NUM_BEATS = 4;
+
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
 

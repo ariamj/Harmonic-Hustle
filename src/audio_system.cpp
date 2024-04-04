@@ -136,6 +136,22 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string countdown_high = "countdown_high.wav";
+	countdown_high_SFX = Mix_LoadWAV(audio_path(countdown_high).c_str());
+	if (countdown_high_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(countdown_high).c_str());
+		return false;
+	}
+
+	std::string countdown_low = "countdown_low.wav";
+	countdown_low_SFX = Mix_LoadWAV(audio_path(countdown_low).c_str());
+	if (countdown_low_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(countdown_low).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -175,6 +191,14 @@ int AudioSystem::playHitGood() {
 
 int AudioSystem::playHitPerfect() {
 	return Mix_PlayChannel(-1, hit_perfect_SFX, 0);
+}
+
+int AudioSystem::playCountdownHigh() {
+	return Mix_PlayChannel(-1, countdown_high_SFX, 0);
+}
+
+int AudioSystem::playCountdownLow() {
+	return Mix_PlayChannel(-1, countdown_low_SFX, 0);
 }
 
 int AudioSystem::musicPlaying() {
