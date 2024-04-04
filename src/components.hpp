@@ -140,7 +140,7 @@ struct GameInfo {
 	Entity curr_enemy;
 	int curr_level = 1;
 	int max_level = 4;
-	int curr_difficulty = 1;
+	int curr_difficulty = 0;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;

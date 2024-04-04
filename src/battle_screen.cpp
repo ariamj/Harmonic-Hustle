@@ -386,7 +386,7 @@ void Battle::handle_battle_end() {
 		return;
 	}
 	// replay current lvl battle music for the battle over popup
-	audio->playBattle(enemy_index);
+	audio->playBattle(enemy_index % NUM_UNIQUE_BATTLES);
 
 	// Calculate a recommended calibration for timing for player
 	// float adjustment = calculate_adjustment();
@@ -493,8 +493,10 @@ void Battle::start() {
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
 	 //_CrtMemCheckpoint(&s1);
 
-	// Local variables to improve readability
-	 // -1 for 0-indexing
+	// For testing specific difficulty
+	gameInfo.curr_difficulty = 1;
+
+	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
 	num_notes = battleInfo[enemy_index].count_notes;
 	
