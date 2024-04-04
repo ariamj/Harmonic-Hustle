@@ -553,6 +553,7 @@ void Battle::start() {
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SMOKE);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
 	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe
@@ -843,7 +844,15 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	score += standing;
 
 	// Render particles
-	createSmoke(registry.motions.get(entity_other).position);
+	vec2 note_position = registry.motions.get(entity_other).position;
+	createSmoke(note_position);
+	// Render particles for holding note
+	if (registry.notes.has(entity_other)) {
+		float duration = registry.notes.get(entity_other).duration;
+		if (duration > -1.f) {
+			createSpark(note_position, duration);
+		}
+	}
 
 	// Clean up registry
 	// registry.collisionTimers.emplace(entity_other);

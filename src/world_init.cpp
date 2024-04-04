@@ -501,6 +501,25 @@ Entity createSmoke(vec2 pos) {
 	return entity;
 }
 
+Entity createSpark(vec2 pos, float max_duration) {
+	Entity entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.velocity = { 0.f, -100.f };
+
+	// Add timer to remove entity automatically
+	ParticleTimer& timer = registry.particleTimers.emplace(entity);
+	timer.count_ms = max_duration;
+
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::SPARK;
+	// particles.max_particles = 20;
+
+	return entity;
+}
+
 Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpImgId, Screen screen) {
 	auto entity = Entity();
 
