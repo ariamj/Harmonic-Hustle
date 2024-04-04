@@ -20,6 +20,7 @@ struct BattleInfo {
     float bpm;
     float metadata_offset;
     int count_notes;
+    int count_held_notes;
     std::vector<NoteInfo> notes;
     std::vector<std::pair<float, BattleMode>> modes;
 };
@@ -116,6 +117,7 @@ class Battle {
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
         void setReminderPopUp();
+        void setJudgmentLineColour(int lane_index, vec3 colour);
         void handle_exit_reminder();
         void handle_note_release(int lane_index);
 

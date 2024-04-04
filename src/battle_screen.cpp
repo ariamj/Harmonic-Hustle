@@ -354,16 +354,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					if (note.curr_duration < 0.f) {
 						audio->stopHoldNote(i);
 						audio->playHitPerfect();
+						combo++;
+						// TODO: Change from always perfect
+						standing = perfect;
+						score += standing;
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSmoke(vec2(motion.position.x, 1/1.2 * gameInfo.height));
-						// Find the corresponding judgment line and set colour
-						for (auto entity : registry.judgmentLine.entities) {
-							if (motion.position.x == registry.motions.get(entity).position.x) {
-								vec3& colour = registry.colours.get(entity);
-								colour = PERFECT_COLOUR;
-								registry.judgmentLineTimers.emplace_with_duplicates(entity);
-							}
-						}
+						setJudgmentLineColour(i, PERFECT_COLOUR);
 						registry.remove_all_components_of(lane_hold[i]);
 
 					}
@@ -374,6 +371,14 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	}
 	return true;
 };
+
+void Battle::setJudgmentLineColour(int lane_index, vec3 colour) {
+	// Find the corresponding judgment line and set colour
+	Entity& judgment = registry.judgmentLine.entities[lane_index];
+	vec3& judgment_colour = registry.colours.get(judgment);
+	judgment_colour = colour;
+	registry.judgmentLineTimers.emplace_with_duplicates(judgment);
+}
 
 // when battle ends, 
 // 		set battle is over to true, TODO -> render text on screen
@@ -499,6 +504,7 @@ void Battle::start() {
 	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
 	num_notes = battleInfo[enemy_index].count_notes;
+	int num_held_notes = battleInfo[enemy_index].count_held_notes;
 	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
@@ -510,7 +516,7 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil(num_notes * perfect / 2);
+	score_threshold = ceil((num_notes + num_held_notes)* perfect / 2);
 
 	// Reset counters
 	perfect_counter = 0;
@@ -935,8 +941,10 @@ void Battle::handle_note_release(int lane_index) {
 		if (note.curr_duration > HOLD_DURATION_LEEWAY) {
 			audio->stopHoldNote(lane_index);
 			audio->playMissedNote();
+			setJudgmentLineColour(lane_index, MISSED_COLOUR);
 			note.curr_duration = NO_DURATION; // only miss once
 			registry.remove_all_components_of(entity);
+			// TODO: Remove particles immediately on releasing early (?)
 			combo = 0;
 		}
 	}
