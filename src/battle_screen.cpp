@@ -519,7 +519,7 @@ void Battle::start() {
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
-	// audio->playBattle(enemy_index); // switch to battle music -> updating to play once the reminder pop up exits
+	audio->playBattle(enemy_index); // switch to battle music
 	setBattleIsOver(false);
 
 	// pause for 3 sec on battle start -> should show after reminder pop up exits
