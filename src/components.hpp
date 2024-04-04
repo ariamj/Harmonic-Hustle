@@ -195,6 +195,10 @@ struct BattleOverPopUp {
 	
 };
 
+struct BattleReminderPopUp {
+
+};
+
 struct Collision
 {
 	// Note, the first object is stored in the ECS container.entities
@@ -275,8 +279,11 @@ enum class TEXTURE_ASSET_ID {
 	BATTLEENEMY_GUITAR_LOSE = BATTLEENEMY_MIC_LOSE + 1,
 	BATTLEBOSS_LOSE = BATTLEENEMY_GUITAR_LOSE + 1,
 	BATTLEPLAYER_LOSE = BATTLEBOSS_LOSE + 1,
+	NOTE_EXAMPLE_ABOVE = BATTLEPLAYER_LOSE + 1,
+	NOTE_EXAMPLE_ON = NOTE_EXAMPLE_ABOVE + 1,
+	NOTE_EXAMPLE_HIT = NOTE_EXAMPLE_ON + 1,
 
-	TEXTURE_COUNT = BATTLEPLAYER_LOSE +1 // keep as last variable
+	TEXTURE_COUNT = NOTE_EXAMPLE_HIT +1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 

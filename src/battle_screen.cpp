@@ -71,16 +71,53 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		registry.combos.emplace(c);
 	}
 
-	if (in_countdown) {
+	if (in_reminder) {
+		// render help text with simple instructions
+
+		float reminderTextYPos = gameInfo.height / 3.5f;
+		float reminderTextXPos = gameInfo.width / 2.f;
+		createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.9f, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 60.f;
+		createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.6f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 50.f;
+		createText("use keys", vec2(reminderTextXPos - 55.f, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+		// reminderTextYPos += 50.f;
+		createText("D F J K", vec2(reminderTextXPos +  55.f, reminderTextYPos), 0.4f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 40.f;
+		createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 40.f;
+		createText("try to hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		
+		//// space for help images
+		reminderTextYPos += 170.f;
+		createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+		createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 285.f, reminderTextYPos), 0.4f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+		reminderTextYPos += 60.f;
+		createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.6f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
+
+	} else if (in_countdown) {
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game
 		//		else render the countdown number on screen
 		countdownTimer_ms -= elapsed_ms_since_last_update;
 
+		// if battle hasn't started, play music from beginning, else resume
 		if (countdownTimer_ms <= 0) {
 			// fully resume game
 			in_countdown = false;
-			audio->resumeMusic();
+			if (just_exited_reminder) {
+				just_exited_reminder = false;
+				audio->playBattle(enemy_index); // switch to battle music
+			} else {
+				audio->resumeMusic();
+			}
 		} else {
 			// render count down text
 			int time = (int) (countdownTimer_ms / 1000) + 1;
@@ -426,14 +463,44 @@ void Battle::start() {
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 
-	audio->playBattle(enemy_index); // switch to battle music
+	// audio->playBattle(enemy_index); // switch to battle music -> updating to play once the reminder pop up exits
 	setBattleIsOver(false);
 
-	// pause for 3 sec upon entering battle
-	audio->pauseMusic();
+	// pause for 3 sec on battle start -> should show after reminder pop up exits
 	in_countdown = true;
 	countdownTimer_ms = 3000;
+
+	// add the reminder pop up parts to screen
+	setReminderPopUp();
 }
+
+void Battle::setReminderPopUp() {
+	vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
+	Entity reminderBoxBottom = createBox(center, {gameInfo.width / 1.8f, gameInfo.height / 1.8f});
+	Entity reminderBoxTop = createBox(center, {gameInfo.width / 1.8f - 20.f, gameInfo.height / 1.8f - 20.f});
+
+	registry.colours.insert(reminderBoxBottom, Colour::theme_blue_2);
+	registry.colours.insert(reminderBoxTop, Colour::theme_blue_1);
+
+	registry.battleReminderPopUpParts.emplace(reminderBoxBottom);
+	registry.battleReminderPopUpParts.emplace(reminderBoxTop);
+
+	registry.screens.insert(reminderBoxBottom, Screen::BATTLE);
+	registry.screens.insert(reminderBoxTop, Screen::BATTLE);
+
+	float imgXPos = gameInfo.width / 2.f;
+	float imgYPos = gameInfo.height / 2.f + 65.f;
+
+	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
+	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
+	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
+
+	registry.battleReminderPopUpParts.emplace(aboveImg);
+	registry.battleReminderPopUpParts.emplace(onImg);
+	registry.battleReminderPopUpParts.emplace(hitImg);
+
+	in_reminder = true;
+};
 
 // if isPaused = true, pause music
 // if isPaused = false, set to in countdown mode and reset timer
@@ -701,8 +768,23 @@ void handleDebug(int action) {
 	}
 }
 
+void Battle::handle_exit_reminder() {
+	in_reminder = false;
+	just_exited_reminder = true;
+	audio->pauseMusic();
+	while (registry.battleReminderPopUpParts.entities.size() > 0)
+		registry.remove_all_components_of(registry.battleReminderPopUpParts.entities.back());
+
+};
+
 void Battle::handle_key(int key, int scancode, int action, int mod) {
-	if (battle_is_over) {
+	if (in_reminder) {
+		switch (key) {
+			case GLFW_KEY_SPACE: // remove all reminder pop up parts
+				handle_exit_reminder();
+		}
+		
+	} else if (battle_is_over) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 

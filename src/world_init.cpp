@@ -475,3 +475,33 @@ Entity createSparks(vec2 pos) {
 
 	return entity;
 }
+
+Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpImgId, Screen screen) {
+	auto entity = Entity();
+
+	// Store a reference to the potentially re-used mesh object
+	Mesh& mesh = renderer->getMesh(GEOMETRY_BUFFER_ID::SPRITE);
+	registry.meshPtrs.emplace(entity, &mesh);
+	
+	// Setting initial motion values
+	auto& motion = registry.motions.emplace(entity);
+	motion.angle = 0.f;
+	motion.velocity = { 0, 0 };
+	motion.position = pos;
+	motion.scale = vec2({ 80, 100 });
+
+	// screen entity exists in
+	registry.screens.insert(entity, screen);
+
+	// Create component
+	registry.renderRequests.insert(
+		entity,
+		{
+			helpImgId,
+			EFFECT_ASSET_ID::TEXTURED,
+			GEOMETRY_BUFFER_ID::SPRITE,
+		}
+	);
+
+	return entity;
+}

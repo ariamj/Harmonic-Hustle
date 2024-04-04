@@ -93,10 +93,6 @@ class Battle {
         Entity gameOverPopUpOverlay;
 
         bool battle_is_over = false;
-        
-        // set to true once player resumes game from pause
-        bool in_countdown = false;
-        float countdownTimer_ms;
 
         GLFWwindow* window;
 
@@ -110,6 +106,8 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
+        void setReminderPopUp();
+        void handle_exit_reminder();
 
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
@@ -150,4 +148,11 @@ class Battle {
         // random generation
         // https://stackoverflow.com/a/69815862
         std::mt19937 random_generator = std::mt19937{std::random_device{}()};
+
+        // set to true once player resumes game from pause
+        bool in_countdown = false;
+        float countdownTimer_ms;
+        
+        bool in_reminder = true;
+        bool just_exited_reminder = false;
 };

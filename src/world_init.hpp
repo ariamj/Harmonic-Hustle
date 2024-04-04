@@ -49,3 +49,5 @@ Entity createText(std::string text, vec2 pos, float scale, vec3 colour, glm::mat
 Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 size, vec3 text_colour, vec3 box_colour, Screen screen);
 // creates an empty entity that has spark particles
 Entity createSparks(vec2 pos);
+// create a simple png object to show some example images
+Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpImgId, Screen screen);

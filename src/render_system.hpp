@@ -72,7 +72,10 @@ class RenderSystem {
 		textures_path("Enemy-Mic-Portrait-Lose.png"),
 		textures_path("Enemy-Guitar-Portrait-Lose.png"),
 		textures_path("Boss-Portrait-Lose.png"),
-		textures_path("Player-Portrait-Lose.png")
+		textures_path("Player-Portrait-Lose.png"),
+		textures_path("NoteExampleAbove.png"),
+		textures_path("NoteExampleOn.png"),
+		textures_path("NoteExampleHit.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
