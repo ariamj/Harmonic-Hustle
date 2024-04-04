@@ -69,9 +69,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		registry.combos.emplace(c);
 	}
 
+	// render score
 	vec2 score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
 	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
 	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, glm::mat4(1.f), Screen::BATTLE);
+	// render score threshold
 	vec2 threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
 	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), glm::mat4(1.f), Screen::BATTLE);
@@ -121,10 +123,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		createText(std::to_string(missed_counter), vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// Combo
-		createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 4)), 1.f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 3.25)), 0.6f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// next instruction
-		createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 6)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+		createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.75)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
 
 		// notify savenext_note_spawn
 		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
