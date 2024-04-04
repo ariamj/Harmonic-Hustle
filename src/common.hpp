@@ -95,6 +95,7 @@ namespace Colour {
 	static const vec3 gray = { 0.5, 0.5, 0.5 };
 	static const vec3 dark_gray = { 0.25, 0.25, 0.25 };
 	static const vec3 white = { 1.0, 1.0, 1.0 };
+	static const vec3 khaki = vec3(240,230,140) / vec3(255);
 
 	// game theme colours
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue
