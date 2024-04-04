@@ -41,10 +41,8 @@ Battle::~Battle() {
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
 	std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Battle";
-	// TODO: render score on screen instead
-	title_ss << " --- Score: " << score;
 	if (debugging.in_debug_mode) {
-		// TODO: render threshold on screen instead
+		title_ss << " --- Score: " << score;
 		title_ss << " --- Score Threshold: " << score_threshold;
 	}
 	glfwSetWindowTitle(window, title_ss.str().c_str());
@@ -67,9 +65,16 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 
 	if (registry.combos.components.size() == 0) {
-		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 20.f), 1.f, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
 		registry.combos.emplace(c);
 	}
+
+	vec2 score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
+	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
+	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, glm::mat4(1.f), Screen::BATTLE);
+	vec2 threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
+	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
+	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), glm::mat4(1.f), Screen::BATTLE);
 
 	if (in_countdown) {
 		// if in countdown mode, update the timer

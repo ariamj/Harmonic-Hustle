@@ -131,7 +131,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[H]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+		createText("(?)[H]", vec2(10.f, 25.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -681,7 +681,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 						// pressing 'C' during battle immedidately ends battle, for testing
 						// added guard to prevent pressing when battle is already over
 						if (!battle.battle_is_over) {
-							battle.score = 9999; // auto-win
+							// battle.score = 9999; // auto-win
 							battle.handle_battle_end();
 						}
 						break;
