@@ -15,4 +15,5 @@ private:
     void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) override;
     void updateParticleBehaviours(Particle& p, float dt, Entity entity);
     void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset);
+    vec2 trace(vec3 rpos, vec3 rdir, vec2 fragCoord, float life);
 };

@@ -36,6 +36,7 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
+        newParticles = 1;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
@@ -54,12 +55,14 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
 
 
 void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
-    p.life -= dt; // reduce life
+    p.life -= 2.f * dt; // reduce life
     if (p.life > 0.0f)
     {	// particle is alive, thus update
+        // p.position += p.velocity * dt * 5.f;
+        p.velocity.y = lerp(-180.f, 40.f, 1.f - pow(p.life, 2));
         p.position += p.velocity * dt * 5.f;
-        p.color.a -= dt * 2.5;
-        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+
+        p.color.a -= dt * 0.f;
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
@@ -69,16 +72,21 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
 
 void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
-    float random = ((rand() % 100) - 50) / 10.0f;
+    float random = ((rand() % 100) - 50);
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
-    particle.position = entity_motion.position + random + offset;
+
+    if (random > 0.f) {
+        particle.position = vec2(entity_motion.position.x + (NOTE_WIDTH + random) / 20.f, gameInfo.height / 1.2f);
+    } else {
+        particle.position = vec2(entity_motion.position.x - (NOTE_WIDTH - random )/ 5.f, gameInfo.height / 1.2f);
+    }
 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
-    particle.color += gameInfo.particle_color_adjustment;
+    // particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = entity_motion.velocity;
-    particle.scale = DEFAULT_PARTICLE_SCALE;
+    particle.velocity = vec2(random * 0.6f, -50.f);
+    particle.scale = DEFAULT_PARTICLE_SCALE * 2.f;
 }
 
 PARTICLE_TYPE_ID SparkParticleGenerator::getType() {
