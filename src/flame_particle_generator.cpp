@@ -77,7 +77,7 @@ void FlameParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.position = entity_motion.position + random + offset;
 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.4f);
-    particle.color += gameInfo.battleModeColor;
+    particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
     particle.scale = DEFAULT_PARTICLE_SCALE;

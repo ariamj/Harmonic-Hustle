@@ -301,13 +301,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			if (conductor.song_position >= mode_change_time) {
 				switch (battleInfo[enemy_index].modes[mode_index].second) {
 				case back_and_forth:
-					gameInfo.battleModeColor = { -1.f, 0.2f, 1.f, 0.f }; // no adjust
+					gameInfo.particle_color_adjustment = BACK_AND_FORTH_COLOUR;
 					break;
 				case beat_rush:
-					gameInfo.battleModeColor = { 1.5f, -0.2f, -0.2f, -0.2f }; // adjust to red
+					gameInfo.particle_color_adjustment = BEAT_RUSH_COLOUR;
 					break;
 				case unison:
-					gameInfo.battleModeColor = { 1.f, -0.2f, -1.f, 0.f }; // adjust to orange
+					gameInfo.particle_color_adjustment = UNISON_COLOUR;
 					break;
 				}
 				mode_index += 1;
@@ -344,6 +344,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		}
 
+		// Decrement durations of held notes
 		for (int i = 0; i < NUM_LANES; i++) {
 			if (registry.notes.has(lane_hold[i])) {
 				Note& note = registry.notes.get(lane_hold[i]);
@@ -355,6 +356,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						audio->playHitPerfect();
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSparks(vec2(motion.position.x, 1/1.2 * gameInfo.height));
+						// Find the corresponding judgment line and set colour
 						for (auto entity : registry.judgmentLine.entities) {
 							if (motion.position.x == registry.motions.get(entity).position.x) {
 								vec3& colour = registry.colours.get(entity);
@@ -379,6 +381,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 //			increment player level
 //		if lost, remove only collided with enemy on screen
 void Battle::handle_battle_end() {
+
+	if (in_countdown || in_reminder) {
+		return;
+	}
 	// replay current lvl battle music for the battle over popup
 	audio->playBattle(enemy_index);
 
@@ -548,15 +554,14 @@ void Battle::start() {
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
 
-	// Audio now starts at the end of countdown
+	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe
 	audio->pauseMusic();
-	// audio->playBattle(enemy_index); // switch to battle music
 
 	// Set flag
 	setBattleIsOver(false);
 
-	// pause for 3 sec on battle start -> should show after reminder pop up exits
+	// pause for some # of beats on battle start -> should show after reminder pop up exits
 	in_countdown = true;
 	countdownTimer_ms = COUNTDOWN_TOTAL_BEATS * conductor.crotchet;
 
@@ -854,19 +859,15 @@ void Battle::handleRhythmInput(int action, int key) {
 		switch (key) {
 			case GLFW_KEY_D:
 				d_key_pressed = true;
-				d_key_held = true;
 				break;
 			case GLFW_KEY_F:
 				f_key_pressed = true;
-				f_key_held = true;
 				break;
 			case GLFW_KEY_J:
 				j_key_pressed = true;
-				j_key_held = true;
 				break;
 			case GLFW_KEY_K:
 				k_key_pressed = true;
-				k_key_held = true;
 				break;
 			default:
 				break;
@@ -895,65 +896,37 @@ void Battle::handleRhythmInput(int action, int key) {
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
 		case GLFW_KEY_D:
-			d_key_pressed = false;
-			d_key_held = false;
-			std::cout << "D key released\n";
-			if (registry.notes.has(lane_hold[0])) {
-				Note& note = registry.notes.get(lane_hold[0]);
-				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
-					audio->stopHoldNote(0);
-					audio->playMissedNote();
-					note.curr_duration = NO_DURATION; // only miss once
-					registry.remove_all_components_of(lane_hold[0]);
-				}
-			}
+			handle_note_release(lane1);
 			break;
 		case GLFW_KEY_F:
-			f_key_pressed = false;
-			f_key_held = false;
-			std::cout << "F key released\n";
-			if (registry.notes.has(lane_hold[1])) {
-				Note& note = registry.notes.get(lane_hold[1]);
-				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
-					audio->stopHoldNote(1);
-					audio->playMissedNote();
-					note.curr_duration = NO_DURATION; // only miss once
-					registry.remove_all_components_of(lane_hold[1]);
-				}
-			}
+			handle_note_release(lane2);
 			break;
 		case GLFW_KEY_J:
-			j_key_pressed = false;
-			j_key_held = false;
-			std::cout << "J key released\n";
-			if (registry.notes.has(lane_hold[2])) {
-				Note& note = registry.notes.get(lane_hold[2]);
-				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
-					audio->stopHoldNote(2);
-					audio->playMissedNote();
-					note.curr_duration = NO_DURATION; // only miss once
-					registry.remove_all_components_of(lane_hold[2]);
-				}
-			}
+			handle_note_release(lane3);
 			break;
 		case GLFW_KEY_K:
-			k_key_pressed = false;
-			k_key_held = false;
-			std::cout << "K key released\n";
-			if (registry.notes.has(lane_hold[3])) {
-				Note& note = registry.notes.get(lane_hold[3]);
-				if (note.curr_duration > HOLD_DURATION_LEEWAY) {
-					audio->stopHoldNote(3);
-					audio->playMissedNote();
-					note.curr_duration = NO_DURATION; // only miss once
-					registry.remove_all_components_of(lane_hold[3]);
-				}
-			}
+			handle_note_release(lane4);
 			break;
 		default:
 			break;
 		}
 
+	}
+}
+
+void Battle::handle_note_release(int lane_index) {
+	// Retrieve the entity being held in the given lane
+	Entity entity = lane_hold[lane_index];
+	if (registry.notes.has(entity)) {
+		Note& note = registry.notes.get(entity);
+		// Player released too early
+		if (note.curr_duration > HOLD_DURATION_LEEWAY) {
+			audio->stopHoldNote(lane_index);
+			audio->playMissedNote();
+			note.curr_duration = NO_DURATION; // only miss once
+			registry.remove_all_components_of(entity);
+			combo = 0;
+		}
 	}
 }
 

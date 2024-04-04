@@ -35,6 +35,14 @@ class Battle {
             missed = -5
         };
 
+        // Indices of lane for readability
+        enum Lane {
+            lane1 = 0,
+            lane2 = 1,
+            lane3 = 2,
+            lane4 = 3
+        };
+
         void init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio, Serializer* saver);
 
         // Releases all associated resources
@@ -79,10 +87,6 @@ class Battle {
         bool f_key_pressed = false;
         bool j_key_pressed = false;
         bool k_key_pressed = false;
-        bool d_key_held = false;
-        bool f_key_held = false;
-        bool j_key_held = false;
-        bool k_key_held = false;
         Standing standing;
         int perfect_counter = 0;
         int good_counter = 0;
@@ -113,6 +117,7 @@ class Battle {
         float calculate_adjustment();
         void setReminderPopUp();
         void handle_exit_reminder();
+        void handle_note_release(int lane_index);
 
         static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
@@ -123,6 +128,10 @@ class Battle {
         const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };
         const vec3 ALRIGHT_COLOUR = { 255.f, 255.f, 1.f };
         const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
+
+        const vec4 BACK_AND_FORTH_COLOUR = { -1.f, 0.2f, 1.f, 0.f }; // blue
+        const vec4 BEAT_RUSH_COLOUR = { 1.5f, -0.2f, -0.2f, 0.f }; // red
+        const vec4 UNISON_COLOUR = { 1.f, -0.2f, -1.f, 0.f }; // orange
 
         const float APPROX_FRAME_DURATION = 16.6f;
         const float LEEWAY_FRAMES = 2.f;
@@ -155,9 +164,11 @@ class Battle {
         int mode_index;
         float last_beat;
 
-        // held note trackers
+        // held note information
         float NO_DURATION = -1.0f;
+        // duration for locking a lane from spawning notes
         float lane_locked[4] = { NO_DURATION, NO_DURATION, NO_DURATION, NO_DURATION };
+        // the entity (note) that a lane has collided with and is currently being held
         Entity lane_hold[4];
 
         // random generation
