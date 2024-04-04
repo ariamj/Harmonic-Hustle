@@ -27,6 +27,9 @@ public:
 	int playHitGood();
 	int playHitPerfect();
 
+	int playCountdownLow();
+	int playCountdownHigh();
+
 	int musicPlaying();
 	float getSongPosition();
 
@@ -48,5 +51,6 @@ private:
 	Mix_Chunk* hit_perfect_SFX;
 	Mix_Chunk* miss_SFX;
 	Mix_Chunk* hold_SFX;
-
+	Mix_Chunk* countdown_high_SFX;
+	Mix_Chunk* countdown_low_SFX;
 };

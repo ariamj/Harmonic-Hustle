@@ -8,6 +8,8 @@
 #include "tiny_ecs.hpp"
 
 #include "trail_particle_generator.hpp"
+#include "smoke_particle_generator.hpp"
+#include "flame_particle_generator.hpp"
 #include "spark_particle_generator.hpp"
 
 #include <map>
@@ -60,7 +62,7 @@ class RenderSystem {
 		textures_path("Boss-Portrait-Neutral.png"),
 		textures_path("Player-CS-Neutral.png"),
 		textures_path("CS-Text-Box.png"),
-		textures_path("Spark-Particle.png"),
+		textures_path("Smoke-Particle.png"),
 		textures_path("Enemy-Drum-Portrait.png"),
 		textures_path("Enemy-Mic-Portrait.png"),
 		textures_path("Enemy-Drum-Portrait-Win.png"),
@@ -75,7 +77,9 @@ class RenderSystem {
 		textures_path("Player-Portrait-Lose.png"),
 		textures_path("NoteExampleAbove.png"),
 		textures_path("NoteExampleOn.png"),
-		textures_path("NoteExampleHit.png")
+		textures_path("NoteExampleHit.png"),
+		textures_path("Flame-Particle.png"),
+		textures_path("Spark-Particle.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -92,6 +96,8 @@ class RenderSystem {
 		shader_path("note"),
 		shader_path("font"),
 		shader_path("trailParticle"),
+		shader_path("smokeParticle"),
+		shader_path("flameParticle"),
 		shader_path("sparkParticle")
 	};
 

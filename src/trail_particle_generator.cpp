@@ -36,7 +36,6 @@ void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
-        newParticles = 4;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
@@ -101,7 +100,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.position = entity_motion.position + random + offset;
 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
-    particle.color += gameInfo.battleModeColor;
+    particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
     particle.velocity = entity_motion.velocity * 0.1f;
     particle.scale = DEFAULT_PARTICLE_SCALE;

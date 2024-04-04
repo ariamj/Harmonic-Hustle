@@ -125,15 +125,16 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 		}
 	);
 
-	// TODO: Depending on duration, choose different particle type?
-	// Give trail particles to entity
+	// Give particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
 	if (duration > 0.f) {
-		ParticleEffect& particles = registry.particleEffects.emplace(entity);
 		particles.type = PARTICLE_TYPE_ID::TRAIL;
-	} 
+	}
+	else {
+		particles.type = PARTICLE_TYPE_ID::FLAME;
+	}
 
 	return entity;
-
 }
 
 Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration) {
@@ -482,7 +483,7 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	return btn_base;
 }
 
-Entity createSparks(vec2 pos) {
+Entity createSmoke(vec2 pos) {
 	Entity entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
@@ -494,8 +495,27 @@ Entity createSparks(vec2 pos) {
 
 	// Give trail particles to entity
 	ParticleEffect& particles = registry.particleEffects.emplace(entity);
-	particles.type = PARTICLE_TYPE_ID::SPARK;
+	particles.type = PARTICLE_TYPE_ID::SMOKE;
 	particles.max_particles = 20;
+
+	return entity;
+}
+
+Entity createSpark(vec2 pos, float max_duration) {
+	Entity entity = Entity();
+
+	Motion& motion = registry.motions.emplace(entity);
+	motion.position = pos;
+	motion.velocity = { 0.f, -100.f };
+
+	// Add timer to remove entity automatically
+	ParticleTimer& timer = registry.particleTimers.emplace(entity);
+	timer.count_ms = max_duration;
+
+	// Give trail particles to entity
+	ParticleEffect& particles = registry.particleEffects.emplace(entity);
+	particles.type = PARTICLE_TYPE_ID::SPARK;
+	// particles.max_particles = 20;
 
 	return entity;
 }

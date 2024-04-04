@@ -7,17 +7,17 @@
 ** Creative Commons, either version 4 of the License, or (at your
 ** option) any later version.
 ******************************************************************/
-#include "spark_particle_generator.hpp"
+#include "flame_particle_generator.hpp"
 #include "iostream"
 
 
-SparkParticleGenerator::SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture)
+FlameParticleGenerator::FlameParticleGenerator(GLuint shaderProgram, GLuint used_texture)
     : ParticleGenerator(shaderProgram, used_texture)
 {
     // init is called in ParticleGenerator constructor
 }
 
-void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
+void FlameParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
     for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
         Entity entity = blocks[i];
 
@@ -36,7 +36,7 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
-        newParticles = 1;
+        newParticles = 4;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
@@ -54,15 +54,14 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
 }
 
 
-void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
-    p.life -= 2.f * dt; // reduce life
+void FlameParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
+    p.life -= dt; // reduce life
     if (p.life > 0.0f)
     {	// particle is alive, thus update
-        // p.position += p.velocity * dt * 5.f;
-        p.velocity.y = lerp(-180.f, 40.f, 1.f - pow(p.life, 2));
-        p.position += p.velocity * dt * 5.f;
-
-        p.color.a -= dt * 0.f;
+        float random = ((rand() % 100) - 50) / 2.0f;
+        p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
+        p.color.a -= dt * ALPHA_FADE_MULTIPLIER;
+        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
@@ -70,25 +69,20 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     }
 }
 
-void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
+void FlameParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
-    float random = ((rand() % 100) - 50);
+    float random = ((rand() % 100) - 50) / 10.0f;
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
+    particle.position = entity_motion.position + random + offset;
 
-    if (random > 0.f) {
-        particle.position = vec2(entity_motion.position.x + (NOTE_WIDTH + random) / 20.f, gameInfo.height / 1.2f);
-    } else {
-        particle.position = vec2(entity_motion.position.x - (NOTE_WIDTH - random )/ 5.f, gameInfo.height / 1.2f);
-    }
-
-    particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
-    // particle.color += gameInfo.particle_color_adjustment;
+    particle.color = glm::vec4(rColor, rColor, rColor, 0.4f);
+    particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = vec2(random * 0.6f, -50.f);
-    particle.scale = DEFAULT_PARTICLE_SCALE * 2.f;
+    particle.velocity = entity_motion.velocity * 0.1f;
+    particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 
-PARTICLE_TYPE_ID SparkParticleGenerator::getType() {
-    return PARTICLE_TYPE_ID::SPARK;
+PARTICLE_TYPE_ID FlameParticleGenerator::getType() {
+    return PARTICLE_TYPE_ID::FLAME;
 }

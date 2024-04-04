@@ -146,7 +146,7 @@ struct GameInfo {
 	bool is_game_over_finished = false;
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
-	vec4 battleModeColor;
+	vec4 particle_color_adjustment;
 	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in ms
 };
 extern GameInfo gameInfo;
@@ -273,8 +273,8 @@ enum class TEXTURE_ASSET_ID {
 	BATTLEBOSS = BOSS_CS + 1,
 	PLAYER_CS = BATTLEBOSS + 1,
 	BOX_CS = PLAYER_CS + 1,
-	SPARK_PARTICLE = BOX_CS + 1,
-	BATTLEENEMY_DRUM = SPARK_PARTICLE + 1,
+	SMOKE_PARTICLE = BOX_CS + 1,
+	BATTLEENEMY_DRUM = SMOKE_PARTICLE + 1,
 	BATTLEENEMY_MIC = BATTLEENEMY_DRUM + 1,
 	BATTLEENEMY_DRUM_WIN = BATTLEENEMY_MIC + 1,
 	BATTLEENEMY_MIC_WIN = BATTLEENEMY_DRUM_WIN + 1,
@@ -289,8 +289,10 @@ enum class TEXTURE_ASSET_ID {
 	NOTE_EXAMPLE_ABOVE = BATTLEPLAYER_LOSE + 1,
 	NOTE_EXAMPLE_ON = NOTE_EXAMPLE_ABOVE + 1,
 	NOTE_EXAMPLE_HIT = NOTE_EXAMPLE_ON + 1,
+	FLAME_PARTICLE = NOTE_EXAMPLE_HIT + 1,
+	SPARK_PARTICLE = FLAME_PARTICLE + 1,
 
-	TEXTURE_COUNT = NOTE_EXAMPLE_HIT +1 // keep as last variable
+	TEXTURE_COUNT = SPARK_PARTICLE +1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -307,7 +309,9 @@ enum class EFFECT_ASSET_ID {
 	NOTE = JUDGEMENT + 1,
 	FONT = NOTE + 1,
 	TRAIL_PARTICLE = FONT + 1,
-	SPARK_PARTICLE = TRAIL_PARTICLE + 1,
+	SMOKE_PARTICLE = TRAIL_PARTICLE + 1,
+	FLAME_PARTICLE = SMOKE_PARTICLE + 1,
+	SPARK_PARTICLE = FLAME_PARTICLE + 1,
 	EFFECT_COUNT = SPARK_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
@@ -328,7 +332,9 @@ const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
 enum class PARTICLE_TYPE_ID {
 	TRAIL = 0,
-	SPARK = TRAIL + 1,
+	SMOKE = TRAIL + 1,
+	FLAME = SMOKE + 1,
+	SPARK = FLAME + 1,
 	PARTICLE_TYPE_COUNT = SPARK + 1
 };
 const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;

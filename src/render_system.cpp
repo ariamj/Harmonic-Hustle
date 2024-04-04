@@ -453,6 +453,24 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 			particle_generators.push_back(generator);
 			return;
 		}
+		case (int)PARTICLE_TYPE_ID::SMOKE:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SMOKE_PARTICLE];
+			std::shared_ptr<SmokeParticleGenerator> generator =
+				std::make_shared<SmokeParticleGenerator>(SmokeParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+			return;
+		}
+		case (int)PARTICLE_TYPE_ID::FLAME:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::FLAME_PARTICLE];
+			std::shared_ptr<FlameParticleGenerator> generator =
+				std::make_shared<FlameParticleGenerator>(FlameParticleGenerator(shaderProgram, usedTexture));
+			particle_generators.push_back(generator);
+			return;
+		}
 		case (int)PARTICLE_TYPE_ID::SPARK:
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];

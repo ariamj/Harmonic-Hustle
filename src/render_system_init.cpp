@@ -520,6 +520,20 @@ void RenderSystem::initializeParticleGenerators()
 	// assert(projection_uloc > -1);
 	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
 
+	// Smoke
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// Flame
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
+
 	// Spark
 	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
 	glUseProgram(shaderProgram);
