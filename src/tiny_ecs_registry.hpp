@@ -32,6 +32,7 @@ public:
 	ComponentContainer<JudgementLine> judgmentLine;
 	ComponentContainer<CollisionTimer> collisionTimers;
 	ComponentContainer<JudgementLineTimer> judgmentLineTimers;
+	ComponentContainer<ProgressBar> progressBars;
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<Text> texts;
@@ -75,6 +76,7 @@ public:
 		registry_list.push_back(&judgmentLine);
 		registry_list.push_back(&collisionTimers);
 		registry_list.push_back(&judgmentLineTimers);
+		registry_list.push_back(&progressBars);
 		registry_list.push_back(&colours);
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&texts);

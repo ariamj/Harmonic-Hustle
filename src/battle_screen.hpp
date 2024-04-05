@@ -71,6 +71,9 @@ class Battle {
         void handle_note_hit(Entity entity, Entity entity_other);
         void handleRhythmInput(int action, int key);
 
+        // Song Progress bar
+        void updateSongProgressBar();
+
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
         void handle_mouse_move(vec2 pos);
@@ -198,4 +201,11 @@ class Battle {
         
         bool in_reminder = true;
         bool just_exited_reminder = false;
+
+        // progress bar
+        Entity progress_bar;
+        vec2 score_pos;
+        vec2 threshold_pos;
+        vec2 progress_bar_pos;
+        vec2 progress_bar_base_size;
 };
