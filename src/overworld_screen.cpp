@@ -76,7 +76,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		std::string levelText = "lvl " + std::to_string(enemyLevel);
         if (enemyLevel > playerLevel) {
             if (!registry.colours.has(enemy)) {
-                registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
+                registry.colours.insert(enemy, Colour::red_enemy_tint);
             }
 			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::red, glm::mat4(1.f), Screen::OVERWORLD, true);
         } else {

@@ -4,5 +4,6 @@ enum Screen {
     SETTINGS = 2,
     START = 3,
     CUTSCENE = 4,
-    GAMEOVER = 5
+    GAMEOVER = 5,
+    TUTORIAL = 6,
 };

@@ -138,7 +138,8 @@ void Start::handle_key(int key, int scancode, int action, int mod) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 std::cout << "space pressed" << std::endl;
-                gameInfo.curr_screen = Screen::OVERWORLD;
+                // gameInfo.curr_screen = Screen::OVERWORLD;
+                gameInfo.curr_screen = Screen::TUTORIAL;
             }
             break;
         case GLFW_KEY_X:

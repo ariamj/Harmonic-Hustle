@@ -102,6 +102,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	start.init(window, renderer_arg);
 	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
+	tutorial.init(window, renderer_arg);
 
 	// Moved into here from main
 	audioSystem.init();
@@ -125,7 +126,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, glm::mat4(1.f), gameInfo.curr_screen, true);
 	}
 
-	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
+	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE && gameInfo.curr_screen != Screen::TUTORIAL) {
 		// Help binding instruction
 		vec3 text_colour = Colour::theme_blue_1;
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -192,6 +193,8 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::START) {
 		return start.handle_step(elapsed_ms_since_last_update, current_speed);
+	} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
+		return tutorial.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else {
 		return gameOver.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
@@ -277,6 +280,8 @@ void WorldSystem::restart_game() {
 
 	start.init_screen();
 	gameOver.init_screen();
+	tutorial.tutorial_progress = TutorialPart::INTRO;
+	tutorial.init_parts(TutorialPart::INTRO);
 
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();
@@ -321,6 +326,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	settings.set_visible(false);
 	battle.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
 	overworld.set_visible(true);
 	// don't restart the overworld music if coming from settings or start screen
 	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
@@ -338,6 +344,7 @@ bool WorldSystem::render_set_battle_screen() {
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
 	battle.set_visible(true);
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -360,6 +367,7 @@ bool WorldSystem::render_set_settings_screen() {
 	start.set_visible(false);
 	gameOver.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
 	settings.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -386,6 +394,7 @@ bool WorldSystem::render_set_start_screen() {
 	settings.set_visible(false);
   	cutscene.set_visible(false);
 	gameOver.set_visible(false);
+	tutorial.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -411,6 +420,7 @@ bool WorldSystem::render_set_game_over_screen() {
 	settings.set_visible(false);
   	cutscene.set_visible(false);
 	start.set_visible(false);
+	tutorial.set_visible(false);
 	gameOver.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -435,6 +445,7 @@ bool WorldSystem::render_set_cutscene() {
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(false);
+	tutorial.set_visible(false);
 	cutscene.set_visible(true);
   
 	// sets the player velocity to 0 once screen switches
@@ -450,6 +461,29 @@ bool WorldSystem::render_set_cutscene() {
 
 	std::cout << "current screen: cutscene" << std::endl;
 	return true; // added to prevent error
+};
+
+// REQUIRES current scene NOT be tutorial
+// switch to tutorial
+bool WorldSystem::render_set_tutorial() {
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.curr_screen = Screen::TUTORIAL;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+  	cutscene.set_visible(false);
+	gameOver.set_visible(false);
+	start.set_visible(false);
+	tutorial.set_visible(true);
+	
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+
+	std::cout << "current screen: tutorial" << std::endl;
+  	return true; // added to prevent error
 };
 
 void WorldSystem::checkEnemyPositions() {
@@ -521,6 +555,7 @@ void WorldSystem::handleEscInput(int action) {
 }
 
 // help key
+// can't be toggled during cut scenes or tutorial
 void WorldSystem::handleHInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "H key press" << std::endl;
@@ -561,13 +596,7 @@ void WorldSystem::handleHInput(int action) {
 			} else if (gameInfo.prev_screen == Screen::GAMEOVER) {
 				render_set_game_over_screen();
 			}
-
 		}
-		// disable help/settings during cutscenes
-		// else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-		// 	battle.start();
-		// 	render_set_battle_screen();
-		// }
 	}
 }
 
@@ -590,12 +619,10 @@ void WorldSystem::handleBackspaceInput(int action) {
 
 void WorldSystem::handleClickStartBtn() {
 	std::cout << "Clicked on 'START'" << std::endl;
-	// test button clicks
-	// testButton(start.start_btn);
 
-	// To overworld
+	// transition to tutorial after clicking new game start button
 	if (gameInfo.curr_screen == Screen::START) {
-		render_set_overworld_screen();
+		render_set_tutorial();
 	}
 }
 
@@ -725,17 +752,26 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);
-				if (gameInfo.curr_screen == Screen::OVERWORLD) {
-					render_set_overworld_screen();
+				// if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				// 	render_set_overworld_screen();
+				// }
+				// switch to tutorial after start screen
+				if (gameInfo.curr_screen == Screen::TUTORIAL) {
+					render_set_tutorial();
 				}
 			} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 				gameOver.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::START) {
+					restart_game();
 					render_set_start_screen();
 				}
 			}
 			else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 				cutscene.handle_key(key, scancode, action, mod);
+			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
+				tutorial.handle_key(key, scancode, action, mod);
+				if (gameInfo.curr_screen == Screen::OVERWORLD)
+					render_set_overworld_screen();
 			}
 			break;
 	}

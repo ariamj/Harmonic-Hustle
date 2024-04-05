@@ -206,6 +206,10 @@ struct BattleReminderPopUp {
 
 };
 
+struct TutorialParts {
+
+};
+
 struct Collision
 {
 	// Note, the first object is stored in the ECS container.entities

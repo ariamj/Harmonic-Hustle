@@ -19,6 +19,7 @@
 #include "game_over_screen.hpp"
 #include "audio_system.hpp"
 #include "cutscene.hpp"
+#include "tutorial_screen.hpp"
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -35,6 +36,7 @@ public:
 	GameOver gameOver;
 	AudioSystem audioSystem;
 	Cutscene cutscene;
+	Tutorial tutorial;
 	
 	// Creates a window
 	GLFWwindow* create_window();
@@ -69,8 +71,11 @@ private:
 	// sets the current scene to game over screen
 	bool render_set_game_over_screen();
 
-  // sets to cut scene
+  	// sets to cut scene
 	bool render_set_cutscene();
+
+	// sets the curr scene to tutorial
+	bool render_set_tutorial();
 
 	void checkEnemyPositions();
 
