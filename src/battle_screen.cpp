@@ -60,7 +60,7 @@ void Battle::init_screen() {
 	Entity progress_base = createBox(progress_bar_pos, progress_bar_base_size);
 	registry.screens.insert(progress_base, Screen::BATTLE);
 	registry.colours.insert(progress_base, Colour::theme_blue_3 + vec3(0.2));
-	
+
 	progress_bar = createBox(progress_bar_pos, vec2(progress_bar_base_size.x - (progress_bar_base_size.y * 0.2), progress_bar_base_size.y * 0.8));
 	registry.progressBars.emplace(progress_bar);
 	registry.screens.insert(progress_bar, Screen::BATTLE);
@@ -882,9 +882,13 @@ void Battle::updateSongProgressBar() {
 	float song_pos = audio->getSongPosition();
 	float duration = audio->getSongDuration();
 	float percent_done = song_pos / duration;
+	// createText(std::to_string(percent_done), vec2(gameInfo.width*3/4.f, gameInfo.height/2.f), 1.f, Colour::white, Screen::BATTLE);
 
 	Motion& motion = registry.motions.get(progress_bar);
-	if (!battle_is_over) {
+	if (in_reminder || (in_countdown && just_exited_reminder)) {
+		//fix size at 0 at start
+		motion.scale.x = 0.f;
+	} else if (!battle_is_over) {
 		float bar_length = percent_done * (progress_bar_base_size.x - (progress_bar_base_size.y * 0.2));
 		motion.position.x = progress_bar_pos.x - (progress_bar_base_size.x/2.f) + (bar_length/2.f) + (0.1 * progress_bar_base_size.y);
 		motion.scale.x = bar_length;
