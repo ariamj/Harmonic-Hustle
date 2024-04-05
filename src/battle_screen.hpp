@@ -116,7 +116,23 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
+
+        // pop up helper methods
         void setReminderPopUp();
+        void addReminderPopUpPartsLevelOne();
+        void addReminderPopUpPartsLevelTwo();
+        void addReminderPopUpPartsLevelThree();
+        void addReminderPopUpPartsLevelBoss();
+        void addDefaultReminderParts();
+        void renderReminderTextLevelOne();
+        void renderReminderTextLevelTwo();
+        void renderReminderTextLevelThree();
+        void renderReminderTextLevelBoss();
+        void renderDefaultReminderText();
+        void renderReminderText();
+        void renderGameOverText();
+
+
         void setJudgmentLineColour(int lane_index, vec3 colour);
         void handle_exit_reminder();
         void handle_note_release(int lane_index);
