@@ -46,6 +46,21 @@ struct Text
 	bool center_pos;
 };
 
+struct StaticText
+{
+	//text content stays the same (eg. title)
+};
+
+struct DynamicText
+{
+	//text content always changes (eg. score)
+};
+
+struct TextTimer
+{
+	float count_ms = 200.f;
+};
+
 struct BoxButton {
 	Entity button_base;
 	std::string text;

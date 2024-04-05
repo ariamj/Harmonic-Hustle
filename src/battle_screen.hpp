@@ -49,6 +49,8 @@ class Battle {
         // Releases all associated resources
         ~Battle();
 
+        void init_screen();
+
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
 
@@ -89,6 +91,8 @@ class Battle {
         bool j_key_pressed = false;
         bool k_key_pressed = false;
         Standing standing;
+        Entity standing_notif;
+        float min_standing_notif_counter_ms = 200.f;
         int perfect_counter = 0;
         int good_counter = 0;
         int alright_counter = 0;

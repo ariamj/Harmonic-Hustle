@@ -23,6 +23,10 @@ void Cutscene::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
+void Cutscene::init_screen() {
+    
+}
+
 bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Cutscene";
@@ -74,18 +78,18 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
         }
 
         if (registry.CSTexts.components.size() == 0) {
-            Entity text = createText(INTRO_DIALOGUE[intro_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(INTRO_DIALOGUE[intro_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
 
             // continue text
-            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, Screen::CUTSCENE);
         }
         else {
             for (auto& e : registry.CSTexts.entities) {
                 registry.texts.remove(e);
             }
 
-            Entity text = createText(INTRO_DIALOGUE[intro_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(INTRO_DIALOGUE[intro_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
     }
@@ -131,18 +135,18 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
         }
 
         if (registry.CSTexts.components.size() == 0) {
-            Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
 
             // continue text
-            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, Screen::CUTSCENE);
         }
         else {
             for (auto& e : registry.CSTexts.entities) {
                 registry.texts.remove(e);
             }
 
-            Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(BOSS_DIALOGUE[boss_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
     }else if (!gameInfo.is_game_over_finished) {
@@ -188,18 +192,18 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
         }
 
         if (registry.CSTexts.components.size() == 0) {
-            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
 
             // continue text
-            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            createText(CONT_TEXT, vec2(gameInfo.width / 1.4, gameInfo.height / 1.15), 0.5, Colour::black, Screen::CUTSCENE);
         }
         else {
             for (auto& e : registry.CSTexts.entities) {
                 registry.texts.remove(e);
             }
 
-            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, glm::mat4(1.f), Screen::CUTSCENE);
+            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
     }

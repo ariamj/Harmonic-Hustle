@@ -35,6 +35,9 @@ public:
 	ComponentContainer<vec3> colours;
 	ComponentContainer<DebugComponent> debugComponents;
 	ComponentContainer<Text> texts;
+	ComponentContainer<StaticText> staticTexts;
+	ComponentContainer<DynamicText> dynamicTexts;
+	ComponentContainer<TextTimer> textTimers;
 	ComponentContainer<BoxButton> boxButtons;
 	ComponentContainer<ParticleEffect> particleEffects;
 	ComponentContainer<BoxAreaBound> boxAreaBounds;
@@ -75,6 +78,9 @@ public:
 		registry_list.push_back(&colours);
 		registry_list.push_back(&debugComponents);
 		registry_list.push_back(&texts);
+		registry_list.push_back(&staticTexts);
+		registry_list.push_back(&dynamicTexts);
+		registry_list.push_back(&textTimers);
 		registry_list.push_back(&boxButtons);
 		registry_list.push_back(&particleEffects);
 		registry_list.push_back(&boxAreaBounds);
