@@ -8,7 +8,7 @@ class SmokeParticleGenerator : public ParticleGenerator
 public:
     // subclass constructor
     // const int amount = 500;
-    SmokeParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    SmokeParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~SmokeParticleGenerator() {};
 private:
     PARTICLE_TYPE_ID getType() override;

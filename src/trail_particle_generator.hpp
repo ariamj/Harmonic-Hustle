@@ -8,7 +8,7 @@ class TrailParticleGenerator : public ParticleGenerator
 public:
     // subclass constructor
     // const int amount = 500;
-    TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~TrailParticleGenerator() {};
 private:
     // Extend trail to appear longer

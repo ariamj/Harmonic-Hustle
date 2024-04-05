@@ -11,14 +11,14 @@
 #include "iostream"
 
 
-FlameParticleGenerator::FlameParticleGenerator(GLuint shaderProgram, GLuint used_texture)
-    : ParticleGenerator(shaderProgram, used_texture)
+FlameParticleGenerator::FlameParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
+    : ParticleGenerator(shaderProgram, used_texture, amount, max_entities)
 {
     // init is called in ParticleGenerator constructor
 }
 
 void FlameParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+    for (int i = 0; i < max_entities; i++) {
         Entity entity = blocks[i];
 
         if (entity == initialized_entity_id) {
@@ -36,7 +36,6 @@ void FlameParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
-        newParticles = 4;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,

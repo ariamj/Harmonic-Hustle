@@ -8,7 +8,7 @@ class SparkParticleGenerator : public ParticleGenerator
 public:
     // subclass constructor
     // const int amount = 500;
-    SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~SparkParticleGenerator() {};
 private:
     PARTICLE_TYPE_ID getType() override;
