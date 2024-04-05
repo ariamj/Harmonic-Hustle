@@ -517,7 +517,7 @@ Entity createSpark(vec2 pos, float max_duration, Entity entity_to_observe) {
 
 	// Add timer to remove entity automatically
 	ParticleTimer& timer = registry.particleTimers.emplace(entity);
-	timer.count_ms = max_duration;
+	timer.count_ms = max_duration + 200.f;
 	timer.entity_to_observe = entity_to_observe;
 
 	// Give trail particles to entity

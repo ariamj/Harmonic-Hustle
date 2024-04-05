@@ -54,38 +54,43 @@ void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles
 
 
 void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
-    p.life -= dt; // reduce life
-    if (p.life > 0.0f)
-    {	// particle is alive, thus update
-        p.position += p.velocity * 2.f * dt;
-        if (registry.notes.has(entity)) {
-            Note& note = registry.notes.get(entity);
-            Motion& motion = registry.motions.get(entity);
-
-            if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
-                // Don't render below judgment line if note is being held
-                p.color.a = 0.f;
-            }
-            else {
-                float distance_between_note_and_particle = motion.position.y - p.position.y - TRAIL_EXTENSION_DISTANCE;
-                float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
-                float progress = distance_between_note_and_particle / duration_as_screen_distance;
-                float random = ((rand() % 100) - 50) * 1.8f;
-                p.color.a = lerp(1.f, 0.f, progress);
-                if (note.pressed) {
-                    p.position += vec2(p.velocity.x + random, p.velocity.y) * 3.f * dt;
-                }
-            }
-        }
-        else {
-            p.color.a -= dt;
-        }
-        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+    // note that this only allows these particles to be attached to notes
+    if (!registry.notes.has(entity) || !registry.particleEffects.has(entity)) {
+        p.color.a = 0.f;
+        p.life = 0.f;
+        return;
     }
-    else {
-        // particle is dead, change alpha to hide rendering (dead particles are still rendered)
+
+    Note& note = registry.notes.get(entity);
+    p.life -= dt; // reduce life
+
+    // particle is dead or below judgment line
+    if (p.life <= 0.f || p.position.y >= 1 / 1.2f * gameInfo.height) {
+        p.color.a = 0.f;
+        return;
+    }
+
+    // particle is alive, thus update
+    p.position += p.velocity * 2.f * dt;
+    Motion& motion = registry.motions.get(entity);
+
+    if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
+        // Don't render below judgment line if note is being held
         p.color.a = 0.f;
     }
+    else {
+        float distance_between_note_and_particle = motion.position.y - p.position.y - TRAIL_EXTENSION_DISTANCE;
+        float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
+        float progress = distance_between_note_and_particle / duration_as_screen_distance;
+        float random = ((rand() % 100) - 50) * 1.8f;
+        p.color.a = lerp(1.f, 0.f, progress);
+        if (note.pressed) {
+            p.position += vec2(p.velocity.x + random, p.velocity.y) * 3.f * dt;
+        }
+    }
+
+    p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+
 }
 
 void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
@@ -98,7 +103,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
     particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = entity_motion.velocity * 0.1f;
+    particle.velocity = entity_motion.velocity * 0.2f;
     particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 

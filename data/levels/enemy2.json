@@ -214,7 +214,7 @@
                 { "unison": 160.0 }
             ]
         },
-                {
+        {
             "difficulty": "hard",
             "rhythms": 
             [
@@ -225,13 +225,13 @@
                         [
                             {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
                             {"spawn_time": 0.5, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 1.0, "duration":  1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 2}, 
+                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 2},
+                            {"spawn_time": 4.0, "duration": 1.5, "quantity": 1},
                             {"spawn_time": 4.5, "duration": -1.0, "quantity": 1},
                             {"spawn_time": 5.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 5.5, "duration": -1.0, "quantity": 1}
+                            {"spawn_time": 5.5, "duration": 1.5, "quantity": 1}
                         ],                    
                         "color":
                         [
@@ -244,11 +244,11 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 0.0, "duration": 1.0, "quantity": 1},
                             {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": 1.0, "quantity": 1}, 
                             {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 4.0, "duration": 1.0, "quantity": 2},
                             {"spawn_time": 5.0, "duration": -1.0, "quantity": 1},
                             {"spawn_time": 5.5, "duration": -1.0, "quantity": 1},
                             {"spawn_time": 6.5, "duration": -1.0, "quantity": 1},
@@ -265,9 +265,9 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 0.5, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 1} 
+                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 2},
+                            {"spawn_time": 0.5, "duration": -1.0, "quantity": 2}, 
+                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 2} 
                         ],                    
                         "color":
                         [
@@ -280,15 +280,15 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 0.0, "duration": 1.0, "quantity": 2},
                             {"spawn_time": 1.5, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": 1.0, "quantity": 2}, 
                             {"spawn_time": 3.5, "duration": -1.0, "quantity": 1},
                             {"spawn_time": 4.0, "duration": -1.0, "quantity": 1}, 
                             {"spawn_time": 5.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 6.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 6.0, "duration": -1.0, "quantity": 2},
                             {"spawn_time": 6.5, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 7.0, "duration": -1.0, "quantity": 1}
+                            {"spawn_time": 7.0, "duration": -1.0, "quantity": 2}
                         ],                    
                         "color":
                         [

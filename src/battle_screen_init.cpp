@@ -153,7 +153,12 @@ bool Battle::loadLevelFromFile(int index) {
 			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
 			convertBeatsToMilliseconds(&mode_timings, battleInfo[battle_index].bpm / 60.f);
 
+			if (battle_index == 11) {
+				int i = 0;
+			}
 			// Note timings
+			// Sort notes by spawn times
+			std::sort(battle_note_info.begin(), battle_note_info.end(), compareSpawnTimes);
 			battleInfo[battle_index].notes = battle_note_info;
 			battleInfo[battle_index].count_notes = battleInfo[battle_index].notes.size();
 			battleInfo[battle_index].count_held_notes = count_held_notes;
@@ -169,6 +174,11 @@ bool Battle::loadLevelFromFile(int index) {
 	}
 
 	return true;
+}
+
+bool Battle::compareSpawnTimes(const NoteInfo& a, const NoteInfo& b)
+{
+	return a.spawn_time < b.spawn_time;
 }
 
 int Battle::convertDifficultyToInt(std::string difficulty) {

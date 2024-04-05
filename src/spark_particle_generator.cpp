@@ -62,7 +62,7 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         p.velocity.y = lerp(-180.f, 40.f, 1.f - pow(p.life, 2));
         p.position += p.velocity * dt * 5.f;
 
-        p.color.a -= dt * 1.6f;
+        p.color.a -= dt * 2.5f;
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)

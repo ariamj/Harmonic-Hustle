@@ -442,7 +442,8 @@ void Battle::start() {
 	 //_CrtMemCheckpoint(&s1);
 
 	// For testing specific difficulty
-	gameInfo.curr_difficulty = 1;
+	// TODO: Choose in-game instead
+	gameInfo.curr_difficulty = 2;
 
 	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
@@ -459,7 +460,7 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil((num_notes + num_held_notes)* perfect / 2);
+	score_threshold = ceil((num_notes + num_held_notes) * perfect * 0.5f);
 
 	// Reset counters
 	perfect_counter = 0;
