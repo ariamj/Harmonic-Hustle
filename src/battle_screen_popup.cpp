@@ -36,18 +36,6 @@ void Battle::setReminderPopUp() {
 	}
 };
 
-void Battle::addDefaultReminderParts() {
-	float imgXPos = gameInfo.width / 2.f;
-	float imgYPos = gameInfo.height / 2.f + 45.f;
-	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
-	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
-	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
-
-	registry.battleReminderPopUpParts.emplace(aboveImg);
-	registry.battleReminderPopUpParts.emplace(onImg);
-	registry.battleReminderPopUpParts.emplace(hitImg);
-}
-
 // render entities as needed depending on difficulty, else use default
 void Battle::addReminderPopUpPartsLevelOne() {
 	switch(gameInfo.curr_difficulty) {
@@ -94,37 +82,16 @@ void Battle::addReminderPopUpPartsLevelBoss() {
 	
 }
 
-void Battle::renderDefaultReminderText() {
-	float reminderTextYPos = gameInfo.height / 3.7f;
-	float reminderTextXPos = gameInfo.width / 2.f;
-	createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+void Battle::addDefaultReminderParts() {
+	float imgXPos = gameInfo.width / 2.f;
+	float imgYPos = gameInfo.height / 2.f + 45.f;
+	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
+	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
+	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
 
-	reminderTextYPos += 60.f;
-	createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
-
-	reminderTextYPos += 45.f;
-	createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-	// reminderTextYPos += 50.f;
-	createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-	
-	//// space for help images
-	reminderTextYPos += 170.f;
-	createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-	createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
-
-	reminderTextYPos += 55.f;
-	createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
+	registry.battleReminderPopUpParts.emplace(aboveImg);
+	registry.battleReminderPopUpParts.emplace(onImg);
+	registry.battleReminderPopUpParts.emplace(hitImg);
 }
 
 
@@ -216,6 +183,39 @@ void Battle::renderReminderTextLevelBoss() {
 
 			// renderDefaultReminderText();
 	}
+}
+
+void Battle::renderDefaultReminderText() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+	createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 60.f;
+	createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 45.f;
+	createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+	// reminderTextYPos += 50.f;
+	createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 40.f;
+	createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 40.f;
+	createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+	
+	//// space for help images
+	reminderTextYPos += 170.f;
+	createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 40.f;
+	createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
+
+	createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
+
+	reminderTextYPos += 55.f;
+	createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
 }
 
 void Battle::handle_exit_reminder() {

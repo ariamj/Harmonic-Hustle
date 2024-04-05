@@ -117,24 +117,27 @@ class Battle {
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
 
-        // pop up helper methods
+        // helpers for reminder pop up -> entities
         void setReminderPopUp();
         void addReminderPopUpPartsLevelOne();
         void addReminderPopUpPartsLevelTwo();
         void addReminderPopUpPartsLevelThree();
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
+
+        // helpers for reminder pop up -> texts
+        void renderReminderText();
         void renderReminderTextLevelOne();
         void renderReminderTextLevelTwo();
         void renderReminderTextLevelThree();
         void renderReminderTextLevelBoss();
         void renderDefaultReminderText();
-        void renderReminderText();
+
+        void handle_exit_reminder();
+        
         void renderGameOverText();
 
-
         void setJudgmentLineColour(int lane_index, vec3 colour);
-        void handle_exit_reminder();
         void handle_note_release(int lane_index);
 
         static const int NUM_LANES = 4;
