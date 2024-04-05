@@ -882,7 +882,6 @@ void Battle::updateSongProgressBar() {
 	float song_pos = audio->getSongPosition();
 	float duration = audio->getSongDuration();
 	float percent_done = song_pos / duration;
-	// createText(std::to_string(percent_done), vec2(gameInfo.width*3/4.f, gameInfo.height/2.f), 1.f, Colour::white, Screen::BATTLE);
 
 	Motion& motion = registry.motions.get(progress_bar);
 	if (in_reminder || (in_countdown && just_exited_reminder)) {
