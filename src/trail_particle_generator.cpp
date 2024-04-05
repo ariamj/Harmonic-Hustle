@@ -57,32 +57,28 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     p.life -= dt; // reduce life
     if (p.life > 0.0f)
     {	// particle is alive, thus update
-        p.position += p.velocity * dt;
+        p.position += p.velocity * 2.f * dt;
         if (registry.notes.has(entity)) {
             Note& note = registry.notes.get(entity);
-            // Manage particles for held-notes
-            if (note.duration > 0.f) {
-                if (note.pressed) {
-                    if (p.position.y >= 1 / 1.2f * gameInfo.height) {
-                        p.color.a = 0.f;
-                    }
-                    else {
-                        float random = ((rand() % 100) - 50) * 1.8f;
-                        p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
-                        p.position += p.velocity * dt;
-                        p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
-                    }
-                }
-                else {
-                    p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
-                }
+            Motion& motion = registry.motions.get(entity);
+
+            if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
+                // Don't render below judgment line if note is being held
+                p.color.a = 0.f;
             }
             else {
-                p.color.a -= dt * 2.5f;
+                float distance_between_note_and_particle = motion.position.y - p.position.y - TRAIL_EXTENSION_DISTANCE;
+                float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
+                float progress = distance_between_note_and_particle / duration_as_screen_distance;
+                float random = ((rand() % 100) - 50) * 1.8f;
+                p.color.a = lerp(1.f, 0.f, progress);
+                if (note.pressed) {
+                    p.position += vec2(p.velocity.x + random, p.velocity.y) * 3.f * dt;
+                }
             }
         }
         else {
-            p.color.a -= dt * 2.5;
+            p.color.a -= dt;
         }
         p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
     }
