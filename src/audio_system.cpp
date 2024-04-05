@@ -210,6 +210,10 @@ float AudioSystem::getSongPosition() {
 	return Mix_GetMusicPosition(current_music);
 }
 
+float AudioSystem::getSongDuration() {
+	return Mix_MusicDuration(current_music);
+}
+
 void AudioSystem::pauseMusic() {
 	Mix_PauseMusic();
 }

@@ -38,14 +38,33 @@ Battle::~Battle() {
 };
 
 void Battle::init_screen() {
+	score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
+	threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
+	progress_bar_pos = vec2(gameInfo.width/2.f, 35.f);
+	progress_bar_base_size = vec2(1000.f, 40.f);
+	
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
 	vec3 text_colour = Colour::light_gray;
 	float text_scale = 1.5f;
-	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+
+	// Score labels
+	createText("SCORE", score_pos - vec2(50.f), 0.45f, Colour::khaki, Screen::BATTLE, true, true);
+	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE, true, true);
+
+	// Song progress bar
+	Entity progress_base = createBox(progress_bar_pos, progress_bar_base_size);
+	registry.screens.insert(progress_base, Screen::BATTLE);
+	registry.colours.insert(progress_base, Colour::theme_blue_3 + vec3(0.2));
+	
+	progress_bar = createBox(progress_bar_pos, vec2(progress_bar_base_size.x - (progress_bar_base_size.y * 0.2), progress_bar_base_size.y * 0.8));
+	registry.progressBars.emplace(progress_bar);
+	registry.screens.insert(progress_bar, Screen::BATTLE);
+	registry.colours.insert(progress_bar, Colour::theme_blue_3 - vec3(0.05));
 }
 
 
@@ -63,20 +82,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
 	if (registry.combos.components.size() == 0) {
-		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, Colour::light_gray, Screen::BATTLE, true);
+		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 75.f), 0.9f, Colour::light_gray, Screen::BATTLE, true);
 		registry.combos.emplace(c);
 	}
 
+	updateSongProgressBar();
+
 	// render score
-	vec2 score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
 	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, Screen::BATTLE);
-	createText("SCORE", score_pos - vec2(50.f), 0.45f, Colour::khaki, Screen::BATTLE);
 	// render score threshold
-	vec2 threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
 	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
-	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE);
 
 	if (in_reminder) {
 		// renderReminderText();
@@ -857,6 +874,23 @@ void Battle::handle_note_release(int lane_index) {
 			// TODO: Remove particles immediately on releasing early (?)
 			combo = 0;
 		}
+	}
+}
+
+void Battle::updateSongProgressBar() {
+	//song progress bar
+	float song_pos = audio->getSongPosition();
+	float duration = audio->getSongDuration();
+	float percent_done = song_pos / duration;
+
+	Motion& motion = registry.motions.get(progress_bar);
+	if (!battle_is_over) {
+		float bar_length = percent_done * (progress_bar_base_size.x - (progress_bar_base_size.y * 0.2));
+		motion.position.x = progress_bar_pos.x - (progress_bar_base_size.x/2.f) + (bar_length/2.f) + (0.1 * progress_bar_base_size.y);
+		motion.scale.x = bar_length;
+	} else {
+		motion.position = progress_bar_pos;
+		motion.scale.x = progress_bar_base_size.x - (progress_bar_base_size.y * 0.2);
 	}
 }
 
