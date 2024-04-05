@@ -51,9 +51,9 @@ void Battle::addDefaultReminderParts() {
 // render entities as needed depending on difficulty, else use default
 void Battle::addReminderPopUpPartsLevelOne() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			addDefaultReminderParts();
 	}
@@ -62,9 +62,9 @@ void Battle::addReminderPopUpPartsLevelOne() {
 // render entities as needed depending on difficulty, else use default
 void Battle::addReminderPopUpPartsLevelTwo() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			addDefaultReminderParts();
 	}
@@ -74,9 +74,9 @@ void Battle::addReminderPopUpPartsLevelTwo() {
 // render entities as needed depending on difficulty, else use default
 void Battle::addReminderPopUpPartsLevelThree() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			addDefaultReminderParts();
 	}
@@ -85,9 +85,9 @@ void Battle::addReminderPopUpPartsLevelThree() {
 
 void Battle::addReminderPopUpPartsLevelBoss() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			addDefaultReminderParts();
 	}
@@ -149,9 +149,9 @@ void Battle::renderReminderText() {
 
 void Battle::renderReminderTextLevelOne() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			renderDefaultReminderText();
 	}
@@ -159,9 +159,9 @@ void Battle::renderReminderTextLevelOne() {
 
 void Battle::renderReminderTextLevelTwo() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			renderDefaultReminderText();
 	}
@@ -169,9 +169,9 @@ void Battle::renderReminderTextLevelTwo() {
 
 void Battle::renderReminderTextLevelThree() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			renderDefaultReminderText();
 	}
@@ -179,9 +179,9 @@ void Battle::renderReminderTextLevelThree() {
 
 void Battle::renderReminderTextLevelBoss() {
 	switch(gameInfo.curr_difficulty) {
+		case 0:
 		case 1:
 		case 2:
-		case 3:
 		default:
 			float reminderTextYPos = gameInfo.height / 3.7f;
 			float reminderTextXPos = gameInfo.width / 2.f;
