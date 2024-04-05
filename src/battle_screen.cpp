@@ -79,7 +79,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE);
 
 	if (in_reminder) {
-		renderReminderText();
+		// renderReminderText();
 	} else if (in_countdown) {
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game

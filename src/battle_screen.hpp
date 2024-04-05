@@ -130,12 +130,12 @@ class Battle {
         void addDefaultReminderParts();
 
         // helpers for reminder pop up -> texts
-        void renderReminderText();
-        void renderReminderTextLevelOne();
-        void renderReminderTextLevelTwo();
-        void renderReminderTextLevelThree();
-        void renderReminderTextLevelBoss();
-        void renderDefaultReminderText();
+        // void renderReminderText();
+        // void renderReminderTextLevelOne();
+        // void renderReminderTextLevelTwo();
+        // void renderReminderTextLevelThree();
+        // void renderReminderTextLevelBoss();
+        // void renderDefaultReminderText();
 
         void handle_exit_reminder();
         

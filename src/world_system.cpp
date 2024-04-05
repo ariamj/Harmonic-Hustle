@@ -741,6 +741,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 				gameOver.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::START) {
+					restart_game();
 					render_set_start_screen();
 				}
 			}
