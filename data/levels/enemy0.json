@@ -116,11 +116,11 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 0.0, "duration": 1.0, "quantity": 2},
                             {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 2}, 
                             {"spawn_time": 2.5, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}
+                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 2}
                         ],                    
                         "color":
                         [
@@ -134,11 +134,11 @@
                         "note_timings":
                         [
                             {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 2}, 
                             {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}, 
-                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 5.5, "duration": -1.0, "quantity": 1}
+                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 2}, 
+                            {"spawn_time": 4.0, "duration": 1.0, "quantity": 3},
+                            {"spawn_time": 5.5, "duration": -1.0, "quantity": 2}
                         ],                    
                         "color":
                         [

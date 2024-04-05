@@ -324,11 +324,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						createSmoke(vec2(motion.position.x, 1/1.2 * gameInfo.height));
 						setJudgmentLineColour(i, PERFECT_COLOUR);
 						registry.remove_all_components_of(lane_hold[i]);
-
 					}
 				}
 			}
-
 		}
 	}
 	return true;
@@ -461,7 +459,8 @@ void Battle::start() {
 	 //_CrtMemCheckpoint(&s1);
 
 	// For testing specific difficulty
-	gameInfo.curr_difficulty = 1;
+	// TODO: Choose in-game instead
+	gameInfo.curr_difficulty = 2;
 
 	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
@@ -478,7 +477,7 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil((num_notes + num_held_notes)* perfect / 2);
+	score_threshold = ceil((num_notes + num_held_notes) * perfect * 0.5f);
 
 	// Reset counters
 	perfect_counter = 0;
@@ -786,7 +785,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	if (registry.notes.has(entity_other)) {
 		float duration = registry.notes.get(entity_other).duration;
 		if (duration > -1.f) {
-			createSpark(note_position, duration);
+			createSpark(note_position, duration, entity_other);
 		}
 	}
 

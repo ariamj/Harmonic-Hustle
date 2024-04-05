@@ -93,7 +93,6 @@ bool Serializer::save_game() {
 	root["player"]["position"].append(motion.position.x);
 	root["player"]["position"].append(motion.position.y);
 	registry.list_all_components();
-	int count = 0;
 	for (int i = 0; i < registry.enemies.size(); i++) {
 		Entity e = registry.enemies.entities[i];
 		const auto& m = registry.motions.get(e);

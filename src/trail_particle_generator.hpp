@@ -11,6 +11,8 @@ public:
     TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
     ~TrailParticleGenerator() {};
 private:
+    // Extend trail to appear longer
+    const float TRAIL_EXTENSION_DISTANCE = 50.f;
     PARTICLE_TYPE_ID getType() override;
     void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) override;
     void updateParticleBehaviours(Particle& p, float dt, Entity entity);

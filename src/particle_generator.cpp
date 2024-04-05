@@ -142,7 +142,6 @@ void ParticleGenerator::init()
     // 
 
     for (int i = 0; i < max_particles; i++) {
-        int size = particles.size();
         particles.push_back(Particle());
     }
     initialized_entity_id = blocks[0];
