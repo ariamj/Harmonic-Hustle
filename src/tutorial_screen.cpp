@@ -46,10 +46,10 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
     title_ss << "Harmonic Hustle";
     title_ss << " --- Tutorial ";
     glfwSetWindowTitle(window, title_ss.str().c_str());
-    createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL );
+    // createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL );
 
 
-    createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
+    // createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
     return true;
 }
 
@@ -76,7 +76,10 @@ void Tutorial::initIntroParts() {
 
     ////////// ADD TEXT
 
-    vec2 spriteExPos2 = {gameInfo.width * 8.5f / 10.f, gameInfo.height * 1.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f};
+    Entity titleText = createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL, true, true );
+    registry.tutorialParts.emplace(titleText);
+
+    vec2 spriteExPos2 = spriteExPos - vec2{0, PLAYER_HEIGHT / 2.f - 10.f};
     Entity text1 = createText("lvl 1", spriteExPos2, 0.5f, Colour::green, Screen::TUTORIAL, true, true);
 
     vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
@@ -142,25 +145,78 @@ void Tutorial::initIntroParts() {
     registry.tutorialParts.emplace(text15);
     registry.tutorialParts.emplace(text16);
 
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(contText);
+
 }
 
 void Tutorial::initBattleExplainParts() {
-    vec2 spriteExPos = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.85f / 6.f};
+    vec2 spriteExPos = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.7f / 6.f};
     Entity playerSpriteExample = createHelpImage(renderer, spriteExPos, vec2(PLAYER_WIDTH, PLAYER_HEIGHT) * vec2(0.7), TEXTURE_ASSET_ID::ENEMY_GUITAR, Screen::TUTORIAL);
     
     registry.tutorialParts.emplace(playerSpriteExample);
 
     // ADDING TEXT
 
-    vec2 spriteExPos2 = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.85f / 6.f - PLAYER_HEIGHT * 0.7f / 2.f - 7.f };
+    vec2 spriteExPos2 = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.7f / 6.f - PLAYER_HEIGHT * 0.7f / 2.f - 7.f };
     Entity text1 = createText("lvl 1", spriteExPos2, 0.5f * 0.7f, Colour::white, Screen::TUTORIAL, true, true);
 
-    float rightXPos = gameInfo.width * 5.f / 10.f;
-    float currY = gameInfo.height / 7.f;
+    float rightXPos = gameInfo.width * 5.5f / 10.f;
+    float currY = gameInfo.height / 12.f;
     Entity text2 = createText("If you hit one of these guys, you'll enter a battle!", vec2(rightXPos, currY), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currY += 50.f;
+    float centerX = gameInfo.width / 2.f;
+    Entity text3 = createText("There are 2 different types of notes in battle", vec2(rightXPos, currY), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    // note examples
+    currY += 170.f;
+    Entity text4 = createText("tap notes", vec2(gameInfo.width / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+
+    Entity text5 = createText("hold notes", vec2(gameInfo.width * 4.5f / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+
+    // note images
+    Entity tapNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 2.5f/8.f, currY), vec2(70.f, 150.f), TEXTURE_ASSET_ID::TAP_NOTE_EXAMPLE, Screen::TUTORIAL);
+    Entity holdNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 6.f/8.f, currY), vec2(80.f, 240.f), TEXTURE_ASSET_ID::HOLD_NOTE_EXAMPLE, Screen::TUTORIAL);
+
+    currY += 170.f;
+    Entity text6 = createText("to hit notes in the right lanes, use", vec2(centerX - 90.f, currY), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text7 = createText("D F J K", vec2(centerX + 370.f, currY), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
+
+    // judgement lines img
+    currY += 130.f;
+    Entity judgementLinesImage = createHelpImage(renderer, vec2(centerX, currY), vec2(410.f, 170.f), TEXTURE_ASSET_ID::JUDGEMENT_LINES_EXAMPLE, Screen::TUTORIAL);
+
+    // more text
+    currY += 130.f;
+    Entity text8 = createText("hit notes as they pass the", vec2(centerX - 90.f, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text9 = createText("center!", vec2(centerX + 310.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+
+    currY += 40.f;
+    Entity text10 = createText("the closer you are, the higher the score", vec2(centerX, currY), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currY += 70.f;
+    Entity text11 = createText("to win,", vec2(centerX - 510.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+    Entity text12 = createText("get above the score threshold in each level!", vec2(centerX + 90.f, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
 
     registry.tutorialParts.emplace(text1);
     registry.tutorialParts.emplace(text2);
+    registry.tutorialParts.emplace(text3);
+    registry.tutorialParts.emplace(text4);
+    registry.tutorialParts.emplace(text5);
+    registry.tutorialParts.emplace(tapNoteImage);
+    registry.tutorialParts.emplace(holdNoteImage);
+    registry.tutorialParts.emplace(text6);
+    registry.tutorialParts.emplace(text7);
+    registry.tutorialParts.emplace(judgementLinesImage);
+    registry.tutorialParts.emplace(text8);
+    registry.tutorialParts.emplace(text9);
+    registry.tutorialParts.emplace(text10);
+    registry.tutorialParts.emplace(text11);
+    registry.tutorialParts.emplace(text12);
+
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(contText);
 }
 
 void Tutorial::initAdvancingExplaingParts() {

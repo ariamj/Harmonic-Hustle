@@ -42,10 +42,10 @@ void Battle::init_screen() {
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
 	vec3 text_colour = Colour::light_gray;
 	float text_scale = 1.5f;
-	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
+	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true, true);
 }
 
 
