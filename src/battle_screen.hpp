@@ -121,21 +121,13 @@ class Battle {
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
 
-        // helpers for reminder pop up -> entities
+        // helpers for reminder pop up
         void setReminderPopUp();
         void addReminderPopUpPartsLevelOne();
         void addReminderPopUpPartsLevelTwo();
         void addReminderPopUpPartsLevelThree();
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
-
-        // helpers for reminder pop up -> texts
-        // void renderReminderText();
-        // void renderReminderTextLevelOne();
-        // void renderReminderTextLevelTwo();
-        // void renderReminderTextLevelThree();
-        // void renderReminderTextLevelBoss();
-        // void renderDefaultReminderText();
 
         void handle_exit_reminder();
         
