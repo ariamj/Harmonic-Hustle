@@ -483,8 +483,11 @@ void Battle::start() {
 	total_early_distance = 0;
 
 	Entity e = registry.battleEnemy.entities[0];
+	Entity ep = registry.battlePlayer.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);
+	RenderRequest& render_p = registry.renderRequests.get(ep);
 
+	render_p.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER;
 	switch (gameInfo.curr_level) {
 		case 1:
 			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY;
