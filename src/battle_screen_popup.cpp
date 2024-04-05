@@ -77,146 +77,117 @@ void Battle::addReminderPopUpPartsLevelBoss() {
 		case 1:
 		case 2:
 		default:
-			addDefaultReminderParts();
+			float imgXPos = gameInfo.width / 2.f;
+			float imgYPos = gameInfo.height / 2.f + 45.f;
+			Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
+			Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
+			Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
+
+			registry.battleReminderPopUpParts.emplace(aboveImg);
+			registry.battleReminderPopUpParts.emplace(onImg);
+			registry.battleReminderPopUpParts.emplace(hitImg);
+
+			float reminderTextYPos = gameInfo.height / 3.7f;
+			float reminderTextXPos = gameInfo.width / 2.f;
+			// testing update boss battle text
+			Entity text1 = createText("It's time for the boss battle!", vec2(reminderTextXPos, reminderTextYPos), 0.85f, Colour::red, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 60.f;
+			Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 45.f;
+			Entity text3 = createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+			// reminderTextYPos += 50.f;
+			Entity text4 = createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 40.f;
+			Entity text5 = createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 40.f;
+			Entity text6 = createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+			
+			//// space for help images
+			reminderTextYPos += 170.f;
+			Entity text7 = createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 40.f;
+			Entity text8 = createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+			Entity text9 = createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+
+			reminderTextYPos += 55.f;
+			Entity text10 = createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
+			registry.battleReminderPopUpParts.emplace(text1);
+			registry.battleReminderPopUpParts.emplace(text2);
+			registry.battleReminderPopUpParts.emplace(text3);
+			registry.battleReminderPopUpParts.emplace(text4);
+			registry.battleReminderPopUpParts.emplace(text5);
+			registry.battleReminderPopUpParts.emplace(text6);
+			registry.battleReminderPopUpParts.emplace(text7);
+			registry.battleReminderPopUpParts.emplace(text8);
+			registry.battleReminderPopUpParts.emplace(text9);
+			registry.battleReminderPopUpParts.emplace(text10);
+			// addDefaultReminderParts();
 	}
 	
 }
 
 void Battle::addDefaultReminderParts() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+	Entity text1 = createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 45.f;
+	Entity text3 = createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	// reminderTextYPos += 50.f;
+	Entity text4 = createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 40.f;
+	Entity text5 = createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 40.f;
+	Entity text6 = createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	
+	// help images
 	float imgXPos = gameInfo.width / 2.f;
 	float imgYPos = gameInfo.height / 2.f + 45.f;
 	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
 	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
 	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
 
+	//// space for help images
+	reminderTextYPos += 170.f;
+	Entity text7 = createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 40.f;
+	Entity text8 = createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	Entity text9 = createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 55.f;
+	Entity text10 = createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
 	registry.battleReminderPopUpParts.emplace(aboveImg);
 	registry.battleReminderPopUpParts.emplace(onImg);
 	registry.battleReminderPopUpParts.emplace(hitImg);
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text4);
+	registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(text7);
+	registry.battleReminderPopUpParts.emplace(text8);
+	registry.battleReminderPopUpParts.emplace(text9);
+	registry.battleReminderPopUpParts.emplace(text10);
 }
 
-
-void Battle::renderReminderText() {
-	// render help text with simple instructions
-
-	// render entities as needed depending on level
-	switch (gameInfo.curr_level) {
-		case 1:
-			renderReminderTextLevelOne();
-			break;
-		case 2:
-			renderReminderTextLevelTwo();
-			break;
-		case 3:
-			renderReminderTextLevelThree();
-			break;
-		default: // boss level
-			renderReminderTextLevelBoss();
-	}
-}
-
-void Battle::renderReminderTextLevelOne() {
-	switch(gameInfo.curr_difficulty) {
-		case 0:
-		case 1:
-		case 2:
-		default:
-			renderDefaultReminderText();
-	}
-}
-
-void Battle::renderReminderTextLevelTwo() {
-	switch(gameInfo.curr_difficulty) {
-		case 0:
-		case 1:
-		case 2:
-		default:
-			renderDefaultReminderText();
-	}
-}
-
-void Battle::renderReminderTextLevelThree() {
-	switch(gameInfo.curr_difficulty) {
-		case 0:
-		case 1:
-		case 2:
-		default:
-			renderDefaultReminderText();
-	}
-}
-
-void Battle::renderReminderTextLevelBoss() {
-	switch(gameInfo.curr_difficulty) {
-		case 0:
-		case 1:
-		case 2:
-		default:
-			float reminderTextYPos = gameInfo.height / 3.7f;
-			float reminderTextXPos = gameInfo.width / 2.f;
-			createText("It's time for the boss battle!", vec2(reminderTextXPos, reminderTextYPos), 0.85f, Colour::red, Screen::BATTLE, true);
-
-			reminderTextYPos += 60.f;
-			createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true);
-
-			reminderTextYPos += 45.f;
-			createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-			// reminderTextYPos += 50.f;
-			createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true);
-
-			reminderTextYPos += 40.f;
-			createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-			reminderTextYPos += 40.f;
-			createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-			
-			//// space for help images
-			reminderTextYPos += 170.f;
-			createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-			reminderTextYPos += 40.f;
-			createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-			createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true);
-
-			reminderTextYPos += 55.f;
-			createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true);
-
-			// renderDefaultReminderText();
-	}
-}
-
-void Battle::renderDefaultReminderText() {
-	float reminderTextYPos = gameInfo.height / 3.7f;
-	float reminderTextXPos = gameInfo.width / 2.f;
-	createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, Screen::BATTLE, true);
-
-	reminderTextYPos += 60.f;
-	createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true);
-
-	reminderTextYPos += 45.f;
-	createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-	// reminderTextYPos += 50.f;
-	createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-	
-	//// space for help images
-	reminderTextYPos += 170.f;
-	createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-	reminderTextYPos += 40.f;
-	createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true);
-
-	createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true);
-
-	reminderTextYPos += 55.f;
-	createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true);
-}
 
 void Battle::handle_exit_reminder() {
 	in_reminder = false;
@@ -265,33 +236,33 @@ void Battle::renderGameOverText() {
 	float score_x_spacing = overlay_motion.scale.x/8.f;
 
 	if (battleWon()) {
-		createText("Congratulations!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE, true);
-		createText("Enemy has been defeated", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::black, Screen::BATTLE, true);
+		createText("Congratulations!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE);
+		createText("Enemy has been defeated", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::black, Screen::BATTLE);
 	} else {
-		createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3.5)), 0.75f, Colour::black, Screen::BATTLE, true);
+		createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3.5)), 0.75f, Colour::black, Screen::BATTLE);
 	}
-	createText("Score: " + std::to_string((int)score), vec2(gameInfo.width/2.f - (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, Screen::BATTLE, true);
-	createText("Enemy: " + std::to_string((int)score_threshold), vec2(gameInfo.width/2.f + (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, Screen::BATTLE, true);
+	createText("Score: " + std::to_string((int)score), vec2(gameInfo.width/2.f - (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, Screen::BATTLE);
+	createText("Enemy: " + std::to_string((int)score_threshold), vec2(gameInfo.width/2.f + (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, Screen::BATTLE);
 	
 	// Scoring
 	float scoring_text_size = 0.5f;
-	createText("Perfect", vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_purple, Screen::BATTLE, true);
-	createText("Good", vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_green, Screen::BATTLE, true);
-	createText("Alright", vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_yellow, Screen::BATTLE, true);
-	createText("Missed", vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_red, Screen::BATTLE, true);
+	createText("Perfect", vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_purple, Screen::BATTLE);
+	createText("Good", vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_green, Screen::BATTLE);
+	createText("Alright", vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_yellow, Screen::BATTLE);
+	createText("Missed", vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_red, Screen::BATTLE);
 
-	createText(std::to_string(perfect_counter), vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_purple, Screen::BATTLE, true);
-	createText(std::to_string(good_counter), vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_green, Screen::BATTLE, true);
-	createText(std::to_string(alright_counter), vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_yellow, Screen::BATTLE, true);
-	createText(std::to_string(missed_counter), vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_red, Screen::BATTLE, true);
+	createText(std::to_string(perfect_counter), vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_purple, Screen::BATTLE);
+	createText(std::to_string(good_counter), vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_green, Screen::BATTLE);
+	createText(std::to_string(alright_counter), vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_yellow, Screen::BATTLE);
+	createText(std::to_string(missed_counter), vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_red, Screen::BATTLE);
 
 	// Combo
-	createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 3.25)), 0.6f, Colour::black, Screen::BATTLE, true);
+	createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 3.25)), 0.6f, Colour::black, Screen::BATTLE);
 
 	// next instruction
-	createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.75)), 0.4f, Colour::black, Screen::BATTLE, true);
+	createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.75)), 0.4f, Colour::black, Screen::BATTLE);
 
 	// notify savenext_note_spawn
-	createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, Screen::BATTLE, true);
+	createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, Screen::BATTLE);
 	
 }
