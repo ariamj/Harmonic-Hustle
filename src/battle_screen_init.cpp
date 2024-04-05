@@ -153,9 +153,6 @@ bool Battle::loadLevelFromFile(int index) {
 			convertBeatsToMilliseconds(&battle_note_info, battleInfo[battle_index].bpm / 60.f);
 			convertBeatsToMilliseconds(&mode_timings, battleInfo[battle_index].bpm / 60.f);
 
-			if (battle_index == 11) {
-				int i = 0;
-			}
 			// Note timings
 			// Sort notes by spawn times
 			std::sort(battle_note_info.begin(), battle_note_info.end(), compareSpawnTimes);
