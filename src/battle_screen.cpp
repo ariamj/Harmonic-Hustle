@@ -79,7 +79,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE);
 
 	if (in_reminder) {
-		renderReminderText();
+		// renderReminderText();
 	} else if (in_countdown) {
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game
@@ -483,8 +483,11 @@ void Battle::start() {
 	total_early_distance = 0;
 
 	Entity e = registry.battleEnemy.entities[0];
+	Entity ep = registry.battlePlayer.entities[0];
 	RenderRequest& render = registry.renderRequests.get(e);
+	RenderRequest& render_p = registry.renderRequests.get(ep);
 
+	render_p.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER;
 	switch (gameInfo.curr_level) {
 		case 1:
 			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY;
