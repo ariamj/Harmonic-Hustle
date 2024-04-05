@@ -21,6 +21,10 @@ void Settings::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
+void Settings::init_screen() {
+    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false, true);
+}
+
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Settings/Help";
@@ -30,8 +34,6 @@ bool Settings::handle_step(float elapsed_ms_since_last_update, float current_spe
     // Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
-
-    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false);
 
     return true;
 }

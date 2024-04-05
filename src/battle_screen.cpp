@@ -37,6 +37,17 @@ Battle::~Battle() {
 
 };
 
+void Battle::init_screen() {
+	// render judgement line key prompts
+	float text_y_pos = gameInfo.height/1.2f + 100.f;
+	vec3 text_colour = Colour::light_gray;
+	float text_scale = 1.5f;
+	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+}
+
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
 	std::stringstream title_ss;
@@ -51,22 +62,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
-	// Remove out of screen entities (Notes, etc.)
-	// while (registry.texts.entities.size() > 0)
-	// 	registry.remove_all_components_of(registry.texts.entities.back());
-	
-	// render judgement line key prompts
-	float text_y_pos = gameInfo.height/1.2f + 100.f;
-	vec3 text_colour = Colour::light_gray;
-	float text_scale = 1.5f;
-	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
-
-
 	if (registry.combos.components.size() == 0) {
-		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, text_colour, Screen::BATTLE, true);
+		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, Colour::light_gray, Screen::BATTLE, true);
 		registry.combos.emplace(c);
 	}
 
@@ -342,6 +339,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					colour = {1.f, 1.f, 1.f};
 					registry.judgmentLineTimers.remove(line);
 				}
+			}
+		}
+
+		// standing notif timers
+		// min_standing_notif_counter_ms = 200.f;
+		for (Entity text : registry.textTimers.entities) {
+			min_standing_notif_counter_ms -= elapsed_ms_since_last_update;
+
+			// remove standing notif after time expires
+			if (min_standing_notif_counter_ms < 0) {
+				registry.textTimers.remove(text);
+				registry.texts.remove(text);
 			}
 		}
 
@@ -755,7 +764,7 @@ void Battle::handle_collisions() {
 		// Retrieve information about duration before removing notehead from registry
 		if (registry.notes.has(lowest_note)) {
 			Note& note = registry.notes.get(lowest_note);
-			Motion& motion = registry.motions.get(lowest_note);
+			// Motion& motion = registry.motions.get(lowest_note);
 
 			// Now manage held notes (which does not affect regular note behaviour above)
 			if (note.duration > 0.f) {
@@ -815,6 +824,10 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 
 	// Colour
 	vec3& colour = registry.colours.get(entity);
+
+	// Standing notif
+	std::string standing_text;
+	vec3 text_colour;
 	
 	if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
@@ -822,6 +835,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
 		combo++;
+		standing_text = "PERFECT";
+		text_colour = Colour::purple;
 	}	// Determine standing
 	else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 		|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
@@ -830,10 +845,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		good_counter++;
 		colour = GOOD_COLOUR;
 		combo++;
-		// if (registry.textTimers.entities.size() == 0) {
-		// 	Entity standing_text = createText("Good", vec2(gameInfo.width/2.f, gameInfo.height/2.f), 1.f, GOOD_COLOUR, Screen::BATTLE);
-		// 	registry.textTimers.emplace(standing_text);
-		// }
+		standing_text = "GOOD";
+		text_colour = Colour::green;
 	}
 	else {
 		// set standing to Alright
@@ -841,7 +854,16 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		alright_counter++;
 		colour = ALRIGHT_COLOUR;
 		combo++;
+		standing_text = "ALRIGHT";
+		text_colour = Colour::yellow;
 	}
+
+	if (registry.textTimers.entities.size() != 0) {
+		registry.remove_all_components_of(standing_notif);
+	}
+	standing_notif = createText(standing_text, vec2(gameInfo.width/2.f, gameInfo.height/2.f), 1.f, text_colour, Screen::BATTLE, true, true);
+	registry.textTimers.emplace_with_duplicates(standing_notif);
+	min_standing_notif_counter_ms = 300.f;
 
 	// Tracking information to recommend timing adjustments
 	float displacement = note_y_pos - lane_y_pos;

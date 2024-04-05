@@ -58,7 +58,7 @@ struct DynamicText
 
 struct TextTimer
 {
-	float count_ms = 500;
+	float count_ms = 200.f;
 };
 
 struct BoxButton {

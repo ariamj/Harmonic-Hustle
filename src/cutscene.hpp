@@ -51,6 +51,8 @@ class Cutscene {
         // Releases all associated resources
         ~Cutscene();
 
+        void init_screen();
+
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
 
