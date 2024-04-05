@@ -48,107 +48,10 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
     glfwSetWindowTitle(window, title_ss.str().c_str());
     createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL );
 
-    if (tutorial_progress == TutorialPart::INTRO) {
-        renderIntroText();
-
-    } else if (tutorial_progress == TutorialPart::BATTLE_EXPLAIN) {
-        renderBattleExplainText();
-
-    } else if (tutorial_progress == TutorialPart::ADVANCING_EXPLAIN) {
-        renderAdvancingExplainText();
-    }
 
     createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
     return true;
 }
-
-
-/////////////RENDER TEXT HELPER METHODS
-
-
-void Tutorial::renderIntroText() {
-    vec2 spriteExPos = {gameInfo.width * 8.5f / 10.f, gameInfo.height * 1.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f};
-    createText("lvl 1", spriteExPos, 0.5f, Colour::green, Screen::TUTORIAL );
-
-    vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
-    createText("lvl 1", enemyExPostion, 0.5f, Colour::white, Screen::TUTORIAL );
-
-    vec2 redEnemyExPosition = vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 4.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
-    createText("lvl 2", redEnemyExPosition, 0.5f, Colour::red, Screen::TUTORIAL );
-
-    float currXPos = gameInfo.width * 4.f / 10.f;
-    float currYPos = gameInfo.height * 1.3f/ 7.f;
-
-    createText("This is you! You're currently level 1. To win this game,",
-        vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-
-    currYPos += 30.f;
-    createText("you'll have to level up to be strong enough to defeat the boss.",
-        vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-
-    currYPos += 50.f;
-    createText("On spawn, you'll be in the overworld surrounded by enemies.",
-        vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-
-    currYPos += 40.f;
-    Entity wasd = createText("W A S D",
-        vec2(gameInfo.width * 2.5f / 10.f, currYPos), 0.65f, Colour::green, Screen::TUTORIAL);
-
-    Entity wasdRest = createText("keys to move around",
-        vec2(gameInfo.width * 4.5f / 10.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL);
-
-    ///////////// right aligned
-    float rightXPos = gameInfo.width * 6.f / 10.f;
-    currYPos += 140.f;
-    createText("On spawn, you'll be in the overworld surrounded by enemies.", 
-        vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-
-    currYPos += 40.f;
-    createText("Collide and ", 
-        vec2(rightXPos - 270.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL);
-    createText("defeat same level enemies", 
-        vec2(rightXPos + 150.f, currYPos), 0.65f, Colour::red, Screen::TUTORIAL);
-
-    currYPos += 40.f;
-    createText("They'll have a white level tag", 
-        vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-
-    ////////left aligned
-    currYPos += 170.f;
-    createText("run away", 
-        vec2(currXPos - 190.f, currYPos), 0.65f, Colour::red, Screen::TUTORIAL);
-    createText("from red enemies!", 
-        vec2(currXPos + 100.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL);
-
-    currYPos += 40.f;
-    createText("they have a higher level than you.", 
-        vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-    currYPos += 30.f;
-    // TODO -> update if we rework the red enemy collision flow
-    createText("if you hit them, you'll have to restart the game!", 
-        vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL);
-}
-
-
-void Tutorial::renderBattleExplainText() {
-    // createText("TESTING 2", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true);
-    vec2 spriteExPos = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.85f / 6.f - PLAYER_HEIGHT * 0.7f / 2.f - 7.f };
-    createText("lvl 1", spriteExPos, 0.5f * 0.7f, Colour::white, Screen::TUTORIAL );
-
-    float rightXPos = gameInfo.width * 5.f / 10.f;
-    float currY = gameInfo.height / 7.f;
-    createText("If you hit one of these guys, you'll enter a battle!",
-        vec2(rightXPos, currY), 0.5f, Colour::off_white, Screen::TUTORIAL, true);
-
-}
-
-
-void Tutorial::renderAdvancingExplainText() {
-    createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true);
-
-}
-
-/////////////INIT HELPER METHODS
 
 void Tutorial::initIntroParts() {
     // vec2 spriteExPos = {gameInfo.width / 10.f, gameInfo.height / 5.f};
@@ -170,6 +73,75 @@ void Tutorial::initIntroParts() {
     registry.colours.insert(redEnemyExample, Colour::red_enemy_tint);
 
     registry.tutorialParts.emplace(redEnemyExample);
+
+    ////////// ADD TEXT
+
+    vec2 spriteExPos2 = {gameInfo.width * 8.5f / 10.f, gameInfo.height * 1.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f};
+    Entity text1 = createText("lvl 1", spriteExPos2, 0.5f, Colour::green, Screen::TUTORIAL, true, true);
+
+    vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
+    Entity text2 = createText("lvl 1", enemyExPostion, 0.5f, Colour::white, Screen::TUTORIAL, true, true);
+
+    vec2 redEnemyExPosition = vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 4.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
+    Entity text3 = createText("lvl 2", redEnemyExPosition, 0.5f, Colour::red, Screen::TUTORIAL, true, true);
+
+    float currXPos = gameInfo.width * 4.f / 10.f;
+    float currYPos = gameInfo.height * 1.3f/ 7.f;
+
+    Entity text4 = createText("This is you! You're currently level 1. To win this game,", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currYPos += 30.f;
+    Entity text5 = createText("you'll have to level up to be strong enough to defeat the boss.", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currYPos += 50.f;
+    Entity text6 = createText("On spawn, you'll be in the overworld surrounded by enemies.", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currYPos += 40.f;
+    Entity text7 = createText("W A S D", vec2(gameInfo.width * 2.5f / 10.f, currYPos), 0.65f, Colour::green, Screen::TUTORIAL, true, true);
+
+    Entity text8 = createText("keys to move around", vec2(gameInfo.width * 4.5f / 10.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    ///////////// right aligned
+    float rightXPos = gameInfo.width * 6.f / 10.f;
+    currYPos += 140.f;
+    Entity text9 = createText("On spawn, you'll be in the overworld surrounded by enemies.", vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currYPos += 40.f;
+    Entity text10 = createText("Collide and ", vec2(rightXPos - 270.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text11 = createText("defeat same level enemies", 
+        vec2(rightXPos + 150.f, currYPos), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
+
+    currYPos += 40.f;
+    Entity text12 = createText("They'll have a white level tag", vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    ////////left aligned
+    currYPos += 170.f;
+    Entity text13 = createText("run away", vec2(currXPos - 190.f, currYPos), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
+    Entity text14 = createText("from red enemies!", vec2(currXPos + 100.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    currYPos += 40.f;
+    Entity text15 = createText("they have a higher level than you.", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currYPos += 30.f;
+    // TODO -> update if we rework the red enemy collision flow
+    Entity text16 = createText("if you hit them, you'll have to restart the game!", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(text2);
+    registry.tutorialParts.emplace(text3);
+    registry.tutorialParts.emplace(text4);
+    registry.tutorialParts.emplace(text5);
+    registry.tutorialParts.emplace(text6);
+    registry.tutorialParts.emplace(text7);
+    registry.tutorialParts.emplace(text8);
+    registry.tutorialParts.emplace(text9);
+    registry.tutorialParts.emplace(text10);
+    registry.tutorialParts.emplace(text11);
+    registry.tutorialParts.emplace(text12);
+    registry.tutorialParts.emplace(text13);
+    registry.tutorialParts.emplace(text14);
+    registry.tutorialParts.emplace(text15);
+    registry.tutorialParts.emplace(text16);
+
 }
 
 void Tutorial::initBattleExplainParts() {
@@ -177,10 +149,23 @@ void Tutorial::initBattleExplainParts() {
     Entity playerSpriteExample = createHelpImage(renderer, spriteExPos, vec2(PLAYER_WIDTH, PLAYER_HEIGHT) * vec2(0.7), TEXTURE_ASSET_ID::ENEMY_GUITAR, Screen::TUTORIAL);
     
     registry.tutorialParts.emplace(playerSpriteExample);
+
+    // ADDING TEXT
+
+    vec2 spriteExPos2 = {gameInfo.width * 1.5f / 10.f, gameInfo.height * 0.85f / 6.f - PLAYER_HEIGHT * 0.7f / 2.f - 7.f };
+    Entity text1 = createText("lvl 1", spriteExPos2, 0.5f * 0.7f, Colour::white, Screen::TUTORIAL, true, true);
+
+    float rightXPos = gameInfo.width * 5.f / 10.f;
+    float currY = gameInfo.height / 7.f;
+    Entity text2 = createText("If you hit one of these guys, you'll enter a battle!", vec2(rightXPos, currY), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(text2);
 }
 
 void Tutorial::initAdvancingExplaingParts() {
-
+    Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(text1);
 }
 
 bool Tutorial::set_visible(bool isVisible) {

@@ -38,11 +38,6 @@ class Tutorial {
 
     private:
 
-        // helpers to render text
-        void renderIntroText();
-        void renderBattleExplainText();
-        void renderAdvancingExplainText();
-
         void initIntroParts();
         void initBattleExplainParts();
         void initAdvancingExplaingParts();
