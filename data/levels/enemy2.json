@@ -4,6 +4,106 @@
     "beatmaps":
     [
         {
+            "difficulty": "easy",
+            "rhythms": 
+            [
+                {
+                    "A": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 5.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 6.0, "duration": -1.0, "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "B": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 1.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 5.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 7.0, "duration": -1.0, "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "C": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                },
+                {
+                    "D": 
+                    { 
+                        "note_timings":
+                        [
+                            {"spawn_time": 0.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 2.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 4.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 5.0, "duration": -1.0, "quantity": 1}, 
+                            {"spawn_time": 6.0, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 7.0, "duration": -1.0, "quantity": 1}
+                        ],                    
+                        "color":
+                        [
+                            1.0, 1.0, 1.0, 1.0
+                        ]
+                    }
+                }
+            ],
+            "rhythm_timings": [
+                { "A": 8.0 },
+                { "A": 24.0 },
+                { "B": 40.0 },
+                { "B": 56.0 },
+                { "A": 64.0 },
+                { "A": 72.0 },
+                { "A": 80.0 },
+                { "A": 88.0 },
+                { "C": 95.0 },
+                { "D": 104.0 },
+                { "D": 120.0 },
+                { "B": 136.0 },
+                { "B": 152.0 },
+                { "B": 160.0 },
+                { "A": 168.0 },
+                { "B": 176.0 },
+                { "A": 184.0 },
+                { "C": 190.5 }
+            ],
+            "mode_timings": 
+            [
+                { "back_and_forth": 0.0 },
+                { "unison": 64.0 },
+                { "back_and_forth": 100.0 },
+                { "unison": 160.0 }
+            ]
+        },
+        {
             "difficulty": "normal",
             "rhythms": 
             [

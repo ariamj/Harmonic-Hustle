@@ -61,9 +61,9 @@ bool GameOver::handle_step(float elapsed_ms_since_last_update, float current_spe
 
     vec2 shadow_offset = vec2(10.f);
     // title - shadow
-    createText("GAME OVER", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::GAMEOVER, true);
+    createText("GAME OVER", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::GAMEOVER, true);
     // title
-    createText("GAME OVER", title_1_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::GAMEOVER, true);
+    createText("GAME OVER", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::GAMEOVER, true);
     
     // Render all button texts
     for (Entity entity : registry.boxButtons.entities) {
@@ -78,11 +78,11 @@ bool GameOver::handle_step(float elapsed_ms_since_last_update, float current_spe
             if ((text == "RESTART" && mouse_area == in_restart_btn) || (text == "HELP" && mouse_area == in_help_btn)) {
                 text_colour = Colour::white;
             }
-            createText(text, motion.position, btn.text_scale, text_colour, glm::mat4(1.f), Screen::GAMEOVER, true);
+            createText(text, motion.position, btn.text_scale, text_colour, Screen::GAMEOVER, true);
         }
     }
 
-    createText("...or press 'space' to restart game...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, glm::mat4(1.f), Screen::GAMEOVER, true);
+    createText("...or press 'space' to restart game...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::GAMEOVER, true);
 
     // Debug
     if (debugging.in_debug_mode) {

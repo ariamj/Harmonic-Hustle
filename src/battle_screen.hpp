@@ -20,6 +20,7 @@ struct BattleInfo {
     float bpm;
     float metadata_offset;
     int count_notes;
+    int count_held_notes;
     std::vector<NoteInfo> notes;
     std::vector<std::pair<float, BattleMode>> modes;
 };
@@ -47,6 +48,8 @@ class Battle {
 
         // Releases all associated resources
         ~Battle();
+
+        void init_screen();
 
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
@@ -88,6 +91,8 @@ class Battle {
         bool j_key_pressed = false;
         bool k_key_pressed = false;
         Standing standing;
+        Entity standing_notif;
+        float min_standing_notif_counter_ms = 200.f;
         int perfect_counter = 0;
         int good_counter = 0;
         int alright_counter = 0;
@@ -115,14 +120,34 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
         float calculate_adjustment();
+
+        // helpers for reminder pop up -> entities
         void setReminderPopUp();
+        void addReminderPopUpPartsLevelOne();
+        void addReminderPopUpPartsLevelTwo();
+        void addReminderPopUpPartsLevelThree();
+        void addReminderPopUpPartsLevelBoss();
+        void addDefaultReminderParts();
+
+        // helpers for reminder pop up -> texts
+        void renderReminderText();
+        void renderReminderTextLevelOne();
+        void renderReminderTextLevelTwo();
+        void renderReminderTextLevelThree();
+        void renderReminderTextLevelBoss();
+        void renderDefaultReminderText();
+
         void handle_exit_reminder();
+        
+        void renderGameOverText();
+
+        void setJudgmentLineColour(int lane_index, vec3 colour);
         void handle_note_release(int lane_index);
 
         static const int NUM_LANES = 4;
         static const size_t MAX_NOTES = 10;
         static const int NUM_UNIQUE_BATTLES = 4;
-        static const int NUM_DIFFICULTY_MODES = 2;
+        static const int NUM_DIFFICULTY_MODES = 3;
 
         const vec3 PERFECT_COLOUR = { 255.f, 1.f, 255.f };
         const vec3 GOOD_COLOUR = { 1.f, 255.f, 1.f };

@@ -67,6 +67,7 @@ bool Battle::loadLevelFromFile(int index) {
         for (auto beatmap : beatmaps) {
             int difficulty = convertDifficultyToInt(beatmap["difficulty"].asString());
             int battle_index = index + (difficulty * NUM_UNIQUE_BATTLES);
+			int count_held_notes = 0;
 
 			// Offset and BPM
 			battleInfo[battle_index].metadata_offset = root["metadata_offset"].asFloat();
@@ -118,6 +119,10 @@ bool Battle::loadLevelFromFile(int index) {
 					converted_note_info.quantity = 1; // push back multiple copies instead
 					converted_note_info.duration = rhythm_note.duration * 60.f / battleInfo[battle_index].bpm * 1000.f;
 
+					if (rhythm_note.duration > 0.f) {
+						count_held_notes += 1;
+					}
+
 					// Add duplicate copies for multiple notes
 					for (int i = 0; i < rhythm_note.quantity; i++) {
 						notes_to_add.push_back(converted_note_info);
@@ -151,6 +156,7 @@ bool Battle::loadLevelFromFile(int index) {
 			// Note timings
 			battleInfo[battle_index].notes = battle_note_info;
 			battleInfo[battle_index].count_notes = battleInfo[battle_index].notes.size();
+			battleInfo[battle_index].count_held_notes = count_held_notes;
 
 			// Mode timings
   			battleInfo[battle_index].modes = mode_timings;
@@ -166,10 +172,13 @@ bool Battle::loadLevelFromFile(int index) {
 }
 
 int Battle::convertDifficultyToInt(std::string difficulty) {
+	if (difficulty == "easy") {
+		return 0;
+	}
     if (difficulty == "normal") {
-        return 0;
-    } else if (difficulty == "hard") {
         return 1;
+    } else if (difficulty == "hard") {
+        return 2;
     } else {
         printf("Invalid difficulty in JSON\n");
         return -1;

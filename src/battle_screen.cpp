@@ -37,6 +37,17 @@ Battle::~Battle() {
 
 };
 
+void Battle::init_screen() {
+	// render judgement line key prompts
+	float text_y_pos = gameInfo.height/1.2f + 100.f;
+	vec3 text_colour = Colour::light_gray;
+	float text_scale = 1.5f;
+	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, Screen::BATTLE, true);
+}
+
 
 bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed) {
 	std::stringstream title_ss;
@@ -51,67 +62,24 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
-	// Remove out of screen entities (Notes, etc.)
-	// while (registry.texts.entities.size() > 0)
-	// 	registry.remove_all_components_of(registry.texts.entities.back());
-	
-	// render judgement line key prompts
-	float text_y_pos = gameInfo.height/1.2f + 100.f;
-	vec3 text_colour = Colour::light_gray;
-	float text_scale = 1.5f;
-	createText("D", vec2(gameInfo.lane_1, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("F", vec2(gameInfo.lane_2, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("J", vec2(gameInfo.lane_3, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-	createText("K", vec2(gameInfo.lane_4, text_y_pos), text_scale, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
-
 	if (registry.combos.components.size() == 0) {
-		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, text_colour, glm::mat4(1.f), Screen::BATTLE, true);
+		Entity c = createText("Combo: " + std::to_string(combo), vec2(gameInfo.width/2.f, 25.f), 0.9f, Colour::light_gray, Screen::BATTLE, true);
 		registry.combos.emplace(c);
 	}
 
 	// render score
 	vec2 score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
-	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
-	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, glm::mat4(1.f), Screen::BATTLE);
+	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
+	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, Screen::BATTLE);
+	createText("SCORE", score_pos - vec2(50.f), 0.45f, Colour::khaki, Screen::BATTLE);
 	// render score threshold
 	vec2 threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
-	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, glm::mat4(1.f), Screen::BATTLE);
-	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), glm::mat4(1.f), Screen::BATTLE);
+	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
+	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
+	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE);
 
 	if (in_reminder) {
-		// render help text with simple instructions
-
-		float reminderTextYPos = gameInfo.height / 3.7f;
-		float reminderTextXPos = gameInfo.width / 2.f;
-		createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 60.f;
-		createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 45.f;
-		createText("use keys", vec2(reminderTextXPos - 60.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		// reminderTextYPos += 50.f;
-		createText("D F J K", vec2(reminderTextXPos +  65.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 40.f;
-		createText("to hit notes in the corresponding lanes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 40.f;
-		createText("hit the notes as they pass the center of the line", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-		
-		//// space for help images
-		reminderTextYPos += 170.f;
-		createText("remember to hold long notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 40.f;
-		createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, glm::mat4(1.f), Screen::BATTLE, true);
-
-		reminderTextYPos += 55.f;
-		createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
-
+		renderReminderText();
 	} else if (in_countdown) {
 		// if in countdown mode, update the timer
 		//		if countdown is done, resume the game
@@ -138,7 +106,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			if (time == 0) {
 				audio->playCountdownHigh();
 			}
-			else if (time > COUNTDOWN_NUM_BEATS && time % 2 == 1 || time < COUNTDOWN_NUM_BEATS) {
+			else if ((time > COUNTDOWN_NUM_BEATS && time % 2 == 1)|| time < COUNTDOWN_NUM_BEATS) {
 				audio->playCountdownLow();
 			}
 		}
@@ -149,51 +117,16 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			in_countdown = false;
 			if (just_exited_reminder) {
 				just_exited_reminder = false;
-				audio->playBattle(enemy_index); // switch to battle music
+				audio->playBattle(enemy_index % NUM_UNIQUE_BATTLES); // switch to battle music
 			} else {
 				audio->resumeMusic();
 			}
 		} else {
 			// render count down text
-			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, glm::mat4(1.f), Screen::BATTLE, true);
+			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, Screen::BATTLE, true);
 		}
 	} else if (battle_is_over) {
-		//TODO render in text that has:
-		//		battle outcome, player score and a "press space to continue" line
-		float spacing = 50.f;
-		// Get sizing of battle over overlay
-		Motion overlay_motion = registry.motions.get(gameOverPopUpOverlay);
-		float score_x_spacing = overlay_motion.scale.x/8.f;
-
-		if (battleWon()) {
-			createText("Congratulations!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-			createText("Enemy has been defeated", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-		} else {
-			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3.5)), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-		}
-		createText("Score: " + std::to_string((int)score), vec2(gameInfo.width/2.f - (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-		createText("Enemy: " + std::to_string((int)score_threshold), vec2(gameInfo.width/2.f + (score_x_spacing * 2), gameInfo.height/2.f - spacing), 0.75f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-		
-		// Scoring
-		float scoring_text_size = 0.5f;
-		createText("Perfect", vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_purple, glm::mat4(1.f), Screen::BATTLE, true);
-		createText("Good", vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
-		createText("Alright", vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_yellow, glm::mat4(1.f), Screen::BATTLE, true);
-		createText("Missed", vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + spacing), scoring_text_size, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
-
-		createText(std::to_string(perfect_counter), vec2(gameInfo.width/2.f -( score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_purple, glm::mat4(1.f), Screen::BATTLE, true);
-		createText(std::to_string(good_counter), vec2(gameInfo.width/2.f - score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_green, glm::mat4(1.f), Screen::BATTLE, true);
-		createText(std::to_string(alright_counter), vec2(gameInfo.width/2.f + score_x_spacing, gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_yellow, glm::mat4(1.f), Screen::BATTLE, true);
-		createText(std::to_string(missed_counter), vec2(gameInfo.width/2.f + (score_x_spacing * 3), gameInfo.height/2.f + (spacing*2)), scoring_text_size, Colour::dark_red, glm::mat4(1.f), Screen::BATTLE, true);
-
-		// Combo
-		createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 3.25)), 0.6f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		// next instruction
-		createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.75)), 0.4f, Colour::black, glm::mat4(1.f), Screen::BATTLE, true);
-
-		// notify savenext_note_spawn
-		createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, glm::mat4(1.f), Screen::BATTLE, true);
+		renderGameOverText();
 	} else {
 		auto& motions_registry = registry.motions;
 
@@ -344,6 +277,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		}
 
+		// standing notif timers
+		// min_standing_notif_counter_ms = 200.f;
+		for (Entity text : registry.textTimers.entities) {
+			min_standing_notif_counter_ms -= elapsed_ms_since_last_update;
+
+			// remove standing notif after time expires
+			if (min_standing_notif_counter_ms < 0) {
+				registry.textTimers.remove(text);
+				registry.texts.remove(text);
+			}
+		}
+
 		// Decrement durations of held notes
 		for (int i = 0; i < NUM_LANES; i++) {
 			if (registry.notes.has(lane_hold[i])) {
@@ -354,16 +299,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					if (note.curr_duration < 0.f) {
 						audio->stopHoldNote(i);
 						audio->playHitPerfect();
+						combo++;
+						// TODO: Change from always perfect
+						standing = perfect;
+						score += standing;
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSmoke(vec2(motion.position.x, 1/1.2 * gameInfo.height));
-						// Find the corresponding judgment line and set colour
-						for (auto entity : registry.judgmentLine.entities) {
-							if (motion.position.x == registry.motions.get(entity).position.x) {
-								vec3& colour = registry.colours.get(entity);
-								colour = PERFECT_COLOUR;
-								registry.judgmentLineTimers.emplace_with_duplicates(entity);
-							}
-						}
+						setJudgmentLineColour(i, PERFECT_COLOUR);
 						registry.remove_all_components_of(lane_hold[i]);
 
 					}
@@ -374,6 +316,14 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	}
 	return true;
 };
+
+void Battle::setJudgmentLineColour(int lane_index, vec3 colour) {
+	// Find the corresponding judgment line and set colour
+	Entity& judgment = registry.judgmentLine.entities[lane_index];
+	vec3& judgment_colour = registry.colours.get(judgment);
+	judgment_colour = colour;
+	registry.judgmentLineTimers.emplace_with_duplicates(judgment);
+}
 
 // when battle ends, 
 // 		set battle is over to true, TODO -> render text on screen
@@ -386,7 +336,7 @@ void Battle::handle_battle_end() {
 		return;
 	}
 	// replay current lvl battle music for the battle over popup
-	audio->playBattle(enemy_index);
+	audio->playBattle(enemy_index % NUM_UNIQUE_BATTLES);
 
 	// Calculate a recommended calibration for timing for player
 	// float adjustment = calculate_adjustment();
@@ -493,9 +443,13 @@ void Battle::start() {
 	// DEBUG MEMORY LEAKS (WINDOWS ONLY)
 	 //_CrtMemCheckpoint(&s1);
 
-	// Local variables to improve readability
-	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1); // -1 for 0-indexing
+	// For testing specific difficulty
+	gameInfo.curr_difficulty = 1;
+
+	// 0-indexing
+	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
 	num_notes = battleInfo[enemy_index].count_notes;
+	int num_held_notes = battleInfo[enemy_index].count_held_notes;
 	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
@@ -507,7 +461,7 @@ void Battle::start() {
 	// Reset score
 	score = 0;
 	// Reset score threshold
-	score_threshold = ceil(num_notes * perfect / 2);
+	score_threshold = ceil((num_notes + num_held_notes)* perfect / 2);
 
 	// Reset counters
 	perfect_counter = 0;
@@ -570,34 +524,6 @@ void Battle::start() {
 	setReminderPopUp();
 }
 
-void Battle::setReminderPopUp() {
-	vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
-	Entity reminderBoxBottom = createBox(center, {gameInfo.width / 1.8f, gameInfo.height / 1.8f});
-	Entity reminderBoxTop = createBox(center, {gameInfo.width / 1.8f - 20.f, gameInfo.height / 1.8f - 20.f});
-
-	registry.colours.insert(reminderBoxBottom, Colour::theme_blue_2);
-	registry.colours.insert(reminderBoxTop, Colour::theme_blue_1);
-
-	registry.battleReminderPopUpParts.emplace(reminderBoxBottom);
-	registry.battleReminderPopUpParts.emplace(reminderBoxTop);
-
-	registry.screens.insert(reminderBoxBottom, Screen::BATTLE);
-	registry.screens.insert(reminderBoxTop, Screen::BATTLE);
-
-	float imgXPos = gameInfo.width / 2.f;
-	float imgYPos = gameInfo.height / 2.f + 45.f;
-
-	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), vec2({ 80, 100 }), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
-	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), vec2({ 80, 100 }), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
-	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos), vec2({ 80, 100 }), TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
-
-	registry.battleReminderPopUpParts.emplace(aboveImg);
-	registry.battleReminderPopUpParts.emplace(onImg);
-	registry.battleReminderPopUpParts.emplace(hitImg);
-
-	in_reminder = true;
-};
-
 // if isPaused = true, pause music
 // if isPaused = false, set to in countdown mode and reset timer
 //		-> requires prev screen to NOT be battle if resuming
@@ -644,33 +570,6 @@ bool Battle::set_visible(bool isVisible) {
 
     return is_visible;
 };
-
-// if battle is over, render pop up parts
-// 		else reset it by removing pop up parts
-void Battle::setBattleIsOver(bool isOver) {
-	// std::cout << "test set battle is over: " << isOver << std::endl;
-	battle_is_over = isOver;
-	if (battle_is_over) {
-		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
-		// the lighter box on top
-		gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
-		// the bigger border box
-		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
-
-		registry.colours.insert(gameOverPopUpOverlay, Colour::theme_blue_1);
-		// registry.colours.insert(gameOverPopUpOverlay, {0.048, 0.184, 0.201});
-		registry.colours.insert(gameOverPopUp, Colour::theme_blue_2);
-
-		registry.battleOverPopUpParts.emplace(gameOverPopUpOverlay);
-		registry.battleOverPopUpParts.emplace(gameOverPopUp);
-
-		registry.screens.insert(gameOverPopUpOverlay, Screen::BATTLE);
-		registry.screens.insert(gameOverPopUp, Screen::BATTLE);
-	} else {
-		while (registry.battleOverPopUpParts.entities.size() > 0)
-			registry.remove_all_components_of(registry.battleOverPopUpParts.entities.back());
-	}
-}
 
 // Return true if won battle (ie. points greater than needed threshold)
 bool Battle::battleWon() {
@@ -745,7 +644,7 @@ void Battle::handle_collisions() {
 		// Retrieve information about duration before removing notehead from registry
 		if (registry.notes.has(lowest_note)) {
 			Note& note = registry.notes.get(lowest_note);
-			Motion& motion = registry.motions.get(lowest_note);
+			// Motion& motion = registry.motions.get(lowest_note);
 
 			// Now manage held notes (which does not affect regular note behaviour above)
 			if (note.duration > 0.f) {
@@ -805,6 +704,10 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 
 	// Colour
 	vec3& colour = registry.colours.get(entity);
+
+	// Standing notif
+	std::string standing_text;
+	vec3 text_colour;
 	
 	if ((note_y_pos >= lane_y_pos - scoring_margin) && (note_y_pos <= lane_y_pos + scoring_margin)) {
 		// set standing to Perfect
@@ -812,6 +715,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		perfect_counter++;
 		colour = PERFECT_COLOUR;
 		combo++;
+		standing_text = "PERFECT";
+		text_colour = Colour::purple;
 	}	// Determine standing
 	else if (((note_y_pos >= lane_y_pos - judgement_line_half_height) && (note_y_pos < lane_y_pos - scoring_margin))
 		|| ((note_y_pos > lane_y_pos + scoring_margin) && (note_y_pos <= lane_y_pos + judgement_line_half_height))) {
@@ -820,6 +725,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		good_counter++;
 		colour = GOOD_COLOUR;
 		combo++;
+		standing_text = "GOOD";
+		text_colour = Colour::green;
 	}
 	else {
 		// set standing to Alright
@@ -827,7 +734,16 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 		alright_counter++;
 		colour = ALRIGHT_COLOUR;
 		combo++;
+		standing_text = "ALRIGHT";
+		text_colour = Colour::yellow;
 	}
+
+	if (registry.textTimers.entities.size() != 0) {
+		registry.remove_all_components_of(standing_notif);
+	}
+	standing_notif = createText(standing_text, vec2(gameInfo.width/2.f, gameInfo.height/2.f), 1.f, text_colour, Screen::BATTLE, true, true);
+	registry.textTimers.emplace_with_duplicates(standing_notif);
+	min_standing_notif_counter_ms = 300.f;
 
 	// Tracking information to recommend timing adjustments
 	float displacement = note_y_pos - lane_y_pos;
@@ -932,8 +848,10 @@ void Battle::handle_note_release(int lane_index) {
 		if (note.curr_duration > HOLD_DURATION_LEEWAY) {
 			audio->stopHoldNote(lane_index);
 			audio->playMissedNote();
+			setJudgmentLineColour(lane_index, MISSED_COLOUR);
 			note.curr_duration = NO_DURATION; // only miss once
 			registry.remove_all_components_of(entity);
+			// TODO: Remove particles immediately on releasing early (?)
 			combo = 0;
 		}
 	}
@@ -944,15 +862,6 @@ void handleDebug(int action) {
 		debugging.in_debug_mode = !debugging.in_debug_mode;
 	}
 }
-
-void Battle::handle_exit_reminder() {
-	in_reminder = false;
-	just_exited_reminder = true;
-	audio->pauseMusic();
-	while (registry.battleReminderPopUpParts.entities.size() > 0)
-		registry.remove_all_components_of(registry.battleReminderPopUpParts.entities.back());
-
-};
 
 void Battle::handle_key(int key, int scancode, int action, int mod) {
 	if (in_reminder) {

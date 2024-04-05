@@ -27,7 +27,17 @@ void Start::init_screen() {
     registry.screens.insert(banner_2, Screen::START);
     registry.colours.insert(banner_2, Colour::white);
 
+    vec2 shadow_offset = vec2(10.f);
+    // title - shadow
+    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::START, true, true);
+    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::START, true, true);
+    // title
+    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::START, true, true);
+    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, Screen::START, true, true);
+
     renderButtons();
+
+    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::START, true, true);
 }
 
 void Start::renderButtons() {
@@ -66,15 +76,6 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
     
-
-    vec2 shadow_offset = vec2(10.f);
-    // title - shadow
-    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
-    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::START, true);
-    // title
-    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
-    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::START, true);
-    
     // Render all button texts
     for (Entity entity : registry.boxButtons.entities) {
         if (registry.screens.get(entity) == Screen::START) {
@@ -88,11 +89,9 @@ bool Start::handle_step(float elapsed_ms_since_last_update, float current_speed)
             if ((text == "NEW GAME" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn) || (text == "LOAD" && mouse_area == in_load_btn)) {
                 text_colour = Colour::white;
             }
-            createText(text, motion.position, btn.text_scale, text_colour, glm::mat4(1.f), Screen::START, true);
+            createText(text, motion.position, btn.text_scale, text_colour, Screen::START, true, false);
         }
     }
-
-    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, glm::mat4(1.f), Screen::START, true);
 
     // Debug
     if (debugging.in_debug_mode) {

@@ -46,6 +46,21 @@ struct Text
 	bool center_pos;
 };
 
+struct StaticText
+{
+	//text content stays the same (eg. title)
+};
+
+struct DynamicText
+{
+	//text content always changes (eg. score)
+};
+
+struct TextTimer
+{
+	float count_ms = 200.f;
+};
+
 struct BoxButton {
 	Entity button_base;
 	std::string text;
@@ -140,6 +155,7 @@ struct GameInfo {
 	Entity curr_enemy;
 	int curr_level = 1;
 	int max_level = 4;
+	int curr_difficulty = 0;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;

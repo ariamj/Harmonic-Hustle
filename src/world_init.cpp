@@ -443,7 +443,7 @@ Entity createDot(vec2 pos, vec2 size)
 	return entity;
 }
 
-Entity createText(const std::string text, vec2 pos, float scale, vec3 colour, glm::mat4 trans, Screen screen, bool center_pos) {
+Entity createText(const std::string text, vec2 pos, float scale, vec3 colour, Screen screen, bool center_pos, bool static_text, glm::mat4 trans) {
 	Entity entity = Entity();
 
 	// Create text component to be rendered
@@ -459,6 +459,13 @@ Entity createText(const std::string text, vec2 pos, float scale, vec3 colour, gl
 			center_pos,
 		}
 	);
+
+	// non-changing or changing text
+	if (static_text) {
+		registry.staticTexts.emplace(entity);
+	} else {
+		registry.dynamicTexts.emplace(entity);
+	}
 
 	return entity;
 }
