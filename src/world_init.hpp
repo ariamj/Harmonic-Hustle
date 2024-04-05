@@ -46,7 +46,7 @@ Entity createCircleOutline(vec2 pos, float radius);
 // a filled in circle for debugging purposes
 Entity createDot(vec2 pos, vec2 size);
 // // creates a text to be rendered
-Entity createText(std::string text, vec2 pos, float scale, vec3 colour, Screen screen = Screen::OVERWORLD, bool center_pos = true, bool staticText = true, glm::mat4 trans = glm::mat4(1.f));
+Entity createText(std::string text, vec2 pos, float scale, vec3 colour, Screen screen = Screen::OVERWORLD, bool center_pos = true, bool static_text = false, glm::mat4 trans = glm::mat4(1.f));
 // creates a button - need to add text separately
 Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 size, vec3 text_colour, vec3 box_colour, Screen screen);
 // creates an empty entity that has spark particles

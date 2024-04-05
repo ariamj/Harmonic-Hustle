@@ -115,8 +115,15 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
-	while (registry.texts.entities.size() > 0)
-		registry.remove_all_components_of(registry.texts.entities.back());
+	// while (registry.texts.entities.size() > 0)
+	// 	registry.remove_all_components_of(registry.texts.entities.back());
+	
+	// Remove all dynamic texts -> to be rendered again with new values
+	for (Entity text : registry.texts.entities) {
+		if (registry.dynamicTexts.has(text)) {
+			registry.remove_all_components_of(text);
+		}
+	}
 
 	// add FPS to screen
 
@@ -276,6 +283,9 @@ void WorldSystem::restart_game() {
 	gameInfo.curr_level = 1;
 
 	start.init_screen();
+	settings.init_screen();
+	cutscene.init_screen();
+	battle.init_screen();
 	gameOver.init_screen();
 
 	// set current screen to start screen on every restart

@@ -23,6 +23,10 @@ void Cutscene::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
+void Cutscene::init_screen() {
+    
+}
+
 bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Cutscene";
