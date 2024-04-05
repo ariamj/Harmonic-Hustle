@@ -370,6 +370,7 @@ struct ParticleEffect
 struct ParticleTimer
 {
 	float count_ms = 1500.f;
+	Entity entity_to_observe;
 };
 
 struct RenderRequest {

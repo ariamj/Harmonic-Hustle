@@ -508,7 +508,7 @@ Entity createSmoke(vec2 pos) {
 	return entity;
 }
 
-Entity createSpark(vec2 pos, float max_duration) {
+Entity createSpark(vec2 pos, float max_duration, Entity entity_to_observe) {
 	Entity entity = Entity();
 
 	Motion& motion = registry.motions.emplace(entity);
@@ -518,6 +518,7 @@ Entity createSpark(vec2 pos, float max_duration) {
 	// Add timer to remove entity automatically
 	ParticleTimer& timer = registry.particleTimers.emplace(entity);
 	timer.count_ms = max_duration;
+	timer.entity_to_observe = entity_to_observe;
 
 	// Give trail particles to entity
 	ParticleEffect& particles = registry.particleEffects.emplace(entity);

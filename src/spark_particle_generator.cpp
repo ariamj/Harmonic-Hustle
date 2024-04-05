@@ -36,7 +36,7 @@ void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
-        newParticles = 1;
+        newParticles = 2;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
@@ -62,7 +62,7 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         p.velocity.y = lerp(-180.f, 40.f, 1.f - pow(p.life, 2));
         p.position += p.velocity * dt * 5.f;
 
-        p.color.a -= dt * 0.f;
+        p.color.a -= dt * 1.6f;
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
@@ -72,6 +72,13 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
 
 void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
+    // Stop spawning particles once entity has removed
+    if (registry.particleTimers.has(entity)) {
+        ParticleTimer& timer = registry.particleTimers.get(entity);
+        if (!registry.notes.has(timer.entity_to_observe)) {
+            return;
+        }
+    }
     float random = ((rand() % 100) - 50);
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
