@@ -71,10 +71,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	vec2 score_pos = { PORTRAIT_WIDTH*3/8.f, PORTRAIT_HEIGHT - 50.f};
 	createText(std::to_string((int)score), score_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score), score_pos, 1.5f, Colour::khaki, Screen::BATTLE);
+	createText("SCORE", score_pos - vec2(50.f), 0.45f, Colour::khaki, Screen::BATTLE);
 	// render score threshold
 	vec2 threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
 	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
+	createText("THRESHOLD", threshold_pos + vec2(50.f), 0.45f, Colour::red * vec3(0.75), Screen::BATTLE);
 
 	if (in_reminder) {
 		// render help text with simple instructions
