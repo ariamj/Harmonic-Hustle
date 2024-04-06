@@ -32,6 +32,7 @@ public:
 
 	int musicPlaying();
 	float getSongPosition();
+	float getSongDuration();
 
 	void pauseMusic();
 	void resumeMusic();

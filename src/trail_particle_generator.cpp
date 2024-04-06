@@ -11,14 +11,14 @@
 #include "iostream"
 
 
-TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture)
-    : ParticleGenerator(shaderProgram, used_texture)
+TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
+    : ParticleGenerator(shaderProgram, used_texture, amount, max_entities)
 {
     // init is called in ParticleGenerator constructor
 }
 
 void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+    for (int i = 0; i < max_entities; i++) {
         Entity entity = blocks[i];
 
         if (entity == initialized_entity_id) {
@@ -54,46 +54,57 @@ void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles
 
 
 void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Entity entity) {
-    p.life -= dt; // reduce life
-    if (p.life > 0.0f)
-    {	// particle is alive, thus update
-        p.position += p.velocity * dt;
-        if (registry.notes.has(entity)) {
-            Note& note = registry.notes.get(entity);
-            // Manage particles for held-notes
-            if (note.duration > 0.f) {
-                if (note.pressed) {
-                    if (p.position.y >= 1 / 1.2f * gameInfo.height) {
-                        p.color.a = 0.f;
-                    }
-                    else {
-                        float random = ((rand() % 100) - 50) * 1.8f;
-                        p.position += vec2(p.velocity.x + random, p.velocity.y) * dt * 3.f;
-                        p.position += p.velocity * dt;
-                        p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
-                    }
-                }
-                else {
-                    p.color.a -= dt * 1000.f / (note.duration + conductor.crotchet / 1.2f);
-                }
-            }
-            else {
-                p.color.a -= dt * 2.5f;
-            }
-        }
-        else {
-            p.color.a -= dt * 2.5;
-        }
-        p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+    // note that this only allows these particles to be attached to notes
+    if (!registry.notes.has(entity) || !registry.particleEffects.has(entity)) {
+        p.color.a = 0.f;
+        p.life = 0.f;
+        return;
     }
-    else {
-        // particle is dead, change alpha to hide rendering (dead particles are still rendered)
+
+    Note& note = registry.notes.get(entity);
+    p.life -= dt; // reduce life
+
+    // particle is dead or below judgment line
+    if (p.life <= 0.f || p.position.y >= 1 / 1.2f * gameInfo.height) {
+        p.color.a = 0.f;
+        return;
+    }
+
+    // particle is alive, thus update
+    p.position += p.velocity * 2.f * dt;
+    Motion& motion = registry.motions.get(entity);
+
+    if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
+        // Don't render below judgment line if note is being held
         p.color.a = 0.f;
     }
+    else {
+        float trail_extension_distance = -(conductor.crotchet * TRAIL_EXTENSION_MULTIPLIER);
+        float distance_between_note_and_particle = motion.position.y - p.position.y;
+        // Cover the case where particle is immediately reassigned, and particle position is below note
+        if (distance_between_note_and_particle < 0.f) {
+            p.color.a = 0.f;
+            return;
+        }
+        distance_between_note_and_particle += trail_extension_distance;
+        float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
+        float progress = distance_between_note_and_particle / duration_as_screen_distance;
+        float random = ((rand() % 100) - 50) * 1.8f;
+        p.color.a = lerp(1.f, 0.f, progress);
+        if (note.pressed) {
+            p.position += vec2(p.velocity.x + random, p.velocity.y) * 3.f * dt;
+        }
+    }
+
+    p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+
 }
 
 void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
+    if (!registry.notes.has(entity) || !registry.particleEffects.has(entity)) {
+        return;
+    }
     float random = ((rand() % 100) - 50) / 10.0f;
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
@@ -102,7 +113,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
     particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = entity_motion.velocity * 0.1f;
+    particle.velocity = entity_motion.velocity * 0.2f;
     particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 

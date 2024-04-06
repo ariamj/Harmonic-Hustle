@@ -119,13 +119,12 @@ bool Battle::loadLevelFromFile(int index) {
 					converted_note_info.quantity = 1; // push back multiple copies instead
 					converted_note_info.duration = rhythm_note.duration * 60.f / battleInfo[battle_index].bpm * 1000.f;
 
-					if (rhythm_note.duration > 0.f) {
-						count_held_notes += 1;
-					}
-
 					// Add duplicate copies for multiple notes
 					for (int i = 0; i < rhythm_note.quantity; i++) {
 						notes_to_add.push_back(converted_note_info);
+						if (rhythm_note.duration > 0.f) {
+							count_held_notes += 1;
+						}
 					}
 				}
 
@@ -154,6 +153,8 @@ bool Battle::loadLevelFromFile(int index) {
 			convertBeatsToMilliseconds(&mode_timings, battleInfo[battle_index].bpm / 60.f);
 
 			// Note timings
+			// Sort notes by spawn times
+			std::sort(battle_note_info.begin(), battle_note_info.end(), compareSpawnTimes);
 			battleInfo[battle_index].notes = battle_note_info;
 			battleInfo[battle_index].count_notes = battleInfo[battle_index].notes.size();
 			battleInfo[battle_index].count_held_notes = count_held_notes;
@@ -169,6 +170,11 @@ bool Battle::loadLevelFromFile(int index) {
 	}
 
 	return true;
+}
+
+bool Battle::compareSpawnTimes(const NoteInfo& a, const NoteInfo& b)
+{
+	return a.spawn_time < b.spawn_time;
 }
 
 int Battle::convertDifficultyToInt(std::string difficulty) {

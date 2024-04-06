@@ -170,6 +170,9 @@ int AudioSystem::playBattle(int enemy_id) {
 }
 
 int AudioSystem::playHoldNote(int channel_offset) {
+	// Volume was getting set to 0 between playthroughs somehow
+	// This is most straightforward fix, but can be improved
+	Mix_Volume(8 + channel_offset, MIX_MAX_VOLUME);
 	return Mix_PlayChannel(8 + channel_offset, hold_SFX, 0);
 }
 
@@ -208,6 +211,10 @@ int AudioSystem::musicPlaying() {
 
 float AudioSystem::getSongPosition() {
 	return Mix_GetMusicPosition(current_music);
+}
+
+float AudioSystem::getSongDuration() {
+	return Mix_MusicDuration(current_music);
 }
 
 void AudioSystem::pauseMusic() {

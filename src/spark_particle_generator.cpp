@@ -11,14 +11,14 @@
 #include "iostream"
 
 
-SparkParticleGenerator::SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture)
-    : ParticleGenerator(shaderProgram, used_texture)
+SparkParticleGenerator::SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
+    : ParticleGenerator(shaderProgram, used_texture, amount, max_entities)
 {
     // init is called in ParticleGenerator constructor
 }
 
 void SparkParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+    for (int i = 0; i < max_entities; i++) {
         Entity entity = blocks[i];
 
         if (entity == initialized_entity_id) {
@@ -62,7 +62,7 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         p.velocity.y = lerp(-180.f, 40.f, 1.f - pow(p.life, 2));
         p.position += p.velocity * dt * 5.f;
 
-        p.color.a -= dt * 0.f;
+        p.color.a -= dt * 2.5f;
     }
     else {
         // particle is dead, change alpha to hide rendering (dead particles are still rendered)
@@ -72,6 +72,13 @@ void SparkParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
 
 void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
+    // Stop spawning particles once entity has removed
+    if (registry.particleTimers.has(entity)) {
+        ParticleTimer& timer = registry.particleTimers.get(entity);
+        if (!registry.notes.has(timer.entity_to_observe)) {
+            return;
+        }
+    }
     float random = ((rand() % 100) - 50);
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);

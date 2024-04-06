@@ -71,6 +71,9 @@ class Battle {
         void handle_note_hit(Entity entity, Entity entity_other);
         void handleRhythmInput(int action, int key);
 
+        // Song Progress bar
+        void updateSongProgressBar();
+
         // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
         void handle_mouse_move(vec2 pos);
@@ -119,7 +122,10 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
+        // Comparison function for sorting NoteInfo
+        static bool compareSpawnTimes(const NoteInfo& a, const NoteInfo& b);
         float calculate_adjustment();
+
 
         // helpers for reminder pop up
         void setReminderPopUp();
@@ -155,7 +161,7 @@ class Battle {
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
         const float MIN_FRAMES_ADJUSTMENT = -5.f;
         const float MAX_FRAMES_ADJUSTMENT = 5.f;
-        const float HOLD_DURATION_LEEWAY = 0.9f;
+        const float HOLD_DURATION_LEEWAY = 10.f * APPROX_FRAME_DURATION; // allows player to release slightly early, in ms
 
         const int COUNTDOWN_TOTAL_BEATS = 8;
         const int COUNTDOWN_NUM_BEATS = 4;
@@ -198,4 +204,11 @@ class Battle {
         
         bool in_reminder = true;
         bool just_exited_reminder = false;
+
+        // progress bar
+        Entity progress_bar;
+        vec2 score_pos;
+        vec2 threshold_pos;
+        vec2 progress_bar_pos;
+        vec2 progress_bar_base_size;
 };

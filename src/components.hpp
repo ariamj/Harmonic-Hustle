@@ -142,6 +142,11 @@ struct JudgementLineTimer
 	float count_ms = 200;
 };
 
+struct ProgressBar
+{
+	//progress bar
+};
+
 struct GameInfo {
 	Screen curr_screen;
 	Screen prev_screen; // to handle resume correct screen after pausing
@@ -377,6 +382,7 @@ struct ParticleEffect
 struct ParticleTimer
 {
 	float count_ms = 1500.f;
+	Entity entity_to_observe;
 };
 
 struct RenderRequest {
