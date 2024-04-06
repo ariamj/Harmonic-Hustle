@@ -120,6 +120,9 @@ enum MouseArea {
 	in_help_btn,
 	in_restart_btn,
 	in_load_btn,
+	in_easy_btn,
+	in_normal_btn,
+	in_hard_btn,
 };
 
 // Modes of note timings

@@ -790,7 +790,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	double xpos = mouse_position.x;
     double ypos = mouse_position.y;
-
+	
 	float y_padding = 50.f; // for some reason y coords a bit off...
 
 	/* Start screen buttons*/
@@ -839,6 +839,32 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		}
 		gameOver.handle_mouse_move(mouse_area);
 	}
+
+	// Difficulty buttons in tutorial -> only if in last part of tutorial
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADVANCING_EXPLAIN) {
+		// EASY button
+		BoxAreaBound easy_btn_area = registry.boxAreaBounds.get(tutorial.easy_btn);
+		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 100.f) && (ypos <= easy_btn_area.bottom - 100.f);
+		// HELP button
+		BoxAreaBound normal_btn_area = registry.boxAreaBounds.get(tutorial.normal_btn);
+		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 100.f) && (ypos <= normal_btn_area.bottom - 100.f);
+		
+		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
+		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 100.f) && (ypos <= hard_btn_area.bottom - 100.f);
+		
+		if (within_easy_btn_area) {
+			mouse_area = in_easy_btn;
+
+		} else if (within_normal_btn_area) {
+			mouse_area = in_normal_btn;
+
+		} else if (within_hard_btn_area) {
+			mouse_area = in_hard_btn;
+		} else {
+			mouse_area = in_unclickable;
+		}
+		tutorial.handle_mouse_move(mouse_area);
+	}
 }
 
 void WorldSystem::on_mouse_button(int button, int action, int mods) {
@@ -853,9 +879,24 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_restart_btn:
 				handleClickRestartBtn();
-        break;
+        		break;
 			case in_load_btn:
 				handleClickLoadBtn();
+				break;
+			case in_easy_btn:
+				tutorial.handle_difficulty_click(0);
+				if (gameInfo.curr_screen == Screen::OVERWORLD)
+					render_set_overworld_screen();
+				break;
+			case in_normal_btn:
+				tutorial.handle_difficulty_click(1);
+				if (gameInfo.curr_screen == Screen::OVERWORLD)
+					render_set_overworld_screen();
+				break;
+			case in_hard_btn:
+				tutorial.handle_difficulty_click(2);
+				if (gameInfo.curr_screen == Screen::OVERWORLD)
+					render_set_overworld_screen();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

@@ -27,10 +27,11 @@ class Tutorial {
          // Input callback functions
         void handle_key(int key, int scancode, int action, int mod);
         void handle_mouse_move(MouseArea mouse_area);
+        void handle_difficulty_click(int difficulty);
 
         // buttons -> TODO double check how many levels we want
         Entity easy_btn;
-	    Entity medium_btn;
+	    Entity normal_btn;
         Entity hard_btn;
 
         // mouse area

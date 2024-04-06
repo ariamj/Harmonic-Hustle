@@ -48,7 +48,24 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
     glfwSetWindowTitle(window, title_ss.str().c_str());
     // createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL );
 
+    if (tutorial_progress == TutorialPart::ADVANCING_EXPLAIN) {
+        // Render all button texts
+        for (Entity entity : registry.boxButtons.entities) {
+            if (registry.screens.get(entity) == Screen::TUTORIAL) {
+                BoxButton btn = registry.boxButtons.get(entity);
+                Motion motion = registry.motions.get(entity);
+                std::string text = registry.boxButtons.get(entity).text;
+                vec3 text_colour = btn.text_colour;
 
+                // Hover effect
+                // NOTE: if lag happens, comment this part out
+                if ((text == "easy" && mouse_area == in_easy_btn) || (text == "normal" && mouse_area == in_normal_btn) || (text == "hard" && mouse_area == in_hard_btn)) {
+                    text_colour = Colour::white;
+                }
+                createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
+            }
+        }
+    }
     // createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
     return true;
 }
@@ -171,17 +188,17 @@ void Tutorial::initBattleExplainParts() {
 
     // note examples
     currY += 170.f;
-    Entity text4 = createText("tap notes", vec2(gameInfo.width / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+    Entity text4 = createText("tap notes", vec2(gameInfo.width * 1.7 / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
 
-    Entity text5 = createText("hold notes", vec2(gameInfo.width * 4.5f / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
+    Entity text5 = createText("hold notes", vec2(gameInfo.width * 5.2f / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
 
     // note images
-    Entity tapNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 2.5f/8.f, currY), vec2(70.f, 150.f), TEXTURE_ASSET_ID::TAP_NOTE_EXAMPLE, Screen::TUTORIAL);
-    Entity holdNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 6.f/8.f, currY), vec2(80.f, 240.f), TEXTURE_ASSET_ID::HOLD_NOTE_EXAMPLE, Screen::TUTORIAL);
+    Entity tapNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 3.2f/8.f, currY), vec2(70.f, 150.f), TEXTURE_ASSET_ID::TAP_NOTE_EXAMPLE, Screen::TUTORIAL);
+    Entity holdNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 6.7f/8.f, currY), vec2(80.f, 240.f), TEXTURE_ASSET_ID::HOLD_NOTE_EXAMPLE, Screen::TUTORIAL);
 
     currY += 170.f;
-    Entity text6 = createText("to hit notes in the right lanes, use", vec2(centerX - 90.f, currY), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
-    Entity text7 = createText("D F J K", vec2(centerX + 370.f, currY), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
+    Entity text6 = createText("to hit notes in the right lanes, use", vec2(centerX - 80.f, currY), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text7 = createText("D F J K", vec2(centerX + 380.f, currY), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
 
     // judgement lines img
     currY += 130.f;
@@ -220,8 +237,83 @@ void Tutorial::initBattleExplainParts() {
 }
 
 void Tutorial::initAdvancingExplaingParts() {
-    Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
+    // Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
+    // registry.tutorialParts.emplace(text1);
+    float currY = gameInfo.height / 10.f;
+    float centerX = gameInfo.width / 2.f;
+
+    Entity text1 = createText("Each level will have", vec2(centerX - 90.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text2 = createText("3 enemies", vec2(centerX + 220.f, currY), 0.6f, Colour::red, Screen::TUTORIAL, true, true);
+
+    currY += 50.f;
+    Entity text3 = createText("You'll only have to defeat one to advance", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 40.f;
+    Entity text4 = createText("But don't lose, cause you only get", vec2(centerX - 90.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text5 = createText("3 chances!", vec2(centerX + 340.f, currY), 0.5f, Colour::red, Screen::TUTORIAL, true, true);
+
+    // explain boss
+    float leftTextPos = gameInfo.width * 1.1f/ 3.f;
+
+    currY += 190.f;
+    Entity bossExampleImg = createHelpImage(renderer, vec2(gameInfo.width * 7.5f / 10.f, currY + 10.f), vec2(PORTRAIT_WIDTH, PORTRAIT_HEIGHT) * vec2(0.6), TEXTURE_ASSET_ID::BATTLEBOSS, Screen::TUTORIAL);
+    registry.tutorialParts.emplace(bossExampleImg);
+    
+    Entity text6 = createText("After level 3, you'll encounter the boss", vec2(leftTextPos, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 40.f;
+    Entity text7 = createText("To win the game,", vec2(leftTextPos - 165.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text8 = createText("defeat the boss!", vec2(leftTextPos + 165.f, currY), 0.6f, Colour::green, Screen::TUTORIAL, true, true);
+
+    // explain difficulty
+    currY += 190.f;
+    Entity text9 = createText("To start, choose a difficulty level", vec2(centerX, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 50.f;
+    Entity text10 = createText("difficulties indicate freqeuncy of note spawns in battle", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    
+
     registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(text2);
+    registry.tutorialParts.emplace(text3);
+    registry.tutorialParts.emplace(text4);
+    registry.tutorialParts.emplace(text5);
+    registry.tutorialParts.emplace(text6);
+    registry.tutorialParts.emplace(text7);
+    registry.tutorialParts.emplace(text8);
+    registry.tutorialParts.emplace(text9);
+    registry.tutorialParts.emplace(text10);
+
+    float buttonX = gameInfo.width / 6.f;
+    currY += 150.f;
+	vec2 shadow_pos = vec2(buttonX, currY) + vec2(10.f, 10.f);
+
+    vec2 buttonSize = vec2(gameInfo.width / 5.f, gameInfo.height / 10.f);
+
+    // create buttons
+    Entity easy_shadow = createBox(shadow_pos, buttonSize);
+	registry.screens.insert(easy_shadow, Screen::TUTORIAL);
+	registry.colours.insert(easy_shadow, Colour::theme_blue_3);
+	easy_btn = createButton("easy", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+	
+    buttonX = gameInfo.width / 2.f;
+    shadow_pos = vec2(buttonX, currY) + vec2(10.f, 10.f);
+
+    Entity normal_shadow = createBox(shadow_pos, buttonSize);
+	registry.screens.insert(normal_shadow, Screen::TUTORIAL);
+	registry.colours.insert(normal_shadow, Colour::theme_blue_3);
+	normal_btn = createButton("normal", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+	
+    buttonX = gameInfo.width * 5.f / 6.f;
+    shadow_pos = vec2(buttonX, currY) + vec2(10.f, 10.f);
+
+    Entity hard_shadow = createBox(shadow_pos, buttonSize);
+	registry.screens.insert(hard_shadow, Screen::TUTORIAL);
+	registry.colours.insert(hard_shadow, Colour::theme_blue_3);
+	hard_btn = createButton("hard", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+	
+    currY += 170.f;
+    Entity contText = createText("...or press 'space' to continue with normal difficulty...", vec2(centerX, gameInfo.height*9.5f/10.f), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    registry.tutorialParts.emplace(contText);
+
 }
 
 bool Tutorial::set_visible(bool isVisible) {
@@ -243,15 +335,24 @@ bool Tutorial::set_visible(bool isVisible) {
     return is_visible;
 }
 
+// transition to overworld, set difficulty
+void Tutorial::handle_difficulty_click(int difficulty) {
+    gameInfo.curr_difficulty = difficulty;
+    std::cout << "set difficulty: " << difficulty << std::endl;
+    gameInfo.curr_screen = Screen::OVERWORLD;
+}
+
 void Tutorial::handle_key(int key, int scancode, int action, int mod) {
     switch(key) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 tutorial_progress++;
+                // if (tutorial_progress != tutorial_max_progress_parts) {
                 std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                 init_parts((TutorialPart) tutorial_progress);
                 if (tutorial_progress == tutorial_max_progress_parts)
-                    gameInfo.curr_screen = Screen::OVERWORLD;
+                    handle_difficulty_click(1); // default to normal
+                // }
             }
             break;
         // case GLFW_KEY_X:
