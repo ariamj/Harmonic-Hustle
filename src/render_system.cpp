@@ -470,7 +470,7 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::FLAME_PARTICLE];
-			int amount = 500;
+			int amount = 300;
 			int max_entities = 15;
 			std::shared_ptr<FlameParticleGenerator> generator =
 				std::make_shared<FlameParticleGenerator>(FlameParticleGenerator(shaderProgram, usedTexture, amount, max_entities));

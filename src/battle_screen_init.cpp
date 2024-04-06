@@ -119,13 +119,12 @@ bool Battle::loadLevelFromFile(int index) {
 					converted_note_info.quantity = 1; // push back multiple copies instead
 					converted_note_info.duration = rhythm_note.duration * 60.f / battleInfo[battle_index].bpm * 1000.f;
 
-					if (rhythm_note.duration > 0.f) {
-						count_held_notes += 1;
-					}
-
 					// Add duplicate copies for multiple notes
 					for (int i = 0; i < rhythm_note.quantity; i++) {
 						notes_to_add.push_back(converted_note_info);
+						if (rhythm_note.duration > 0.f) {
+							count_held_notes += 1;
+						}
 					}
 				}
 

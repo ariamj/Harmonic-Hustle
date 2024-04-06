@@ -319,6 +319,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						combo++;
 						// TODO: Change from always perfect
 						standing = perfect;
+						perfect_counter++;
 						score += standing;
 						Motion& motion = registry.motions.get(lane_hold[i]);
 						createSmoke(vec2(motion.position.x, 1/1.2 * gameInfo.height));
@@ -465,7 +466,6 @@ void Battle::start() {
 	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
 	num_notes = battleInfo[enemy_index].count_notes;
-	int num_held_notes = battleInfo[enemy_index].count_held_notes;
 	
 	// Set Conductor variables
 	conductor.bpm = battleInfo[enemy_index].bpm;
@@ -476,8 +476,14 @@ void Battle::start() {
 
 	// Reset score
 	score = 0;
-	// Reset score threshold
-	score_threshold = ceil((num_notes + num_held_notes) * perfect * 0.5f);
+	
+	float base_percentage = 0.5f; // 50% of perfect score 
+	float difficulty_percentage = 0.15f * gameInfo.curr_difficulty; // +15% for each higher difficulty
+	int total_hits = num_notes + battleInfo[enemy_index].count_held_notes;
+	// Calculate score threshold
+	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
+	int rounded_up_to_multiple_of_fifty = rounded_score + (50 - (rounded_score % 50));
+	score_threshold = rounded_up_to_multiple_of_fifty;
 
 	// Reset counters
 	perfect_counter = 0;
@@ -669,7 +675,7 @@ void Battle::handle_collisions() {
 			if (note.duration > 0.f) {
 				lane_hold[lane_index] = lowest_note;
 				note.pressed = true;
-				std::cout << audio->playHoldNote(lane_index) << "\n";
+				audio->playHoldNote(lane_index);
 				// Remove the note head visual
 				registry.renderRequests.remove(lowest_note);
 			}

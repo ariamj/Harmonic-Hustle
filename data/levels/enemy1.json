@@ -269,8 +269,7 @@
                             {"spawn_time": 3.0, "duration": -1.0, "quantity": 1}, 
                             {"spawn_time": 4.0, "duration": 1.0, "quantity": 1},
                             {"spawn_time": 5.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 6.0, "duration": -1.0, "quantity": 1},
-                            {"spawn_time": 6.5, "duration": -1.0, "quantity": 1},
+                            {"spawn_time": 6.0, "duration": 1.0, "quantity": 1},
                             {"spawn_time": 7.0, "duration": -1.0, "quantity": 1}
                         ],                    
                         "color":
