@@ -239,9 +239,13 @@ void Tutorial::initBattleExplainParts() {
 void Tutorial::initAdvancingExplaingParts() {
     // Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
     // registry.tutorialParts.emplace(text1);
-    float currY = gameInfo.height / 10.f;
+    float currY = gameInfo.height / 15.f;
     float centerX = gameInfo.width / 2.f;
 
+    Entity pauseTipText = createText("Tip: if you ever need to pause, click H!", vec2(centerX, currY), 0.7f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(pauseTipText);
+
+    currY += 90.f;
     Entity text1 = createText("Each level will have", vec2(centerX - 90.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
     Entity text2 = createText("3 enemies", vec2(centerX + 220.f, currY), 0.6f, Colour::red, Screen::TUTORIAL, true, true);
 
@@ -264,7 +268,7 @@ void Tutorial::initAdvancingExplaingParts() {
     Entity text8 = createText("defeat the boss!", vec2(leftTextPos + 165.f, currY), 0.6f, Colour::green, Screen::TUTORIAL, true, true);
 
     // explain difficulty
-    currY += 190.f;
+    currY += 170.f;
     Entity text9 = createText("To start, choose a difficulty level", vec2(centerX, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
     currY += 50.f;
     Entity text10 = createText("difficulties indicate freqeuncy of note spawns in battle", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
@@ -282,7 +286,7 @@ void Tutorial::initAdvancingExplaingParts() {
     registry.tutorialParts.emplace(text10);
 
     float buttonX = gameInfo.width / 6.f;
-    currY += 150.f;
+    currY += 120.f;
 	vec2 shadow_pos = vec2(buttonX, currY) + vec2(10.f, 10.f);
 
     vec2 buttonSize = vec2(gameInfo.width / 5.f, gameInfo.height / 10.f);
