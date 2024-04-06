@@ -79,7 +79,8 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         p.color.a = 0.f;
     }
     else {
-        float distance_between_note_and_particle = motion.position.y - p.position.y - TRAIL_EXTENSION_DISTANCE;
+        float trail_extension_distance = -(conductor.crotchet * TRAIL_EXTENSION_MULTIPLIER);
+        float distance_between_note_and_particle = motion.position.y - p.position.y + trail_extension_distance;
         float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
         float progress = distance_between_note_and_particle / duration_as_screen_distance;
         float random = ((rand() % 100) - 50) * 1.8f;
