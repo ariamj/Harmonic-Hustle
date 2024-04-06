@@ -20,6 +20,7 @@
 #include "audio_system.hpp"
 #include "cutscene.hpp"
 #include "tutorial_screen.hpp"
+#include <options_popup.hpp>
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -37,6 +38,7 @@ public:
 	AudioSystem audioSystem;
 	Cutscene cutscene;
 	Tutorial tutorial;
+	OptionsPopup optionsMenu;
 	
 	// Creates a window
 	GLFWwindow* create_window();

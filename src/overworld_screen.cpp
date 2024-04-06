@@ -35,7 +35,8 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
-
+	//createText("Options Menu", vec2(gameInfo.width / 2.f, gameInfo.height / 3.6), 1.0f, Colour::theme_blue_3, Screen::OVERWORLD);
+	//opm.displayOptions(Screen::OVERWORLD);
 	// Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
@@ -58,7 +59,14 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 
 	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
 	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, Screen::OVERWORLD, true );
-	
+	vec2 center = { gameInfo.width / 2.f, gameInfo.height / 2.f };
+	Entity back = createBox(center, { gameInfo.width / 4.5f, gameInfo.height / 2.f });
+	Entity front = createBox(center, { gameInfo.width / 4.5f - 20.f, gameInfo.height / 2.f - 20.f });
+	registry.colours.insert(back, Colour::theme_blue_2);
+	registry.colours.insert(front, Colour::white);
+
+	registry.screens.insert(back, Screen::OVERWORLD);
+	registry.screens.insert(front, Screen::OVERWORLD);
 
 	// // Spawn new enemies
 	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
@@ -89,6 +97,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, Screen::OVERWORLD, true);
         }
     }
+	opm.displayOptions((int)Screen::OVERWORLD);
 
     // count down enemy pause timer if needed
     if (registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
@@ -104,7 +113,7 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	// ScreenState &screen = registry.screenStates.components[0];
 
 	// float min_counter_ms = 3000.f;
-	opm.displayOptions((int)Screen::OVERWORLD);
+
     return true;
 };
 

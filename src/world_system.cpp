@@ -103,6 +103,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
 	tutorial.init(window, renderer_arg);
+	optionsMenu = OptionsPopup();
 
 	// Moved into here from main
 	audioSystem.init();
@@ -558,8 +559,10 @@ void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
 		//only save if exit in overworld
-		if (gameInfo.curr_screen != Screen::START) {
+		if (gameInfo.curr_screen == OVERWORLD || gameInfo.curr_screen == BATTLE) {
 			printf("Can display options popup\n");
+			optionsMenu.displayOptions((int)Screen::OVERWORLD);
+			
 		}
 		else {
 			printf("Cannot options popup in screen enum %i\n", (int) gameInfo.curr_screen);
