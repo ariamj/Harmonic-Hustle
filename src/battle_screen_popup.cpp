@@ -79,9 +79,9 @@ void Battle::addReminderPopUpPartsLevelBoss() {
 		default:
 			float imgXPos = gameInfo.width / 2.f;
 			float imgYPos = gameInfo.height / 2.f + 45.f;
-			Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
-			Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
-			Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
+			Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos),vec2(80, 100), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
+			Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), vec2(80, 100),TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
+			Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),vec2(80, 100),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
 
 			registry.battleReminderPopUpParts.emplace(aboveImg);
 			registry.battleReminderPopUpParts.emplace(onImg);
@@ -157,9 +157,9 @@ void Battle::addDefaultReminderParts() {
 	// help images
 	float imgXPos = gameInfo.width / 2.f;
 	float imgYPos = gameInfo.height / 2.f + 45.f;
-	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
-	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
-	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
+	Entity aboveImg = createHelpImage(renderer, vec2(imgXPos - 100.f, imgYPos), vec2(80, 100),TEXTURE_ASSET_ID::NOTE_EXAMPLE_ABOVE, Screen::BATTLE);
+	Entity onImg = createHelpImage(renderer, vec2(imgXPos, imgYPos), vec2(80, 100), TEXTURE_ASSET_ID::NOTE_EXAMPLE_ON, Screen::BATTLE);
+	Entity hitImg = createHelpImage(renderer, vec2(imgXPos + 100.f, imgYPos),vec2(80, 100), TEXTURE_ASSET_ID::NOTE_EXAMPLE_HIT, Screen::BATTLE);
 
 	//// space for help images
 	reminderTextYPos += 170.f;

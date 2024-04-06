@@ -54,4 +54,4 @@ Entity createSmoke(vec2 pos);
 // creates an empty entity that has spark particles
 Entity createSpark(vec2 pos, float max_duration, Entity entity_to_observe);
 // create a simple png object to show some example images
-Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpImgId, Screen screen);
+Entity createHelpImage(RenderSystem* renderer, vec2 pos, vec2 scale, TEXTURE_ASSET_ID helpImgId, Screen screen);

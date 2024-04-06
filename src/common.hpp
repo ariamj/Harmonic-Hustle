@@ -96,6 +96,8 @@ namespace Colour {
 	static const vec3 dark_gray = { 0.25, 0.25, 0.25 };
 	static const vec3 white = { 1.0, 1.0, 1.0 };
 	static const vec3 khaki = vec3(240,230,140) / vec3(255);
+	static const vec3 off_white = vec3(0.8, 0.83, 0.851);
+	static const vec3 red_enemy_tint = vec3{0.95f, 0.6f, 0.6f};
 
 	// game theme colours
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue
@@ -118,6 +120,9 @@ enum MouseArea {
 	in_help_btn,
 	in_restart_btn,
 	in_load_btn,
+	in_easy_btn,
+	in_normal_btn,
+	in_hard_btn,
 };
 
 // Modes of note timings

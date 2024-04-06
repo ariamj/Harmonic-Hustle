@@ -528,7 +528,7 @@ Entity createSpark(vec2 pos, float max_duration, Entity entity_to_observe) {
 	return entity;
 }
 
-Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpImgId, Screen screen) {
+Entity createHelpImage(RenderSystem* renderer, vec2 pos, vec2 scale, TEXTURE_ASSET_ID helpImgId, Screen screen) {
 	auto entity = Entity();
 
 	// Store a reference to the potentially re-used mesh object
@@ -540,7 +540,7 @@ Entity createHelpImage(RenderSystem* renderer, vec2 pos, TEXTURE_ASSET_ID helpIm
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = pos;
-	motion.scale = vec2({ 80, 100 });
+	motion.scale = scale;
 
 	// screen entity exists in
 	registry.screens.insert(entity, screen);

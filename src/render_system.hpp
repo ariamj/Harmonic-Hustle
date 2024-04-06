@@ -75,11 +75,14 @@ class RenderSystem {
 		textures_path("Enemy-Guitar-Portrait-Lose.png"),
 		textures_path("Boss-Portrait-Lose.png"),
 		textures_path("Player-Portrait-Lose.png"),
-		textures_path("NoteExampleAbove.png"),
-		textures_path("NoteExampleOn.png"),
-		textures_path("NoteExampleHit.png"),
+		textures_path("Note-Example-Above.png"),
+		textures_path("Note-Example-On.png"),
+		textures_path("Note-Example-Hit.png"),
 		textures_path("Flame-Particle.png"),
-		textures_path("Spark-Particle.png")
+		textures_path("Spark-Particle.png"),
+		textures_path("Judgement-Lines-Example.png"),
+		textures_path("Long-Note-Example.png"),
+		textures_path("Tap-Note-Example.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
