@@ -231,6 +231,10 @@ struct TutorialParts {
 
 };
 
+struct OptionsMenu {
+
+};
+
 struct Collision
 {
 	// Note, the first object is stored in the ECS container.entities
