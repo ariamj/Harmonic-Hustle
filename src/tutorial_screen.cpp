@@ -252,8 +252,8 @@ void Tutorial::initAdvancingExplaingParts() {
     currY += 50.f;
     Entity text3 = createText("You'll only have to defeat one to advance", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
     currY += 40.f;
-    Entity text4 = createText("But don't lose, cause you only get", vec2(centerX - 90.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
-    Entity text5 = createText("3 chances!", vec2(centerX + 340.f, currY), 0.5f, Colour::red, Screen::TUTORIAL, true, true);
+    Entity text4 = createText("But don't lose, cause you only get", vec2(centerX - 105.f, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text5 = createText("3 chances!", vec2(centerX + 345.f, currY), 0.6f, Colour::red, Screen::TUTORIAL, true, true);
 
     // explain boss
     float leftTextPos = gameInfo.width * 1.1f/ 3.f;
