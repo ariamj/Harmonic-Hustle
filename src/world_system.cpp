@@ -103,7 +103,6 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
 	tutorial.init(window, renderer_arg);
-	optionsMenu = OptionsPopup();
 
 	// Moved into here from main
 	audioSystem.init();
@@ -561,7 +560,6 @@ void WorldSystem::handleEscInput(int action) {
 		//only save if exit in overworld
 		if (gameInfo.curr_screen == OVERWORLD || gameInfo.curr_screen == BATTLE) {
 			printf("Can display options popup\n");
-			optionsMenu.displayOptions((int)Screen::OVERWORLD);
 			
 		}
 		else {

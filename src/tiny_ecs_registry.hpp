@@ -51,7 +51,6 @@ public:
 	ComponentContainer<ParticleTimer> particleTimers;
 	ComponentContainer<BattleCombo> combos;
 	ComponentContainer<BattlePlayer> battlePlayer;
-	ComponentContainer<OptionsPopupParts> optionsPopupParts;
 	
 	// constructor that adds all containers for looping over them
 	ECSRegistry()
@@ -97,7 +96,6 @@ public:
 		registry_list.push_back(&particleTimers);
 		registry_list.push_back(&combos);
 		registry_list.push_back(&battlePlayer);
-		registry_list.push_back(&optionsPopupParts);
 	}
 
 	void clear_all_components() {

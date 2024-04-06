@@ -5,14 +5,12 @@
 #include <math.h>
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
-#include <options_popup.hpp>
 
 // Game configuration
 // const size_t MAX_ENEMIES = 2;
 // const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
 
-OptionsPopup opm;
 
 Overworld::Overworld() 
 : next_enemy_spawn(0.f)
@@ -97,7 +95,6 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, Screen::OVERWORLD, true);
         }
     }
-	opm.displayOptions((int)Screen::OVERWORLD);
 
     // count down enemy pause timer if needed
     if (registry.pauseEnemyTimers.has(*gameInfo.player_sprite)) {
