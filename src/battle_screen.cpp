@@ -478,7 +478,7 @@ void Battle::start() {
 	score = 0;
 	
 	float base_percentage = 0.5f; // 50% of perfect score 
-	float difficulty_percentage = 0.15f * gameInfo.curr_difficulty; // +15% for each higher difficulty
+	float difficulty_percentage = 0.1f * gameInfo.curr_difficulty; // +10% for each higher difficulty
 	int total_hits = num_notes + battleInfo[enemy_index].count_held_notes;
 	// Calculate score threshold
 	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
