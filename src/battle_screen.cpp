@@ -461,7 +461,7 @@ void Battle::start() {
 
 	// For testing specific difficulty
 	// TODO: Choose in-game instead
-	gameInfo.curr_difficulty = 2;
+	// gameInfo.curr_difficulty = 2;
 
 	// 0-indexing
 	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
