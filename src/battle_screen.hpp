@@ -161,7 +161,7 @@ class Battle {
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
         const float MIN_FRAMES_ADJUSTMENT = -5.f;
         const float MAX_FRAMES_ADJUSTMENT = 5.f;
-        const float HOLD_DURATION_LEEWAY = 0.9f;
+        const float HOLD_DURATION_LEEWAY = 10.f * APPROX_FRAME_DURATION; // allows player to release slightly early, in ms
 
         const int COUNTDOWN_TOTAL_BEATS = 8;
         const int COUNTDOWN_NUM_BEATS = 4;

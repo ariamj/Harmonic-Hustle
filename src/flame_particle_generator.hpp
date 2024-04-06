@@ -8,7 +8,7 @@ class FlameParticleGenerator : public ParticleGenerator
 public:
     // subclass constructor
     // const int amount = 500;
-    FlameParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    FlameParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~FlameParticleGenerator() {};
 private:
     const float ALPHA_FADE_MULTIPLIER = 2.5f;

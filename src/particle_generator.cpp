@@ -10,8 +10,8 @@
 #include "particle_generator.hpp"
 #include "iostream"
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture)
-    : shaderProgram(shaderProgram), used_texture(used_texture)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
+    : shaderProgram(shaderProgram), used_texture(used_texture), amount(amount), max_entities(max_entities)
 {
     init();
 }
@@ -34,7 +34,7 @@ void ParticleGenerator::updateEntities() {
     for (auto entity : registry.particleEffects.entities) {
         // Check if entity is current assigned to a block
         bool entity_found = false;
-        for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+        for (int i = 0; i < max_entities; i++) {
             if (blocks[i] == entity) {
                 entity_found = true;
             }
@@ -117,6 +117,8 @@ void ParticleGenerator::Draw()
 
 void ParticleGenerator::init()
 {
+    max_particles = max_entities * amount;
+
     // set up mesh and attribute properties
     unsigned int VBO;
     float particle_quad[] = {
@@ -144,9 +146,11 @@ void ParticleGenerator::init()
     for (int i = 0; i < max_particles; i++) {
         particles.push_back(Particle());
     }
-    initialized_entity_id = blocks[0];
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
-        blocks[i] = initialized_entity_id;
+    // Need some entity ID that does not have particles. Choose player for now
+    initialized_entity_id = registry.players.entities[0];
+
+    for (int i = 0; i < max_entities; i++) {
+        blocks.push_back(initialized_entity_id);
     }
 
     // Generate instance VBO
@@ -198,7 +202,7 @@ unsigned int ParticleGenerator::firstUnusedParticle(int lastUsedParticle, int be
 int ParticleGenerator::findUnusedBlock()
 {
     // Find an available block index and return it
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+    for (int i = 0; i < max_entities; i++) {
         // 0 when initialized, or free when previous Entity is no longer registered for particles
         if (blocks[i] == 0 || !registry.particleEffects.has(blocks[i])) {
             return i;

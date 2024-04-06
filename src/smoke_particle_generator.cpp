@@ -11,14 +11,14 @@
 #include "iostream"
 
 
-SmokeParticleGenerator::SmokeParticleGenerator(GLuint shaderProgram, GLuint used_texture)
-    : ParticleGenerator(shaderProgram, used_texture)
+SmokeParticleGenerator::SmokeParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
+    : ParticleGenerator(shaderProgram, used_texture, amount, max_entities)
 {
     // init is called in ParticleGenerator constructor
 }
 
 void SmokeParticleGenerator::updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) {
-    for (int i = 0; i < MAX_PARTICLE_ENTITIES; i++) {
+    for (int i = 0; i < max_entities; i++) {
         Entity entity = blocks[i];
 
         if (entity == initialized_entity_id) {
