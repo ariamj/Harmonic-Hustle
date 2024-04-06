@@ -80,7 +80,13 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     }
     else {
         float trail_extension_distance = -(conductor.crotchet * TRAIL_EXTENSION_MULTIPLIER);
-        float distance_between_note_and_particle = motion.position.y - p.position.y + trail_extension_distance;
+        float distance_between_note_and_particle = motion.position.y - p.position.y;
+        // Cover the case where particle is immediately reassigned, and particle position is below note
+        if (distance_between_note_and_particle < 0.f) {
+            p.color.a = 0.f;
+            return;
+        }
+        distance_between_note_and_particle += trail_extension_distance;
         float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
         float progress = distance_between_note_and_particle / duration_as_screen_distance;
         float random = ((rand() % 100) - 50) * 1.8f;
@@ -96,6 +102,9 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
 
 void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
+    if (!registry.notes.has(entity) || !registry.particleEffects.has(entity)) {
+        return;
+    }
     float random = ((rand() % 100) - 50) / 10.0f;
     float rColor = 0.5f + ((rand() % 100) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
