@@ -96,7 +96,7 @@ void Tutorial::initIntroParts() {
     Entity titleText = createText("Tutorial", vec2(gameInfo.width / 2.f, gameInfo.height / 20.f), 1.3f, Colour::white, Screen::TUTORIAL, true, true );
     registry.tutorialParts.emplace(titleText);
 
-    vec2 spriteExPos2 = spriteExPos - vec2{0, PLAYER_HEIGHT / 2.f - 10.f};
+    vec2 spriteExPos2 = spriteExPos - vec2{0, PLAYER_HEIGHT / 2.f + 10.f};
     Entity text1 = createText("lvl 1", spriteExPos2, 0.5f, Colour::green, Screen::TUTORIAL, true, true);
 
     vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
@@ -242,7 +242,7 @@ void Tutorial::initAdvancingExplaingParts() {
     float currY = gameInfo.height / 15.f;
     float centerX = gameInfo.width / 2.f;
 
-    Entity pauseTipText = createText("Tip: if you ever need to pause, click H!", vec2(centerX, currY), 0.7f, Colour::theme_blue_2 + vec3(0.3), Screen::TUTORIAL, true, true);
+    Entity pauseTipText = createText("Tip: if you ever need to pause or check keys, click H!", vec2(centerX, currY), 0.7f, Colour::theme_blue_2 + vec3(0.3), Screen::TUTORIAL, true, true);
     registry.tutorialParts.emplace(pauseTipText);
 
     currY += 90.f;
