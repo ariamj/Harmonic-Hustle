@@ -20,6 +20,7 @@
 #include "audio_system.hpp"
 #include "cutscene.hpp"
 #include "tutorial_screen.hpp"
+#include <options_screen.hpp>
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -37,6 +38,7 @@ public:
 	AudioSystem audioSystem;
 	Cutscene cutscene;
 	Tutorial tutorial;
+	OptionsMenu optionsMenu;
 	
 	// Creates a window
 	GLFWwindow* create_window();
@@ -76,6 +78,9 @@ private:
 
 	// sets the curr scene to tutorial
 	bool render_set_tutorial();
+
+	// sets to options/ settings screen
+	bool render_set_options_screen();
 
 	void checkEnemyPositions();
 

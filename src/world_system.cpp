@@ -202,7 +202,11 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		return start.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
 		return tutorial.handle_step(elapsed_ms_since_last_update, current_speed);
-	} else {
+	}
+	else if (gameInfo.curr_screen == Screen::OPTIONS) {
+		return optionsMenu.handle_step(elapsed_ms_since_last_update, current_speed);
+	}
+	else {
 		return gameOver.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
@@ -290,6 +294,7 @@ void WorldSystem::restart_game() {
 	cutscene.init_screen();
 	battle.init_screen();
 	gameOver.init_screen();
+	optionsMenu.init_screen();
 	tutorial.tutorial_progress = TutorialPart::INTRO;
 	tutorial.init_parts(TutorialPart::INTRO);
 
@@ -337,6 +342,7 @@ bool WorldSystem::render_set_overworld_screen() {
 	battle.set_visible(false);
 	cutscene.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	overworld.set_visible(true);
 	// don't restart the overworld music if coming from settings or start screen
 	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
@@ -355,6 +361,7 @@ bool WorldSystem::render_set_battle_screen() {
 	overworld.set_visible(false);
 	cutscene.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	battle.set_visible(true);
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -378,6 +385,7 @@ bool WorldSystem::render_set_settings_screen() {
 	gameOver.set_visible(false);
 	cutscene.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	settings.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -405,6 +413,7 @@ bool WorldSystem::render_set_start_screen() {
   	cutscene.set_visible(false);
 	gameOver.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -412,8 +421,8 @@ bool WorldSystem::render_set_start_screen() {
 		registry.motions.get(player_sprite).velocity = {0, 0};
 	}
   
-  	// don't restart the music if coming from help screen
-	if (prevScreen != Screen::SETTINGS)
+  	// don't restart the music if coming from help or options screen
+	if (prevScreen != Screen::SETTINGS || prevScreen != Screen::OPTIONS)
 		audioSystem.playOverworld();
 
 	std::cout << "current screen: start" << std::endl;
@@ -431,6 +440,7 @@ bool WorldSystem::render_set_game_over_screen() {
   	cutscene.set_visible(false);
 	start.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	gameOver.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -456,6 +466,7 @@ bool WorldSystem::render_set_cutscene() {
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	cutscene.set_visible(true);
   
 	// sets the player velocity to 0 once screen switches
@@ -484,7 +495,9 @@ bool WorldSystem::render_set_tutorial() {
   	cutscene.set_visible(false);
 	gameOver.set_visible(false);
 	start.set_visible(false);
+	optionsMenu.set_visible(false);
 	tutorial.set_visible(true);
+	
 	
 
 	// sets the player velocity to 0 once screen switches
@@ -495,6 +508,34 @@ bool WorldSystem::render_set_tutorial() {
 	std::cout << "current screen: tutorial" << std::endl;
   	return true; // added to prevent error
 };
+
+// REQUIRES current scene to NOT be options menu
+// switch to options screen
+bool WorldSystem::render_set_options_screen() {
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.curr_screen = Screen::OPTIONS;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+	cutscene.set_visible(false);
+	gameOver.set_visible(false);
+	start.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = { 0, 0 };
+	}
+
+	// add a timer so every time it switches enemies pause for a bit
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
+	}
+
+	std::cout << "current screen: options menu" << std::endl;
+	return true;
+}
 
 void WorldSystem::checkEnemyPositions() {
 	vec2 playerPos = registry.motions.get(player_sprite).position;
@@ -552,8 +593,6 @@ void testButton(Entity& btn) {
 }
 
 // options menu key
-// exit game key
-// 	-> on exit, saves game and closes window
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
@@ -574,7 +613,7 @@ void WorldSystem::saveAndExit() {
 	//only save if exit in overworld
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
 		saver.save_game();
-		//glfwSetWindowShouldClose(window, 1);
+		glfwSetWindowShouldClose(window, 1);
 	}
 }
 

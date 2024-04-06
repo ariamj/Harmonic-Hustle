@@ -57,14 +57,6 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 
 	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
 	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, Screen::OVERWORLD, true );
-	vec2 center = { gameInfo.width / 2.f, gameInfo.height / 2.f };
-	Entity back = createBox(center, { gameInfo.width / 4.5f, gameInfo.height / 2.f });
-	Entity front = createBox(center, { gameInfo.width / 4.5f - 20.f, gameInfo.height / 2.f - 20.f });
-	registry.colours.insert(back, Colour::theme_blue_2);
-	registry.colours.insert(front, Colour::white);
-
-	registry.screens.insert(back, Screen::OVERWORLD);
-	registry.screens.insert(front, Screen::OVERWORLD);
 
 	// // Spawn new enemies
 	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;

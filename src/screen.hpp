@@ -6,4 +6,5 @@ enum Screen {
     CUTSCENE = 4,
     GAMEOVER = 5,
     TUTORIAL = 6,
+    OPTIONS = 7
 };
