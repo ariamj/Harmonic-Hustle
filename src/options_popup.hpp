@@ -3,5 +3,5 @@ class OptionsPopup
 public:
 	OptionsPopup();
 	~OptionsPopup();
-	void displayOptions();
+	void displayOptions(int screen);
 };

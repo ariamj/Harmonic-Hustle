@@ -82,6 +82,7 @@ private:
 	vec2 getRamdomEnemyPosition();
 
 	void handleEscInput(int action);
+	void saveAndExit();
 	void handleHInput(int action);
 	void handleBackspaceInput(int action);
 	void handleClickStartBtn();

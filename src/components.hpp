@@ -231,7 +231,7 @@ struct TutorialParts {
 
 };
 
-struct OptionsMenu {
+struct OptionsPopupParts {
 
 };
 

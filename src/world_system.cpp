@@ -551,16 +551,29 @@ void testButton(Entity& btn) {
 	}
 }
 
+// options menu key
 // exit game key
 // 	-> on exit, saves game and closes window
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "esc press" << std::endl;
 		//only save if exit in overworld
-		if (gameInfo.curr_screen == Screen::OVERWORLD) {
-			saver.save_game();
+		if (gameInfo.curr_screen != Screen::START) {
+			printf("Can display options popup\n");
 		}
-		glfwSetWindowShouldClose(window, 1);
+		else {
+			printf("Cannot options popup in screen enum %i\n", (int) gameInfo.curr_screen);
+		}
+		//glfwSetWindowShouldClose(window, 1);
+	}
+}
+
+void WorldSystem::saveAndExit() {
+	std::cout << "Saving and exiting..." << std::endl;
+	//only save if exit in overworld
+	if (gameInfo.curr_screen == Screen::OVERWORLD) {
+		saver.save_game();
+		//glfwSetWindowShouldClose(window, 1);
 	}
 }
 
@@ -691,7 +704,7 @@ void WorldSystem::handleClickLoadBtn() {
 		render_set_overworld_screen();
 	}
 }	
-
+bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 
@@ -741,6 +754,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			}
 			break;
 		case GLFW_KEY_ESCAPE:
+			esc_pressed = true;
 			handleEscInput(action);
 			break;
 		case GLFW_KEY_H: 
@@ -786,6 +800,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			break;
 	}
 }
+
+
 
 void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	double xpos = mouse_position.x;
@@ -865,6 +881,10 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		}
 		tutorial.handle_mouse_move(mouse_area);
 	}
+
+	// TODO: buttons for options menu popup
+
+	//if (gameInfo.curr_screen != START && )
 }
 
 void WorldSystem::on_mouse_button(int button, int action, int mods) {
