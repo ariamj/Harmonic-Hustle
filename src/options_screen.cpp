@@ -17,23 +17,23 @@ void OptionsMenu::init(GLFWwindow* window, RenderSystem* renderer) {
 }
 
 void OptionsMenu::init_screen() {
-    title_1_pos = vec2(gameInfo.width / 2.f - gameInfo.width / 8.f, gameInfo.height / 8.f);
-    title_2_pos = vec2(gameInfo.width / 2.f + gameInfo.width / 8.f, gameInfo.height * 2 / 8.f);
+    title_1_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 8.f);
+    //title_2_pos = vec2(gameInfo.width / 2.f + gameInfo.width / 8.f, gameInfo.height * 2 / 8.f);
     // title "banner"
-    Entity banner_1 = createBox(title_1_pos, vec2(800.f, 100.f));
+    Entity banner_1 = createBox(title_1_pos, vec2(1200.f, 100.f));
     registry.screens.insert(banner_1, Screen::OPTIONS);
     registry.colours.insert(banner_1, Colour::white);
-    Entity banner_2 = createBox(title_2_pos, vec2(650.f, 100.f));
+    /*Entity banner_2 = createBox(title_2_pos, vec2(650.f, 100.f));
     registry.screens.insert(banner_2, Screen::OPTIONS);
-    registry.colours.insert(banner_2, Colour::white);
+    registry.colours.insert(banner_2, Colour::white);*/
 
     vec2 shadow_offset = vec2(10.f);
     // title - shadow
-    createText("HARMONIC", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
-    createText("HUSTLE", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
+    createText("OPTIONS MENU", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
+    //createText("MENU", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
     // title
-    createText("HARMONIC", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
-    createText("HUSTLE", title_2_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
+    createText("OPTIONS MENU", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
+    //createText("MENU", title_2_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
 
     renderButtons();
 
@@ -47,24 +47,34 @@ void OptionsMenu::renderButtons() {
     float y_padding = main_menu_size.y + 15.f;
     vec2 center_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 2.f);
     vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
+    vec2 shift = vec2(200.f, 0.f);
 
-    // Start button
-    Entity start_shadow = createBox(shadow_pos, new_game_btn_size);
+    // new game button
+    Entity start_shadow = createBox(shadow_pos - shift, new_game_btn_size);
     registry.screens.insert(start_shadow, Screen::OPTIONS);
-    registry.colours.insert(start_shadow, Colour::theme_blue_3);
-    Entity start_btn = createButton("NEW GAME", center_pos, 1.5f, new_game_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    registry.colours.insert(start_shadow, Colour::green);
+    new_game_btn = createButton("NEW GAME", center_pos - shift, 1.5f, new_game_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // load from save button
+    // load from save button:: actually, save game button
     Entity save_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos, main_menu_size);
     registry.screens.insert(save_shadow, Screen::OPTIONS);
     registry.colours.insert(save_shadow, Colour::theme_blue_3);
-    Entity load_from_save_btn = createButton("LOAD", center_pos + vec2(0, new_game_y_padding), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    load_from_save_btn = createButton("SAVE GAME", center_pos + vec2(0, new_game_y_padding), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // Help button
+    // TODO: difficulty settings button
+
+    // help png button
     Entity help_shadow = createBox(vec2(0, y_padding + y_padding + 30.f) + shadow_pos, main_menu_size);
     registry.screens.insert(help_shadow, Screen::OPTIONS);
     registry.colours.insert(help_shadow, Colour::theme_blue_3);
     help_btn = createButton("HELP", center_pos + vec2(0, y_padding + y_padding + 30.f), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+
+    // TODO: tutorial button
+
+    // TODO: Return to start screen button
+
+    // TODO: Save and exit button
+
 }
 
 bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_speed) {

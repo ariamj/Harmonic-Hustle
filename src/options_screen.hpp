@@ -24,11 +24,14 @@ public:
 
     // buttons
     Entity resume_game_btn;
+    Entity save_game_btn;
     Entity new_game_btn;
     Entity difficulty_btn;
     Entity help_btn;
     Entity tutorial_btn;
     Entity exit_btn;
+    Entity return_to_main_btn;
+    Entity load_from_save_btn; //temp
 
     // mouse area
     MouseArea mouse_area;
