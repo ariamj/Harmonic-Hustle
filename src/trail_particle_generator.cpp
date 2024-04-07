@@ -36,6 +36,7 @@ void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
+        newParticles = 3;
         for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
@@ -81,14 +82,16 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     else {
         float trail_extension_distance = -(conductor.crotchet * TRAIL_EXTENSION_MULTIPLIER);
         float distance_between_note_and_particle = motion.position.y - p.position.y;
-        // Cover the case where particle is immediately reassigned, and particle position is below note
-        if (distance_between_note_and_particle < 0.f) {
+        float duration_as_screen_distance = (note.duration / gameInfo.curr_note_travel_time * gameInfo.height);
+        // Cover the cases where particle is immediately reassigned, and particle position is unpredictable
+        if (distance_between_note_and_particle < 0.f 
+            || distance_between_note_and_particle >= duration_as_screen_distance
+            || abs(motion.position.x - p.position.x) > 50.f) {
             p.color.a = 0.f;
             return;
         }
         distance_between_note_and_particle += trail_extension_distance;
-        float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
-        float progress = distance_between_note_and_particle / duration_as_screen_distance;
+        float progress = min(distance_between_note_and_particle / duration_as_screen_distance, 1.f);
         float random = ((rand() % 100) - 50) * 2.f;
         p.color.a = lerp(1.f, 0.f, progress);
         if (note.pressed) {

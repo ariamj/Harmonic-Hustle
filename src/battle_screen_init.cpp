@@ -16,9 +16,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
 
-	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(note_travel_time - (note_travel_time * (timing_offset)));
-
 	// Load level data from file :)
     loadAllLevelData();
 };
@@ -194,7 +191,7 @@ int Battle::convertDifficultyToInt(std::string difficulty) {
 // Convert 0-indexed metronome-based beats to timings in milliseconds
 void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float bpm_ratio) {
 	for (int i = 0; i < note_infos->size(); i++) {
-		float converted_timing = (1000.f * note_infos->at(i).spawn_time / bpm_ratio) + spawn_offset;
+		float converted_timing = (1000.f * note_infos->at(i).spawn_time / bpm_ratio);
 		note_infos->at(i).spawn_time = converted_timing;
 	}
 }
@@ -202,7 +199,7 @@ void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float
 void Battle::convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>> *mode_timings, float bpm_ratio) {
 	for (int i = 0; i < mode_timings->size(); i++) {
 		float time = mode_timings->at(i).first;
-		float converted_timing = (time * 1000.f / bpm_ratio) - (note_travel_time * timing_offset) - 1.5f * 60.f / bpm_ratio;
+		float converted_timing = (time * 1000.f / bpm_ratio) - 1.5f * 60.f / bpm_ratio;
 		mode_timings->at(i).first = converted_timing;
 	}
 }

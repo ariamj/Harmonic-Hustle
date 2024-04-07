@@ -168,7 +168,9 @@ struct GameInfo {
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
 	vec4 particle_color_adjustment;
-	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in ms
+	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in portions of frames
+	float base_note_travel_time = 2000.f; // how long note takes to travel from top to bottom
+	float curr_note_travel_time = 2000.f;
 };
 extern GameInfo gameInfo;
 

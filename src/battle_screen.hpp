@@ -174,16 +174,16 @@ class Battle {
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
 
-        // the time it should take for note to fall from top to bottom
-        // TODO: Allow calibration via difficulty setting
-        float note_travel_time = 2000.f;
+        // the time it should take for note to fall from top to bottom (on easiest difficulty)
+        float BASE_NOTE_TRAVEL_TIME = 2000.f;
+        float NOTE_TRAVEL_TIME_DIFFICULTY_STEP = 250.f;
         float spawn_offset; 
         float timing_offset = 1 - (1.f / 1.2f); // coupled with judgment_y_pos in createJudgmentLine
-        float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
 
         // battle-specific variables for readability, initialized in .start
         int enemy_index;
         int num_notes;
+        int previous_enemy_level = 0;
 
         // tracking information during battle
         int next_note_index;
@@ -219,4 +219,7 @@ class Battle {
         vec2 mode_pos;
         std::string mode_text;
         glm::vec3 mode_colour;
+        
+    protected:
+        int enemy_level;
 };

@@ -21,7 +21,7 @@ void Battle::setReminderPopUp() {
 	in_reminder = true;
 
 	// render entities as needed depending on level
-	switch (gameInfo.curr_level) {
+	switch (enemy_level) {
 		case 1:
 			addReminderPopUpPartsLevelOne();
 			break;
