@@ -135,6 +135,11 @@ class Battle {
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
 
+        // more helpers for reminder pop ups
+        void addExplanationBackAndForth();
+        void addExplanationBeatRush();
+        void addExplanationUnison();
+
         void handle_exit_reminder();
         
         void renderGameOverText();

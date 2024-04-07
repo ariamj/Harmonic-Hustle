@@ -40,19 +40,122 @@ void Battle::setReminderPopUp() {
 void Battle::addReminderPopUpPartsLevelOne() {
 	switch(gameInfo.curr_difficulty) {
 		case 0:
+			addExplanationBackAndForth();
+			break;
 		case 1:
+			addExplanationBackAndForth();
+			break;
 		case 2:
+			addExplanationBackAndForth();
+			break;
 		default:
 			addDefaultReminderParts();
 	}
+}
+
+void Battle::addExplanationBackAndForth() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+
+	Entity text1 = createText("You've challenged an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 45.f;
+	Entity text3 = createText("In \"Back and Forth\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::blue, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 50.f;
+	Entity text4 = createText("You will first hear a melody in the music (\"BACK\")", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 40.f;
+	Entity text5 = createText("Correct timing will be based on that melody (\"FORTH\")", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text6 = createText("Particles will appear BLUE in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text4);
+	registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);
+}
+
+void Battle::addExplanationBeatRush() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+
+	Entity text1 = createText("You've challenged an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 45.f;
+	Entity text3 = createText("In \"Beat Rush\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 50.f;
+	Entity text4 = createText("Notes will spawn continuously, at a fixed rate", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 40.f;
+	Entity text5 = createText("Unlike \"Back and Forth\", there won't be waiting time!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text6 = createText("Particles will appear RED in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text4);
+	registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);	
+}
+
+void Battle::addExplanationUnison() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+
+	Entity text1 = createText("You've challenged an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 45.f;
+	Entity text3 = createText("In \"Unison\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::dark_yellow, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 50.f;
+	Entity text4 = createText("Correct timing is at the same time as the melody!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text5 = createText("If you listen closely, you might notice... ", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	
+	reminderTextYPos += 40.f;
+	Entity text6 = createText("the same timing/rhythm has appeared previously!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text7 = createText("Particles will appear ORANGE in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text4);
+	registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(text7);
 }
 
 // render entities as needed depending on difficulty, else use default
 void Battle::addReminderPopUpPartsLevelTwo() {
 	switch(gameInfo.curr_difficulty) {
 		case 0:
+			addExplanationBeatRush();
+			break;
 		case 1:
+			addExplanationBeatRush();
+			break;
 		case 2:
+			addExplanationBeatRush();
+			break;
 		default:
 			addDefaultReminderParts();
 	}
@@ -63,8 +166,14 @@ void Battle::addReminderPopUpPartsLevelTwo() {
 void Battle::addReminderPopUpPartsLevelThree() {
 	switch(gameInfo.curr_difficulty) {
 		case 0:
+			addExplanationUnison();
+			break;
 		case 1:
+			addExplanationUnison();
+			break;
 		case 2:
+			addExplanationUnison();
+			break;
 		default:
 			addDefaultReminderParts();
 	}
@@ -137,7 +246,7 @@ void Battle::addReminderPopUpPartsLevelBoss() {
 void Battle::addDefaultReminderParts() {
 	float reminderTextYPos = gameInfo.height / 3.7f;
 	float reminderTextXPos = gameInfo.width / 2.f;
-	Entity text1 = createText("oh no You've hit an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.95f, Colour::red, Screen::BATTLE, true, true);
+	Entity text1 = createText("You've challenged an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 60.f;
 	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
