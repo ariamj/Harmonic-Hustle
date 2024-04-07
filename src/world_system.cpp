@@ -103,6 +103,7 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
 	tutorial.init(window, renderer_arg);
+	optionsMenu.init(window, renderer_arg);
 
 	// Moved into here from main
 	audioSystem.init();
@@ -521,7 +522,7 @@ bool WorldSystem::render_set_options_screen() {
 	gameOver.set_visible(false);
 	start.set_visible(false);
 	tutorial.set_visible(false);
-	optionsMenu.set_visible(false);
+	optionsMenu.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -595,16 +596,58 @@ void testButton(Entity& btn) {
 // options menu key
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
-		std::cout << "esc press" << std::endl;
-		//only save if exit in overworld
-		if (gameInfo.curr_screen == OVERWORLD || gameInfo.curr_screen == BATTLE) {
-			printf("Can display options popup\n");
-			
+		// if curr screen is overworld, switch to settings
+		if (gameInfo.curr_screen == Screen::OVERWORLD) {
+			gameInfo.prev_screen = Screen::OVERWORLD;
+			render_set_options_screen();
+
+			// if curr screen is battle, pause the battle and then switch to settings
 		}
-		else {
-			printf("Cannot options popup in screen enum %i\n", (int) gameInfo.curr_screen);
-		}
-		//glfwSetWindowShouldClose(window, 1);
+	//	else if (gameInfo.curr_screen == Screen::BATTLE) {
+	//		gameInfo.prev_screen = Screen::BATTLE;
+	//		battle.set_pause(true);
+	//		render_set_options_screen();
+
+	//	}
+	//	else if (gameInfo.curr_screen == Screen::START) {
+	//		gameInfo.prev_screen = Screen::START;
+	//		render_set_options_screen();
+	//	}
+	//	else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+	//		gameInfo.prev_screen = Screen::GAMEOVER;
+	//		render_set_options_screen();
+	//	}
+	//	else if (gameInfo.curr_screen == Screen::SETTINGS) {
+	//		gameInfo.prev_screen = Screen::SETTINGS;
+	//		render_set_options_screen();
+	//	}
+	//	else if (gameInfo.curr_screen == Screen::OPTIONS) {
+	//		// if curr screen is settings,
+	//		//		-> prev screen is overworld, just switch back
+	//		//      -> prev screen is battle, update screen visabilities and SET PAUSE for battle NOT set visible
+	//		//				(set visible restarts the battle, set pause just unpausees it)
+	//		if (gameInfo.prev_screen == Screen::OVERWORLD) {
+	//			render_set_overworld_screen();
+	//		}
+	//		else if (gameInfo.prev_screen == Screen::BATTLE) {
+	//			gameInfo.curr_screen = Screen::BATTLE;
+	//			settings.set_visible(false);
+	//			optionsMenu.set_visible(false);
+	//			overworld.set_visible(false);
+	//			cutscene.set_visible(false);
+	//			battle.set_pause(false);
+	//			std::cout << "current screen: battle" << std::endl;
+	//		}
+	//		else if (gameInfo.prev_screen == Screen::START) {
+	//			render_set_start_screen();
+	//		}
+	//		else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+	//			render_set_game_over_screen();
+	//		}
+	//		else if (gameInfo.prev_screen == Screen::SETTINGS) {
+	//			render_set_settings_screen();
+	//		}
+	//	}
 	}
 }
 
