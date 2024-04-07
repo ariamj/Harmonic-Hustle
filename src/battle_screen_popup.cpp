@@ -63,7 +63,7 @@ void Battle::addExplanationBackAndForth() {
 	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 45.f;
-	Entity text3 = createText("In \"Back and Forth\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::blue, Screen::BATTLE, true, true);
+	Entity text3 = createText("In \"Back and Forth\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::back_and_forth_colour, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 50.f;
 	Entity text4 = createText("You will first hear a melody in the music (\"BACK\")", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
@@ -74,12 +74,16 @@ void Battle::addExplanationBackAndForth() {
 	reminderTextYPos += 60.f;
 	Entity text6 = createText("Particles will appear BLUE in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
+	reminderTextYPos += 55.f;
+	Entity continue_text = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
 	registry.battleReminderPopUpParts.emplace(text1);
 	registry.battleReminderPopUpParts.emplace(text2);
 	registry.battleReminderPopUpParts.emplace(text3);
 	registry.battleReminderPopUpParts.emplace(text4);
 	registry.battleReminderPopUpParts.emplace(text5);
 	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(continue_text);	
 }
 
 void Battle::addExplanationBeatRush() {
@@ -92,7 +96,7 @@ void Battle::addExplanationBeatRush() {
 	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 45.f;
-	Entity text3 = createText("In \"Beat Rush\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
+	Entity text3 = createText("In \"Beat Rush\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::beat_rush_colour, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 50.f;
 	Entity text4 = createText("Notes will spawn continuously, at a fixed rate", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
@@ -103,12 +107,20 @@ void Battle::addExplanationBeatRush() {
 	reminderTextYPos += 60.f;
 	Entity text6 = createText("Particles will appear RED in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
+	reminderTextYPos += 80.f;
+	Entity text7 = createText("Modes will change during the battle. Stay alert!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 55.f;
+	Entity continue_text = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
 	registry.battleReminderPopUpParts.emplace(text1);
 	registry.battleReminderPopUpParts.emplace(text2);
 	registry.battleReminderPopUpParts.emplace(text3);
 	registry.battleReminderPopUpParts.emplace(text4);
 	registry.battleReminderPopUpParts.emplace(text5);
 	registry.battleReminderPopUpParts.emplace(text6);	
+	registry.battleReminderPopUpParts.emplace(text7);	
+	registry.battleReminderPopUpParts.emplace(continue_text);
 }
 
 void Battle::addExplanationUnison() {
@@ -121,7 +133,7 @@ void Battle::addExplanationUnison() {
 	Entity text2 = createText("time to prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 45.f;
-	Entity text3 = createText("In \"Unison\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::dark_yellow, Screen::BATTLE, true, true);
+	Entity text3 = createText("In \"Unison\" mode:", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::unison_colour, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 50.f;
 	Entity text4 = createText("Correct timing is at the same time as the melody!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
@@ -135,6 +147,9 @@ void Battle::addExplanationUnison() {
 	reminderTextYPos += 60.f;
 	Entity text7 = createText("Particles will appear ORANGE in colour", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
+	reminderTextYPos += 55.f;
+	Entity continue_text = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
 	registry.battleReminderPopUpParts.emplace(text1);
 	registry.battleReminderPopUpParts.emplace(text2);
 	registry.battleReminderPopUpParts.emplace(text3);
@@ -142,6 +157,7 @@ void Battle::addExplanationUnison() {
 	registry.battleReminderPopUpParts.emplace(text5);
 	registry.battleReminderPopUpParts.emplace(text6);
 	registry.battleReminderPopUpParts.emplace(text7);
+	registry.battleReminderPopUpParts.emplace(continue_text);
 }
 
 // render entities as needed depending on difficulty, else use default

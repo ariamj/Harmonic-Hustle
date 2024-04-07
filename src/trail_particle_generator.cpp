@@ -71,7 +71,7 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     }
 
     // particle is alive, thus update
-    p.position += p.velocity * 2.f * dt;
+    p.position += p.velocity * dt;
     Motion& motion = registry.motions.get(entity);
 
     if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
@@ -89,14 +89,14 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         distance_between_note_and_particle += trail_extension_distance;
         float duration_as_screen_distance = (note.duration / 2000.f * gameInfo.height);
         float progress = distance_between_note_and_particle / duration_as_screen_distance;
-        float random = ((rand() % 100) - 50) * 1.8f;
+        float random = ((rand() % 100) - 50) * 2.f;
         p.color.a = lerp(1.f, 0.f, progress);
         if (note.pressed) {
-            p.position += vec2(p.velocity.x + random, p.velocity.y) * 3.f * dt;
+            p.position += vec2(p.velocity.x + random, p.velocity.y) * 2.5f * dt;
         }
     }
 
-    p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(1.f, NOTE_MAX_SCALE_FACTOR, p.position.y / gameInfo.height));
+    p.scale = vec2(DEFAULT_PARTICLE_SCALE * lerp(0.8f, 2.5f, p.position.y / gameInfo.height));
 
 }
 
@@ -106,14 +106,14 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
         return;
     }
     float random = ((rand() % 100) - 50) / 10.0f;
-    float rColor = 0.5f + ((rand() % 100) / 100.0f);
+    float rColor = 0.5f + ((rand() % 115) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
     particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = entity_motion.velocity * 0.2f;
+    particle.velocity = entity_motion.velocity * 0.05f;
     particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 

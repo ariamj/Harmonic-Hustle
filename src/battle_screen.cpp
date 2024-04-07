@@ -42,6 +42,10 @@ void Battle::init_screen() {
 	threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
 	progress_bar_pos = vec2(gameInfo.width/2.f, 35.f);
 	progress_bar_base_size = vec2(1000.f, 40.f);
+
+	// TODO: Position mode text better
+		// Back and Forth (blue) as default
+	mode_pos = vec2(gameInfo.width * 0.88f, gameInfo.height * 0.15f);
 	
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
@@ -94,6 +98,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	// render score threshold
 	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
+	// render battle mode
+	createText("mode", mode_pos + vec2(0.f, -gameInfo.height * 0.03), 0.6f, Colour::light_gray, Screen::BATTLE);
+	createText(mode_text, mode_pos + vec2(5.f), 0.6f, mode_colour, Screen::BATTLE);
 
 	if (in_reminder) {
 		// renderReminderText();
@@ -219,7 +226,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				// remove missed notes and play missed note sound
 				if (registry.notes.has(motions_registry.entities[i])) {
 					Note& note = registry.notes.get(motions_registry.entities[i]);
-					// Only remove note if it is not a held note, or is currently being held
+					// Only remove note if it is not currently being held
 					if (!note.pressed) {
 						audio->playDroppedNote();
 						standing = missed;
@@ -242,22 +249,29 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
 			motion.position.y = lerp(0.0, float(gameInfo.height), progress);
-			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, progress);	
+			motion.scale_factor = lerp(1.f, NOTE_MAX_SCALE_FACTOR, progress);	
 		}
 
 		// Update battle mode based on conductor time
 		if (mode_index < battleInfo[enemy_index].modes.size()) {
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
 			if (conductor.song_position >= mode_change_time) {
-				switch (battleInfo[enemy_index].modes[mode_index].second) {
+				current_mode = battleInfo[enemy_index].modes[mode_index].second;
+				switch (current_mode) {
 				case back_and_forth:
 					gameInfo.particle_color_adjustment = BACK_AND_FORTH_COLOUR;
+					mode_text = "back and forth";
+					mode_colour = Colour::back_and_forth_colour;
 					break;
 				case beat_rush:
 					gameInfo.particle_color_adjustment = BEAT_RUSH_COLOUR;
+					mode_text= "beat rush";
+					mode_colour = Colour::beat_rush_colour;
 					break;
 				case unison:
 					gameInfo.particle_color_adjustment = UNISON_COLOUR;
+					mode_text = "unison";
+					mode_colour = Colour::unison_colour;
 					break;
 				}
 				mode_index += 1;
@@ -496,7 +510,12 @@ void Battle::start() {
 
 	// TODO (?): Account for when note spawns are negative (before music starts)
 	next_note_index = 0;
+
+	// Mode-related
 	mode_index = 0;
+	mode_text = "Back and Forth";
+	mode_colour = Colour::back_and_forth_colour;
+	current_mode = back_and_forth;
 
 	// Fine-tuning timing
 	count_late = 0;

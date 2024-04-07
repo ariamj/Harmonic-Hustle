@@ -71,7 +71,7 @@ void FlameParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
 void FlameParticleGenerator::respawnParticle(Particle& particle, Entity entity, glm::vec2 offset)
 {
     float random = ((rand() % 100) - 50) / 10.0f;
-    float rColor = 0.5f + ((rand() % 100) / 100.0f);
+    float rColor = 0.5f + ((rand() % 50) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
 
