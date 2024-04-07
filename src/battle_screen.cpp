@@ -482,8 +482,8 @@ void Battle::start() {
 	int total_hits = num_notes + battleInfo[enemy_index].count_held_notes;
 	// Calculate score threshold
 	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
-	int rounded_up_to_multiple_of_fifty = rounded_score + (50 - (rounded_score % 50));
-	score_threshold = rounded_up_to_multiple_of_fifty;
+	int rounded_down_to_multiple_of_fifty = rounded_score - (rounded_score % 50);
+	score_threshold = rounded_down_to_multiple_of_fifty;
 
 	// Reset counters
 	perfect_counter = 0;
