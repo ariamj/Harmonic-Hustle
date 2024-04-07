@@ -134,17 +134,11 @@ bool Overworld::handle_collisions() {
             // if collision is between enemy with level <= player level
             //      set curr enemy and switch to battle scene
             // else restart the entire game
-			if (registry.isRunning.has(entity_other)) {
+			if (registry.enemies.has(entity_other)) {
 
 				// Set enemy sprite as enemy for battle
 				gameInfo.curr_enemy = entity_other;
 				gameInfo.curr_screen = Screen::BATTLE;
-
-            } else {
-				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
-				gameInfo.curr_enemy = entity_other;
-				gameInfo.curr_screen = Screen::BATTLE;
-				// return true to restart game
 				return false;
             }
         }

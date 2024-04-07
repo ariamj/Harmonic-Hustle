@@ -16,9 +16,6 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
 
-	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(note_travel_time - (note_travel_time * (timing_offset)));
-
 	// Load level data from file :)
     loadAllLevelData();
 };

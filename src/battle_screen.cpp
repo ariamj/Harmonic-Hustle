@@ -247,7 +247,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			Note& note = registry.notes.get(entity);
 			Motion& motion = registry.motions.get(entity);
 
-			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
+			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / gameInfo.curr_note_travel_time;
 			motion.position.y = lerp(0.0, float(gameInfo.height), progress);
 			motion.scale_factor = lerp(1.f, NOTE_MAX_SCALE_FACTOR, progress);	
 		}
@@ -404,20 +404,10 @@ void Battle::handle_battle_end() {
 
 	// battle won
 	if (battleWon()) {
-		// remove all lower lvl enemies
-		int currLevel = gameInfo.curr_level;
-		auto& enemies = registry.enemies.entities;
-		for (Entity enemy : enemies) {
-			int currEnemyLevel = registry.levels.get(enemy).level;
-			if (currEnemyLevel == currLevel) {
-				registry.enemies.remove(enemy);
-				registry.renderRequests.remove(enemy);
-			}
-		}
 
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_WIN;
 
-		switch (gameInfo.curr_level) {
+		switch (enemy_level) {
 		case 1:
 			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_LOSE;
 			break;
@@ -434,16 +424,26 @@ void Battle::handle_battle_end() {
 			std::cout << "game level too high" << "\n";
 		}
 
-		// increment player lvl
-		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+		gameInfo.curr_level = min(enemy_level + 1, gameInfo.max_level);
 		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
-		
+
+		// remove all lower lvl enemies
+		int currLevel = gameInfo.curr_level;
+		auto& enemies = registry.enemies.entities;
+		for (Entity enemy : enemies) {
+			int currEnemyLevel = registry.levels.get(enemy).level;
+			if (currEnemyLevel < currLevel) {
+				registry.enemies.remove(enemy);
+				registry.renderRequests.remove(enemy);
+			}
+		}
+
 	// battle lost
 	} else {
 
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_LOSE;
 
-		switch (gameInfo.curr_level) {
+		switch (enemy_level) {
 		case 1:
 			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_WIN;
 			break;
@@ -478,8 +478,11 @@ void Battle::start() {
 	// gameInfo.curr_difficulty = 2;
 
 	int level = gameInfo.curr_level;
-	int enemy_level = 0;
+	enemy_level = 0;
 	int level_difference = 0;
+
+	// Accelerate based on difficulty
+	gameInfo.base_note_travel_time = BASE_NOTE_TRAVEL_TIME - (gameInfo.curr_difficulty * NOTE_TRAVEL_TIME_DIFFICULTY_STEP);
 
 	// Check enemy level
 	if (registry.levels.has(gameInfo.curr_enemy)) {
@@ -490,7 +493,12 @@ void Battle::start() {
 		level = enemy_level;
 		// Store level difference
 		level_difference = enemy_level - gameInfo.curr_level;
+	} else {
+		// Dependent on boss not having a level component
+		// Also catches C key case in overworld
+		enemy_level = gameInfo.curr_level;
 	}
+
 
 	// 0-indexing
 	int difficulty_offset = gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES;
@@ -517,13 +525,24 @@ void Battle::start() {
 
 	// Adjust note speed based on level difference between player and enemy
 	float note_speed_multiplier = pow(NOTE_TRAVEL_TIME_MULTIPLER, level_difference);
-	note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
+	float new_note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
+
+
+	if (enemy_level < previous_enemy_level && enemy_level != 4) {
+		// Player is challenging a lower level non-boss enemy than last time
+			// Forgiving; use the regularly computed note speed
+		gameInfo.curr_note_travel_time = new_note_travel_time;
+	} else {
+		// Player is continuing to challenge the same high level enemy, or even higher
+			// Not forgiving; do not slow down note speed
+		gameInfo.curr_note_travel_time = min(gameInfo.curr_note_travel_time, new_note_travel_time);
+	}
+
+	// If player wants to backtrack after fighting higher level enemy
+	previous_enemy_level = enemy_level;
 
 	// Used to spawn notes relative to judgment line instead of window height
-	spawn_offset = -(note_travel_time - (note_travel_time * (timing_offset)));
-
-	// Not ideal, but simplest way to pass info to particle generators...
-	gameInfo.curr_note_travel_time = note_travel_time;
+	spawn_offset = -(gameInfo.curr_note_travel_time - (gameInfo.curr_note_travel_time * (timing_offset)));
 
 	// Reset counters
 	perfect_counter = 0;
@@ -539,7 +558,7 @@ void Battle::start() {
 
 	// Mode-related
 	mode_index = 0;
-	mode_text = "Back and Forth";
+	mode_text = "back and forth";
 	mode_colour = Colour::back_and_forth_colour;
 	current_mode = back_and_forth;
 
@@ -555,7 +574,7 @@ void Battle::start() {
 	RenderRequest& render_p = registry.renderRequests.get(ep);
 
 	render_p.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER;
-	switch (gameInfo.curr_level) {
+	switch (enemy_level) {
 		case 1:
 			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY;
 			break;
@@ -767,7 +786,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	Motion& lane_motion = registry.motions.get(entity);
 	float note_y_pos = registry.motions.get(entity_other).position.y;
 	float lane_y_pos = lane_motion.position.y;
-	float scoring_margin = (SCORING_LEEWAY / note_travel_time) * gameInfo.height;
+	float scoring_margin = (SCORING_LEEWAY / (gameInfo.curr_note_travel_time)) * gameInfo.height;
 
 	// Sizing
 	JudgementLine judgement_line = registry.judgmentLine.get(entity);
@@ -1036,7 +1055,7 @@ float Battle::calculate_adjustment() {
 	float weighted_avg_late_distance = avg_late_distance * count_late / (total_count);
 
 	float avg_error_distance = weighted_avg_early_distance + weighted_avg_late_distance;
-	float adjustment = avg_error_distance / gameInfo.height * note_travel_time;
+	float adjustment = avg_error_distance / gameInfo.height * gameInfo.curr_note_travel_time;
 
 	std::cout << "Recommended adjustment: " << adjustment << " ms\n";
 
