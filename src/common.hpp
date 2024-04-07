@@ -103,6 +103,12 @@ namespace Colour {
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue
 	static const vec3 theme_blue_2 = { 0.308, 0.434, 0.451 }; //mid blue
 	static const vec3 theme_blue_3 = { 0.048, 0.184, 0.201 }; //background colour
+
+	// mode and particle colours
+	static const vec3 back_and_forth_colour = { 0.153, 0.6098, 0.6169};
+	static const vec3 beat_rush_colour = { 0.65, 0.015, 0.015 };
+	static const vec3 unison_colour = { 0.709, 0.376, 0.1059 };
+	
 };
 
 // box area of interest (eg. for buttons, active area)
