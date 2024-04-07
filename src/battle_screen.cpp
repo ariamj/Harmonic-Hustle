@@ -199,8 +199,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				// If notes spawn suddenly in the middle of screen, then there is an error in beatmap design
 			for (int k = 0; k < lane_indices.size(); k++) {
 				NoteInfo note = battleInfo[enemy_index].notes[next_note_index];
-				if (conductor.song_position >= note.spawn_time) {
-					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time, note.duration);
+				if (conductor.song_position >= note.spawn_time + spawn_offset) {
+					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time + spawn_offset, note.duration);
 					next_note_index += 1;
 					// Set duration 
 					lane_locked[lane_indices[k]] = note.duration + conductor.crotchet / 4.f;
@@ -255,7 +255,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Update battle mode based on conductor time
 		if (mode_index < battleInfo[enemy_index].modes.size()) {
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
-			if (conductor.song_position >= mode_change_time) {
+			if (conductor.song_position >= mode_change_time - (gameInfo.curr_note_travel_time * timing_offset)) {
 				current_mode = battleInfo[enemy_index].modes[mode_index].second;
 				switch (current_mode) {
 				case back_and_forth:
@@ -477,8 +477,24 @@ void Battle::start() {
 	// TODO: Choose in-game instead
 	// gameInfo.curr_difficulty = 2;
 
+	int level = gameInfo.curr_level;
+	int enemy_level = 0;
+	int level_difference = 0;
+
+	// Check enemy level
+	if (registry.levels.has(gameInfo.curr_enemy)) {
+		Level& enemy_ref_level = registry.levels.get(gameInfo.curr_enemy);
+		enemy_level = enemy_ref_level.level;
+
+		// Set level to enemy level regardless
+		level = enemy_level;
+		// Store level difference
+		level_difference = enemy_level - gameInfo.curr_level;
+	}
+
 	// 0-indexing
-	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
+	int difficulty_offset = gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES;
+	enemy_index = min(level - 1, NUM_UNIQUE_BATTLES - 1) + difficulty_offset;
 	num_notes = battleInfo[enemy_index].count_notes;
 	
 	// Set Conductor variables
@@ -498,6 +514,16 @@ void Battle::start() {
 	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
 	int rounded_down_to_multiple_of_fifty = rounded_score - (rounded_score % 50);
 	score_threshold = rounded_down_to_multiple_of_fifty;
+
+	// Adjust note speed based on level difference between player and enemy
+	float note_speed_multiplier = pow(NOTE_TRAVEL_TIME_MULTIPLER, level_difference);
+	note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
+
+	// Used to spawn notes relative to judgment line instead of window height
+	spawn_offset = -(note_travel_time - (note_travel_time * (timing_offset)));
+
+	// Not ideal, but simplest way to pass info to particle generators...
+	gameInfo.curr_note_travel_time = note_travel_time;
 
 	// Reset counters
 	perfect_counter = 0;
@@ -548,10 +574,11 @@ void Battle::start() {
 	}
 
 	// Create generators for particles that appear in the battle scene
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	// Order matters
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SMOKE);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 
 	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe

@@ -61,6 +61,9 @@ const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
 const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
 const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
 
+// for making notes travel faster on higher-level enemy collision
+const float NOTE_TRAVEL_TIME_MULTIPLER = 0.75f;
+
 // FPS global set by main.cpp
 extern int FPS;
 
