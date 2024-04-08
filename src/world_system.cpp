@@ -187,7 +187,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			gameInfo.is_game_over_finished = true;
 			// overwrite prev save data since game is now finished	
 			saver.save_game();
-      render_set_game_over_screen();
+			render_set_game_over_screen();
 		}
 		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;

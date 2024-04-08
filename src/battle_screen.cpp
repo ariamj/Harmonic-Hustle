@@ -1019,7 +1019,7 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
-					if (gameInfo.curr_lives == 0 || registry.enemies.entities.size() == 0) {
+					if (gameInfo.curr_lives == 0 || (registry.enemies.entities.size() == 0 && gameInfo.curr_level < 4)) {
 						// std::cout << "testing no more enemies" << std::endl;
 						gameInfo.curr_screen = Screen::GAMEOVER;
 					} else {
