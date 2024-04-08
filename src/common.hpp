@@ -41,8 +41,8 @@ const float PLAYER_WIDTH = 1.0f * 165.f;
 const float PLAYER_HEIGHT = 1.0f * 165.f;
 const float ENEMY_WIDTH = 1.0f * 165.f;
 const float ENEMY_HEIGHT = 1.0f * 165.f;
-const float PORTRAIT_WIDTH = 3 * 165.f;
-const float PORTRAIT_HEIGHT = 3 * 165.f;
+const float PORTRAIT_WIDTH = 3 * 150.f;
+const float PORTRAIT_HEIGHT = 3 * 150.f;
 const float CS_WIDTH = 850.f;
 const float CS_HEIGHT = 1350.f;
 const int MAX_TEXT_LENGTH = 255;
@@ -55,8 +55,14 @@ const float PLAYER_ENEMY_RADIUS = 300.f;
 const float CHASE_TOTAL_VELOCITY = 50.f;
 const float RUN_AWAY_TOTAL_VELOCITY = 50.f;
 const float DEFAULT_ENEMY_VELOCITY = 50.f;
-const float X_DISPLACEMENT_PORTRAIT = PORTRAIT_WIDTH * 3.f / 7.f;
+const float X_DISPLACEMENT_PORTRAIT = PORTRAIT_WIDTH * 2.5f / 7.f;
 const float Y_DISPLACEMENT_PORTRAIT = PORTRAIT_HEIGHT / 2;
+
+// Scaling to editors' screens
+const float ORIGINAL_MONITOR_WIDTH = 2256.f;
+const float ORIGINAL_MONITOR_HEIGHT = 1504.f;
+const float K_MONITOR_WIDTH = 1470.f;
+const float K_MONITOR_HEIGHT = 956.f;
 
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
