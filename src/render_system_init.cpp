@@ -352,22 +352,22 @@ void RenderSystem::initializeGlGeometryBuffers()
 
 	 //////////////////////////////////
 	// Initialize box
-	std::vector<ColoredVertex> box_vertices;
-	std::vector<uint16_t> box_indices;
+	 std::vector<ColoredVertex> box_vertices;
+	 std::vector<uint16_t> box_indices;
 
-	constexpr vec3 white = { 1.0,1.0,1.0 };
+	 constexpr vec3 white = { 1.0,1.0,1.0 };
 
-	// Corner points
-	box_vertices = {
-		{{-0.5,-0.5, 0.f}, white},
-		{{-0.5, 0.5, 0.f}, white},
-		{{ 0.5, 0.5, 0.f}, white},
-		{{ 0.5,-0.5, 0.f}, white},
-	};
+	 // Corner points
+	 box_vertices = {
+		 {{-0.5,-0.5, 0.f}, white},
+		 {{-0.5, 0.5, 0.f}, white},
+		 {{ 0.5, 0.5, 0.f}, white},
+		 {{ 0.5,-0.5, 0.f}, white},
+	 };
 
-	// Two triangles
-	box_indices = {0, 1, 3, 1, 2, 3};
-	
+	 // Two triangles
+	 box_indices = { 0, 1, 3, 1, 2, 3 };
+
 	 int box_geom_index = (int)GEOMETRY_BUFFER_ID::BOX;
 	 meshes[box_geom_index].vertices = box_vertices;
 	 meshes[box_geom_index].vertex_indices = box_indices;

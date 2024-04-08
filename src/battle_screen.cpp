@@ -46,7 +46,7 @@ void Battle::init_screen() {
 	// TODO: Position mode text better
 		// Back and Forth (blue) as default
 	mode_pos = vec2(gameInfo.width * 0.88f, gameInfo.height * 0.15f);
-	
+
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
 	vec3 text_colour = Colour::light_gray;
@@ -168,12 +168,36 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
+		Entity enemy = registry.battleEnemy.entities[0];
+		Entity player = registry.battlePlayer.entities[0];
 
-		// TODO (?): Initiate some visual FX on every beat of song
+		Motion& player_m = motions_registry.get(player);
+		Motion& enemy_m = motions_registry.get(enemy);
+
 		// Track each beat of song 
 		if (conductor.song_position > last_beat + conductor.crotchet) {
-			 // std::cout << "Beat detected" << "\n";
+			 //std::cout << "Beat detected" << "\n";
+
+			 player_m.position.y -= 15;
+			 enemy_m.position.y -= 15;
+
+			 // player portrait smokes
+			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(25.f, Y_DISPLACEMENT_PORTRAIT));
+
+			 // enemy portrait smokes
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f) - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT - (PORTRAIT_WIDTH / 2.f), gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+
 			 last_beat += conductor.crotchet;
+		} else {
+			if (player_m.position.y != Y_DISPLACEMENT_PORTRAIT + 20.f) {
+				player_m.velocity.y = 5;
+			}
+
+			if (enemy_m.position.y != gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f) {
+				enemy_m.velocity.y = 5;
+			}
 		}
 
 		// Spawning notes based on song position

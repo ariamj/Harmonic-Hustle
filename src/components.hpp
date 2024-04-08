@@ -147,6 +147,10 @@ struct ProgressBar
 	//progress bar
 };
 
+struct BattleLanes {
+
+};
+
 struct GameInfo {
 	Screen curr_screen;
 	Screen prev_screen; // to handle resume correct screen after pausing

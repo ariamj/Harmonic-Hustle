@@ -382,6 +382,19 @@ void RenderSystem::draw()
 
 	drawToScreen();
 
+	// have to render the lanes before the particles so it doesnt cover it up
+	Screen curr_screen = registry.screens.get(screen_state_entity);
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && registry.battleLanes.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
 	// Particle rendering, behind associated entities. Updates happen in world_system step
  	for (auto generator : particle_generators) {
 		generator->Draw();
@@ -389,13 +402,12 @@ void RenderSystem::draw()
 	glBindVertexArray(vao);
 
 	// Mesh rendering
-	Screen curr_screen = registry.screens.get(screen_state_entity);
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
 		if (registry.screens.has(entity)) {
 			Screen entity_screen = registry.screens.get(entity);
-			if (entity_screen == curr_screen) {
+			if (entity_screen == curr_screen && !registry.battleLanes.has(entity)) {
 				drawTexturedMesh(entity, projection_2D);
 			}
 		}

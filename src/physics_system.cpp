@@ -312,6 +312,20 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 				}
 			}
 		}
+
+		// move battle player portrait
+		if (registry.battlePlayer.has(entity)) {
+			if (motion.position.y != Y_DISPLACEMENT_PORTRAIT + 20.f) {
+				motion.position += motion.velocity;
+			}
+		}
+
+		// move battle enemy portrait
+		if (registry.battleEnemy.has(entity)) {
+			if (motion.position.y != gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f) {
+				motion.position += motion.velocity;
+			}
+		}
 	}
 
 	// auto t1 = Clock::now();
