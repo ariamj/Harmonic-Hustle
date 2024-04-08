@@ -55,6 +55,8 @@ const float PLAYER_ENEMY_RADIUS = 300.f;
 const float CHASE_TOTAL_VELOCITY = 50.f;
 const float RUN_AWAY_TOTAL_VELOCITY = 50.f;
 const float DEFAULT_ENEMY_VELOCITY = 50.f;
+const float X_DISPLACEMENT_PORTRAIT = PORTRAIT_WIDTH * 3.f / 7.f;
+const float Y_DISPLACEMENT_PORTRAIT = PORTRAIT_HEIGHT / 2;
 
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
@@ -101,6 +103,7 @@ namespace Colour {
 	static const vec3 khaki = vec3(240,230,140) / vec3(255);
 	static const vec3 off_white = vec3(0.8, 0.83, 0.851);
 	static const vec3 red_enemy_tint = vec3{0.95f, 0.6f, 0.6f};
+	static const vec3 lane_color = { 0.03922, 0.13725, 0.15686 };
 
 	// game theme colours
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue

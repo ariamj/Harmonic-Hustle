@@ -168,12 +168,30 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
+		Entity enemy = registry.battleEnemy.entities[0];
+		Entity player = registry.battlePlayer.entities[0];
 
-		// TODO (?): Initiate some visual FX on every beat of song
+		Motion& player_m = motions_registry.get(player);
+		Motion& enemy_m = motions_registry.get(enemy);
+
 		// Track each beat of song 
 		if (conductor.song_position > last_beat + conductor.crotchet) {
-			 // std::cout << "Beat detected" << "\n";
+			 //std::cout << "Beat detected" << "\n";
+
+			 player_m.position.y -= 15;
+			 enemy_m.position.y -= 15;
+
+			 createSmoke(vec2(100,100));
+
 			 last_beat += conductor.crotchet;
+		} else {
+			if (player_m.position.y != Y_DISPLACEMENT_PORTRAIT + 20.f) {
+				player_m.velocity.y = 5;
+			}
+
+			if (enemy_m.position.y != gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f) {
+				enemy_m.velocity.y = 5;
+			}
 		}
 
 		// Spawning notes based on song position
