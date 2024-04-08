@@ -8,6 +8,7 @@ void Battle::setReminderPopUp() {
 	vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
 	Entity reminderBoxBottom = createBox(center, {gameInfo.width / 1.8f, gameInfo.height / 1.8f});
 	Entity reminderBoxTop = createBox(center, {gameInfo.width / 1.8f - 20.f, gameInfo.height / 1.8f - 20.f});
+	registry.foregrounds.emplace(reminderBoxTop);
 
 	registry.colours.insert(reminderBoxBottom, Colour::theme_blue_2);
 	registry.colours.insert(reminderBoxTop, Colour::theme_blue_1);
@@ -334,6 +335,7 @@ void Battle::setBattleIsOver(bool isOver) {
 		vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
 		// the lighter box on top
 		gameOverPopUpOverlay = createBox(center, {gameInfo.width / 2.f - 20.f, gameInfo.height / 2.f - 20.f});
+		registry.foregrounds.emplace(gameOverPopUpOverlay);
 		// the bigger border box
 		Entity gameOverPopUp = createBox(center, {gameInfo.width / 2.f, gameInfo.height / 2.f});
 

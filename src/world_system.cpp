@@ -274,21 +274,25 @@ void WorldSystem::restart_game() {
 	registry.screens.insert(lane1_box, Screen::BATTLE);
 	registry.colours.insert(lane1_box, lane_colour);
 	registry.battleLanes.emplace(lane1_box);
+	registry.backgrounds.emplace(lane1_box);
 
 	Entity lane2_box = createBox(vec2(gameInfo.lane_2, gameInfo.height / 2.f), lane_size);
 	registry.screens.insert(lane2_box, Screen::BATTLE);
 	registry.colours.insert(lane2_box, lane_colour);
 	registry.battleLanes.emplace(lane2_box);
+	registry.backgrounds.emplace(lane2_box);
 
 	Entity lane3_box = createBox(vec2(gameInfo.lane_3, gameInfo.height / 2.f), lane_size);
 	registry.screens.insert(lane3_box, Screen::BATTLE);
 	registry.colours.insert(lane3_box, lane_colour);
 	registry.battleLanes.emplace(lane3_box);
+	registry.backgrounds.emplace(lane3_box);
 
 	Entity lane4_box = createBox(vec2(gameInfo.lane_4, gameInfo.height / 2.f), lane_size);
 	registry.screens.insert(lane4_box, Screen::BATTLE);
 	registry.colours.insert(lane4_box, lane_colour);
 	registry.battleLanes.emplace(lane4_box);
+	registry.backgrounds.emplace(lane4_box);
 
 	// hard coded values for now
 	float judgement_line_y_pos = gameInfo.height / 1.2;
