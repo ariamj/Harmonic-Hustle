@@ -134,6 +134,7 @@ class Battle {
         void addReminderPopUpPartsLevelThree();
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
+        void addReminderPopUpPartsChallengeLevel();
 
         // more helpers for reminder pop ups
         void addExplanationBackAndForth();
