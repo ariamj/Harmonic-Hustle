@@ -390,7 +390,7 @@ void Battle::renderGameOverText() {
 	createText("Best Combo: " + std::to_string(max_combo), vec2(gameInfo.width / 2.f, gameInfo.height / 2.f + (spacing * 3.25)), 0.6f, Colour::black, Screen::BATTLE);
 
 	// next instruction
-	createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.75)), 0.4f, Colour::black, Screen::BATTLE);
+	createText("...Press space to continue...", vec2(gameInfo.width/2.f, gameInfo.height/2.f + (spacing * 4.1f)), 0.4f, Colour::black, Screen::BATTLE);
 
 	// notify savenext_note_spawn
 	createText("Game saved", vec2(gameInfo.width / 2.f, gameInfo.height / 2.f - (spacing * 6)), 0.4f, Colour::green, Screen::BATTLE);
