@@ -548,6 +548,7 @@ bool WorldSystem::render_set_tutorial() {
 // REQUIRES current scene to NOT be options menu
 // switch to options screen
 bool WorldSystem::render_set_options_screen() {
+	gameInfo.in_options = true;
 	Screen prevScreen = gameInfo.curr_screen;
 	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OPTIONS;
@@ -861,6 +862,7 @@ void WorldSystem::handleClickResumeBtn()
 			//std::cout << "here in non option" << std::endl;
 			handleClickResumeBtn();
 		}
+		gameInfo.in_options = false;
 	}
 
 }
@@ -1010,8 +1012,15 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				cutscene.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
 				tutorial.handle_key(key, scancode, action, mod);
-				if (gameInfo.curr_screen == Screen::OVERWORLD)
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					if (gameInfo.in_options) {
+						// reset tutorial upon exit
+						tutorial.tutorial_progress = TutorialPart::INTRO;
+						render_set_options_screen();
+					} else {
 						render_set_overworld_screen();
+					}
+				}
 			}
 			break;
 	}

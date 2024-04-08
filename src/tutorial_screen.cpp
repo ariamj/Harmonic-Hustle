@@ -408,12 +408,20 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 tutorial_progress++;
-                // if (tutorial_progress != tutorial_max_progress_parts) {
-                std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
-                init_parts((TutorialPart) tutorial_progress);
-                if (tutorial_progress == tutorial_max_progress_parts)
-                    handle_difficulty_click(1); // default to normal
-                // }
+                // if playing tutorial from options, don't play choose difficulty
+                if (gameInfo.in_options && (tutorial_progress + 1) == tutorial_max_progress_parts) {  
+                    tutorial_progress++;
+                    std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
+                    init_parts((TutorialPart) tutorial_progress);
+                    gameInfo.curr_screen = Screen::OVERWORLD;
+                } else {
+                    // if (tutorial_progress != tutorial_max_progress_parts) {
+                    std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
+                    init_parts((TutorialPart) tutorial_progress);
+                    if (tutorial_progress == tutorial_max_progress_parts)
+                        handle_difficulty_click(1); // default to normal
+                    // }
+                }
             }
             break;
         // case GLFW_KEY_X:
