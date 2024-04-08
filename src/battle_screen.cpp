@@ -299,6 +299,18 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					break;
 				}
 				mode_index += 1;
+				if (registry.textTimers.has(mode_alert)) {
+					registry.remove_all_components_of(mode_alert);
+				}
+				if (registry.textTimers.has(mode_alert_shadow)) {
+					registry.remove_all_components_of(mode_alert_shadow);
+				}
+				vec2 mode_alert_pos = vec2(gameInfo.width/2.f, gameInfo.height/4.f);
+				mode_alert = createText(mode_text, mode_alert_pos, 1.5f, mode_colour, Screen::BATTLE, true, true);
+				mode_alert_shadow = createText(mode_text, mode_alert_pos + vec2(10.f), 1.5f, Colour::black, Screen::BATTLE, true, true);
+				registry.textTimers.emplace(mode_alert);
+				registry.textTimers.emplace(mode_alert_shadow);
+				min_mode_alert_counter_ms = 1000.f;
 			}
 		}
 
@@ -334,11 +346,19 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 		// standing notif timers
 		// min_standing_notif_counter_ms = 200.f;
+		float text_min_counter_ms;
 		for (Entity text : registry.textTimers.entities) {
-			min_standing_notif_counter_ms -= elapsed_ms_since_last_update;
+			if ((text == mode_alert) || (text == mode_alert_shadow)) {
+				min_mode_alert_counter_ms -= elapsed_ms_since_last_update;
+				text_min_counter_ms = min_mode_alert_counter_ms;
+			} else {
+				min_standing_notif_counter_ms -= elapsed_ms_since_last_update;
+				text_min_counter_ms = min_standing_notif_counter_ms;
+			}
+			// text_min_counter_ms -= elapsed_ms_since_last_update;
 
 			// remove standing notif after time expires
-			if (min_standing_notif_counter_ms < 0) {
+			if (text_min_counter_ms < 0) {
 				registry.textTimers.remove(text);
 				registry.texts.remove(text);
 			}
