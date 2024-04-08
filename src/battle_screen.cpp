@@ -560,7 +560,7 @@ void Battle::start() {
 	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
 	int rounded_down_to_multiple_of_fifty = rounded_score - (rounded_score % 50);
 	score_threshold = rounded_down_to_multiple_of_fifty;
-
+	
 	// Adjust note speed based on level difference between player and enemy
 	float note_speed_multiplier = pow(NOTE_TRAVEL_TIME_MULTIPLER, level_difference);
 	float new_note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
@@ -1019,7 +1019,8 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
-					if (gameInfo.curr_lives == 0) {
+					if (gameInfo.curr_lives == 0 || registry.enemies.entities.size() == 0) {
+						// std::cout << "testing no more enemies" << std::endl;
 						gameInfo.curr_screen = Screen::GAMEOVER;
 					} else {
 						gameInfo.curr_screen = Screen::OVERWORLD;

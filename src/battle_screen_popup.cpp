@@ -21,19 +21,24 @@ void Battle::setReminderPopUp() {
 
 	in_reminder = true;
 
-	// render entities as needed depending on level
-	switch (enemy_level) {
-		case 1:
-			addReminderPopUpPartsLevelOne();
-			break;
-		case 2:
-			addReminderPopUpPartsLevelTwo();
-			break;
-		case 3:
-			addReminderPopUpPartsLevelThree();
-			break;
-		default: // boss level
-			addReminderPopUpPartsLevelBoss();
+	// render specific pop up if enemy level > player level
+	if (enemy_level > gameInfo.curr_level) {
+		addReminderPopUpPartsChallengeLevel();
+	} else {	
+		// render entities as needed depending on level
+		switch (enemy_level) {
+			case 1:
+				addReminderPopUpPartsLevelOne();
+				break;
+			case 2:
+				addReminderPopUpPartsLevelTwo();
+				break;
+			case 3:
+				addReminderPopUpPartsLevelThree();
+				break;
+			default: // boss level
+				addReminderPopUpPartsLevelBoss();
+		}
 	}
 };
 
@@ -260,6 +265,40 @@ void Battle::addReminderPopUpPartsLevelBoss() {
 	
 }
 
+void Battle::addReminderPopUpPartsChallengeLevel() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+	
+	Entity text1 = createText("so you've challenged", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+	
+	reminderTextYPos += 40.f;
+	Entity text2 = createText("a red enemy", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 90.f;
+	Entity text3 = createText("unfortunately that means you'll", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+	
+	reminderTextYPos += 45.f;
+	Entity text4 = createText("get no battle tips here...", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+	
+	reminderTextYPos += 70.f;
+	// Entity text5 = createText("hope you know what you're doing", vec2(reminderTextXPos, reminderTextYPos), 0.35f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 50.f;
+	Entity text6 = createText("good luck!", vec2(reminderTextXPos, reminderTextYPos), 1.f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 140.f;
+	Entity text10 = createText("press space to start the battle", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
+
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text4);
+	// registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(text10);
+};
+
 void Battle::addDefaultReminderParts() {
 	float reminderTextYPos = gameInfo.height / 3.7f;
 	float reminderTextXPos = gameInfo.width / 2.f;
@@ -369,6 +408,10 @@ void Battle::renderGameOverText() {
 		if (gameInfo.curr_lives == 0) {
 			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE);
 			createText("And you've run out of lives :(", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::red, Screen::BATTLE);
+		} else if (registry.enemies.entities.size() == 0) {
+			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE);
+			createText("And you've run out of chances", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.73f, Colour::red, Screen::BATTLE);
+			createText("to get to the boss", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 2)), 0.73f, Colour::red, Screen::BATTLE);
 		} else {
 			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3.5)), 0.75f, Colour::black, Screen::BATTLE);
 		}
