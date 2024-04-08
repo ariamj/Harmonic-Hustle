@@ -791,10 +791,12 @@ void WorldSystem::handleClickHelpBtn() {
 	// testButton(start.help_btn);
 
 	// To settings
-	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
+	if (gameInfo.curr_screen == Screen::START ) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
 		// render_set_settings_screen();
 		render_set_options_screen();
+	} else if (gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
+		render_set_settings_screen();
 	}
 }
 
