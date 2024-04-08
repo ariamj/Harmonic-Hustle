@@ -66,7 +66,7 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     p.life -= dt; // reduce life
 
     // particle is dead or below judgment line
-    if (p.life <= 0.f || p.position.y >= 1 / 1.2f * gameInfo.height) {
+    if (p.life <= 0.f) {
         p.color.a = 0.f;
         return;
     }
