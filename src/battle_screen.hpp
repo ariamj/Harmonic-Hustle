@@ -96,6 +96,7 @@ class Battle {
         Standing standing;
         Entity standing_notif;
         float min_standing_notif_counter_ms = 200.f;
+        float min_mode_alert_counter_ms = 1000.f;
         int perfect_counter = 0;
         int good_counter = 0;
         int alright_counter = 0;
@@ -221,6 +222,8 @@ class Battle {
         vec2 mode_pos;
         std::string mode_text;
         glm::vec3 mode_colour;
+        Entity mode_alert;
+        Entity mode_alert_shadow;
         
     protected:
         int enemy_level;
