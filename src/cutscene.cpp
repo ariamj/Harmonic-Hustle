@@ -165,7 +165,7 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
             registry.CSTextbox.emplace(textbox);
         }
 
-        if ((game_over_dialogue_progress + 1) % 2 == 0) {
+        if (((game_over_dialogue_progress + 1) % 2 == 0) || ((lose_boss_dialogue_progress + 1) % 2 == 0)) {
             Entity e = registry.playerCS.entities[0];
             Entity enemy = registry.enemyCS.entities[0];
 
@@ -191,8 +191,17 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
 
         }
 
+        std::string dialogue_text;
+        if (gameInfo.won_boss) {
+            // won battle against boss - end
+            dialogue_text = GAME_OVER_DIALOGUE[game_over_dialogue_progress];
+        } else {
+            // lost battle against boss - rematch (maybe)
+            dialogue_text = LOSE_BOSS_DIALOGUE[lose_boss_dialogue_progress];
+        }
+
         if (registry.CSTexts.components.size() == 0) {
-            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
+            Entity text = createText(dialogue_text, vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
 
             // continue text
@@ -203,7 +212,7 @@ bool Cutscene::handle_step(float elapsed_ms_since_last_update, float current_spe
                 registry.texts.remove(e);
             }
 
-            Entity text = createText(GAME_OVER_DIALOGUE[game_over_dialogue_progress], vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
+            Entity text = createText(dialogue_text, vec2(gameInfo.width / 2.f, gameInfo.height / 1.3), 0.5, Colour::black, Screen::CUTSCENE);
             registry.CSTexts.emplace(text);
         }
     }
@@ -248,7 +257,11 @@ void Cutscene::handle_key(int key, int scancode, int action, int mod) {
                 else if (!gameInfo.is_boss_finished) {
                     boss_dialogue_progress++;
                 } else {
-                    game_over_dialogue_progress++;
+                    if (gameInfo.won_boss) {
+                        game_over_dialogue_progress++;
+                    } else {
+                        lose_boss_dialogue_progress++;
+                    }
                 }
             }
             break;
