@@ -887,8 +887,8 @@ void WorldSystem::handleClickNewGameBtn()
 void WorldSystem::handleClickDifficultyBtn()
 {
 	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.difficulty_btn)) {
-		tutorial.tutorial_progress = TutorialPart::ADVANCING_EXPLAIN;
-		tutorial.init_parts(TutorialPart::ADVANCING_EXPLAIN);
+		tutorial.tutorial_progress = TutorialPart::CHOOSE_DIFFICULTY;
+		tutorial.init_parts(TutorialPart::CHOOSE_DIFFICULTY);
 		render_set_tutorial();
 		//tutorial.tutorial_progress = TutorialPart::INTRO;
 	}
@@ -1073,16 +1073,16 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	}
 
 	// Difficulty buttons in tutorial -> only if in last part of tutorial
-	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADVANCING_EXPLAIN) {
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::CHOOSE_DIFFICULTY) {
 		// EASY button
 		BoxAreaBound easy_btn_area = registry.boxAreaBounds.get(tutorial.easy_btn);
-		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 100.f) && (ypos <= easy_btn_area.bottom - 100.f);
+		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 50.f) && (ypos <= easy_btn_area.bottom - 50.f);
 		// HELP button
 		BoxAreaBound normal_btn_area = registry.boxAreaBounds.get(tutorial.normal_btn);
-		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 100.f) && (ypos <= normal_btn_area.bottom - 100.f);
+		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 75.f) && (ypos <= normal_btn_area.bottom - 75.f);
 		
 		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
-		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 100.f) && (ypos <= hard_btn_area.bottom - 100.f);
+		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;
