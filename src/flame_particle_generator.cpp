@@ -36,7 +36,7 @@ void FlameParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles 
-        for (unsigned int i = 0; i < newParticles; ++i)
+        for (unsigned int i = 0; i < newParticles + additional_particles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
                 particle_effect.min_index, particle_effect.max_index);
@@ -78,10 +78,14 @@ void FlameParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.4f);
     particle.color += gameInfo.particle_color_adjustment;
     particle.life = 1.f;
-    particle.velocity = entity_motion.velocity * 0.1f;
+    particle.velocity = entity_motion.velocity * (0.075f * (additional_particles + 1));
     particle.scale = DEFAULT_PARTICLE_SCALE;
 }
 
 PARTICLE_TYPE_ID FlameParticleGenerator::getType() {
     return PARTICLE_TYPE_ID::FLAME;
+}
+
+void FlameParticleGenerator::setAdditionalParticles(int num_particles) {
+    additional_particles = num_particles;
 }
