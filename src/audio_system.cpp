@@ -56,6 +56,14 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string lobby_file = "lobby.wav";
+	lobby_music = Mix_LoadMUS(audio_path(lobby_file).c_str());
+	if (lobby_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(lobby_file).c_str());
+		return false;
+	}
+
 	std::string enemy0_file = "enemy0.wav";
 	Mix_Music* enemy0_music = Mix_LoadMUS(audio_path(enemy0_file).c_str());
 	if (enemy0_music == nullptr) { // add "%s\n" for each sound added
@@ -75,8 +83,6 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy1_music);
 
-
-
 	std::string enemy2_file = "enemy2.wav";
 	Mix_Music* enemy2_music = Mix_LoadMUS(audio_path(enemy2_file).c_str());
 	if (enemy2_music == nullptr) { // add "%s\n" for each sound added
@@ -86,7 +92,6 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy2_music);
 
-	//TODO: ADD NEW SONG FOR THE BOSS
 	std::string boss0_file = "boss0.wav";
 	Mix_Music* boss0_music = Mix_LoadMUS(audio_path(boss0_file).c_str());
 	if (boss0_music == nullptr) { // add "%s\n" for each sound added
@@ -152,12 +157,22 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string applause = "applause.wav";
+	applause_SFX = Mix_LoadWAV(audio_path(applause).c_str());
+	if (applause_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(applause).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
 int AudioSystem::playOverworld() {
-	// Use "Music" type and associated methods for background music (allegedly higher quality)
-		// Will Use "Chunk" type for short SFX snippets later on
+	// Don't reset music
+	if (current_music == overworld_music) {
+		return 0; 
+	}
 	current_music = overworld_music;
 	return Mix_PlayMusic(overworld_music, -1);
 }
@@ -167,6 +182,11 @@ int AudioSystem::playBattle(int enemy_id) {
 	// Mix_PlayMusic(enemy_music[enemy_id], -1);
 	current_music = enemy_music[enemy_id];
 	return Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
+}
+
+int AudioSystem::playLobby() {
+	current_music = lobby_music;
+	return Mix_PlayMusic(lobby_music, -1);
 }
 
 int AudioSystem::playHoldNote(int channel_offset) {
@@ -202,6 +222,10 @@ int AudioSystem::playCountdownHigh() {
 
 int AudioSystem::playCountdownLow() {
 	return Mix_PlayChannel(-1, countdown_low_SFX, 0);
+}
+
+int AudioSystem::playApplause() {
+	return Mix_PlayChannel(-1, applause_SFX, 0);
 }
 
 int AudioSystem::musicPlaying() {

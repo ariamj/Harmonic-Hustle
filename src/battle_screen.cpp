@@ -429,6 +429,8 @@ void Battle::handle_battle_end() {
 	// battle won
 	if (battleWon()) {
 
+		audio->playApplause();
+
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_WIN;
 
 		switch (enemy_level) {
@@ -519,9 +521,6 @@ void Battle::start() {
 	// Bad practice to give info to particles
 	gameInfo.judgment_line_half_height = judgement_line_half_height;
 
-	// Accelerate based on difficulty
-	gameInfo.base_note_travel_time = BASE_NOTE_TRAVEL_TIME - (gameInfo.curr_difficulty * NOTE_TRAVEL_TIME_DIFFICULTY_STEP);
-
 	// Check enemy level
 	if (registry.levels.has(gameInfo.curr_enemy)) {
 		Level& enemy_ref_level = registry.levels.get(gameInfo.curr_enemy);
@@ -562,8 +561,10 @@ void Battle::start() {
 	score_threshold = rounded_down_to_multiple_of_fifty;
 	
 	// Adjust note speed based on level difference between player and enemy
+	// First, increase based on difficulty
+	float difficulty_note_travel_time = BASE_NOTE_TRAVEL_TIME - (gameInfo.curr_difficulty * NOTE_TRAVEL_TIME_DIFFICULTY_STEP);
 	float note_speed_multiplier = pow(NOTE_TRAVEL_TIME_MULTIPLER, level_difference);
-	float new_note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
+	float new_note_travel_time = difficulty_note_travel_time * note_speed_multiplier;
 
 
 	if (enemy_level < previous_enemy_level && enemy_level != 4) {
@@ -630,16 +631,21 @@ void Battle::start() {
 			std::cout << "game level too high" << "\n";
 	}
 
+	int additional_particles = floor((BASE_NOTE_TRAVEL_TIME - gameInfo.curr_note_travel_time) / 250.f);
+
+	std::cout << additional_particles << "\n";
+
 	// Create generators for particles that appear in the battle scene
 	// Order matters
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SMOKE);
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME, additional_particles);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL, additional_particles);
 
 	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe
-	audio->pauseMusic();
+	// audio->pauseMusic();
+	audio->playLobby();
 
 	// Set flag
 	setBattleIsOver(false);
@@ -885,12 +891,14 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 
 	// Render particles
 	vec2 note_position = registry.motions.get(entity_other).position;
-	createSmoke(note_position);
 	// Render particles for holding note
 	if (registry.notes.has(entity_other)) {
 		float duration = registry.notes.get(entity_other).duration;
 		if (duration > -1.f) {
 			createSpark(note_position, duration, entity_other);
+		}
+		else {
+			createSmoke(note_position);
 		}
 	}
 
@@ -1019,7 +1027,7 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
-					if (gameInfo.curr_lives == 0 || registry.enemies.entities.size() == 0) {
+					if (gameInfo.curr_lives == 0 || (registry.enemies.entities.size() == 0 && gameInfo.curr_level < 4)) {
 						// std::cout << "testing no more enemies" << std::endl;
 						gameInfo.curr_screen = Screen::GAMEOVER;
 					} else {

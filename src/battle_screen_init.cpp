@@ -16,6 +16,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
 	
+	gameInfo.curr_note_travel_time = BASE_NOTE_TRAVEL_TIME;
 
 	// Load level data from file :)
     loadAllLevelData();

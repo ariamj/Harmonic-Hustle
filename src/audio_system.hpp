@@ -18,6 +18,7 @@ public:
 
 	int playOverworld();
 	int playBattle(int enemy_id);
+	int playLobby();
 
 	int playHoldNote(int channel_offset);
 	int stopHoldNote(int channel_offset);
@@ -29,6 +30,8 @@ public:
 
 	int playCountdownLow();
 	int playCountdownHigh();
+
+	int playApplause();
 
 	int musicPlaying();
 	float getSongPosition();
@@ -46,6 +49,7 @@ private:
 	Mix_Music* current_music;
 	// music references
 	Mix_Music* overworld_music;
+	Mix_Music* lobby_music;
 	std::vector<Mix_Music*> enemy_music;
 	Mix_Chunk* drop_SFX;
 	Mix_Chunk* hit_good_SFX;
@@ -54,4 +58,5 @@ private:
 	Mix_Chunk* hold_SFX;
 	Mix_Chunk* countdown_high_SFX;
 	Mix_Chunk* countdown_low_SFX;
+	Mix_Chunk* applause_SFX;
 };

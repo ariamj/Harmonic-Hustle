@@ -469,8 +469,7 @@ mat3 RenderSystem::createProjectionMatrix()
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-void RenderSystem::createParticleGenerator(int particle_type_id) {
-	// int amount = 0;
+void RenderSystem::createParticleGenerator(int particle_type_id, int additional_particles) {
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
 		{
@@ -481,13 +480,14 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 			std::shared_ptr<TrailParticleGenerator> generator =
 				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
 			particle_generators.push_back(generator);
+			generator->setAdditionalParticles(additional_particles);
 			return;
 		}
 		case (int)PARTICLE_TYPE_ID::SMOKE:
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SMOKE_PARTICLE];
-			int amount = 150;
+			int amount = 120;
 			int max_entities = 30;
 			std::shared_ptr<SmokeParticleGenerator> generator =
 				std::make_shared<SmokeParticleGenerator>(SmokeParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
@@ -498,18 +498,19 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::FLAME_PARTICLE];
-			int amount = 300;
+			int amount = 400;
 			int max_entities = 15;
 			std::shared_ptr<FlameParticleGenerator> generator =
 				std::make_shared<FlameParticleGenerator>(FlameParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
 			particle_generators.push_back(generator);
+			generator->setAdditionalParticles(additional_particles);
 			return;
 		}
 		case (int)PARTICLE_TYPE_ID::SPARK:
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SPARK_PARTICLE];
-			int amount = 200;
+			int amount = 150;
 			int max_entities = 4;
 			std::shared_ptr<SparkParticleGenerator> generator =
 				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture, amount, max_entities));

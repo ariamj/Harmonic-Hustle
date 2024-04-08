@@ -162,7 +162,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		// once song ends, display battle over overlay
 		// 		curr screen is set to overworld when battle is over and user presses SPACE
 		if (!song_playing) {
-			std::cout << "HEREEE" << std::endl;
+			// std::cout << "HEREEE" << std::endl;
 			battle.handle_battle_end();
 		} else {
 			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -188,7 +188,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			gameInfo.is_game_over_finished = true;
 			// overwrite prev save data since game is now finished	
 			saver.save_game();
-      render_set_game_over_screen();
+			render_set_game_over_screen();
 		}
 		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;

@@ -147,7 +147,7 @@ public:
 	// Particles
 	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
 
-	void createParticleGenerator(int particle_type_id);
+	void createParticleGenerator(int particle_type_id, int additional_particles = 0);
 
 
 private:

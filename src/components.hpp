@@ -185,9 +185,8 @@ struct GameInfo {
 	bool gameIsOver = false;
 	vec4 particle_color_adjustment;
 	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in portions of frames
-	float base_note_travel_time = 2000.f; // how long note takes to travel from top to bottom
 	float curr_note_travel_time = 2000.f;
-	float judgment_line_half_height = 0.f;
+	float judgment_line_half_height;
 };
 extern GameInfo gameInfo;
 
