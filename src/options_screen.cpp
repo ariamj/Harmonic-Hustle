@@ -62,13 +62,13 @@ void OptionsMenu::renderButtons() {
     registry.colours.insert(start_shadow, Colour::theme_blue_3);
     new_game_btn = createButton("NEW GAME", center_pos + vec2(0, new_game_y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // load from save button:: actually, save game button
+    // save game button
     Entity save_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos - shift, options_btn_size);
     registry.screens.insert(save_shadow, Screen::OPTIONS);
     registry.colours.insert(save_shadow, Colour::theme_blue_3);
-    load_from_save_btn = createButton("SAVE GAME", center_pos + vec2(0, y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    save_game_btn = createButton("SAVE GAME", center_pos + vec2(0, y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // TODO: difficulty settings buttons
+    // difficulty settings buttons
     Entity difficulty_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos - shift, options_btn_size);
     registry.screens.insert(difficulty_shadow, Screen::OPTIONS);
     registry.colours.insert(difficulty_shadow, Colour::theme_blue_3);
@@ -80,18 +80,19 @@ void OptionsMenu::renderButtons() {
     registry.colours.insert(help_shadow, Colour::theme_blue_3);
     help_btn = createButton("HELP", center_pos + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // TODO: tutorial button
+    // tutorial button
     Entity tutorial_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(tutorial_shadow, Screen::OPTIONS);
     registry.colours.insert(tutorial_shadow, Colour::theme_blue_3);
     load_from_save_btn = createButton("TUTORIAL", center_pos + vec2(0, new_game_y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // TODO: Return to main menu button
+    // Return to main menu button
     Entity menu_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(menu_shadow, Screen::OPTIONS);
     registry.colours.insert(menu_shadow, Colour::theme_blue_3);
     load_from_save_btn = createButton("MAIN MENU", center_pos + vec2(0, y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
-    // TODO: Save and exit button
+
+    // Save and exit button
     Entity exit_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(exit_shadow, Screen::OPTIONS);
     registry.colours.insert(exit_shadow, Colour::theme_blue_3);

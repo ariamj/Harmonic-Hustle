@@ -31,8 +31,6 @@ public:
     Entity tutorial_btn;
     Entity exit_btn;
     Entity return_to_main_btn;
-    Entity load_from_save_btn; //temp
-
     // mouse area
     MouseArea mouse_area;
 
