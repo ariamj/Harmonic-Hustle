@@ -46,6 +46,32 @@ void Battle::init_screen() {
 	// TODO: Position mode text better
 		// Back and Forth (blue) as default
 	mode_pos = vec2(gameInfo.width * 0.88f, gameInfo.height * 0.15f);
+
+	// renders lanes
+	vec2 lane_size = vec2(150.f, gameInfo.height);
+	vec3 lane_colour = Colour::lane_color;
+	Entity lane1_box = createBox(vec2(gameInfo.lane_1, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane1_box, Screen::BATTLE);
+	registry.colours.insert(lane1_box, lane_colour);
+
+	Entity lane2_box = createBox(vec2(gameInfo.lane_2, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane2_box, Screen::BATTLE);
+	registry.colours.insert(lane2_box, lane_colour);
+
+	Entity lane3_box = createBox(vec2(gameInfo.lane_3, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane3_box, Screen::BATTLE);
+	registry.colours.insert(lane3_box, lane_colour);
+
+	Entity lane4_box = createBox(vec2(gameInfo.lane_4, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane4_box, Screen::BATTLE);
+	registry.colours.insert(lane4_box, lane_colour);
+
+	// hard coded values for now
+	float judgement_line_y_pos = gameInfo.height / 1.2;
+	createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 	
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
@@ -181,7 +207,13 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			 player_m.position.y -= 15;
 			 enemy_m.position.y -= 15;
 
-			 createSmoke(vec2(100,100));
+			 // player portrait smokes
+			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(25.f, Y_DISPLACEMENT_PORTRAIT));
+
+			 // enemy portrait smokes
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f) - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT - (PORTRAIT_WIDTH / 2.f), gameInfo.height - X_DISPLACEMENT_PORTRAIT));
 
 			 last_beat += conductor.crotchet;
 		} else {
