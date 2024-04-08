@@ -374,6 +374,7 @@ bool WorldSystem::is_over() const {
 // switch to overworld scene
 bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_non_option_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -393,6 +394,7 @@ bool WorldSystem::render_set_overworld_screen() {
 // REQUIRES current scene NOT be battle
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::BATTLE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -417,6 +419,7 @@ bool WorldSystem::render_set_battle_screen() {
 // REQUIRES current scene to NOT be settings
 // switch to battle scene
 bool WorldSystem::render_set_settings_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::SETTINGS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -445,6 +448,7 @@ bool WorldSystem::render_set_settings_screen() {
 // switch to start screen
 bool WorldSystem::render_set_start_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::START;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -472,6 +476,7 @@ bool WorldSystem::render_set_start_screen() {
 // switch to game over screen
 bool WorldSystem::render_set_game_over_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::GAMEOVER;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -498,6 +503,7 @@ bool WorldSystem::render_set_game_over_screen() {
 // REQUIRES current scene NOT be cutscene
 // switch to cutscene
 bool WorldSystem::render_set_cutscene() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::CUTSCENE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -527,6 +533,7 @@ bool WorldSystem::render_set_cutscene() {
 // switch to tutorial
 bool WorldSystem::render_set_tutorial() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = gameInfo.prev_screen;
 	gameInfo.curr_screen = Screen::TUTORIAL;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -551,7 +558,9 @@ bool WorldSystem::render_set_tutorial() {
 // REQUIRES current scene to NOT be options menu
 // switch to options screen
 bool WorldSystem::render_set_options_screen() {
+	gameInfo.in_options = true;
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OPTIONS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -561,6 +570,16 @@ bool WorldSystem::render_set_options_screen() {
 	start.set_visible(false);
 	tutorial.set_visible(false);
 	optionsMenu.set_visible(true);
+
+	// if navigating to settings from start, disable certain buttons
+	if (gameInfo.prev_screen == Screen::START) {
+		optionsMenu.disableButton("DIFFICULTY");
+		optionsMenu.disableButton("TUTORIAL");
+	} else {
+		// make sure they're enabled
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("TUTORIAL");
+	}
 
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -772,8 +791,11 @@ void WorldSystem::handleClickHelpBtn() {
 	// testButton(start.help_btn);
 
 	// To settings
-	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
+	if (gameInfo.curr_screen == Screen::START ) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
+		// render_set_settings_screen();
+		render_set_options_screen();
+	} else if (gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
 		render_set_settings_screen();
 	}
 }
@@ -852,6 +874,7 @@ void WorldSystem::handleClickResumeBtn()
 			//std::cout << "here in non option" << std::endl;
 			handleClickResumeBtn();
 		}
+		gameInfo.in_options = false;
 	}
 
 }
@@ -877,9 +900,9 @@ void WorldSystem::handleClickNewGameBtn()
 
 void WorldSystem::handleClickDifficultyBtn()
 {
-	if (gameInfo.curr_screen == Screen::OPTIONS) {
-		tutorial.tutorial_progress = TutorialPart::ADVANCING_EXPLAIN;
-		tutorial.init_parts(TutorialPart::ADVANCING_EXPLAIN);
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.difficulty_btn)) {
+		tutorial.tutorial_progress = TutorialPart::CHOOSE_DIFFICULTY;
+		tutorial.init_parts(TutorialPart::CHOOSE_DIFFICULTY);
 		render_set_tutorial();
 		//tutorial.tutorial_progress = TutorialPart::INTRO;
 	}
@@ -887,7 +910,7 @@ void WorldSystem::handleClickDifficultyBtn()
 
 void WorldSystem::handleClickTutorialBtn()
 {
-	if (gameInfo.curr_screen == Screen::OPTIONS) {
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.tutorial_btn)) {
 		tutorial.tutorial_progress = TutorialPart::INTRO;
 		tutorial.init_parts(TutorialPart::INTRO);
 		render_set_tutorial();
@@ -1001,8 +1024,15 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				cutscene.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
 				tutorial.handle_key(key, scancode, action, mod);
-				if (gameInfo.curr_screen == Screen::OVERWORLD)
-					render_set_overworld_screen();
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					if (gameInfo.in_options) {
+						// reset tutorial upon exit
+						tutorial.tutorial_progress = TutorialPart::INTRO;
+						render_set_options_screen();
+					} else {
+						render_set_overworld_screen();
+					}
+				}
 			}
 			break;
 	}
@@ -1020,14 +1050,14 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	if (gameInfo.curr_screen == Screen::START) {
 		// START button
 		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(start.start_btn);
-		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
+		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding - 10.f) && (ypos <= start_btn_area.bottom - y_padding - 10.f);
 		// HELP button
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - 90.f) && (ypos <= help_btn_area.bottom - 90.f);
 		
 		// LOAD button
 		BoxAreaBound load_btn_area = registry.boxAreaBounds.get(start.load_from_save_btn);
-		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - y_padding) && (ypos <= load_btn_area.bottom - y_padding);
+		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - 80.f) && (ypos <= load_btn_area.bottom - 80.f);
 		
 		if (within_start_btn_area) {
 			// std::cout << "in start button area" << std::endl;
@@ -1064,16 +1094,16 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	}
 
 	// Difficulty buttons in tutorial -> only if in last part of tutorial
-	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADVANCING_EXPLAIN) {
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::CHOOSE_DIFFICULTY) {
 		// EASY button
 		BoxAreaBound easy_btn_area = registry.boxAreaBounds.get(tutorial.easy_btn);
-		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 100.f) && (ypos <= easy_btn_area.bottom - 100.f);
+		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 50.f) && (ypos <= easy_btn_area.bottom - 50.f);
 		// HELP button
 		BoxAreaBound normal_btn_area = registry.boxAreaBounds.get(tutorial.normal_btn);
-		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 100.f) && (ypos <= normal_btn_area.bottom - 100.f);
+		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 75.f) && (ypos <= normal_btn_area.bottom - 75.f);
 		
 		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
-		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 100.f) && (ypos <= hard_btn_area.bottom - 100.f);
+		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;

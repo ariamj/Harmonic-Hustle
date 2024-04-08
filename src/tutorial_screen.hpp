@@ -4,7 +4,8 @@ enum TutorialPart {
     INTRO = 0, // how to navigate overworld, explain enemy types
     BATTLE_EXPLAIN = 1, // note explanation, how to win
     ADVANCING_EXPLAIN = 2, // explain levels, boss, difficulty, difficulty buttons
-    NUM_OF_PARTS = 3,
+    CHOOSE_DIFFICULTY = 3,
+    NUM_OF_PARTS = 4,
 };
 
 class Tutorial {
@@ -29,7 +30,6 @@ class Tutorial {
         void handle_mouse_move(MouseArea mouse_area);
         void handle_difficulty_click(int difficulty);
 
-        // buttons -> TODO double check how many levels we want
         Entity easy_btn;
 	    Entity normal_btn;
         Entity hard_btn;
@@ -42,6 +42,7 @@ class Tutorial {
         void initIntroParts();
         void initBattleExplainParts();
         void initAdvancingExplaingParts();
+        void initChooseDifficultyParts();
 
         // game state
         RenderSystem* renderer;

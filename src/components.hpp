@@ -68,6 +68,11 @@ struct BoxButton {
 	glm::vec3 text_colour = vec3(0.f);
 };
 
+// disable component for buttons
+struct Disabled {
+
+};
+
 // Mesh datastructure for storing vertex and index buffers
 struct Mesh
 {
@@ -188,6 +193,10 @@ struct GameInfo {
 	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in portions of frames
 	float curr_note_travel_time = 2000.f;
 	float judgment_line_half_height;
+	
+	// set to true if we navigate to diff screens FROM options
+	//  else false
+	bool in_options = false;
 };
 extern GameInfo gameInfo;
 
