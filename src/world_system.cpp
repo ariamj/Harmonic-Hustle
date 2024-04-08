@@ -161,7 +161,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		// once song ends, display battle over overlay
 		// 		curr screen is set to overworld when battle is over and user presses SPACE
 		if (!song_playing) {
-			std::cout << "HEREEE" << std::endl;
+			// std::cout << "HEREEE" << std::endl;
 			battle.handle_battle_end();
 		} else {
 			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);

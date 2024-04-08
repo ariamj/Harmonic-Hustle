@@ -164,8 +164,10 @@ bool AudioSystem::LoadFiles() {
 }
 
 int AudioSystem::playOverworld() {
-	// Use "Music" type and associated methods for background music (allegedly higher quality)
-		// Will Use "Chunk" type for short SFX snippets later on
+	// Don't reset music
+	if (current_music == overworld_music) {
+		return 0; 
+	}
 	current_music = overworld_music;
 	return Mix_PlayMusic(overworld_music, -1);
 }
