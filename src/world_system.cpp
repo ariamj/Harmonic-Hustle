@@ -267,7 +267,7 @@ void WorldSystem::restart_game() {
 	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::BATTLE);
 
 	battle_player_sprite = createBattlePlayer(renderer, { X_DISPLACEMENT_PORTRAIT + 20.f, Y_DISPLACEMENT_PORTRAIT + 20.f });
-    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - Y_DISPLACEMENT_PORTRAIT - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f });
+    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - X_DISPLACEMENT_PORTRAIT - 20.f, gameInfo.height - Y_DISPLACEMENT_PORTRAIT - 20.f });
 
 	registry.battleEnemy.emplace(battle_enemy_sprite);
 	registry.battlePlayer.emplace(battle_player_sprite);

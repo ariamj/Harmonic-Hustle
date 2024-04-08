@@ -1,10 +1,6 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 
-const float ORIGINAL_MONITOR_WIDTH = 2256.f;
-const float ORIGINAL_MONITOR_HEIGHT = 1504.f;
-const float K_MONITOR_WIDTH = 1470.f;
-const float K_MONITOR_HEIGHT = 956.f;
 
 Entity createPlayer(RenderSystem* renderer, vec2 pos)
 {

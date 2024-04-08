@@ -182,12 +182,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			 enemy_m.position.y -= 15;
 
 			 // player portrait smokes
-			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT * gameInfo.width / ORIGINAL_MONITOR_WIDTH + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
 			 createSmoke(vec2(25.f, Y_DISPLACEMENT_PORTRAIT));
 
 			 // enemy portrait smokes
-			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f) - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT));
-			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT - (PORTRAIT_WIDTH / 2.f), gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - 25.f, gameInfo.height - Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - X_DISPLACEMENT_PORTRAIT * gameInfo.width / ORIGINAL_MONITOR_WIDTH - (PORTRAIT_WIDTH / 2.f), gameInfo.height - Y_DISPLACEMENT_PORTRAIT));
 
 			 last_beat += conductor.crotchet;
 		} else {
