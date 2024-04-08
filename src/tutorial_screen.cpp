@@ -216,7 +216,7 @@ void Tutorial::initBattleExplainParts() {
     Entity text5 = createText("hold notes", vec2(gameInfo.width * 5.2f / 8.f, currY), 0.7f, Colour::green, Screen::TUTORIAL, true, true);
 
     // note images
-    Entity tapNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 3.2f/8.f, currY), vec2(70.f, 150.f), TEXTURE_ASSET_ID::TAP_NOTE_EXAMPLE, Screen::TUTORIAL);
+    Entity tapNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 3.2f/8.f, currY), vec2(90.f, 140.f), TEXTURE_ASSET_ID::TAP_NOTE_EXAMPLE, Screen::TUTORIAL);
     Entity holdNoteImage = createHelpImage(renderer, vec2(gameInfo.width * 6.7f/8.f, currY), vec2(80.f, 240.f), TEXTURE_ASSET_ID::HOLD_NOTE_EXAMPLE, Screen::TUTORIAL);
 
     currY += 170.f;
