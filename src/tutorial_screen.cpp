@@ -267,7 +267,7 @@ void Tutorial::initAdvancingExplaingParts() {
     float currY = gameInfo.height / 12.f;
     float centerX = gameInfo.width / 2.f;
 
-    Entity pauseTipText = createText("Tip: if you ever need to pause or check keys, click H!", vec2(centerX, currY), 0.7f, Colour::theme_blue_2 + vec3(0.3), Screen::TUTORIAL, true, true);
+    Entity pauseTipText = createText("Tip: if you ever need to pause or check keys, click ESC!", vec2(centerX, currY), 0.7f, Colour::theme_blue_2 + vec3(0.3), Screen::TUTORIAL, true, true);
     registry.tutorialParts.emplace(pauseTipText);
 
     currY += 120.f;
