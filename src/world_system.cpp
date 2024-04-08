@@ -791,8 +791,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					render_set_overworld_screen();
 				} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 					render_set_game_over_screen();
-					// if going from battle to game over -> it means game has ended, so restart and save new game
-					// restart_game();
+					// if going from battle to game over -> it means game has ended, so set game = over and save
 					gameInfo.gameIsOver = true;
 					saver.save_game();
 				}
