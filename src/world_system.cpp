@@ -708,6 +708,8 @@ void WorldSystem::handleClickLoadBtn() {
 
 	if (gameInfo.gameIsOver || gameInfo.curr_lives == 0) {
 		restart_game();
+		// if loaded game was already finished, simulate clicking the start new game button
+		handleClickStartBtn();
 	}
 	// if there are no enemies and game is not over, switch to boss battle
 	else if (gameInfo.existing_enemy_info.size() == 0) {
@@ -789,6 +791,10 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 					render_set_overworld_screen();
 				} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 					render_set_game_over_screen();
+					// if going from battle to game over -> it means game has ended, so restart and save new game
+					// restart_game();
+					gameInfo.gameIsOver = true;
+					saver.save_game();
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);
