@@ -147,7 +147,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} else {
 			// render count down text
-			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, Screen::BATTLE, true);
+			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 2.5f, Colour::white, Screen::BATTLE, true);
 		}
 	} else if (battle_is_over) {
 		renderGameOverText();
@@ -511,6 +511,14 @@ void Battle::start() {
 	enemy_level = 0;
 	int level_difference = 0;
 
+	// Set judgment line half height
+	Entity entity = registry.judgmentLine.entities[0];
+	JudgementLine judgement_line = registry.judgmentLine.components[0];
+	Motion& lane_motion = registry.motions.get(entity);
+	judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+	// Bad practice to give info to particles
+	gameInfo.judgment_line_half_height = judgement_line_half_height;
+
 	// Accelerate based on difficulty
 	gameInfo.base_note_travel_time = BASE_NOTE_TRAVEL_TIME - (gameInfo.curr_difficulty * NOTE_TRAVEL_TIME_DIFFICULTY_STEP);
 
@@ -817,10 +825,6 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	float note_y_pos = registry.motions.get(entity_other).position.y;
 	float lane_y_pos = lane_motion.position.y;
 	float scoring_margin = (SCORING_LEEWAY / (gameInfo.curr_note_travel_time)) * gameInfo.height;
-
-	// Sizing
-	JudgementLine judgement_line = registry.judgmentLine.get(entity);
-	float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
 
 	// Colour
 	vec3& colour = registry.colours.get(entity);

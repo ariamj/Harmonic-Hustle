@@ -15,6 +15,7 @@ void Battle::init(GLFWwindow* window, RenderSystem* renderer, AudioSystem* audio
     lanes[1] = gameInfo.lane_2;
     lanes[2] = gameInfo.lane_3;
     lanes[3] = gameInfo.lane_4;
+	
 
 	// Load level data from file :)
     loadAllLevelData();

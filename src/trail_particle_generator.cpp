@@ -66,7 +66,7 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     p.life -= dt; // reduce life
 
     // particle is dead or below judgment line
-    if (p.life <= 0.f || p.position.y >= 1 / 1.2f * gameInfo.height) {
+    if (p.life <= 0.f) {
         p.color.a = 0.f;
         return;
     }
@@ -75,7 +75,7 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
     p.position += p.velocity * dt;
     Motion& motion = registry.motions.get(entity);
 
-    if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height) {
+    if (note.pressed && p.position.y >= 1 / 1.2f * gameInfo.height - gameInfo.judgment_line_half_height) {
         // Don't render below judgment line if note is being held
         p.color.a = 0.f;
     }

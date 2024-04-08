@@ -84,9 +84,11 @@ void SparkParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
     Motion& entity_motion = registry.motions.get(entity);
 
     if (random > 0.f) {
-        particle.position = vec2(entity_motion.position.x + (NOTE_WIDTH + random) / 20.f, gameInfo.height / 1.2f);
+        particle.position = vec2(entity_motion.position.x + (NOTE_WIDTH + random) / 20.f, 
+                                gameInfo.height / 1.2f - gameInfo.judgment_line_half_height);
     } else {
-        particle.position = vec2(entity_motion.position.x - (NOTE_WIDTH - random )/ 5.f, gameInfo.height / 1.2f);
+        particle.position = vec2(entity_motion.position.x - (NOTE_WIDTH - random )/ 5.f, 
+                                gameInfo.height / 1.2f - gameInfo.judgment_line_half_height);
     }
 
     particle.color = glm::vec4(rColor, rColor, rColor, 0.8f);
