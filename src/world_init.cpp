@@ -559,6 +559,9 @@ Entity createHelpImage(RenderSystem* renderer, vec2 pos, vec2 scale, TEXTURE_ASS
 	// screen entity exists in
 	registry.screens.insert(entity, screen);
 
+	// render in foreground
+	registry.foregrounds.emplace(entity);
+
 	// Create component
 	registry.renderRequests.insert(
 		entity,

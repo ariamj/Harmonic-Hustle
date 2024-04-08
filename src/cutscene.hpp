@@ -43,7 +43,7 @@ class Cutscene {
         const std::vector<std::string> LOSE_BOSS_DIALOGUE = {
             "...",
             "HA! Did you think you could defeat me?! Think again!",
-            "This isn't over! Rematch!!",
+            "This isn't over! I demand a rematch!!",
             "...seriously?...fine..."
         };
 
