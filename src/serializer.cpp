@@ -68,6 +68,7 @@ bool Serializer::load_game() {
 		gameInfo.is_game_over_finished = root["gameInfo"]["is_game_over_finished"].asBool();
 		gameInfo.gameIsOver = root["gameInfo"]["gameIsOver"].asBool();
 		gameInfo.curr_difficulty = root["gameInfo"]["curr_difficulty"].asInt();
+		gameInfo.curr_lives = root["gameInfo"]["curr_lives"].asInt();
 		
 	}
 	catch (std::exception e) {
@@ -112,6 +113,7 @@ bool Serializer::save_game() {
 	root["gameInfo"]["is_game_over_finished"] = gameInfo.is_game_over_finished;
 	root["gameInfo"]["gameIsOver"] = gameInfo.gameIsOver;
 	root["gameInfo"]["curr_difficulty"] = gameInfo.curr_difficulty;
+	root["gameInfo"]["curr_lives"] = gameInfo.curr_lives;
 
 	// write to string
 	std::string document = Json::writeString(wBuilder, root);

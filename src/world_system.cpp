@@ -306,6 +306,7 @@ void WorldSystem::restart_game() {
 	gameInfo.is_game_over_finished = false;
 	gameInfo.is_intro_finished = false;
 
+	gameInfo.curr_lives = 3;
 	gameInfo.curr_level = 1;
 
 	start.init_screen();
@@ -701,7 +702,7 @@ void WorldSystem::handleClickLoadBtn() {
 		}
 	}
 
-	if (gameInfo.gameIsOver) {
+	if (gameInfo.gameIsOver || gameInfo.curr_lives == 0) {
 		restart_game();
 	}
 	// if there are no enemies and game is not over, switch to boss battle
@@ -782,6 +783,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				battle.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+					render_set_game_over_screen();
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);

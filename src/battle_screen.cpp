@@ -484,6 +484,12 @@ void Battle::handle_battle_end() {
 			std::cout << "game level too high" << "\n";
 		}
 
+		// if lost to a red enemy, lose a life
+		// if lives <= 0, go to game over
+		if (enemy_level > gameInfo.curr_level) {
+			gameInfo.curr_lives--;
+		}
+
 		// remove colllided with enemy (give player another chance)
 		registry.enemies.remove(gameInfo.curr_enemy);
 		registry.renderRequests.remove(gameInfo.curr_enemy);
@@ -1009,7 +1015,11 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
-					gameInfo.curr_screen = Screen::OVERWORLD;
+					if (gameInfo.curr_lives == 0) {
+						gameInfo.curr_screen = Screen::GAMEOVER;
+					} else {
+						gameInfo.curr_screen = Screen::OVERWORLD;
+					}
 					// std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
 				}
 				break;
