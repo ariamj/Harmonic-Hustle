@@ -10,8 +10,8 @@ public:
     // const int amount = 500;
     SparkParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~SparkParticleGenerator() {};
-private:
     PARTICLE_TYPE_ID getType() override;
+private:
     void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) override;
     void updateParticleBehaviours(Particle& p, float dt, Entity entity);
     void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset);

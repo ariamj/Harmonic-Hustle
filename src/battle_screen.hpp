@@ -179,6 +179,7 @@ class Battle {
         float NOTE_TRAVEL_TIME_DIFFICULTY_STEP = 250.f;
         float spawn_offset; 
         float timing_offset = 1 - (1.f / 1.2f); // coupled with judgment_y_pos in createJudgmentLine
+	    float judgement_line_half_height = 0.f;
 
         // battle-specific variables for readability, initialized in .start
         int enemy_index;
