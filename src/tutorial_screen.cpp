@@ -74,17 +74,17 @@ void Tutorial::initIntroParts() {
     // vec2 spriteExPos = {gameInfo.width / 10.f, gameInfo.height / 5.f};
     // Entity testing = createHelpImage(renderer, spriteExPos, vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::PLAYER_WALK_F1, Screen::TUTORIAL);
     
-    vec2 spriteExPos = {gameInfo.width * 8.5f / 10.f, gameInfo.height * 1.5f / 6.f};
+    vec2 spriteExPos = {gameInfo.width * 8.5f / 10.f, gameInfo.height * 1.3f / 6.f};
     Entity playerSpriteExample = createHelpImage(renderer, spriteExPos, vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::PLAYER_WALK_F1, Screen::TUTORIAL);
     
     registry.tutorialParts.emplace(playerSpriteExample);
 
-    Entity currEnemyExample = createHelpImage(renderer, vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f),
+    Entity currEnemyExample = createHelpImage(renderer, vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 2.7f / 6.f),
             vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::ENEMY_GUITAR, Screen::TUTORIAL);
 
     registry.tutorialParts.emplace(currEnemyExample);
 
-    Entity redEnemyExample = createHelpImage(renderer, vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 4.5f / 6.f),
+    Entity redEnemyExample = createHelpImage(renderer, vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 3.8f / 6.f),
             vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::ENEMY_MIC, Screen::TUTORIAL);
 
     registry.colours.insert(redEnemyExample, Colour::red_enemy_tint);
@@ -99,14 +99,14 @@ void Tutorial::initIntroParts() {
     vec2 spriteExPos2 = spriteExPos - vec2{0, PLAYER_HEIGHT / 2.f + 10.f};
     Entity text1 = createText("lvl 1", spriteExPos2, 0.5f, Colour::green, Screen::TUTORIAL, true, true);
 
-    vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 3.f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
+    vec2 enemyExPostion = vec2(gameInfo.width * 1.5f / 10.f, gameInfo.height * 2.7f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
     Entity text2 = createText("lvl 1", enemyExPostion, 0.5f, Colour::white, Screen::TUTORIAL, true, true);
 
-    vec2 redEnemyExPosition = vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 4.5f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
+    vec2 redEnemyExPosition = vec2(gameInfo.width * 8.5f / 10.f, gameInfo.height * 3.8f / 6.f - PLAYER_HEIGHT / 2.f - 10.f);
     Entity text3 = createText("lvl 2", redEnemyExPosition, 0.5f, Colour::red, Screen::TUTORIAL, true, true);
 
     float currXPos = gameInfo.width * 4.f / 10.f;
-    float currYPos = gameInfo.height * 1.3f/ 7.f;
+    float currYPos = gameInfo.height * 1.f/ 7.f;
 
     Entity text4 = createText("This is you! You're currently level 1. To win this game,", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
 
@@ -123,7 +123,7 @@ void Tutorial::initIntroParts() {
 
     ///////////// right aligned
     float rightXPos = gameInfo.width * 6.f / 10.f;
-    currYPos += 140.f;
+    currYPos += 110.f;
     Entity text9 = createText("On spawn, you'll be in the overworld surrounded by enemies.", vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
 
     currYPos += 40.f;
@@ -135,7 +135,8 @@ void Tutorial::initIntroParts() {
     Entity text12 = createText("They'll have a white level tag", vec2(rightXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
 
     ////////left aligned
-    currYPos += 170.f;
+    // currYPos += 170.f;
+    currYPos += 110.f;
     Entity text13 = createText("run away", vec2(currXPos - 190.f, currYPos), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
     Entity text14 = createText("from red enemies!", vec2(currXPos + 100.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
 
@@ -143,7 +144,23 @@ void Tutorial::initIntroParts() {
     Entity text15 = createText("they have a higher level than you.", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
     currYPos += 30.f;
     // TODO -> update if we rework the red enemy collision flow
-    Entity text16 = createText("if you hit them, you'll have to restart the game!", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    // Entity text16 = createText("if you hit them, you'll have to restart the game!", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    
+    Entity text16 = createText("if you hit them, you'll enter a", vec2(currXPos - 150.f, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text17 = createText("challenge battle", vec2(currXPos + 245.f, currYPos), 0.5f, Colour::red, Screen::TUTORIAL, true, true);
+    currYPos += 30.f;
+    Entity text18 = createText("you win, and you can skip the lower levels", vec2(currXPos, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    
+    float centerX = gameInfo.width / 2.f;
+    currYPos += 100.f;
+    Entity text19 = createText("You start with", vec2(centerX - 80.f, currYPos), 0.65f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity text20 = createText("3 lives", vec2(centerX + 160.f, currYPos), 0.65f, Colour::green, Screen::TUTORIAL, true, true);
+
+    currYPos += 30.f;
+    Entity text21 = createText("if you lose a challenge battle, you'll lose a life!", vec2(centerX, currYPos), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currYPos += 50.f;
+    Entity text22 = createText("no more lives = game over", vec2(centerX, currYPos), 0.65f, Colour::red, Screen::TUTORIAL, true, true);
+
 
     registry.tutorialParts.emplace(text1);
     registry.tutorialParts.emplace(text2);
@@ -161,6 +178,12 @@ void Tutorial::initIntroParts() {
     registry.tutorialParts.emplace(text14);
     registry.tutorialParts.emplace(text15);
     registry.tutorialParts.emplace(text16);
+    registry.tutorialParts.emplace(text17);
+    registry.tutorialParts.emplace(text18);
+    registry.tutorialParts.emplace(text19);
+    registry.tutorialParts.emplace(text20);
+    registry.tutorialParts.emplace(text21);
+    registry.tutorialParts.emplace(text22);
 
     Entity contText = createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
     registry.tutorialParts.emplace(contText);
