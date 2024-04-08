@@ -68,6 +68,11 @@ struct BoxButton {
 	glm::vec3 text_colour = vec3(0.f);
 };
 
+// disable component for buttons
+struct Disabled {
+
+};
+
 // Mesh datastructure for storing vertex and index buffers
 struct Mesh
 {

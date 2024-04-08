@@ -364,6 +364,7 @@ bool WorldSystem::is_over() const {
 // switch to overworld scene
 bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_non_option_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -383,6 +384,7 @@ bool WorldSystem::render_set_overworld_screen() {
 // REQUIRES current scene NOT be battle
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::BATTLE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -407,6 +409,7 @@ bool WorldSystem::render_set_battle_screen() {
 // REQUIRES current scene to NOT be settings
 // switch to battle scene
 bool WorldSystem::render_set_settings_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::SETTINGS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -435,6 +438,7 @@ bool WorldSystem::render_set_settings_screen() {
 // switch to start screen
 bool WorldSystem::render_set_start_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::START;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -462,6 +466,7 @@ bool WorldSystem::render_set_start_screen() {
 // switch to game over screen
 bool WorldSystem::render_set_game_over_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::GAMEOVER;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -488,6 +493,7 @@ bool WorldSystem::render_set_game_over_screen() {
 // REQUIRES current scene NOT be cutscene
 // switch to cutscene
 bool WorldSystem::render_set_cutscene() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::CUTSCENE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
@@ -517,6 +523,7 @@ bool WorldSystem::render_set_cutscene() {
 // switch to tutorial
 bool WorldSystem::render_set_tutorial() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = gameInfo.prev_screen;
 	gameInfo.curr_screen = Screen::TUTORIAL;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -542,6 +549,7 @@ bool WorldSystem::render_set_tutorial() {
 // switch to options screen
 bool WorldSystem::render_set_options_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OPTIONS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
@@ -551,6 +559,16 @@ bool WorldSystem::render_set_options_screen() {
 	start.set_visible(false);
 	tutorial.set_visible(false);
 	optionsMenu.set_visible(true);
+
+	// if navigating to settings from start, disable certain buttons
+	if (gameInfo.prev_screen == Screen::START) {
+		optionsMenu.disableButton("DIFFICULTY");
+		optionsMenu.disableButton("TUTORIAL");
+	} else {
+		// make sure they're enabled
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("TUTORIAL");
+	}
 
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -764,7 +782,8 @@ void WorldSystem::handleClickHelpBtn() {
 	// To settings
 	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
-		render_set_settings_screen();
+		// render_set_settings_screen();
+		render_set_options_screen();
 	}
 }
 
@@ -867,7 +886,7 @@ void WorldSystem::handleClickNewGameBtn()
 
 void WorldSystem::handleClickDifficultyBtn()
 {
-	if (gameInfo.curr_screen == Screen::OPTIONS) {
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.difficulty_btn)) {
 		tutorial.tutorial_progress = TutorialPart::ADVANCING_EXPLAIN;
 		tutorial.init_parts(TutorialPart::ADVANCING_EXPLAIN);
 		render_set_tutorial();
@@ -877,7 +896,7 @@ void WorldSystem::handleClickDifficultyBtn()
 
 void WorldSystem::handleClickTutorialBtn()
 {
-	if (gameInfo.curr_screen == Screen::OPTIONS) {
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.tutorial_btn)) {
 		tutorial.tutorial_progress = TutorialPart::INTRO;
 		tutorial.init_parts(TutorialPart::INTRO);
 		render_set_tutorial();
@@ -992,7 +1011,7 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
 				tutorial.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD)
-					render_set_overworld_screen();
+						render_set_overworld_screen();
 			}
 			break;
 	}

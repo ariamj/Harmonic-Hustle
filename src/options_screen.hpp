@@ -34,6 +34,11 @@ public:
     // mouse area
     MouseArea mouse_area;
 
+    // only disables and enables buttons by updating the button colour
+    //      check if button should actually disabled before using
+    bool disableButton(std::string buttonName);
+    bool enableButton(std::string buttonName);
+
 private:
     // game state
     RenderSystem* renderer;

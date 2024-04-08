@@ -22,6 +22,7 @@ public:
 	ComponentContainer<BattleOverPopUp> battleOverPopUpParts;
 	ComponentContainer<BattleReminderPopUp> battleReminderPopUpParts;
 	ComponentContainer<TutorialParts> tutorialParts;
+	ComponentContainer<Disabled> disabled;
 	ComponentContainer<Foreground> foregrounds;
 	ComponentContainer<Background> backgrounds;
 	ComponentContainer<Motion> motions;
@@ -70,6 +71,7 @@ public:
 		registry_list.push_back(&battleOverPopUpParts);
 		registry_list.push_back(&battleReminderPopUpParts);
 		registry_list.push_back(&tutorialParts);
+		registry_list.push_back(&disabled);
 		registry_list.push_back(&foregrounds);
 		registry_list.push_back(&backgrounds);
 		registry_list.push_back(&motions);
