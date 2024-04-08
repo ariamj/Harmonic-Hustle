@@ -1029,14 +1029,14 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	if (gameInfo.curr_screen == Screen::START) {
 		// START button
 		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(start.start_btn);
-		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
+		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding - 10.f) && (ypos <= start_btn_area.bottom - y_padding - 10.f);
 		// HELP button
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - 90.f) && (ypos <= help_btn_area.bottom - 90.f);
 		
 		// LOAD button
 		BoxAreaBound load_btn_area = registry.boxAreaBounds.get(start.load_from_save_btn);
-		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - y_padding) && (ypos <= load_btn_area.bottom - y_padding);
+		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - 80.f) && (ypos <= load_btn_area.bottom - 80.f);
 		
 		if (within_start_btn_area) {
 			// std::cout << "in start button area" << std::endl;
