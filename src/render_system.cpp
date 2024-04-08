@@ -381,18 +381,42 @@ void RenderSystem::draw()
 
 	drawToScreen();
 
-	// Particle rendering, behind associated entities. Updates happen in world_system step
- 	for (auto generator : particle_generators) {
-		generator->Draw();
-	}
-	glBindVertexArray(vao);
-
-	// Mesh rendering
+	// Mesh rendering - background entities
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
 		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && registry.backgrounds.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+	// Mesh rendering
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && !registry.backgrounds.has(entity) && !registry.foregrounds.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+	// Particle rendering, between foreground and background layers
+ 	for (auto generator : particle_generators) {
+			generator->Draw();
+	}
+	glBindVertexArray(vao);
+
+	// Mesh rendering - foreground entities
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity) && registry.foregrounds.has(entity)) {
 			Screen entity_screen = registry.screens.get(entity);
 			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
@@ -463,8 +487,8 @@ void RenderSystem::createParticleGenerator(int particle_type_id) {
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SMOKE_PARTICLE];
-			int amount = 200;
-			int max_entities = 15;
+			int amount = 150;
+			int max_entities = 30;
 			std::shared_ptr<SmokeParticleGenerator> generator =
 				std::make_shared<SmokeParticleGenerator>(SmokeParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
 			particle_generators.push_back(generator);

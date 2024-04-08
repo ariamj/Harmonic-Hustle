@@ -110,7 +110,7 @@
             [
                 { "back_and_forth": 0.0 },
                 { "beat_rush": 64.0 },
-                { "back_and_forth": 112.0 }
+                { "back_and_forth": 102.0 }
             ]
         },
         {
@@ -230,7 +230,7 @@
             [
                 { "back_and_forth": 0.0 },
                 { "beat_rush": 64.0 },
-                { "back_and_forth": 112.0 }
+                { "back_and_forth": 102.0 }
             ]
         },
         {
@@ -354,7 +354,7 @@
             [
                 { "back_and_forth": 0.0 },
                 { "beat_rush": 64.0 },
-                { "back_and_forth": 112.0 }
+                { "back_and_forth": 102.0 }
             ]
         }
     ]

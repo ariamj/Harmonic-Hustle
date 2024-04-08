@@ -1,6 +1,11 @@
 #include "world_init.hpp"
 #include "tiny_ecs_registry.hpp"
 
+const float ORIGINAL_MONITOR_WIDTH = 2256.f;
+const float ORIGINAL_MONITOR_HEIGHT = 1504.f;
+const float K_MONITOR_WIDTH = 1470.f;
+const float K_MONITOR_HEIGHT = 956.f;
+
 Entity createPlayer(RenderSystem* renderer, vec2 pos)
 {
 	auto entity = Entity();
@@ -107,6 +112,9 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 
 	// screen entity exists in
 	registry.screens.insert(entity, Screen::BATTLE);
+	
+	// render in foreground
+	registry.foregrounds.emplace(entity);
 
 	// Create component
 	Note& note = registry.notes.emplace(entity);
@@ -150,6 +158,9 @@ Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration) {
 	// screen entity exists in
 	registry.screens.insert(entity, Screen::BATTLE);
 
+	// render in foreground
+	registry.foregrounds.emplace(entity);
+
 	NoteDuration& note_duration = registry.noteDurations.emplace(entity);
 	note_duration.count_ms = duration;
 
@@ -167,7 +178,7 @@ Entity createBattlePlayer(RenderSystem* renderer, vec2 pos)
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 50, 50 };
+	motion.velocity = { 0, 0 };
 	motion.position = pos;
 	motion.scale = vec2({ PORTRAIT_WIDTH, PORTRAIT_HEIGHT });
 
@@ -199,7 +210,7 @@ Entity createBattleEnemy(RenderSystem* renderer, vec2 pos)
 	// Setting initial motion values
 	auto& motion = registry.motions.emplace(entity);
 	motion.angle = 0.f;
-	motion.velocity = { 50, 50 };
+	motion.velocity = { 0, 0 };
 	motion.position = pos;
 	motion.scale = vec2({ PORTRAIT_WIDTH, PORTRAIT_HEIGHT });
 
@@ -233,7 +244,7 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos)
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = pos;
-	motion.scale = vec2({ 2000, 600 });
+	motion.scale = vec2({ 1700.f * gameInfo.width / K_MONITOR_WIDTH, 480 * gameInfo.height / K_MONITOR_HEIGHT });
 
 	// screen entity exists in
 	registry.screens.insert(entity, Screen::CUTSCENE);
@@ -265,7 +276,8 @@ Entity createCSEnemy(RenderSystem* renderer, vec2 pos, Screen screen)
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = pos;
-	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
+	motion.scale = vec2({ CS_WIDTH * gameInfo.width / ORIGINAL_MONITOR_WIDTH, 
+						CS_HEIGHT * gameInfo.height / ORIGINAL_MONITOR_HEIGHT });
 
 	// screen entity exists in
 	registry.screens.insert(entity, screen);
@@ -297,7 +309,8 @@ Entity createCSPlayer(RenderSystem* renderer, vec2 pos, Screen screen)
 	motion.angle = 0.f;
 	motion.velocity = { 0, 0 };
 	motion.position = pos;
-	motion.scale = vec2({ CS_WIDTH, CS_HEIGHT });
+	motion.scale = vec2({ CS_WIDTH * gameInfo.width / ORIGINAL_MONITOR_WIDTH, 
+						CS_HEIGHT * gameInfo.height / ORIGINAL_MONITOR_HEIGHT });
 
 	// screen entity exists in
 	registry.screens.insert(entity, screen);
@@ -474,6 +487,7 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	Entity btn_base = createBox(pos, size);
 
     registry.screens.insert(btn_base, screen);
+	registry.foregrounds.emplace(btn_base);
     registry.colours.insert(btn_base, box_colour);
 	BoxAreaBound& bound = registry.boxAreaBounds.emplace(btn_base);
 	bound.left = pos.x - (size.x/2.f);

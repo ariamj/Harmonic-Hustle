@@ -55,11 +55,16 @@ const float PLAYER_ENEMY_RADIUS = 300.f;
 const float CHASE_TOTAL_VELOCITY = 50.f;
 const float RUN_AWAY_TOTAL_VELOCITY = 50.f;
 const float DEFAULT_ENEMY_VELOCITY = 50.f;
+const float X_DISPLACEMENT_PORTRAIT = PORTRAIT_WIDTH * 3.f / 7.f;
+const float Y_DISPLACEMENT_PORTRAIT = PORTRAIT_HEIGHT / 2;
 
 // Particle-related
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
 const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
 const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
+
+// for making notes travel faster on higher-level enemy collision
+const float NOTE_TRAVEL_TIME_MULTIPLER = 0.75f;
 
 // FPS global set by main.cpp
 extern int FPS;
@@ -98,11 +103,18 @@ namespace Colour {
 	static const vec3 khaki = vec3(240,230,140) / vec3(255);
 	static const vec3 off_white = vec3(0.8, 0.83, 0.851);
 	static const vec3 red_enemy_tint = vec3{0.95f, 0.6f, 0.6f};
+	static const vec3 lane_color = { 0.03922, 0.13725, 0.15686 };
 
 	// game theme colours
 	static const vec3 theme_blue_1 = { 0.758, 0.784, 0.801 }; //lighter blue
 	static const vec3 theme_blue_2 = { 0.308, 0.434, 0.451 }; //mid blue
 	static const vec3 theme_blue_3 = { 0.048, 0.184, 0.201 }; //background colour
+
+	// mode and particle colours
+	static const vec3 back_and_forth_colour = { 0.153, 0.6098, 0.6169};
+	static const vec3 beat_rush_colour = { 0.65, 0.015, 0.015 };
+	static const vec3 unison_colour = { 0.709, 0.376, 0.1059 };
+	
 };
 
 // box area of interest (eg. for buttons, active area)

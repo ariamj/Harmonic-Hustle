@@ -134,6 +134,12 @@ class Battle {
         void addReminderPopUpPartsLevelThree();
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
+        void addReminderPopUpPartsChallengeLevel();
+
+        // more helpers for reminder pop ups
+        void addExplanationBackAndForth();
+        void addExplanationBeatRush();
+        void addExplanationUnison();
 
         void handle_exit_reminder();
         
@@ -153,7 +159,7 @@ class Battle {
         const vec3 MISSED_COLOUR = { 255.f, 1.f, 1.f };
 
         const vec4 BACK_AND_FORTH_COLOUR = { -1.f, 0.2f, 1.f, 0.f }; // blue
-        const vec4 BEAT_RUSH_COLOUR = { 1.5f, -0.2f, -0.2f, 0.f }; // red
+        const vec4 BEAT_RUSH_COLOUR = { 1.1f, -0.8f, -0.8f, 0.f }; // red
         const vec4 UNISON_COLOUR = { 1.f, -0.2f, -1.f, 0.f }; // orange
 
         const float APPROX_FRAME_DURATION = 16.6f;
@@ -161,7 +167,7 @@ class Battle {
         const float SCORING_LEEWAY = LEEWAY_FRAMES * APPROX_FRAME_DURATION; // higher is easier to score better
         const float MIN_FRAMES_ADJUSTMENT = -5.f;
         const float MAX_FRAMES_ADJUSTMENT = 5.f;
-        const float HOLD_DURATION_LEEWAY = 10.f * APPROX_FRAME_DURATION; // allows player to release slightly early, in ms
+        const float HOLD_DURATION_LEEWAY = 9.25f * APPROX_FRAME_DURATION; // allows player to release slightly early, in ms
 
         const int COUNTDOWN_TOTAL_BEATS = 8;
         const int COUNTDOWN_NUM_BEATS = 4;
@@ -169,22 +175,22 @@ class Battle {
         // Enemy-specific battle information
         BattleInfo battleInfo[NUM_UNIQUE_BATTLES * NUM_DIFFICULTY_MODES];
 
-        // the time it should take for note to fall from top to bottom
-        // TODO: Allow calibration via difficulty setting
-        float note_travel_time = 2000.f;
+        // the time it should take for note to fall from top to bottom (on easiest difficulty)
+        float BASE_NOTE_TRAVEL_TIME = 2000.f;
+        float NOTE_TRAVEL_TIME_DIFFICULTY_STEP = 250.f;
         float spawn_offset; 
-
-        // TODO: Allow calibration by player.
-        float adjust_offset = 0.00f;
-        float adjust_increment = 0.005f; // very small changes are impactful
         float timing_offset = 1 - (1.f / 1.2f); // coupled with judgment_y_pos in createJudgmentLine
-        float top_to_judgment = note_travel_time * (1 - timing_offset); // time it takes from top edge to judgment lines
+	    float judgement_line_half_height = 0.f;
 
         // battle-specific variables for readability, initialized in .start
         int enemy_index;
         int num_notes;
+        int previous_enemy_level = 0;
+
+        // tracking information during battle
         int next_note_index;
         int mode_index;
+        BattleMode current_mode;
         float last_beat;
 
         // held note information
@@ -211,4 +217,11 @@ class Battle {
         vec2 threshold_pos;
         vec2 progress_bar_pos;
         vec2 progress_bar_base_size;
+        
+        vec2 mode_pos;
+        std::string mode_text;
+        glm::vec3 mode_colour;
+        
+    protected:
+        int enemy_level;
 };

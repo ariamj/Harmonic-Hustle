@@ -41,9 +41,6 @@ void AISystem::step(float elapsed_ms)
 						registry.isChasing.remove(enemy);
 						enemyMotion.velocity = getRandomEnemyVelocity();
 					}
-					// enemyMotion.velocity = {0,0};
-					// update to use random velocity
-					// enemyMotion.velocity = getRandomVelocity();
 				}
 			} else {
 				if (distance <= PLAYER_ENEMY_RADIUS) {
@@ -59,8 +56,45 @@ void AISystem::step(float elapsed_ms)
 						registry.isRunning.remove(enemy);
 						enemyMotion.velocity = getRandomEnemyVelocity();
 					}
-					// enemyMotion.velocity = {0,0};
-					// update to use random velocity
+				}
+			}
+		}
+	} else {
+		// even if they're paused, add appropriate isChasing / isRunning component to them since player moves
+		auto& enemies = registry.enemies.entities;
+		Motion& playerMotion = registry.motions.get(*gameInfo.player_sprite);
+		vec2 playerPos = playerMotion.position;
+		int playerLevel = registry.levels.get(*gameInfo.player_sprite).level;
+		for (Entity enemy : enemies) {
+			Motion& enemyMotion = registry.motions.get(enemy);
+			vec2 enemyPos = enemyMotion.position;
+			float xDis = playerPos.x - enemyPos.x;
+			float yDis = playerPos.y - enemyPos.y;
+			float distance = xDis * xDis + yDis * yDis;
+			distance = sqrt(distance);
+
+			int enemyLevel = registry.levels.get(enemy).level;
+
+			// chase if higher level, else run away
+			if (enemyLevel > playerLevel) {
+				if (distance <= PLAYER_ENEMY_RADIUS) {
+					if (!registry.isChasing.has(enemy)) {
+						registry.isChasing.emplace(enemy);
+					};
+				} else {
+					if (registry.isChasing.has(enemy)) {
+						registry.isChasing.remove(enemy);
+					}
+				}
+			} else {
+				if (distance <= PLAYER_ENEMY_RADIUS) {
+					if (!registry.isRunning.has(enemy)) {
+						registry.isRunning.emplace(enemy);
+					};
+				} else {
+					if (registry.isRunning.has(enemy)) {
+						registry.isRunning.remove(enemy);
+					}
 				}
 			}
 		}

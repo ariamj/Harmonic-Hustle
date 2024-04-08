@@ -63,6 +63,9 @@ GLFWwindow* WorldSystem::create_window() {
 	gameInfo.width = mode->width;
 	gameInfo.height = mode->height;
 
+	std::cout << gameInfo.width << '\n';
+	std::cout << gameInfo.height << '\n';
+
 	window = glfwCreateWindow(mode->width, mode->height, "Harmonic Hustle", nullptr, nullptr);
 	// window = glfwCreateWindow(window_width_px, window_height_px, "Harmonic Hustle", nullptr, nullptr);
 	if (window == nullptr) {
@@ -263,21 +266,45 @@ void WorldSystem::restart_game() {
 
 	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::BATTLE);
 
-	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
-	float yDisplacement = PORTRAIT_HEIGHT / 2;
-
-	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement + 20.f, yDisplacement + 20.f });
-    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement - 20.f, gameInfo.height - xDisplacement - 20.f });
+	battle_player_sprite = createBattlePlayer(renderer, { X_DISPLACEMENT_PORTRAIT + 20.f, Y_DISPLACEMENT_PORTRAIT + 20.f });
+    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - Y_DISPLACEMENT_PORTRAIT - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f });
 
 	registry.battleEnemy.emplace(battle_enemy_sprite);
 	registry.battlePlayer.emplace(battle_player_sprite);
 
+	// renders lanes
+	vec2 lane_size = vec2(150.f, gameInfo.height);
+	vec3 lane_colour = Colour::lane_color;
+	Entity lane1_box = createBox(vec2(gameInfo.lane_1, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane1_box, Screen::BATTLE);
+	registry.colours.insert(lane1_box, lane_colour);
+	registry.battleLanes.emplace(lane1_box);
+	registry.backgrounds.emplace(lane1_box);
+
+	Entity lane2_box = createBox(vec2(gameInfo.lane_2, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane2_box, Screen::BATTLE);
+	registry.colours.insert(lane2_box, lane_colour);
+	registry.battleLanes.emplace(lane2_box);
+	registry.backgrounds.emplace(lane2_box);
+
+	Entity lane3_box = createBox(vec2(gameInfo.lane_3, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane3_box, Screen::BATTLE);
+	registry.colours.insert(lane3_box, lane_colour);
+	registry.battleLanes.emplace(lane3_box);
+	registry.backgrounds.emplace(lane3_box);
+
+	Entity lane4_box = createBox(vec2(gameInfo.lane_4, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane4_box, Screen::BATTLE);
+	registry.colours.insert(lane4_box, lane_colour);
+	registry.battleLanes.emplace(lane4_box);
+	registry.backgrounds.emplace(lane4_box);
+
 	// hard coded values for now
 	float judgement_line_y_pos = gameInfo.height / 1.2;
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 	
 	// reset cut scene info
 	gameInfo.gameIsOver = false;
@@ -288,6 +315,7 @@ void WorldSystem::restart_game() {
 	gameInfo.is_game_over_finished = false;
 	gameInfo.is_intro_finished = false;
 
+	gameInfo.curr_lives = 3;
 	gameInfo.curr_level = 1;
 
 	start.init_screen();
@@ -771,9 +799,10 @@ void WorldSystem::handleClickLoadBtn() {
 		}
 	}
 
-
-	if (gameInfo.gameIsOver) {
+	if (gameInfo.gameIsOver || gameInfo.curr_lives == 0) {
 		restart_game();
+		// if loaded game was already finished, simulate clicking the start new game button
+		handleClickStartBtn();
 	}
 	// if there are no enemies and game is not over, switch to boss battle
 	else if (gameInfo.existing_enemy_info.size() == 0) {
@@ -936,6 +965,11 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				battle.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+					render_set_game_over_screen();
+					// if going from battle to game over -> it means game has ended, so set game = over and save
+					gameInfo.gameIsOver = true;
+					saver.save_game();
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);

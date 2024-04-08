@@ -42,7 +42,11 @@ void Battle::init_screen() {
 	threshold_pos = vec2(gameInfo.width - (PORTRAIT_WIDTH*3/8.f), gameInfo.height*9/10.f);
 	progress_bar_pos = vec2(gameInfo.width/2.f, 35.f);
 	progress_bar_base_size = vec2(1000.f, 40.f);
-	
+
+	// TODO: Position mode text better
+		// Back and Forth (blue) as default
+	mode_pos = vec2(gameInfo.width * 0.88f, gameInfo.height * 0.15f);
+
 	// render judgement line key prompts
 	float text_y_pos = gameInfo.height/1.2f + 100.f;
 	vec3 text_colour = Colour::light_gray;
@@ -94,6 +98,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	// render score threshold
 	createText(std::to_string((int)score_threshold), threshold_pos + vec2(5.f), 1.5f, Colour::black, Screen::BATTLE);
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
+	// render battle mode
+	createText("mode", mode_pos + vec2(0.f, -gameInfo.height * 0.03), 0.6f, Colour::light_gray, Screen::BATTLE);
+	createText(mode_text, mode_pos + vec2(5.f), 0.6f, mode_colour, Screen::BATTLE);
 
 	if (in_reminder) {
 		// renderReminderText();
@@ -140,7 +147,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} else {
 			// render count down text
-			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, Screen::BATTLE, true);
+			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 2.5f, Colour::white, Screen::BATTLE, true);
 		}
 	} else if (battle_is_over) {
 		renderGameOverText();
@@ -161,12 +168,36 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			conductor.song_position += elapsed_ms_since_last_update;
 		}
 
+		Entity enemy = registry.battleEnemy.entities[0];
+		Entity player = registry.battlePlayer.entities[0];
 
-		// TODO (?): Initiate some visual FX on every beat of song
+		Motion& player_m = motions_registry.get(player);
+		Motion& enemy_m = motions_registry.get(enemy);
+
 		// Track each beat of song 
 		if (conductor.song_position > last_beat + conductor.crotchet) {
-			 // std::cout << "Beat detected" << "\n";
+			 //std::cout << "Beat detected" << "\n";
+
+			 player_m.position.y -= 15;
+			 enemy_m.position.y -= 15;
+
+			 // player portrait smokes
+			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(25.f, Y_DISPLACEMENT_PORTRAIT));
+
+			 // enemy portrait smokes
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f) - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT - (PORTRAIT_WIDTH / 2.f), gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+
 			 last_beat += conductor.crotchet;
+		} else {
+			if (player_m.position.y != Y_DISPLACEMENT_PORTRAIT + 20.f) {
+				player_m.velocity.y = 5;
+			}
+
+			if (enemy_m.position.y != gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f) {
+				enemy_m.velocity.y = 5;
+			}
 		}
 
 		// Spawning notes based on song position
@@ -192,8 +223,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				// If notes spawn suddenly in the middle of screen, then there is an error in beatmap design
 			for (int k = 0; k < lane_indices.size(); k++) {
 				NoteInfo note = battleInfo[enemy_index].notes[next_note_index];
-				if (conductor.song_position >= note.spawn_time) {
-					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time, note.duration);
+				if (conductor.song_position >= note.spawn_time + spawn_offset) {
+					createNote(renderer, vec2(lanes[lane_indices[k]], 0.f), note.spawn_time + spawn_offset, note.duration);
 					next_note_index += 1;
 					// Set duration 
 					lane_locked[lane_indices[k]] = note.duration + conductor.crotchet / 4.f;
@@ -219,7 +250,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				// remove missed notes and play missed note sound
 				if (registry.notes.has(motions_registry.entities[i])) {
 					Note& note = registry.notes.get(motions_registry.entities[i]);
-					// Only remove note if it is not a held note, or is currently being held
+					// Only remove note if it is not currently being held
 					if (!note.pressed) {
 						audio->playDroppedNote();
 						standing = missed;
@@ -240,24 +271,31 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			Note& note = registry.notes.get(entity);
 			Motion& motion = registry.motions.get(entity);
 
-			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / note_travel_time;
+			float progress = (conductor.song_position - note.spawn_time + gameInfo.frames_adjustment * APPROX_FRAME_DURATION) / gameInfo.curr_note_travel_time;
 			motion.position.y = lerp(0.0, float(gameInfo.height), progress);
-			motion.scale_factor = lerp(1.0, NOTE_MAX_SCALE_FACTOR, progress);	
+			motion.scale_factor = lerp(1.f, NOTE_MAX_SCALE_FACTOR, progress);	
 		}
 
 		// Update battle mode based on conductor time
 		if (mode_index < battleInfo[enemy_index].modes.size()) {
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
-			if (conductor.song_position >= mode_change_time) {
-				switch (battleInfo[enemy_index].modes[mode_index].second) {
+			if (conductor.song_position >= mode_change_time - (gameInfo.curr_note_travel_time * timing_offset)) {
+				current_mode = battleInfo[enemy_index].modes[mode_index].second;
+				switch (current_mode) {
 				case back_and_forth:
 					gameInfo.particle_color_adjustment = BACK_AND_FORTH_COLOUR;
+					mode_text = "back and forth";
+					mode_colour = Colour::back_and_forth_colour;
 					break;
 				case beat_rush:
 					gameInfo.particle_color_adjustment = BEAT_RUSH_COLOUR;
+					mode_text= "beat rush";
+					mode_colour = Colour::beat_rush_colour;
 					break;
 				case unison:
 					gameInfo.particle_color_adjustment = UNISON_COLOUR;
+					mode_text = "unison";
+					mode_colour = Colour::unison_colour;
 					break;
 				}
 				mode_index += 1;
@@ -390,20 +428,10 @@ void Battle::handle_battle_end() {
 
 	// battle won
 	if (battleWon()) {
-		// remove all lower lvl enemies
-		int currLevel = gameInfo.curr_level;
-		auto& enemies = registry.enemies.entities;
-		for (Entity enemy : enemies) {
-			int currEnemyLevel = registry.levels.get(enemy).level;
-			if (currEnemyLevel == currLevel) {
-				registry.enemies.remove(enemy);
-				registry.renderRequests.remove(enemy);
-			}
-		}
 
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_WIN;
 
-		switch (gameInfo.curr_level) {
+		switch (enemy_level) {
 		case 1:
 			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_LOSE;
 			break;
@@ -420,16 +448,26 @@ void Battle::handle_battle_end() {
 			std::cout << "game level too high" << "\n";
 		}
 
-		// increment player lvl
-		gameInfo.curr_level = min(gameInfo.curr_level + 1, gameInfo.max_level);
+		gameInfo.curr_level = min(enemy_level + 1, gameInfo.max_level);
 		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
-		
+
+		// remove all lower lvl enemies
+		int currLevel = gameInfo.curr_level;
+		auto& enemies = registry.enemies.entities;
+		for (Entity enemy : enemies) {
+			int currEnemyLevel = registry.levels.get(enemy).level;
+			if (currEnemyLevel < currLevel) {
+				registry.enemies.remove(enemy);
+				registry.renderRequests.remove(enemy);
+			}
+		}
+
 	// battle lost
 	} else {
 
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_LOSE;
 
-		switch (gameInfo.curr_level) {
+		switch (enemy_level) {
 		case 1:
 			render_enemny.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY_GUITAR_WIN;
 			break;
@@ -444,6 +482,12 @@ void Battle::handle_battle_end() {
 			break;
 		default:
 			std::cout << "game level too high" << "\n";
+		}
+
+		// if lost to a red enemy, lose a life
+		// if lives <= 0, go to game over
+		if (enemy_level > gameInfo.curr_level) {
+			gameInfo.curr_lives--;
 		}
 
 		// remove colllided with enemy (give player another chance)
@@ -463,8 +507,40 @@ void Battle::start() {
 	// TODO: Choose in-game instead
 	// gameInfo.curr_difficulty = 2;
 
+	int level = gameInfo.curr_level;
+	enemy_level = 0;
+	int level_difference = 0;
+
+	// Set judgment line half height
+	Entity entity = registry.judgmentLine.entities[0];
+	JudgementLine judgement_line = registry.judgmentLine.components[0];
+	Motion& lane_motion = registry.motions.get(entity);
+	judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+	// Bad practice to give info to particles
+	gameInfo.judgment_line_half_height = judgement_line_half_height;
+
+	// Accelerate based on difficulty
+	gameInfo.base_note_travel_time = BASE_NOTE_TRAVEL_TIME - (gameInfo.curr_difficulty * NOTE_TRAVEL_TIME_DIFFICULTY_STEP);
+
+	// Check enemy level
+	if (registry.levels.has(gameInfo.curr_enemy)) {
+		Level& enemy_ref_level = registry.levels.get(gameInfo.curr_enemy);
+		enemy_level = enemy_ref_level.level;
+
+		// Set level to enemy level regardless
+		level = enemy_level;
+		// Store level difference
+		level_difference = enemy_level - gameInfo.curr_level;
+	} else {
+		// Dependent on boss not having a level component
+		// Also catches C key case in overworld
+		enemy_level = gameInfo.curr_level;
+	}
+
+
 	// 0-indexing
-	enemy_index = min(gameInfo.curr_level - 1, NUM_UNIQUE_BATTLES - 1) + (gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES);
+	int difficulty_offset = gameInfo.curr_difficulty * NUM_UNIQUE_BATTLES;
+	enemy_index = min(level - 1, NUM_UNIQUE_BATTLES - 1) + difficulty_offset;
 	num_notes = battleInfo[enemy_index].count_notes;
 	
 	// Set Conductor variables
@@ -482,8 +558,29 @@ void Battle::start() {
 	int total_hits = num_notes + battleInfo[enemy_index].count_held_notes;
 	// Calculate score threshold
 	int rounded_score = ceil((total_hits) * perfect * (base_percentage + difficulty_percentage));
-	int rounded_up_to_multiple_of_fifty = rounded_score + (50 - (rounded_score % 50));
-	score_threshold = rounded_up_to_multiple_of_fifty;
+	int rounded_down_to_multiple_of_fifty = rounded_score - (rounded_score % 50);
+	score_threshold = rounded_down_to_multiple_of_fifty;
+	
+	// Adjust note speed based on level difference between player and enemy
+	float note_speed_multiplier = pow(NOTE_TRAVEL_TIME_MULTIPLER, level_difference);
+	float new_note_travel_time = gameInfo.base_note_travel_time * note_speed_multiplier;
+
+
+	if (enemy_level < previous_enemy_level && enemy_level != 4) {
+		// Player is challenging a lower level non-boss enemy than last time
+			// Forgiving; use the regularly computed note speed
+		gameInfo.curr_note_travel_time = new_note_travel_time;
+	} else {
+		// Player is continuing to challenge the same high level enemy, or even higher
+			// Not forgiving; do not slow down note speed
+		gameInfo.curr_note_travel_time = min(gameInfo.curr_note_travel_time, new_note_travel_time);
+	}
+
+	// If player wants to backtrack after fighting higher level enemy
+	previous_enemy_level = enemy_level;
+
+	// Used to spawn notes relative to judgment line instead of window height
+	spawn_offset = -(gameInfo.curr_note_travel_time - (gameInfo.curr_note_travel_time * (timing_offset)));
 
 	// Reset counters
 	perfect_counter = 0;
@@ -496,7 +593,12 @@ void Battle::start() {
 
 	// TODO (?): Account for when note spawns are negative (before music starts)
 	next_note_index = 0;
+
+	// Mode-related
 	mode_index = 0;
+	mode_text = "back and forth";
+	mode_colour = Colour::back_and_forth_colour;
+	current_mode = back_and_forth;
 
 	// Fine-tuning timing
 	count_late = 0;
@@ -510,7 +612,7 @@ void Battle::start() {
 	RenderRequest& render_p = registry.renderRequests.get(ep);
 
 	render_p.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER;
-	switch (gameInfo.curr_level) {
+	switch (enemy_level) {
 		case 1:
 			render.used_texture = TEXTURE_ASSET_ID::BATTLEENEMY;
 			break;
@@ -529,10 +631,11 @@ void Battle::start() {
 	}
 
 	// Create generators for particles that appear in the battle scene
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
+	// Order matters
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SMOKE);
 	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::FLAME);
-	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::SPARK);
+	renderer->createParticleGenerator((int)PARTICLE_TYPE_ID::TRAIL);
 
 	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe
@@ -721,11 +824,7 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 	Motion& lane_motion = registry.motions.get(entity);
 	float note_y_pos = registry.motions.get(entity_other).position.y;
 	float lane_y_pos = lane_motion.position.y;
-	float scoring_margin = (SCORING_LEEWAY / note_travel_time) * gameInfo.height;
-
-	// Sizing
-	JudgementLine judgement_line = registry.judgmentLine.get(entity);
-	float judgement_line_half_height = lane_motion.scale.y * judgement_line.actual_img_scale_factor;
+	float scoring_margin = (SCORING_LEEWAY / (gameInfo.curr_note_travel_time)) * gameInfo.height;
 
 	// Colour
 	vec3& colour = registry.colours.get(entity);
@@ -920,7 +1019,12 @@ void Battle::handle_key(int key, int scancode, int action, int mod) {
 		switch(key) {
 			case GLFW_KEY_SPACE:
 				if (action == GLFW_PRESS) { 
-					gameInfo.curr_screen = Screen::OVERWORLD;
+					if (gameInfo.curr_lives == 0 || registry.enemies.entities.size() == 0) {
+						// std::cout << "testing no more enemies" << std::endl;
+						gameInfo.curr_screen = Screen::GAMEOVER;
+					} else {
+						gameInfo.curr_screen = Screen::OVERWORLD;
+					}
 					// std::cout << "test return to overworld after battle " << battle_is_over << std::endl;
 				}
 				break;
@@ -990,7 +1094,7 @@ float Battle::calculate_adjustment() {
 	float weighted_avg_late_distance = avg_late_distance * count_late / (total_count);
 
 	float avg_error_distance = weighted_avg_early_distance + weighted_avg_late_distance;
-	float adjustment = avg_error_distance / gameInfo.height * note_travel_time;
+	float adjustment = avg_error_distance / gameInfo.height * gameInfo.curr_note_travel_time;
 
 	std::cout << "Recommended adjustment: " << adjustment << " ms\n";
 

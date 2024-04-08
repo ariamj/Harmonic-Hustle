@@ -77,6 +77,16 @@ struct Mesh
 	std::vector<uint16_t> vertex_indices;
 };
 
+struct Foreground
+{
+
+};
+
+struct Background
+{
+
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };
@@ -147,6 +157,10 @@ struct ProgressBar
 	//progress bar
 };
 
+struct BattleLanes {
+
+};
+
 struct GameInfo {
 	Screen curr_screen;
 	Screen prev_screen; // to handle resume correct screen after pausing
@@ -162,6 +176,7 @@ struct GameInfo {
 	int curr_level = 1;
 	int max_level = 4;
 	int curr_difficulty = 0;
+	int curr_lives = 3;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;
@@ -169,7 +184,10 @@ struct GameInfo {
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
 	vec4 particle_color_adjustment;
-	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in ms
+	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in portions of frames
+	float base_note_travel_time = 2000.f; // how long note takes to travel from top to bottom
+	float curr_note_travel_time = 2000.f;
+	float judgment_line_half_height = 0.f;
 };
 extern GameInfo gameInfo;
 
