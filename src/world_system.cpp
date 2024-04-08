@@ -801,13 +801,13 @@ void WorldSystem::handleClickHelpBtn() {
 		gameInfo.prev_screen = gameInfo.curr_screen;
 		// render_set_settings_screen();
 		render_set_options_screen();
-	} else if (gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
+	} else if (gameInfo.curr_screen == Screen::OPTIONS) {
 		render_set_settings_screen();
 	}
 }
 
 void WorldSystem::handleClickRestartBtn() {
-	std::cout << "Clicked on 'RESTART" << std::endl;
+	std::cout << "Clicked on 'MAIN MENU" << std::endl;
 
 	// To Start
 	if (gameInfo.curr_screen == Screen::GAMEOVER) {
@@ -1091,15 +1091,9 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		// START button
 		BoxAreaBound restart_btn_area = registry.boxAreaBounds.get(gameOver.restart_btn);
 		bool within_restart_btn_area = (xpos >= restart_btn_area.left) && (xpos <= restart_btn_area.right) && (ypos >= restart_btn_area.top - y_padding) && (ypos <= restart_btn_area.bottom - y_padding);
-		// HELP button
-		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(gameOver.help_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
 		if (within_restart_btn_area) {
 			// std::cout << "in start button area" << std::endl;
 			mouse_area = in_restart_btn;
-		} else if (within_help_btn_area) {
-			// std::cout << "in help button area" << std::endl;
-			mouse_area = in_help_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
