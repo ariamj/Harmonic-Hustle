@@ -13,7 +13,8 @@ class Cutscene {
     public:
         int boss_dialogue_progress = 0;
         int intro_dialogue_progress = 0;
-       int game_over_dialogue_progress = 0;
+        int game_over_dialogue_progress = 0;
+        int lose_boss_dialogue_progress = 0;
 
         const std::vector<std::string> BOSS_DIALOGUE = {
             "you're gonna regret not turning off that music",
@@ -37,6 +38,13 @@ class Cutscene {
             "You realize it's only been one night right?",
             "...",
             "See you tomorrow :)"
+        };
+
+        const std::vector<std::string> LOSE_BOSS_DIALOGUE = {
+            "...",
+            "HA! Did you think you could defeat me?! Think again!",
+            "This isn't over! Rematch!!",
+            "...seriously?...fine..."
         };
 
         const std::string CONT_TEXT = "PRESS SPACE TO CONTINUE";

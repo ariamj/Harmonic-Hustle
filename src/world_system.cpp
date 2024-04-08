@@ -190,6 +190,15 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			saver.save_game();
 			render_set_game_over_screen();
 		}
+		else if (cutscene.lose_boss_dialogue_progress >= cutscene.LOSE_BOSS_DIALOGUE.size()) {
+			std::cout << "LOST TO BOSS" << std::endl;
+			gameInfo.is_game_over_finished = false;
+			cutscene.lose_boss_dialogue_progress = 0;
+			saver.save_game();
+			battle.start();
+			render_set_battle_screen(); //go to overworld instead(?)
+			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
+		}
 		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
 			gameInfo.is_boss_finished = true;
@@ -311,6 +320,7 @@ void WorldSystem::restart_game() {
 	cutscene.boss_dialogue_progress = 0;
 	cutscene.intro_dialogue_progress = 0;
 	cutscene.game_over_dialogue_progress = 0;
+	cutscene.lose_boss_dialogue_progress = 0;
 	gameInfo.is_boss_finished = false;
 	gameInfo.is_game_over_finished = false;
 	gameInfo.is_intro_finished = false;

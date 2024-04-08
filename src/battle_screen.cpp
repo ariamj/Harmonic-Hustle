@@ -450,6 +450,11 @@ void Battle::handle_battle_end() {
 			std::cout << "game level too high" << "\n";
 		}
 
+		// Beat boss
+		if (gameInfo.curr_level == gameInfo.max_level) {
+			gameInfo.won_boss = true;
+		}
+
 		gameInfo.curr_level = min(enemy_level + 1, gameInfo.max_level);
 		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
 
@@ -490,6 +495,11 @@ void Battle::handle_battle_end() {
 		// if lives <= 0, go to game over
 		if (enemy_level > gameInfo.curr_level) {
 			gameInfo.curr_lives--;
+		}
+
+		// Lost against boss
+		if (gameInfo.curr_level == gameInfo.max_level) {
+			gameInfo.won_boss = false;
 		}
 
 		// remove colllided with enemy (give player another chance)
@@ -707,7 +717,8 @@ bool Battle::set_visible(bool isVisible) {
 
 // Return true if won battle (ie. points greater than needed threshold)
 bool Battle::battleWon() {
-	return (score > score_threshold);
+	// return (score > score_threshold);
+	return (gameInfo.curr_level < 4) ? true : (score > 0);
 }
 
 bool key_pressed = false;
