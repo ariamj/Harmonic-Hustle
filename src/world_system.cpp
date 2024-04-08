@@ -970,32 +970,73 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 
 	if (gameInfo.curr_screen == OPTIONS) {
 		//printf("Current screen is in OPTIONS\n");
-		// START button
-		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
-		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
-		// HELP button
+		
+		// resume game button
+		BoxAreaBound resume_area = registry.boxAreaBounds.get(optionsMenu.resume_game_btn);
+		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - y_padding) && (ypos <= resume_area.bottom - y_padding);
+
+		// save game button
+		BoxAreaBound save_game_area = registry.boxAreaBounds.get(optionsMenu.save_game_btn);
+		bool within_save_game_btn_area = (xpos >= save_game_area.left) && (xpos <= save_game_area.right) && (ypos >= save_game_area.top - y_padding) && (ypos <= save_game_area.bottom - y_padding);
+
+		// new game button
+		BoxAreaBound new_game_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
+		bool within_new_game_btn_area = (xpos >= new_game_area.left) && (xpos <= new_game_area.right) && (ypos >= new_game_area.top - y_padding) && (ypos <= new_game_area.bottom - y_padding);
+
+		// game difficulty button
+		BoxAreaBound difficulty_btn_area = registry.boxAreaBounds.get(optionsMenu.difficulty_btn);
+		bool within_difficulty_btn_area = (xpos >= difficulty_btn_area.left) && (xpos <= difficulty_btn_area.right) && (ypos >= difficulty_btn_area.top - y_padding) && (ypos <= difficulty_btn_area.bottom - y_padding);
+
+		// help button
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(optionsMenu.help_btn);
 		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
 
-		// LOAD button
-		BoxAreaBound load_btn_area = registry.boxAreaBounds.get(optionsMenu.load_from_save_btn);
-		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - y_padding) && (ypos <= load_btn_area.bottom - y_padding);
+		// tutorial button
+		BoxAreaBound tutorial_btn_area = registry.boxAreaBounds.get(optionsMenu.tutorial_btn);
+		bool within_tutorial_btn_area = (xpos >= tutorial_btn_area.left) && (xpos <= tutorial_btn_area.right) && (ypos >= tutorial_btn_area.top - y_padding) && (ypos <= tutorial_btn_area.bottom - y_padding);
 
-		if (within_start_btn_area) {
-			// std::cout << "in start button area" << std::endl;
-			mouse_area = in_start_btn;
+		// exit button
+		BoxAreaBound exit_btn_area = registry.boxAreaBounds.get(optionsMenu.exit_btn);
+		bool within_exit_btn_area = (xpos >= exit_btn_area.left) && (xpos <= exit_btn_area.right) && (ypos >= exit_btn_area.top - y_padding) && (ypos <= exit_btn_area.bottom - y_padding);
+
+		// main menu button
+		BoxAreaBound return_to_main_btn_area = registry.boxAreaBounds.get(optionsMenu.return_to_main_btn);
+		bool within_return_to_main_btn_btn_area = (xpos >= return_to_main_btn_area.left) && (xpos <= return_to_main_btn_area.right) && (ypos >= return_to_main_btn_area.top - y_padding) && (ypos <= return_to_main_btn_area.bottom - y_padding);
+
+		if (within_new_game_btn_area) {
+			std::cout << "in new game button area" << std::endl;
+			mouse_area = in_new_game_btn;
 		}
 		else if (within_help_btn_area) {
 			// std::cout << "in help button area" << std::endl;
-			mouse_area = in_help_btn;
+			mouse_area = in_helpOpt_btn;
 		}
-		else if (within_load_btn_area) {
+		else if (within_resume_game_btn_area) {
+			mouse_area = in_resume_btn;
+		} 
+		else if (within_save_game_btn_area) {
+			mouse_area = in_save_btn;
+		}
+		else if (within_difficulty_btn_area) {
+			mouse_area = in_difficulty_btn;
+		}
+		else if (within_tutorial_btn_area) {
+			mouse_area = in_tutorial_btn;
+		}
+		else if (within_exit_btn_area) {
+			mouse_area = in_exit_btn;
+		}
+		else if (within_return_to_main_btn_btn_area) {
+			mouse_area = in_return_to_main_btn;
+		}
+
+		/*else if (within_load_btn_area) {
 			mouse_area = in_load_btn;
-		}
+		}*/
 		else {
 			mouse_area = in_unclickable;
 		}
-		start.handle_mouse_move(mouse_area);
+		optionsMenu.handle_mouse_move(mouse_area);
 
 	}
 }

@@ -84,19 +84,19 @@ void OptionsMenu::renderButtons() {
     Entity tutorial_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(tutorial_shadow, Screen::OPTIONS);
     registry.colours.insert(tutorial_shadow, Colour::theme_blue_3);
-    load_from_save_btn = createButton("TUTORIAL", center_pos + vec2(0, new_game_y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    tutorial_btn = createButton("TUTORIAL", center_pos + vec2(0, new_game_y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // Return to main menu button
     Entity menu_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(menu_shadow, Screen::OPTIONS);
     registry.colours.insert(menu_shadow, Colour::theme_blue_3);
-    load_from_save_btn = createButton("MAIN MENU", center_pos + vec2(0, y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    return_to_main_btn = createButton("MAIN MENU", center_pos + vec2(0, y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // Save and exit button
     Entity exit_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(exit_shadow, Screen::OPTIONS);
     registry.colours.insert(exit_shadow, Colour::theme_blue_3);
-    difficulty_btn = createButton("SAVE + EXIT", center_pos + vec2(0, y_padding + y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    exit_btn = createButton("SAVE + EXIT", center_pos + vec2(0, y_padding + y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
 }
 
@@ -119,9 +119,14 @@ bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_
 
             // Hover effect
             // NOTE: if lag happens, comment this part out
-            if ((text == "NEW GAME" && mouse_area == in_start_btn) || (text == "HELP" && mouse_area == in_help_btn) || (text == "LOAD" && mouse_area == in_load_btn)) {
+            if ((text == "RESUME" && mouse_area == in_resume_btn) || (text == "HELP" && mouse_area == in_helpOpt_btn) || (text == "SAVE GAME" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
+                || (text == "DIFFICULTY" && mouse_area == in_difficulty_btn) || (text == "TUTORIAL" && mouse_area == in_tutorial_btn) || (text == "MAIN MENU" && mouse_area == in_return_to_main_btn) || (text == "SAVE + EXIT" && mouse_area == in_exit_btn)) {
                 text_colour = Colour::white;
+                std::cout << "here!" << std::endl;
             }
+            //else {
+            //    //std::cout << text << std::endl;
+            //}
             createText(text, motion.position, btn.text_scale, text_colour, Screen::OPTIONS, true, false);
         }
     }
