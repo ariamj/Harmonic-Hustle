@@ -167,42 +167,50 @@ bool OptionsMenu::disableButton(std::string buttonName) {
     if (buttonName == "RESUME") {
         vec3& btnColour = registry.colours.get(resume_game_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(resume_game_btn);
+        if (!registry.disabled.has(resume_game_btn))
+            registry.disabled.emplace(resume_game_btn);
 
     } else if (buttonName == "NEW GAME") {
         vec3& btnColour = registry.colours.get(new_game_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(new_game_btn);
+        if (!registry.disabled.has(new_game_btn))
+            registry.disabled.emplace(new_game_btn);
 
     } else if (buttonName == "SAVE GAME") {
         vec3& btnColour = registry.colours.get(save_game_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(save_game_btn);
+        if (!registry.disabled.has(save_game_btn))
+            registry.disabled.emplace(save_game_btn);
 
     } else if (buttonName == "DIFFICULTY") {
         vec3& btnColour = registry.colours.get(difficulty_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(difficulty_btn);
+        if (!registry.disabled.has(difficulty_btn))
+            registry.disabled.emplace(difficulty_btn);
 
     } else if (buttonName == "HELP") {
         vec3& btnColour = registry.colours.get(help_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(help_btn);
+        if (!registry.disabled.has(help_btn))
+            registry.disabled.emplace(help_btn);
 
     } else if (buttonName == "TUTORIAL") {
         vec3& btnColour = registry.colours.get(tutorial_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(tutorial_btn);
+        if (!registry.disabled.has(tutorial_btn))
+            registry.disabled.emplace(tutorial_btn);
 
     } else if (buttonName == "MAIN MENU") {
         vec3& btnColour = registry.colours.get(return_to_main_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(return_to_main_btn);
+        if (!registry.disabled.has(return_to_main_btn))
+            registry.disabled.emplace(return_to_main_btn);
 
     } else if (buttonName == "SAVE + EXIT") {
         vec3& btnColour = registry.colours.get(exit_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(exit_btn);
+        if (!registry.disabled.has(exit_btn))
+            registry.disabled.emplace(exit_btn);
     }
 }
 
