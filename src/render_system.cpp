@@ -382,14 +382,26 @@ void RenderSystem::draw()
 
 	drawToScreen();
 
-	// have to render the lanes before the particles so it doesnt cover it up
+	// Mesh rendering - background entities
 	Screen curr_screen = registry.screens.get(screen_state_entity);
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
 		if (registry.screens.has(entity)) {
 			Screen entity_screen = registry.screens.get(entity);
-			if (entity_screen == curr_screen && registry.battleLanes.has(entity)) {
+			if (entity_screen == curr_screen && registry.backgrounds.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+	// Mesh rendering
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && !registry.backgrounds.has(entity) && !registry.foregrounds.has(entity)) {
 				drawTexturedMesh(entity, projection_2D);
 			}
 		}
@@ -401,13 +413,13 @@ void RenderSystem::draw()
 	}
 	glBindVertexArray(vao);
 
-	// Mesh rendering
+	// Mesh rendering - foreground entities
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
-		if (registry.screens.has(entity)) {
+		if (registry.screens.has(entity) && registry.foregrounds.has(entity)) {
 			Screen entity_screen = registry.screens.get(entity);
-			if (entity_screen == curr_screen && !registry.battleLanes.has(entity)) {
+			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
 			}
 		}

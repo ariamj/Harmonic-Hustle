@@ -77,6 +77,16 @@ struct Mesh
 	std::vector<uint16_t> vertex_indices;
 };
 
+struct Foreground
+{
+
+};
+
+struct Background
+{
+
+};
+
 // All data relevant to the shape and motion of entities
 struct Motion {
 	vec2 position = { 0, 0 };

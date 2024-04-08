@@ -107,6 +107,9 @@ Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float dura
 
 	// screen entity exists in
 	registry.screens.insert(entity, Screen::BATTLE);
+	
+	// render in foreground
+	registry.foregrounds.emplace(entity);
 
 	// Create component
 	Note& note = registry.notes.emplace(entity);
@@ -149,6 +152,9 @@ Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration) {
 
 	// screen entity exists in
 	registry.screens.insert(entity, Screen::BATTLE);
+
+	// render in foreground
+	registry.foregrounds.emplace(entity);
 
 	NoteDuration& note_duration = registry.noteDurations.emplace(entity);
 	note_duration.count_ms = duration;
@@ -474,6 +480,7 @@ Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 siz
 	Entity btn_base = createBox(pos, size);
 
     registry.screens.insert(btn_base, screen);
+	registry.foregrounds.emplace(btn_base);
     registry.colours.insert(btn_base, box_colour);
 	BoxAreaBound& bound = registry.boxAreaBounds.emplace(btn_base);
 	bound.left = pos.x - (size.x/2.f);
