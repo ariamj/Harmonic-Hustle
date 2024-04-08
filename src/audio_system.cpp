@@ -56,6 +56,14 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string lobby_file = "lobby.wav";
+	lobby_music = Mix_LoadMUS(audio_path(lobby_file).c_str());
+	if (lobby_music == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(lobby_file).c_str());
+		return false;
+	}
+
 	std::string enemy0_file = "enemy0.wav";
 	Mix_Music* enemy0_music = Mix_LoadMUS(audio_path(enemy0_file).c_str());
 	if (enemy0_music == nullptr) { // add "%s\n" for each sound added
@@ -75,8 +83,6 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy1_music);
 
-
-
 	std::string enemy2_file = "enemy2.wav";
 	Mix_Music* enemy2_music = Mix_LoadMUS(audio_path(enemy2_file).c_str());
 	if (enemy2_music == nullptr) { // add "%s\n" for each sound added
@@ -86,7 +92,6 @@ bool AudioSystem::LoadFiles() {
 	}
 	enemy_music.push_back(enemy2_music);
 
-	//TODO: ADD NEW SONG FOR THE BOSS
 	std::string boss0_file = "boss0.wav";
 	Mix_Music* boss0_music = Mix_LoadMUS(audio_path(boss0_file).c_str());
 	if (boss0_music == nullptr) { // add "%s\n" for each sound added
@@ -177,6 +182,11 @@ int AudioSystem::playBattle(int enemy_id) {
 	// Mix_PlayMusic(enemy_music[enemy_id], -1);
 	current_music = enemy_music[enemy_id];
 	return Mix_PlayMusic(enemy_music[enemy_id], 1); // TEMP !!! FOR TESTING END
+}
+
+int AudioSystem::playLobby() {
+	current_music = lobby_music;
+	return Mix_PlayMusic(lobby_music, -1);
 }
 
 int AudioSystem::playHoldNote(int channel_offset) {

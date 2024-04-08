@@ -644,7 +644,8 @@ void Battle::start() {
 
 	// Enemy battle music now starts at the end of countdown
 	// TODO: Add some "waiting" music maybe
-	audio->pauseMusic();
+	// audio->pauseMusic();
+	audio->playLobby();
 
 	// Set flag
 	setBattleIsOver(false);
