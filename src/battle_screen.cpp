@@ -147,7 +147,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			}
 		} else {
 			// render count down text
-			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 3.5f, Colour::white, Screen::BATTLE, true);
+			createText(countdown_text, vec2(gameInfo.width / 2.f, gameInfo.height / 2.f), 2.5f, Colour::white, Screen::BATTLE, true);
 		}
 	} else if (battle_is_over) {
 		renderGameOverText();
