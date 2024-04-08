@@ -655,6 +655,8 @@ void testButton(Entity& btn) {
 // overworld, battle, start (main menu), game over, help 
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = Screen::OVERWORLD;
 			gameInfo.prev_non_option_screen = Screen::OVERWORLD;
@@ -850,6 +852,9 @@ void WorldSystem::handleClickLoadBtn() {
 void WorldSystem::handleClickResumeBtn()
 {
 	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		gameInfo.in_options = false;
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.prev_screen == Screen::OVERWORLD) {
 			render_set_overworld_screen();
 		}
@@ -874,7 +879,6 @@ void WorldSystem::handleClickResumeBtn()
 			//std::cout << "here in non option" << std::endl;
 			handleClickResumeBtn();
 		}
-		gameInfo.in_options = false;
 	}
 
 }
@@ -926,7 +930,11 @@ void WorldSystem::handleClickExitBtn()
 
 void WorldSystem::handleClickMainMenuBtn()
 {
-	if (gameInfo.curr_screen == Screen::OPTIONS) render_set_start_screen();
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("TUTORIAL");
+		render_set_start_screen();
+	}
 }
 
 bool esc_pressed = false;
@@ -1229,6 +1237,7 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				handleClickSaveBtn();
 				break;
 			case in_new_game_btn:
+				gameInfo.in_options = false;
 				handleClickNewGameBtn();
 				break;
 			case in_difficulty_btn:
