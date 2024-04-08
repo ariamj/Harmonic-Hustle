@@ -36,7 +36,7 @@ void TrailParticleGenerator::updateParticles(float dt, unsigned int newParticles
         ParticleEffect& particle_effect = registry.particleEffects.get(entity);
 
         // add new particles
-        for (unsigned int i = 0; i < newParticles + additional_particles; ++i)
+        for (unsigned int i = 0; i < newParticles; ++i)
         {
             int unusedParticle = firstUnusedParticle(particle_effect.last_used_particle,
                 particle_effect.min_index, particle_effect.max_index);

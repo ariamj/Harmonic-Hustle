@@ -182,12 +182,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			 enemy_m.position.y -= 15;
 
 			 // player portrait smokes
-			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(X_DISPLACEMENT_PORTRAIT * gameInfo.width / ORIGINAL_MONITOR_WIDTH + (PORTRAIT_WIDTH / 2.f), Y_DISPLACEMENT_PORTRAIT));
 			 createSmoke(vec2(25.f, Y_DISPLACEMENT_PORTRAIT));
 
 			 // enemy portrait smokes
-			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT + (PORTRAIT_WIDTH / 2.f) - 20.f, gameInfo.height - X_DISPLACEMENT_PORTRAIT));
-			 createSmoke(vec2(gameInfo.width - Y_DISPLACEMENT_PORTRAIT - (PORTRAIT_WIDTH / 2.f), gameInfo.height - X_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - 25.f, gameInfo.height - Y_DISPLACEMENT_PORTRAIT));
+			 createSmoke(vec2(gameInfo.width - X_DISPLACEMENT_PORTRAIT * gameInfo.width / ORIGINAL_MONITOR_WIDTH - (PORTRAIT_WIDTH / 2.f), gameInfo.height - Y_DISPLACEMENT_PORTRAIT));
 
 			 last_beat += conductor.crotchet;
 		} else {
@@ -450,6 +450,11 @@ void Battle::handle_battle_end() {
 			std::cout << "game level too high" << "\n";
 		}
 
+		// Beat boss
+		if (gameInfo.curr_level == gameInfo.max_level) {
+			gameInfo.won_boss = true;
+		}
+
 		gameInfo.curr_level = min(enemy_level + 1, gameInfo.max_level);
 		registry.levels.get(*gameInfo.player_sprite).level = gameInfo.curr_level;
 
@@ -490,6 +495,11 @@ void Battle::handle_battle_end() {
 		// if lives <= 0, go to game over
 		if (enemy_level > gameInfo.curr_level) {
 			gameInfo.curr_lives--;
+		}
+
+		// Lost against boss
+		if (gameInfo.curr_level == gameInfo.max_level) {
+			gameInfo.won_boss = false;
 		}
 
 		// remove colllided with enemy (give player another chance)
@@ -708,6 +718,7 @@ bool Battle::set_visible(bool isVisible) {
 // Return true if won battle (ie. points greater than needed threshold)
 bool Battle::battleWon() {
 	return (score > score_threshold);
+	// return (gameInfo.curr_level < 4) ? true : (score > 0); //test boss
 }
 
 bool key_pressed = false;

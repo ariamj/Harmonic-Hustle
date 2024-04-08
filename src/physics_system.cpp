@@ -322,7 +322,7 @@ void PhysicsSystem::step(float elapsed_ms, RenderSystem* renderSystem)
 
 		// move battle enemy portrait
 		if (registry.battleEnemy.has(entity)) {
-			if (motion.position.y != gameInfo.height - X_DISPLACEMENT_PORTRAIT - 20.f) {
+			if (motion.position.y != gameInfo.height - Y_DISPLACEMENT_PORTRAIT - 20.f) {
 				motion.position += motion.velocity;
 			}
 		}
