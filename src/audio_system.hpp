@@ -30,6 +30,8 @@ public:
 	int playCountdownLow();
 	int playCountdownHigh();
 
+	int playApplause();
+
 	int musicPlaying();
 	float getSongPosition();
 	float getSongDuration();
@@ -54,4 +56,5 @@ private:
 	Mix_Chunk* hold_SFX;
 	Mix_Chunk* countdown_high_SFX;
 	Mix_Chunk* countdown_low_SFX;
+	Mix_Chunk* applause_SFX;
 };

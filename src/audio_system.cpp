@@ -152,6 +152,14 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string applause = "applause.wav";
+	applause_SFX = Mix_LoadWAV(audio_path(applause).c_str());
+	if (applause_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(applause).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -202,6 +210,10 @@ int AudioSystem::playCountdownHigh() {
 
 int AudioSystem::playCountdownLow() {
 	return Mix_PlayChannel(-1, countdown_low_SFX, 0);
+}
+
+int AudioSystem::playApplause() {
+	return Mix_PlayChannel(-1, applause_SFX, 0);
 }
 
 int AudioSystem::musicPlaying() {

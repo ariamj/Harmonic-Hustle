@@ -429,6 +429,8 @@ void Battle::handle_battle_end() {
 	// battle won
 	if (battleWon()) {
 
+		audio->playApplause();
+
 		render_player.used_texture = TEXTURE_ASSET_ID::BATTLEPLAYER_WIN;
 
 		switch (enemy_level) {
