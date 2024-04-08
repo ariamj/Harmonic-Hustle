@@ -94,6 +94,13 @@ private:
 	void handleClickHelpBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
+	void handleClickResumeBtn();
+	void handleClickSaveBtn();
+	void handleClickNewGameBtn();
+	void handleClickDifficultyBtn();
+	void handleClickTutorialBtn();
+	void handleClickExitBtn();
+	void handleClickMainMenuBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);

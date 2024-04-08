@@ -140,7 +140,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[H]", vec2(10.f, 25.f), 0.75f, text_colour, gameInfo.curr_screen, false);
+		createText("(?)[ESC]", vec2(10.f, 25.f), 0.75f, Colour::white, gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -594,71 +594,64 @@ void testButton(Entity& btn) {
 }
 
 // options menu key
+// accessible in the following screens:
+// overworld, battle, start (main menu), game over, help 
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
-		// if curr screen is overworld, switch to settings
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = Screen::OVERWORLD;
+			gameInfo.prev_non_option_screen = Screen::OVERWORLD;
 			render_set_options_screen();
-
-			// if curr screen is battle, pause the battle and then switch to settings
 		}
-	//	else if (gameInfo.curr_screen == Screen::BATTLE) {
-	//		gameInfo.prev_screen = Screen::BATTLE;
-	//		battle.set_pause(true);
-	//		render_set_options_screen();
+		else if (gameInfo.curr_screen == Screen::BATTLE) {
+			gameInfo.prev_screen = Screen::BATTLE;
+			gameInfo.prev_non_option_screen = Screen::BATTLE;
+			battle.set_pause(true);
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::START) {
+			gameInfo.prev_screen = Screen::START;
+			gameInfo.prev_non_option_screen = Screen::START;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+			gameInfo.prev_screen = Screen::GAMEOVER;
+			gameInfo.prev_non_option_screen = Screen::GAMEOVER;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::SETTINGS) {
+			gameInfo.prev_screen = Screen::SETTINGS;
+			gameInfo.prev_non_option_screen = Screen::SETTINGS;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::OPTIONS) {
 
-	//	}
-	//	else if (gameInfo.curr_screen == Screen::START) {
-	//		gameInfo.prev_screen = Screen::START;
-	//		render_set_options_screen();
-	//	}
-	//	else if (gameInfo.curr_screen == Screen::GAMEOVER) {
-	//		gameInfo.prev_screen = Screen::GAMEOVER;
-	//		render_set_options_screen();
-	//	}
-	//	else if (gameInfo.curr_screen == Screen::SETTINGS) {
-	//		gameInfo.prev_screen = Screen::SETTINGS;
-	//		render_set_options_screen();
-	//	}
-	//	else if (gameInfo.curr_screen == Screen::OPTIONS) {
-	//		// if curr screen is settings,
-	//		//		-> prev screen is overworld, just switch back
-	//		//      -> prev screen is battle, update screen visabilities and SET PAUSE for battle NOT set visible
-	//		//				(set visible restarts the battle, set pause just unpausees it)
-	//		if (gameInfo.prev_screen == Screen::OVERWORLD) {
-	//			render_set_overworld_screen();
-	//		}
-	//		else if (gameInfo.prev_screen == Screen::BATTLE) {
-	//			gameInfo.curr_screen = Screen::BATTLE;
-	//			settings.set_visible(false);
-	//			optionsMenu.set_visible(false);
-	//			overworld.set_visible(false);
-	//			cutscene.set_visible(false);
-	//			battle.set_pause(false);
-	//			std::cout << "current screen: battle" << std::endl;
-	//		}
-	//		else if (gameInfo.prev_screen == Screen::START) {
-	//			render_set_start_screen();
-	//		}
-	//		else if (gameInfo.prev_screen == Screen::GAMEOVER) {
-	//			render_set_game_over_screen();
-	//		}
-	//		else if (gameInfo.prev_screen == Screen::SETTINGS) {
-	//			render_set_settings_screen();
-	//		}
-	//	}
+			if (gameInfo.prev_screen == Screen::OVERWORLD) {
+				render_set_overworld_screen();
+			}
+			else if (gameInfo.prev_screen == Screen::BATTLE) {
+				gameInfo.curr_screen = Screen::BATTLE;
+				settings.set_visible(false);
+				optionsMenu.set_visible(false);
+				overworld.set_visible(false);
+				cutscene.set_visible(false);
+				battle.set_pause(false);
+				std::cout << "current screen: battle" << std::endl;
+			}
+			else if (gameInfo.prev_screen == Screen::START) {
+				render_set_start_screen();
+			}
+			else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+				render_set_game_over_screen();
+			}
+			else if (gameInfo.prev_screen == Screen::SETTINGS) {
+				render_set_settings_screen();
+			}
+		}
 	}
 }
 
-void WorldSystem::saveAndExit() {
-	std::cout << "Saving and exiting..." << std::endl;
-	//only save if exit in overworld
-	if (gameInfo.curr_screen == Screen::OVERWORLD) {
-		saver.save_game();
-		glfwSetWindowShouldClose(window, 1);
-	}
-}
+
 
 // help key
 // can't be toggled during cut scenes or tutorial
@@ -702,6 +695,9 @@ void WorldSystem::handleHInput(int action) {
 			} else if (gameInfo.prev_screen == Screen::GAMEOVER) {
 				render_set_game_over_screen();
 			}
+			else if (gameInfo.prev_screen == Screen::OPTIONS) {
+				render_set_options_screen();
+			}
 		}
 	}
 }
@@ -738,7 +734,7 @@ void WorldSystem::handleClickHelpBtn() {
 	// testButton(start.help_btn);
 
 	// To settings
-	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER) {
+	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER || gameInfo.curr_screen == Screen::OPTIONS) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
 		render_set_settings_screen();
 	}
@@ -775,6 +771,7 @@ void WorldSystem::handleClickLoadBtn() {
 		}
 	}
 
+
 	if (gameInfo.gameIsOver) {
 		restart_game();
 	}
@@ -787,7 +784,89 @@ void WorldSystem::handleClickLoadBtn() {
 	if (gameInfo.curr_screen == Screen::START) {
 		render_set_overworld_screen();
 	}
-}	
+}
+
+void WorldSystem::handleClickResumeBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		if (gameInfo.prev_screen == Screen::OVERWORLD) {
+			render_set_overworld_screen();
+		}
+		else if (gameInfo.prev_screen == Screen::BATTLE) {
+			gameInfo.curr_screen = Screen::BATTLE;
+			settings.set_visible(false);
+			overworld.set_visible(false);
+			cutscene.set_visible(false);
+			battle.set_pause(false);
+		}
+		else if (gameInfo.prev_screen == Screen::START) {
+			render_set_start_screen();
+		}
+		else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+			render_set_game_over_screen();
+		}
+		else if (gameInfo.prev_screen == Screen::SETTINGS) {
+			render_set_settings_screen();
+		}
+		else if (gameInfo.prev_screen == Screen::OPTIONS) {
+			gameInfo.prev_screen = gameInfo.prev_non_option_screen;
+			//std::cout << "here in non option" << std::endl;
+			handleClickResumeBtn();
+		}
+	}
+
+}
+
+void WorldSystem::handleClickSaveBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		saver.save_game();
+		printf("Clicked save button, game saved.\n");
+		
+	}
+}
+
+void WorldSystem::handleClickNewGameBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		restart_game();
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
+		render_set_tutorial();
+	}
+}
+
+void WorldSystem::handleClickDifficultyBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		tutorial.tutorial_progress = TutorialPart::ADVANCING_EXPLAIN;
+		tutorial.init_parts(TutorialPart::ADVANCING_EXPLAIN);
+		render_set_tutorial();
+		//tutorial.tutorial_progress = TutorialPart::INTRO;
+	}
+}
+
+void WorldSystem::handleClickTutorialBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
+		render_set_tutorial();
+	}
+}
+
+void WorldSystem::handleClickExitBtn()
+{
+	std::cout << "Saving and exiting..." << std::endl;
+	saver.save_game();
+	glfwSetWindowShouldClose(window, 1);
+}
+
+void WorldSystem::handleClickMainMenuBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) render_set_start_screen();
+}
+
 bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
@@ -966,7 +1045,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		tutorial.handle_mouse_move(mouse_area);
 	}
 
-	// TODO: buttons for options menu popup
+	// buttons for options menu popup
 
 	if (gameInfo.curr_screen == OPTIONS) {
 		//printf("Current screen is in OPTIONS\n");
@@ -1004,7 +1083,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		bool within_return_to_main_btn_btn_area = (xpos >= return_to_main_btn_area.left) && (xpos <= return_to_main_btn_area.right) && (ypos >= return_to_main_btn_area.top - y_padding) && (ypos <= return_to_main_btn_area.bottom - y_padding);
 
 		if (within_new_game_btn_area) {
-			std::cout << "in new game button area" << std::endl;
+			//std::cout << "in new game button area" << std::endl;
 			mouse_area = in_new_game_btn;
 		}
 		else if (within_help_btn_area) {
@@ -1029,10 +1108,6 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		else if (within_return_to_main_btn_btn_area) {
 			mouse_area = in_return_to_main_btn;
 		}
-
-		/*else if (within_load_btn_area) {
-			mouse_area = in_load_btn;
-		}*/
 		else {
 			mouse_area = in_unclickable;
 		}
@@ -1049,6 +1124,7 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				handleClickStartBtn();
 				break;
 			case in_help_btn:
+			case in_helpOpt_btn:
 				handleClickHelpBtn();
 				break;
 			case in_restart_btn:
@@ -1071,6 +1147,27 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				tutorial.handle_difficulty_click(2);
 				if (gameInfo.curr_screen == Screen::OVERWORLD)
 					render_set_overworld_screen();
+				break;
+			case in_resume_btn:
+				handleClickResumeBtn();
+				break;
+			case in_save_btn:
+				handleClickSaveBtn();
+				break;
+			case in_new_game_btn:
+				handleClickNewGameBtn();
+				break;
+			case in_difficulty_btn:
+				handleClickDifficultyBtn();
+				break;
+			case in_tutorial_btn:
+				handleClickTutorialBtn();
+				break;
+			case in_exit_btn:
+				handleClickExitBtn();
+				break;
+			case in_return_to_main_btn:
+				handleClickMainMenuBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

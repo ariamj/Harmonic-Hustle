@@ -18,26 +18,17 @@ void OptionsMenu::init(GLFWwindow* window, RenderSystem* renderer) {
 
 void OptionsMenu::init_screen() {
     title_1_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 8.f);
-    //title_2_pos = vec2(gameInfo.width / 2.f + gameInfo.width / 8.f, gameInfo.height * 2 / 8.f);
-    // title "banner"
     Entity banner_1 = createBox(title_1_pos, vec2(1200.f, 100.f));
     registry.screens.insert(banner_1, Screen::OPTIONS);
     registry.colours.insert(banner_1, Colour::white);
-    /*Entity banner_2 = createBox(title_2_pos, vec2(650.f, 100.f));
-    registry.screens.insert(banner_2, Screen::OPTIONS);
-    registry.colours.insert(banner_2, Colour::white);*/
 
     vec2 shadow_offset = vec2(10.f);
     // title - shadow
     createText("OPTIONS MENU", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
-    //createText("MENU", title_2_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
     // title
     createText("OPTIONS MENU", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
-    //createText("MENU", title_2_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
 
     renderButtons();
-
-    createText("...or press 'space' to continue...", vec2(gameInfo.width / 2.f, gameInfo.height * 7 / 8.f), 0.5f, Colour::theme_blue_2, Screen::OPTIONS, true, true);
 }
 
 void OptionsMenu::renderButtons() {
@@ -122,11 +113,7 @@ bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_
             if ((text == "RESUME" && mouse_area == in_resume_btn) || (text == "HELP" && mouse_area == in_helpOpt_btn) || (text == "SAVE GAME" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
                 || (text == "DIFFICULTY" && mouse_area == in_difficulty_btn) || (text == "TUTORIAL" && mouse_area == in_tutorial_btn) || (text == "MAIN MENU" && mouse_area == in_return_to_main_btn) || (text == "SAVE + EXIT" && mouse_area == in_exit_btn)) {
                 text_colour = Colour::white;
-                std::cout << "here!" << std::endl;
             }
-            //else {
-            //    //std::cout << text << std::endl;
-            //}
             createText(text, motion.position, btn.text_scale, text_colour, Screen::OPTIONS, true, false);
         }
     }
@@ -172,23 +159,7 @@ bool OptionsMenu::set_visible(bool isVisible) {
 
 // Input callback functions
 void OptionsMenu::handle_key(int key, int scancode, int action, int mod) {
-    switch (key) {
-    case GLFW_KEY_SPACE:
-        if (action == GLFW_PRESS) {
-            std::cout << "space pressed" << std::endl;
-            // gameInfo.curr_screen = Screen::OVERWORLD;
-            gameInfo.curr_screen = Screen::TUTORIAL;
-        }
-        break;
-    case GLFW_KEY_X:
-        if (action == GLFW_PRESS) {
-            debugging.in_debug_mode = !debugging.in_debug_mode;
-        }
-        break;
-    default:
-        std::cout << "unhandled key" << std::endl;
-        break;
-    }
+
 }
 
 void OptionsMenu::handle_mouse_move(MouseArea mouse_area) {

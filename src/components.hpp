@@ -150,6 +150,7 @@ struct ProgressBar
 struct GameInfo {
 	Screen curr_screen;
 	Screen prev_screen; // to handle resume correct screen after pausing
+	Screen prev_non_option_screen; // to avoid staying suck in options screen
 	std::shared_ptr<Entity> player_sprite;
 	int height;
 	int width;
