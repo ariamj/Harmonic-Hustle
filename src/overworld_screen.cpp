@@ -56,16 +56,9 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
 	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, Screen::OVERWORLD, true );
 	
-
-	// // Spawn new enemies
-	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-	// 	// reset timer
-	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
-	// 	// create an enemy
-
-	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	// }
+	// render lives text
+	std::string livesText = "lives: " + std::to_string(gameInfo.curr_lives);
+	createText(livesText, vec2(gameInfo.width - 125.f, gameInfo.height - 45.f), 0.7f, Colour::white, Screen::OVERWORLD);
 
     // check if enemies are high level, if yes color red, else remove color if needed
     auto& enemies = registry.enemies.entities;
