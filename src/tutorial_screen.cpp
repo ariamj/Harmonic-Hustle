@@ -338,8 +338,15 @@ void Tutorial::initAdvancingExplaingParts() {
 	
     currY += 170.f;
     Entity contText = createText("...or press 'space' to continue with normal difficulty...", vec2(centerX, gameInfo.height*9.5f/10.f), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
-
+    
     registry.tutorialParts.emplace(contText);
+
+    registry.tutorialParts.emplace(hard_shadow);
+    registry.tutorialParts.emplace(hard_btn);
+    registry.tutorialParts.emplace(normal_shadow);
+    registry.tutorialParts.emplace(normal_btn);
+    registry.tutorialParts.emplace(easy_shadow);
+    registry.tutorialParts.emplace(easy_btn);
 
 }
 

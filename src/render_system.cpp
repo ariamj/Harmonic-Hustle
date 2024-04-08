@@ -184,8 +184,7 @@ void RenderSystem::drawToScreen()
 	glActiveTexture(GL_TEXTURE0);
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
-
-	if (curr_screen == OVERWORLD || curr_screen == START) {
+ 	if (curr_screen == OVERWORLD || curr_screen == START || curr_screen == OPTIONS) {
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);

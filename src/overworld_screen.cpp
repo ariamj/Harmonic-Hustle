@@ -11,6 +11,7 @@
 // const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
 
+
 Overworld::Overworld() 
 : next_enemy_spawn(0.f)
 {
@@ -32,7 +33,8 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
-
+	//createText("Options Menu", vec2(gameInfo.width / 2.f, gameInfo.height / 3.6), 1.0f, Colour::theme_blue_3, Screen::OVERWORLD);
+	//opm.displayOptions(Screen::OVERWORLD);
 	// Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
@@ -59,6 +61,9 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	// render lives text
 	std::string livesText = "lives: " + std::to_string(gameInfo.curr_lives);
 	createText(livesText, vec2(gameInfo.width - 125.f, gameInfo.height - 45.f), 0.7f, Colour::white, Screen::OVERWORLD);
+	// 	// create an enemy
+	// 	// create an enemy
+	// 	// create an enemy
 
     // check if enemies are high level, if yes color red, else remove color if needed
     auto& enemies = registry.enemies.entities;

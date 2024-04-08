@@ -20,6 +20,7 @@
 #include "audio_system.hpp"
 #include "cutscene.hpp"
 #include "tutorial_screen.hpp"
+#include <options_screen.hpp>
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -37,6 +38,7 @@ public:
 	AudioSystem audioSystem;
 	Cutscene cutscene;
 	Tutorial tutorial;
+	OptionsMenu optionsMenu;
 	
 	// Creates a window
 	GLFWwindow* create_window();
@@ -77,17 +79,28 @@ private:
 	// sets the curr scene to tutorial
 	bool render_set_tutorial();
 
+	// sets to options/ settings screen
+	bool render_set_options_screen();
+
 	void checkEnemyPositions();
 
 	vec2 getRamdomEnemyPosition();
 
 	void handleEscInput(int action);
+	void saveAndExit();
 	void handleHInput(int action);
 	void handleBackspaceInput(int action);
 	void handleClickStartBtn();
 	void handleClickHelpBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
+	void handleClickResumeBtn();
+	void handleClickSaveBtn();
+	void handleClickNewGameBtn();
+	void handleClickDifficultyBtn();
+	void handleClickTutorialBtn();
+	void handleClickExitBtn();
+	void handleClickMainMenuBtn();
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
