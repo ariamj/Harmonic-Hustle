@@ -737,8 +737,8 @@ bool Battle::set_visible(bool isVisible) {
 
 // Return true if won battle (ie. points greater than needed threshold)
 bool Battle::battleWon() {
-	return (score > score_threshold);
-	// return (gameInfo.curr_level < 4) ? true : (score > 0); //test boss
+	// return (score > score_threshold);
+	return (gameInfo.curr_level < 4) ? true : (score > 0); //test boss
 }
 
 bool key_pressed = false;
