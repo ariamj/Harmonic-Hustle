@@ -201,7 +201,7 @@ void Battle::convertBeatsToMilliseconds(std::vector<NoteInfo> *note_infos, float
 void Battle::convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>> *mode_timings, float bpm_ratio) {
 	for (int i = 0; i < mode_timings->size(); i++) {
 		float time = mode_timings->at(i).first;
-		float converted_timing = (time * 1000.f / bpm_ratio) - 1.5f * 60.f / bpm_ratio;
+		float converted_timing = (time * 1000.f / bpm_ratio);
 		mode_timings->at(i).first = converted_timing;
 	}
 }

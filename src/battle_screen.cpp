@@ -279,7 +279,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Update battle mode based on conductor time
 		if (mode_index < battleInfo[enemy_index].modes.size()) {
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
-			if (conductor.song_position >= mode_change_time - (gameInfo.curr_note_travel_time * timing_offset)) {
+			float threshold = mode_change_time;
+			float countdown_threshold = threshold - 4 * conductor.crotchet;
+			// Change the mode and associated entities
+			if (conductor.song_position >= threshold) {
 				current_mode = battleInfo[enemy_index].modes[mode_index].second;
 				switch (current_mode) {
 				case back_and_forth:
@@ -289,7 +292,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					break;
 				case beat_rush:
 					gameInfo.particle_color_adjustment = BEAT_RUSH_COLOUR;
-					mode_text= "beat rush";
+					mode_text = "beat rush";
 					mode_colour = Colour::beat_rush_colour;
 					break;
 				case unison:
@@ -311,6 +314,14 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				registry.textTimers.emplace(mode_alert);
 				registry.textTimers.emplace(mode_alert_shadow);
 				min_mode_alert_counter_ms = 1000.f;
+			} else if (conductor.song_position > countdown_threshold) {
+
+				float time_remaining = (mode_change_time - conductor.song_position);
+				int beats_until_change = abs(floor(time_remaining / conductor.crotchet)) + 1;
+				std::cout << time_remaining << " " << beats_until_change << " " << conductor.crotchet << "\n";
+				std::string mode_countdown_text = std::to_string(beats_until_change);
+
+				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 2.0f, Colour::white, Screen::BATTLE, true);
 			}
 		}
 
