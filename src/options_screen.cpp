@@ -212,6 +212,7 @@ bool OptionsMenu::disableButton(std::string buttonName) {
         if (!registry.disabled.has(exit_btn))
             registry.disabled.emplace(exit_btn);
     }
+    return true;
 }
 
 bool OptionsMenu::enableButton(std::string buttonName) {
@@ -263,6 +264,7 @@ if (buttonName == "RESUME") {
         if (registry.disabled.has(exit_btn))
             registry.disabled.remove(exit_btn);
     }
+    return true;
 }
 
 

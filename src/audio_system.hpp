@@ -31,6 +31,8 @@ public:
 	int playCountdownLow();
 	int playCountdownHigh();
 
+	int playModeChange();
+
 	int playApplause();
 
 	int musicPlaying();
@@ -42,6 +44,7 @@ public:
 
 private:
 
+	const int HOLD_NOTE_FIRST_CHANNEL = 12;
 	// How long it should take for held-note SFX to fade out
 	const float HOLD_SFX_FADE_MS = 200.f;
 	bool LoadFiles();
@@ -59,4 +62,5 @@ private:
 	Mix_Chunk* countdown_high_SFX;
 	Mix_Chunk* countdown_low_SFX;
 	Mix_Chunk* applause_SFX;
+	Mix_Chunk* mode_change_SFX;
 };

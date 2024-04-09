@@ -314,8 +314,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				registry.textTimers.emplace(mode_alert);
 				registry.textTimers.emplace(mode_alert_shadow);
 				min_mode_alert_counter_ms = 1000.f;
-			} else if (conductor.song_position > countdown_threshold) {
 
+				audio->playModeChange();
+
+			} else if (conductor.song_position > countdown_threshold) {
+				// Render countdown leading up to mode change
 				float time_remaining = (mode_change_time - conductor.song_position);
 				int beats_until_change = abs(floor(time_remaining / conductor.crotchet)) + 1;
 				std::cout << time_remaining << " " << beats_until_change << " " << conductor.crotchet << "\n";
