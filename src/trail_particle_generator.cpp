@@ -10,6 +10,8 @@
 #include "trail_particle_generator.hpp"
 #include "iostream"
 
+extern int FPS;
+
 
 TrailParticleGenerator::TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities)
     : ParticleGenerator(shaderProgram, used_texture, amount, max_entities)
@@ -91,10 +93,10 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         }
         distance_between_note_and_particle += trail_extension_distance;
         float progress = min(distance_between_note_and_particle / duration_as_screen_distance, 1.f);
-        float random = ((rand() % 100) - 50) * 2.f;
+        float random_x = ((rand() % 100) - 50) * 1.4f;
         p.color.a = lerp(1.f, 0.f, progress);
         if (note.pressed) {
-            p.position += vec2(p.velocity.x + random, p.velocity.y) * 2.22f * dt;
+            p.position += vec2(p.velocity.x + random_x, p.velocity.y) * 2.22f * dt;
             // Brighter to help with visibility
             p.color.a += 0.65f;
         }
