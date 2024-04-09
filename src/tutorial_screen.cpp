@@ -66,9 +66,13 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
 
                 // Hover effect
                 // NOTE: if lag happens, comment this part out
-                if ((text == "easy" && mouse_area == in_easy_btn) || (text == "normal" && mouse_area == in_normal_btn) || (text == "hard" && mouse_area == in_hard_btn)) {
+                int difficulty = gameInfo.curr_difficulty;
+                if ((text == "easy" && mouse_area == in_easy_btn && difficulty != 0) || (text == "normal" && mouse_area == in_normal_btn && difficulty !=1) || (text == "hard" && mouse_area == in_hard_btn && difficulty !=2)) {
                     text_colour = Colour::white;
                 }
+                if (text == "easy" && gameInfo.curr_difficulty == 0) text_colour = Colour::green; 
+                if (text == "normal" && gameInfo.curr_difficulty == 1) text_colour = Colour::dark_blue;
+                if (text == "hard" && gameInfo.curr_difficulty == 2) text_colour = Colour::red;
                 createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
             }
         }
@@ -391,7 +395,7 @@ void Tutorial::initChooseDifficultyParts() {
 	hard_btn = createButton("hard", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
 	
     currY += 170.f;
-    Entity contText = createText("...or press 'space' to continue with normal difficulty...", vec2(centerX, gameInfo.height*9.5f/10.f), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
     
     registry.tutorialParts.emplace(contText);
 
@@ -475,11 +479,11 @@ bool Tutorial::set_visible(bool isVisible) {
 void Tutorial::handle_difficulty_click(int difficulty) {
     gameInfo.curr_difficulty = difficulty;
     std::cout << "set difficulty: " << difficulty << std::endl;
-    if (gameInfo.prev_screen == Screen::OPTIONS) {
-        gameInfo.curr_screen = Screen::OPTIONS;
-    } else {
-        gameInfo.curr_screen = Screen::OVERWORLD;
-    }
+    //if (gameInfo.prev_screen == Screen::OPTIONS) {
+    //    gameInfo.curr_screen = Screen::OPTIONS;
+    //} else {
+    //    gameInfo.curr_screen = Screen::OVERWORLD;
+    //}
 }
 
 void Tutorial::handle_key(int key, int scancode, int action, int mod) {
@@ -487,8 +491,8 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 tutorial_progress++;
-                // if playing tutorial from options, don't play choose difficulty
-                if (gameInfo.in_options && (tutorial_progress + 1) == tutorial_max_progress_parts) {  
+                // if playing tutorial from options, don't play choose difficulty or adjust note timing
+                if (gameInfo.in_options && (tutorial_progress + 2) == tutorial_max_progress_parts) {  
                     tutorial_progress++;
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                     init_parts((TutorialPart) tutorial_progress);
@@ -502,7 +506,12 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                     init_parts((TutorialPart) tutorial_progress);
                     if (tutorial_progress == tutorial_max_progress_parts)
-                        handle_difficulty_click(1); // default to normal
+                        if (gameInfo.prev_screen == Screen::OPTIONS) {
+                            gameInfo.curr_screen = Screen::OPTIONS;
+                        }
+                        else {
+                            gameInfo.curr_screen = Screen::OVERWORLD;
+                        }
                     // }
                 }
             }

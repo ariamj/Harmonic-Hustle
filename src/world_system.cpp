@@ -1190,11 +1190,11 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_easy_btn:
 				tutorial.handle_difficulty_click(0);
-				if (gameInfo.curr_screen == Screen::OVERWORLD) {
-					render_set_overworld_screen();
-				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
-					render_set_options_screen();
-				}
+				//if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				//	render_set_overworld_screen();
+				//} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+				//	render_set_options_screen();
+				//}
 				break;
 			case in_normal_btn:
 				tutorial.handle_difficulty_click(1);
