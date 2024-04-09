@@ -708,71 +708,10 @@ void WorldSystem::handleEscInput(int action) {
 	}
 }
 
-
-
-// help key
-// can't be toggled during cut scenes or tutorial
-void WorldSystem::handleHInput(int action) {
-	if (action == GLFW_PRESS) {
-		std::cout << "H key press" << std::endl;
-
-		// if curr screen is overworld, switch to settings
-		if (gameInfo.curr_screen == Screen::OVERWORLD) {
-			gameInfo.prev_screen = Screen::OVERWORLD;
-			render_set_settings_screen();
-
-		// if curr screen is battle, pause the battle and then switch to settings
-		} else if (gameInfo.curr_screen == Screen::BATTLE) {
-			gameInfo.prev_screen = Screen::BATTLE;
-			battle.set_pause(true);
-			render_set_settings_screen();
-
-		} else if (gameInfo.curr_screen == Screen::START) {
-			gameInfo.prev_screen = Screen::START;
-			render_set_settings_screen();
-		} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
-			gameInfo.prev_screen = Screen::GAMEOVER;
-			render_set_settings_screen();
-		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
-			// if curr screen is settings,
-			//		-> prev screen is overworld, just switch back
-			//      -> prev screen is battle, update screen visabilities and SET PAUSE for battle NOT set visible
-			//				(set visible restarts the battle, set pause just unpausees it)
-			if (gameInfo.prev_screen == Screen::OVERWORLD) {
-				render_set_overworld_screen();
-			} else if (gameInfo.prev_screen == Screen::BATTLE) {
-				gameInfo.curr_screen = Screen::BATTLE;
-				settings.set_visible(false);
-				overworld.set_visible(false);
-				cutscene.set_visible(false);
-				battle.set_pause(false);
-				std::cout << "current screen: battle" << std::endl;
-			} else if (gameInfo.prev_screen == Screen::START) {
-				render_set_start_screen();
-			} else if (gameInfo.prev_screen == Screen::GAMEOVER) {
-				render_set_game_over_screen();
-			}
-			else if (gameInfo.prev_screen == Screen::OPTIONS) {
-				render_set_options_screen();
-			}
-		}
-	}
-}
-
 // confirmation key
 void handleEnterInput(int action) {
 	if (action == GLFW_PRESS) {
 		std::cout << "enter press" << std::endl;
-	}
-}
-
-// temp - testing start screen
-void WorldSystem::handleBackspaceInput(int action) {
-	if (action == GLFW_PRESS) {
-		std::cout << "space pressed" << std::endl;
-		if (gameInfo.curr_screen == Screen::OVERWORLD || gameInfo.curr_screen == Screen::SETTINGS) {
-			render_set_start_screen();
-		}
 	}
 }
 
@@ -966,12 +905,6 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			}
 			
 			break;
-		case GLFW_KEY_V:
-			// for testing purposes
-			if (action == GLFW_PRESS) {
-				render_set_cutscene();
-			}
-			break;
 		case GLFW_KEY_TAB:
 			// toggle show FPS on TAB key
 			if (action == GLFW_PRESS) {
@@ -982,14 +915,8 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			esc_pressed = true;
 			handleEscInput(action);
 			break;
-		case GLFW_KEY_H: 
-			handleHInput(action);
-			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
-			break;
-		case GLFW_KEY_BACKSPACE:
-			handleBackspaceInput(action);
 			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
