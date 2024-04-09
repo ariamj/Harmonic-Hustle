@@ -89,7 +89,6 @@ private:
 	void handleBackspaceInput(int action);
 	void handleEscInput(int action);
 	void saveAndExit();
-	void handleClickStartBtn();
 	void handleClickSettingsBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
@@ -122,11 +121,6 @@ private:
 	Entity judgement_line_sprite;
 
 	// buttons
-	// enum MouseArea {
-	// 	in_unclickable,
-	// 	in_start_btn,
-	// 	in_help_btn,
-	// };
 	MouseArea mouse_area = in_unclickable;
 
 
