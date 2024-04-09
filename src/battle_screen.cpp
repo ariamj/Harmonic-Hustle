@@ -281,9 +281,10 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
 			float threshold = mode_change_time;
 			float countdown_threshold = threshold - 4 * conductor.crotchet;
+			BattleMode next_mode = battleInfo[enemy_index].modes[mode_index].second;
 			// Change the mode and associated entities
 			if (conductor.song_position >= threshold) {
-				current_mode = battleInfo[enemy_index].modes[mode_index].second;
+				current_mode = next_mode;
 				switch (current_mode) {
 				case back_and_forth:
 					gameInfo.particle_color_adjustment = BACK_AND_FORTH_COLOUR;
@@ -325,6 +326,9 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				std::string prev_mode_countdown_text = mode_countdown_text;
 				mode_countdown_text = std::to_string(beats_until_change);
 
+				std::string mode_type_text = convertBattleModeToString(next_mode);
+				vec3 mode_colour = getBattleModeColour(next_mode);
+				createText(mode_type_text, vec2(mode_pos.x, mode_pos.y + 0.135f * gameInfo.height), 0.75f, mode_colour, Screen::BATTLE, true);
 				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 2.0f, Colour::white, Screen::BATTLE, true);
 
 				if (prev_mode_countdown_text != mode_countdown_text) {
@@ -1158,3 +1162,28 @@ float Battle::calculate_adjustment() {
 	return adjustment;
 }
 
+std::string Battle::convertBattleModeToString(BattleMode mode) {
+	switch (mode) {
+	case back_and_forth:
+		return "back and forth";
+	case beat_rush:
+		return "beat rush";
+	case unison:
+		return "unison";
+	default:
+		return "";
+	}
+}
+
+vec3 Battle::getBattleModeColour(BattleMode mode) {
+	switch (mode) {
+	case back_and_forth:
+		return Colour::back_and_forth_colour;
+	case beat_rush:
+		return Colour::beat_rush_colour;
+	case unison:
+		return Colour::unison_colour;
+	default:
+		return Colour::white;
+	}
+}

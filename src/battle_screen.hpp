@@ -123,6 +123,8 @@ class Battle {
         void convertBeatsToMilliseconds(std::vector<NoteInfo>* note_infos, float bpm_ratio);
         void convertBeatsToMilliseconds(std::vector<std::pair<float, BattleMode>>* mode_timings, float bpm_ratio);
         BattleMode convertStringToBattleMode(std::string mode_string);
+        std::string convertBattleModeToString(BattleMode mode);
+        vec3 getBattleModeColour(BattleMode mode);
         // Comparison function for sorting NoteInfo
         static bool compareSpawnTimes(const NoteInfo& a, const NoteInfo& b);
         float calculate_adjustment();
