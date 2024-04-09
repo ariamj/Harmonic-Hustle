@@ -101,6 +101,7 @@ private:
 	void handleClickIncreaseBtn();
 	void handleClickDecreaseBtn();
 	void handleClickAdjustTimingBtn();
+	void handleClickBackBtn();
 
 
 	// Input callback functions

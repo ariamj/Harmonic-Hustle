@@ -46,7 +46,7 @@ class Settings {
         MouseArea mouse_area;
 
         // Back to settings button
-        Entity back_button;
+        Entity back_btn;
 
         void handle_mouse_move(MouseArea mouse_area);
 };

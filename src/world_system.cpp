@@ -907,6 +907,14 @@ void WorldSystem::handleClickAdjustTimingBtn()
 	}
 }
 
+void WorldSystem::handleClickBackBtn()
+{
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		gameInfo.prev_screen = Screen::SETTINGS;
+		render_set_options_screen();
+	}
+}
+
 bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
@@ -1101,6 +1109,20 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		tutorial.handle_mouse_move(mouse_area);
 	}
 
+	// back button in help screen
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		BoxAreaBound back_btn_area = registry.boxAreaBounds.get(settings.back_btn);
+		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top - y_padding) && (ypos <= back_btn_area.bottom - y_padding);
+		if (within_back_btn_area) {
+			mouse_area = in_back_btn;
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		settings.handle_mouse_move(mouse_area);
+
+	}
+
 	// buttons for options menu popup
 
 	if (gameInfo.curr_screen == OPTIONS) {
@@ -1240,6 +1262,9 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_decrease_frame_btn:
 				handleClickDecreaseBtn();
+				break;
+			case in_back_btn:
+				handleClickBackBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

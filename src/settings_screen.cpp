@@ -28,9 +28,9 @@ void Settings::init_screen() {
 void Settings::renderButtons()
 {
     //vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
-    vec2 buttonPos = vec2(gameInfo.width / 30.f, gameInfo.height / 15.f);
+    vec2 buttonPos = vec2(gameInfo.width- 120.f, gameInfo.height/10.f);
     vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
-    back_button = createButton("X", buttonPos, 1.5f, buttonSize, Colour::dark_red, Colour::theme_blue_2 + vec3(0.1), Screen::SETTINGS);
+    back_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::SETTINGS);
 }
 
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -49,14 +49,10 @@ bool Settings::handle_step(float elapsed_ms_since_last_update, float current_spe
             Motion motion = registry.motions.get(entity);
             std::string text = registry.boxButtons.get(entity).text;
             vec3 text_colour = btn.text_colour;
-
-            // Hover effect
-            // NOTE: if lag happens, comment this part out
-            int difficulty = gameInfo.curr_difficulty;
             if (text == "X" && mouse_area == in_back_btn) {
-                text_colour = Colour::red;
+                text_colour = Colour::dark_red;
             }
-            createText(text, motion.position, btn.text_scale, text_colour, Screen::SETTINGS, true, false);
+            createText(text, motion.position + vec2(5.f,0.f), btn.text_scale, text_colour, Screen::SETTINGS, true, false);
         }
     }
 
@@ -99,5 +95,6 @@ void Settings::handle_mouse_move(vec2 pos) {
 }
 void Settings::handle_mouse_move(MouseArea mouse_area)
 {
+    this->mouse_area = mouse_area;
 }
 ;
