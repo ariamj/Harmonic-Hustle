@@ -165,6 +165,22 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string mode_change = "mode_change.wav";
+	mode_change_SFX = Mix_LoadWAV(audio_path(mode_change).c_str());
+	if (mode_change_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(mode_change).c_str());
+		return false;
+	}
+
+	std::string mode_countdown = "mode_countdown.wav";
+	mode_countdown_SFX = Mix_LoadWAV(audio_path(mode_countdown).c_str());
+	if (mode_countdown_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(mode_countdown).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -192,12 +208,12 @@ int AudioSystem::playLobby() {
 int AudioSystem::playHoldNote(int channel_offset) {
 	// Volume was getting set to 0 between playthroughs somehow
 	// This is most straightforward fix, but can be improved
-	Mix_Volume(8 + channel_offset, MIX_MAX_VOLUME);
-	return Mix_PlayChannel(8 + channel_offset, hold_SFX, 0);
+	Mix_Volume(HOLD_NOTE_FIRST_CHANNEL + channel_offset, MIX_MAX_VOLUME);
+	return Mix_PlayChannel(HOLD_NOTE_FIRST_CHANNEL + channel_offset, hold_SFX, 0);
 }
 
 int AudioSystem::stopHoldNote(int channel_offset) {
-	return Mix_FadeOutChannel(8 + channel_offset, HOLD_SFX_FADE_MS);
+	return Mix_FadeOutChannel(HOLD_NOTE_FIRST_CHANNEL + channel_offset, HOLD_SFX_FADE_MS);
 }
 
 int AudioSystem::playDroppedNote() {
@@ -227,6 +243,15 @@ int AudioSystem::playCountdownLow() {
 int AudioSystem::playApplause() {
 	return Mix_PlayChannel(-1, applause_SFX, 0);
 }
+
+int AudioSystem::playModeChange() {
+	return Mix_PlayChannel(-1, mode_change_SFX, 0);
+}
+
+int AudioSystem::playModeCountdown() {
+	return Mix_PlayChannel(-1, mode_countdown_SFX, 0);
+}
+
 
 int AudioSystem::musicPlaying() {
 	// return 1 if music still playing, 0 otherwise

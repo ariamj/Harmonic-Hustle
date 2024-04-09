@@ -255,7 +255,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						audio->playDroppedNote();
 						standing = missed;
 						missed_counter++;
-						score += standing;
+						// Count twice for missing an entire held note (tap, release)
+						if (note.duration > 0.f) {
+							missed_counter++;
+						}
+						score = max(0.f, score + standing);
 						combo = 0;
 						registry.remove_all_components_of(motions_registry.entities[i]);
 					}
@@ -279,8 +283,12 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 		// Update battle mode based on conductor time
 		if (mode_index < battleInfo[enemy_index].modes.size()) {
 			float mode_change_time = battleInfo[enemy_index].modes[mode_index].first;
-			if (conductor.song_position >= mode_change_time - (gameInfo.curr_note_travel_time * timing_offset)) {
-				current_mode = battleInfo[enemy_index].modes[mode_index].second;
+			float threshold = mode_change_time;
+			float countdown_threshold = threshold - 4 * conductor.crotchet;
+			BattleMode next_mode = battleInfo[enemy_index].modes[mode_index].second;
+			// Change the mode and associated entities
+			if (conductor.song_position >= threshold) {
+				current_mode = next_mode;
 				switch (current_mode) {
 				case back_and_forth:
 					gameInfo.particle_color_adjustment = BACK_AND_FORTH_COLOUR;
@@ -289,7 +297,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 					break;
 				case beat_rush:
 					gameInfo.particle_color_adjustment = BEAT_RUSH_COLOUR;
-					mode_text= "beat rush";
+					mode_text = "beat rush";
 					mode_colour = Colour::beat_rush_colour;
 					break;
 				case unison:
@@ -311,6 +319,26 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				registry.textTimers.emplace(mode_alert);
 				registry.textTimers.emplace(mode_alert_shadow);
 				min_mode_alert_counter_ms = 1000.f;
+
+				audio->playModeChange();
+				mode_countdown_text = "";
+
+			} else if (conductor.song_position > countdown_threshold) {
+				// Render countdown leading up to mode change
+				float time_remaining = mode_change_time - conductor.song_position;
+				int beats_until_change = abs(floor(time_remaining / conductor.crotchet)) + 1;
+				std::string prev_mode_countdown_text = mode_countdown_text;
+				mode_countdown_text = std::to_string(beats_until_change);
+
+				std::string mode_type_text = convertBattleModeToString(next_mode);
+				vec3 mode_colour = getBattleModeColour(next_mode);
+				createText(mode_type_text, vec2(mode_pos.x, mode_pos.y + 0.135f * gameInfo.height), 0.6f, mode_colour, Screen::BATTLE, true);
+				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 1.8f, Colour::white, Screen::BATTLE, true);
+
+				if (prev_mode_countdown_text != mode_countdown_text) {
+					std::cout << "Playing mode countdown\n";
+					audio->playModeCountdown();
+				}
 			}
 		}
 
@@ -627,7 +655,7 @@ void Battle::start() {
 
 	// Mode-related
 	mode_index = 0;
-	mode_text = "back and forth";
+	mode_text = "";
 	mode_colour = Colour::back_and_forth_colour;
 	current_mode = back_and_forth;
 
@@ -662,8 +690,6 @@ void Battle::start() {
 	}
 
 	int additional_particles = floor((BASE_NOTE_TRAVEL_TIME - gameInfo.curr_note_travel_time) / 250.f);
-
-	std::cout << additional_particles << "\n";
 
 	// Create generators for particles that appear in the battle scene
 	// Order matters
@@ -1011,6 +1037,7 @@ void Battle::handle_note_release(int lane_index) {
 		if (note.curr_duration > HOLD_DURATION_LEEWAY) {
 			audio->stopHoldNote(lane_index);
 			audio->playMissedNote();
+			missed_counter++;
 			setJudgmentLineColour(lane_index, MISSED_COLOUR);
 			note.curr_duration = NO_DURATION; // only miss once
 			registry.remove_all_components_of(entity);
@@ -1140,3 +1167,28 @@ float Battle::calculate_adjustment() {
 	return adjustment;
 }
 
+std::string Battle::convertBattleModeToString(BattleMode mode) {
+	switch (mode) {
+	case back_and_forth:
+		return "back and forth";
+	case beat_rush:
+		return "beat rush";
+	case unison:
+		return "unison";
+	default:
+		return "";
+	}
+}
+
+vec3 Battle::getBattleModeColour(BattleMode mode) {
+	switch (mode) {
+	case back_and_forth:
+		return Colour::back_and_forth_colour;
+	case beat_rush:
+		return Colour::beat_rush_colour;
+	case unison:
+		return Colour::unison_colour;
+	default:
+		return Colour::white;
+	}
+}
