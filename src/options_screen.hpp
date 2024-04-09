@@ -24,7 +24,7 @@ public:
 
     // buttons
     Entity resume_game_btn;
-    Entity save_game_btn;
+    Entity adjust_timing_btn;
     Entity new_game_btn;
     Entity difficulty_btn;
     Entity controls_btn;
@@ -45,5 +45,4 @@ private:
     GLFWwindow* window;
 
     vec2 title_1_pos;
-    vec2 title_2_pos;
 };

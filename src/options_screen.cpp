@@ -18,23 +18,21 @@ void OptionsMenu::init(GLFWwindow* window, RenderSystem* renderer) {
 
 void OptionsMenu::init_screen() {
     title_1_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 8.f);
-    Entity banner_1 = createBox(title_1_pos, vec2(1200.f, 100.f));
+    Entity banner_1 = createBox(title_1_pos, vec2(800.f, 100.f));
     registry.screens.insert(banner_1, Screen::OPTIONS);
-    registry.colours.insert(banner_1, Colour::white);
+    registry.colours.insert(banner_1, Colour::theme_blue_2);
 
     vec2 shadow_offset = vec2(10.f);
-    // title - shadow
-    createText("OPTIONS MENU", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
+    //// title - shadow
+    //createText("OPTIONS MENU", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::OPTIONS, true, true);
     // title
-    createText("OPTIONS MENU", title_1_pos, 2.5f, Colour::theme_blue_1, Screen::OPTIONS, true, true);
+    createText("SETTINGS", title_1_pos, 2.5f, Colour::white, Screen::OPTIONS, true, true);
 
     renderButtons();
 }
 
 void OptionsMenu::renderButtons() {
-    //vec2 main_menu_size = vec2(350.f, gameInfo.height / 12.f);
-    //vec2 new_game_btn_size = vec2(525.f, gameInfo.height / 9.5f);
-    vec2 options_btn_size = vec2(600.f, gameInfo.height / 9.5f);
+    vec2 options_btn_size = vec2(750.f, gameInfo.height / 9.5f);
     float new_game_y_padding = options_btn_size.y + 30.f;
     float y_padding = options_btn_size.y + 30.f;
     vec2 center_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 3.f);
@@ -45,7 +43,7 @@ void OptionsMenu::renderButtons() {
     Entity resume_shadow = createBox(shadow_pos - shift, options_btn_size);
     registry.screens.insert(resume_shadow, Screen::OPTIONS);
     registry.colours.insert(resume_shadow, Colour::theme_blue_3);
-    resume_game_btn = createButton("RESUME", center_pos - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    resume_game_btn = createButton("RESUME GAME", center_pos - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // new game button
     Entity start_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos - shift, options_btn_size);
@@ -54,10 +52,10 @@ void OptionsMenu::renderButtons() {
     new_game_btn = createButton("NEW GAME", center_pos + vec2(0, new_game_y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // save game button
-    Entity save_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos - shift, options_btn_size);
-    registry.screens.insert(save_shadow, Screen::OPTIONS);
-    registry.colours.insert(save_shadow, Colour::theme_blue_3);
-    save_game_btn = createButton("SAVE GAME", center_pos + vec2(0, y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    Entity timing_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos - shift, options_btn_size);
+    registry.screens.insert(timing_shadow, Screen::OPTIONS);
+    registry.colours.insert(timing_shadow, Colour::theme_blue_3);
+    adjust_timing_btn = createButton("ADJUST TIMING", center_pos + vec2(0, y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // difficulty settings buttons
     Entity difficulty_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos - shift, options_btn_size);
@@ -114,7 +112,7 @@ bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_
             } else {
                // Hover effect
                 // NOTE: if lag happens, comment this part out
-                if ((text == "RESUME" && mouse_area == in_resume_btn) || (text == "CONTROLS" && mouse_area == in_ctrlsOpt_btn) || (text == "SAVE GAME" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
+                if ((text == "RESUME GAME" && mouse_area == in_resume_btn) || (text == "CONTROLS" && mouse_area == in_ctrlsOpt_btn) || (text == "ADJUST TIMING" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
                     || (text == "DIFFICULTY" && mouse_area == in_difficulty_btn) || (text == "TUTORIAL" && mouse_area == in_tutorial_btn) || (text == "MAIN MENU" && mouse_area == in_return_to_main_btn) || (text == "SAVE + EXIT" && mouse_area == in_exit_btn)) {
                     text_colour = Colour::white;
                 } 
@@ -174,10 +172,10 @@ bool OptionsMenu::disableButton(std::string buttonName) {
         btnColour -= vec3(0.2);
         registry.disabled.emplace(new_game_btn);
 
-    } else if ((buttonName == "SAVE GAME") && (!registry.disabled.has(save_game_btn))) {
-        vec3& btnColour = registry.colours.get(save_game_btn);
+    } else if ((buttonName == "ADJUST TIMING") && (!registry.disabled.has(adjust_timing_btn))) {
+        vec3& btnColour = registry.colours.get(adjust_timing_btn);
         btnColour -= vec3(0.2);
-        registry.disabled.emplace(save_game_btn);
+        registry.disabled.emplace(adjust_timing_btn);
 
     } else if ((buttonName == "DIFFICULTY") && (!registry.disabled.has(difficulty_btn))) {
         vec3& btnColour = registry.colours.get(difficulty_btn);
@@ -220,11 +218,11 @@ if (buttonName == "RESUME") {
         if (registry.disabled.has(new_game_btn))
             registry.disabled.remove(new_game_btn);
 
-    } else if (buttonName == "SAVE GAME") {
-        vec3& btnColour = registry.colours.get(save_game_btn);
+    } else if (buttonName == "ADJUST TIMING") {
+        vec3& btnColour = registry.colours.get(adjust_timing_btn);
         btnColour = Colour::theme_blue_2 + vec3(0.1);
-        if (registry.disabled.has(save_game_btn))
-            registry.disabled.remove(save_game_btn);
+        if (registry.disabled.has(adjust_timing_btn))
+            registry.disabled.remove(adjust_timing_btn);
 
     } else if (buttonName == "DIFFICULTY") {
         vec3& btnColour = registry.colours.get(difficulty_btn);

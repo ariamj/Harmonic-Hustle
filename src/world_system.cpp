@@ -1065,8 +1065,8 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - y_padding) && (ypos <= resume_area.bottom - y_padding);
 
 		// save game button
-		BoxAreaBound save_game_area = registry.boxAreaBounds.get(optionsMenu.save_game_btn);
-		bool within_save_game_btn_area = (xpos >= save_game_area.left) && (xpos <= save_game_area.right) && (ypos >= save_game_area.top - y_padding) && (ypos <= save_game_area.bottom - y_padding);
+		BoxAreaBound timing_area = registry.boxAreaBounds.get(optionsMenu.adjust_timing_btn);
+		bool within_adjust_timing_btn_area = (xpos >= timing_area.left) && (xpos <= timing_area.right) && (ypos >= timing_area.top - y_padding) && (ypos <= timing_area.bottom - y_padding);
 
 		// new game button
 		BoxAreaBound new_game_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
@@ -1103,7 +1103,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		else if (within_resume_game_btn_area) {
 			mouse_area = in_resume_btn;
 		} 
-		else if (within_save_game_btn_area) {
+		else if (within_adjust_timing_btn_area) {
 			mouse_area = in_save_btn;
 		}
 		else if (within_difficulty_btn_area) {
