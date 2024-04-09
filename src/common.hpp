@@ -135,7 +135,7 @@ struct BoxAreaBound {
 enum MouseArea {
 	in_unclickable,
 	in_start_btn,
-	in_help_btn,
+	in_settings_btn,
 	in_restart_btn,
 	in_load_btn,
 	in_easy_btn,
@@ -145,7 +145,7 @@ enum MouseArea {
 	in_save_btn,
 	in_new_game_btn,
 	in_difficulty_btn,
-	in_helpOpt_btn,
+	in_ctrlsOpt_btn,
 	in_tutorial_btn,
 	in_exit_btn,
 	in_return_to_main_btn

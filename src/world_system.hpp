@@ -65,7 +65,7 @@ private:
 	bool render_set_battle_screen();
 
 	// sets the current scene to settings/help
-	bool render_set_settings_screen();
+	bool render_set_controls_screen();
 
 	// sets the current scene to start screen
 	bool render_set_start_screen();
@@ -86,12 +86,10 @@ private:
 
 	vec2 getRamdomEnemyPosition();
 
+	void handleBackspaceInput(int action);
 	void handleEscInput(int action);
 	void saveAndExit();
-	void handleHInput(int action);
-	void handleBackspaceInput(int action);
-	void handleClickStartBtn();
-	void handleClickHelpBtn();
+	void handleClickSettingsBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
 	void handleClickResumeBtn();
@@ -123,11 +121,6 @@ private:
 	Entity judgement_line_sprite;
 
 	// buttons
-	// enum MouseArea {
-	// 	in_unclickable,
-	// 	in_start_btn,
-	// 	in_help_btn,
-	// };
 	MouseArea mouse_area = in_unclickable;
 
 

@@ -27,7 +27,7 @@ public:
     Entity save_game_btn;
     Entity new_game_btn;
     Entity difficulty_btn;
-    Entity help_btn;
+    Entity controls_btn;
     Entity tutorial_btn;
     Entity exit_btn;
     Entity return_to_main_btn;
