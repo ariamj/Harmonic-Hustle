@@ -66,8 +66,8 @@ void ParticleGenerator::updateEntities() {
 // render all particles
 void ParticleGenerator::Draw()
 {
-    // don't draw particles if in settings screen (update later if needed)
-    if (gameInfo.curr_screen != Screen::SETTINGS) {
+    // don't draw particles if in settings screen or options screen (update later if needed)
+    if (gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::OPTIONS) {
         // use additive blending to give it a 'glow' effect
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         glUseProgram(shaderProgram);

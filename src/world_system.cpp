@@ -324,6 +324,7 @@ void WorldSystem::restart_game() {
 	gameInfo.is_boss_finished = false;
 	gameInfo.is_game_over_finished = false;
 	gameInfo.is_intro_finished = false;
+	gameInfo.in_options = false;
 
 	gameInfo.curr_lives = 3;
 	gameInfo.curr_level = 1;
@@ -781,8 +782,11 @@ void WorldSystem::handleBackspaceInput(int action) {
 void WorldSystem::handleClickStartBtn() {
 	std::cout << "Clicked on 'START'" << std::endl;
 
-	// transition to tutorial after clicking new game start button
+	// transition to tutorial after clicking new game start button, reset tutorial as needed
 	if (gameInfo.curr_screen == Screen::START) {
+		restart_game();
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
 		render_set_tutorial();
 	}
 }
@@ -863,6 +867,7 @@ void WorldSystem::handleClickResumeBtn()
 			settings.set_visible(false);
 			overworld.set_visible(false);
 			cutscene.set_visible(false);
+			optionsMenu.set_visible(false);
 			battle.set_pause(false);
 		}
 		else if (gameInfo.prev_screen == Screen::START) {
