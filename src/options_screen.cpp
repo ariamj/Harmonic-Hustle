@@ -18,9 +18,9 @@ void OptionsMenu::init(GLFWwindow* window, RenderSystem* renderer) {
 
 void OptionsMenu::init_screen() {
     title_1_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 8.f);
-    Entity banner_1 = createBox(title_1_pos, vec2(800.f, 100.f));
-    registry.screens.insert(banner_1, Screen::OPTIONS);
-    registry.colours.insert(banner_1, Colour::theme_blue_2);
+    //Entity banner_1 = createBox(title_1_pos, vec2(800.f, 100.f));
+    //registry.screens.insert(banner_1, Screen::OPTIONS);
+    //registry.colours.insert(banner_1, Colour::theme_blue_3);
 
     vec2 shadow_offset = vec2(10.f);
     //// title - shadow
@@ -151,7 +151,7 @@ bool OptionsMenu::set_visible(bool isVisible) {
 
     ScreenState& screen = registry.screenStates.components[0];
     if (isVisible) {
-        screen.darken_screen_factor = 0.2;
+        screen.darken_screen_factor = 0.85;
     }
     else {
         screen.darken_screen_factor = 0;
