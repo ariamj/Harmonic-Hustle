@@ -884,11 +884,13 @@ void WorldSystem::handleClickMainMenuBtn()
 void WorldSystem::handleClickIncreaseBtn()
 {
 	printf("clicked on increase\n");
+	gameInfo.frames_adjustment = min(gameInfo.frames_adjustment + 0.25f, MAX_FRAMES_ADJUSTMENT);
 }
 
 void WorldSystem::handleClickDecreaseBtn()
 {
 	printf("clicked on decrease\n");
+	gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
 }
 
 bool esc_pressed = false;

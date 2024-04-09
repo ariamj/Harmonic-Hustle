@@ -167,3 +167,7 @@ bool gl_has_errors();
 vec2 getRandomEnemyVelocity();
 
 float lerp(float start, float end, float t);
+
+// for adjusting note timings
+const float MIN_FRAMES_ADJUSTMENT = -5.f;
+const float MAX_FRAMES_ADJUSTMENT = 5.f;

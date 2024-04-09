@@ -39,6 +39,9 @@ class Tutorial {
         Entity increase_frames_btn;
         Entity decrease_frames_btn;
 
+        // text displaying frame adjustment
+        Entity curr_timing_text;
+
         // mouse area
         MouseArea mouse_area;
 

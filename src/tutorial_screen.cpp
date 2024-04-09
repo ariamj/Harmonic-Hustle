@@ -4,6 +4,8 @@
 #include <iostream>
 #include "world_init.hpp"
 
+std::string getFramesString();
+
 Tutorial::Tutorial() {
 
 };
@@ -78,7 +80,7 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
                 Motion motion = registry.motions.get(entity);
                 std::string text = registry.boxButtons.get(entity).text;
                 vec3 text_colour = btn.text_colour;
-
+                if (text == "-")  motion.position.y += 9.0f; // adjust minus symbol to look centered
                 // Hover effect
                 // NOTE: if lag happens, comment this part out
                 if (text == "-" && mouse_area == in_decrease_frame_btn) {
@@ -90,6 +92,7 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
                 createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
             }
         }
+        registry.texts.get(curr_timing_text).text = getFramesString();
     }
     // createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
     return true;
@@ -400,12 +403,19 @@ void Tutorial::initChooseDifficultyParts() {
     registry.tutorialParts.emplace(easy_btn);
 }
 
+std::string getFramesString() {
+    std::ostringstream frames_str;
+    frames_str.precision(2);
+    frames_str << gameInfo.frames_adjustment;
+    return frames_str.str();
+}
+
 void Tutorial::initAdjustNoteTimingParts()
 {
     float currY = gameInfo.height / 8.f;
     float centerX = gameInfo.width / 2.f;
     float centerY = gameInfo.height / 2.f;
-    float shift = 300.f;
+    float shift = 320.f;
 
     // explain difficulty
     currY += 100.f;
@@ -414,16 +424,14 @@ void Tutorial::initAdjustNoteTimingParts()
     Entity text1 = createText("Timing of notes is measured in portions of frames", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
     
     
-    std::ostringstream frames_str;
-    frames_str.precision(2);
-    frames_str << gameInfo.frames_adjustment;
-    std::ostringstream frames;
-    frames << "Frame Adjustment: " << frames_str.str();
-    Entity curr_timing_text = createText(frames.str(), vec2(centerX, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity adjustment_text = curr_timing_text = createText("Frame Adjustment: ", vec2(centerX - 50.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    curr_timing_text = createText(getFramesString(), vec2(centerX + 190.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
 
     registry.tutorialParts.emplace(text0);
     registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(adjustment_text);
     registry.tutorialParts.emplace(curr_timing_text);
+
 
     Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
     registry.tutorialParts.emplace(contText);
