@@ -328,8 +328,8 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 
 				std::string mode_type_text = convertBattleModeToString(next_mode);
 				vec3 mode_colour = getBattleModeColour(next_mode);
-				createText(mode_type_text, vec2(mode_pos.x, mode_pos.y + 0.135f * gameInfo.height), 0.75f, mode_colour, Screen::BATTLE, true);
-				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 2.0f, Colour::white, Screen::BATTLE, true);
+				createText(mode_type_text, vec2(mode_pos.x, mode_pos.y + 0.135f * gameInfo.height), 0.6f, mode_colour, Screen::BATTLE, true);
+				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 1.8f, Colour::white, Screen::BATTLE, true);
 
 				if (prev_mode_countdown_text != mode_countdown_text) {
 					std::cout << "Playing mode countdown\n";
@@ -651,7 +651,7 @@ void Battle::start() {
 
 	// Mode-related
 	mode_index = 0;
-	mode_text = "back and forth";
+	mode_text = "";
 	mode_colour = Colour::back_and_forth_colour;
 	current_mode = back_and_forth;
 
