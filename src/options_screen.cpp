@@ -65,11 +65,11 @@ void OptionsMenu::renderButtons() {
     registry.colours.insert(difficulty_shadow, Colour::theme_blue_3);
     difficulty_btn = createButton("DIFFICULTY", center_pos + vec2(0, y_padding + y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
-    // help png button
-    Entity help_shadow = createBox(shadow_pos + shift, options_btn_size);
-    registry.screens.insert(help_shadow, Screen::OPTIONS);
-    registry.colours.insert(help_shadow, Colour::theme_blue_3);
-    help_btn = createButton("HELP", center_pos + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    // controls png button
+    Entity controls_shadow = createBox(shadow_pos + shift, options_btn_size);
+    registry.screens.insert(controls_shadow, Screen::OPTIONS);
+    registry.colours.insert(controls_shadow, Colour::theme_blue_3);
+    controls_btn = createButton("CONTROLS", center_pos + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // tutorial button
     Entity tutorial_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos + shift, options_btn_size);
@@ -114,7 +114,7 @@ bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_
             } else {
                // Hover effect
                 // NOTE: if lag happens, comment this part out
-                if ((text == "RESUME" && mouse_area == in_resume_btn) || (text == "HELP" && mouse_area == in_helpOpt_btn) || (text == "SAVE GAME" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
+                if ((text == "RESUME" && mouse_area == in_resume_btn) || (text == "CONTROLS" && mouse_area == in_ctrlsOpt_btn) || (text == "SAVE GAME" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
                     || (text == "DIFFICULTY" && mouse_area == in_difficulty_btn) || (text == "TUTORIAL" && mouse_area == in_tutorial_btn) || (text == "MAIN MENU" && mouse_area == in_return_to_main_btn) || (text == "SAVE + EXIT" && mouse_area == in_exit_btn)) {
                     text_colour = Colour::white;
                 } 
@@ -164,53 +164,45 @@ bool OptionsMenu::set_visible(bool isVisible) {
 
 
 bool OptionsMenu::disableButton(std::string buttonName) {
-    if (buttonName == "RESUME") {
+    if ((buttonName == "RESUME") && (!registry.disabled.has(resume_game_btn))) {
         vec3& btnColour = registry.colours.get(resume_game_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(resume_game_btn))
-            registry.disabled.emplace(resume_game_btn);
+        registry.disabled.emplace(resume_game_btn);
 
-    } else if (buttonName == "NEW GAME") {
+    } else if ((buttonName == "NEW GAME") && (!registry.disabled.has(new_game_btn))) {
         vec3& btnColour = registry.colours.get(new_game_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(new_game_btn))
-            registry.disabled.emplace(new_game_btn);
+        registry.disabled.emplace(new_game_btn);
 
-    } else if (buttonName == "SAVE GAME") {
+    } else if ((buttonName == "SAVE GAME") && (!registry.disabled.has(save_game_btn))) {
         vec3& btnColour = registry.colours.get(save_game_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(save_game_btn))
-            registry.disabled.emplace(save_game_btn);
+        registry.disabled.emplace(save_game_btn);
 
-    } else if (buttonName == "DIFFICULTY") {
+    } else if ((buttonName == "DIFFICULTY") && (!registry.disabled.has(difficulty_btn))) {
         vec3& btnColour = registry.colours.get(difficulty_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(difficulty_btn))
-            registry.disabled.emplace(difficulty_btn);
+        registry.disabled.emplace(difficulty_btn);
 
-    } else if (buttonName == "HELP") {
-        vec3& btnColour = registry.colours.get(help_btn);
+    } else if ((buttonName == "CONTROLS") && (!registry.disabled.has(controls_btn))) {
+        vec3& btnColour = registry.colours.get(controls_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(help_btn))
-            registry.disabled.emplace(help_btn);
+        registry.disabled.emplace(controls_btn);
 
-    } else if (buttonName == "TUTORIAL") {
+    } else if ((buttonName == "TUTORIAL") && (!registry.disabled.has(tutorial_btn))) {
         vec3& btnColour = registry.colours.get(tutorial_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(tutorial_btn))
-            registry.disabled.emplace(tutorial_btn);
+        registry.disabled.emplace(tutorial_btn);
 
-    } else if (buttonName == "MAIN MENU") {
+    } else if ((buttonName == "MAIN MENU") && (!registry.disabled.has(return_to_main_btn))) {
         vec3& btnColour = registry.colours.get(return_to_main_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(return_to_main_btn))
-            registry.disabled.emplace(return_to_main_btn);
+        registry.disabled.emplace(return_to_main_btn);
 
-    } else if (buttonName == "SAVE + EXIT") {
+    } else if ((buttonName == "SAVE + EXIT") && (!registry.disabled.has(exit_btn))) {
         vec3& btnColour = registry.colours.get(exit_btn);
         btnColour -= vec3(0.2);
-        if (!registry.disabled.has(exit_btn))
-            registry.disabled.emplace(exit_btn);
+        registry.disabled.emplace(exit_btn);
     }
 }
 
@@ -239,11 +231,11 @@ if (buttonName == "RESUME") {
         if (registry.disabled.has(difficulty_btn))
             registry.disabled.remove(difficulty_btn);
 
-    } else if (buttonName == "HELP") {
-        vec3& btnColour = registry.colours.get(help_btn);
+    } else if (buttonName == "CONTROLS") {
+        vec3& btnColour = registry.colours.get(controls_btn);
         btnColour = Colour::theme_blue_2 + vec3(0.1);
-        if (registry.disabled.has(help_btn))
-            registry.disabled.remove(help_btn);
+        if (registry.disabled.has(controls_btn))
+            registry.disabled.remove(controls_btn);
 
     } else if (buttonName == "TUTORIAL") {
         vec3& btnColour = registry.colours.get(tutorial_btn);

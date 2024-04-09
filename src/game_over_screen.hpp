@@ -24,7 +24,6 @@ class GameOver {
 
         // buttons
         Entity restart_btn;
-	    Entity help_btn;
 
         // mouse area
         MouseArea mouse_area;

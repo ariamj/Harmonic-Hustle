@@ -400,7 +400,11 @@ bool Tutorial::set_visible(bool isVisible) {
 void Tutorial::handle_difficulty_click(int difficulty) {
     gameInfo.curr_difficulty = difficulty;
     std::cout << "set difficulty: " << difficulty << std::endl;
-    gameInfo.curr_screen = Screen::OVERWORLD;
+    if (gameInfo.prev_screen == Screen::OPTIONS) {
+        gameInfo.curr_screen = Screen::OPTIONS;
+    } else {
+        gameInfo.curr_screen = Screen::OVERWORLD;
+    }
 }
 
 void Tutorial::handle_key(int key, int scancode, int action, int mod) {
@@ -413,7 +417,11 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
                     tutorial_progress++;
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                     init_parts((TutorialPart) tutorial_progress);
-                    gameInfo.curr_screen = Screen::OVERWORLD;
+                    if (gameInfo.prev_screen == Screen::OPTIONS) {
+                        gameInfo.curr_screen = Screen::OPTIONS;
+                    } else {
+                        gameInfo.curr_screen = Screen::OVERWORLD;
+                    }
                 } else {
                     // if (tutorial_progress != tutorial_max_progress_parts) {
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
