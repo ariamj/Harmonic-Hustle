@@ -960,7 +960,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 			createSpark(note_position, duration, entity_other);
 		}
 		else {
-			createSmoke(note_position);
+			float random =  ((rand() % 100) - 30) / 4.f;
+			createSmoke(vec2(note_position.x + random, note_position.y));
 		}
 	}
 
