@@ -65,7 +65,7 @@ private:
 	bool render_set_battle_screen();
 
 	// sets the current scene to settings/help
-	bool render_set_settings_screen();
+	bool render_set_controls_screen();
 
 	// sets the current scene to start screen
 	bool render_set_start_screen();
@@ -86,10 +86,11 @@ private:
 
 	vec2 getRamdomEnemyPosition();
 
+	void handleBackspaceInput(int action);
 	void handleEscInput(int action);
 	void saveAndExit();
 	void handleClickStartBtn();
-	void handleClickHelpBtn();
+	void handleClickSettingsBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
 	void handleClickResumeBtn();
