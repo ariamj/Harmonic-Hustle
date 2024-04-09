@@ -148,7 +148,9 @@ enum MouseArea {
 	in_ctrlsOpt_btn,
 	in_tutorial_btn,
 	in_exit_btn,
-	in_return_to_main_btn
+	in_return_to_main_btn,
+	in_increase_frame_btn,
+	in_decrease_frame_btn
 
 };
 

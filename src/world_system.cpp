@@ -881,6 +881,16 @@ void WorldSystem::handleClickMainMenuBtn()
 	}
 }
 
+void WorldSystem::handleClickIncreaseBtn()
+{
+	printf("clicked on increase\n");
+}
+
+void WorldSystem::handleClickDecreaseBtn()
+{
+	printf("clicked on decrease\n");
+}
+
 bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
@@ -1054,6 +1064,26 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		}
 		tutorial.handle_mouse_move(mouse_area);
 	}
+	// Timing buttons in tutorial
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADJUST_TIMING) {
+		// + button
+		BoxAreaBound increase_frame_area = registry.boxAreaBounds.get(tutorial.increase_frames_btn);
+		bool within_increase_frames_btn_area = (xpos >= increase_frame_area.left) && (xpos <= increase_frame_area.right) && (ypos >= increase_frame_area.top - y_padding) && (ypos <= increase_frame_area.bottom - y_padding);
+		// - button
+		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
+		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
+
+		if (within_increase_frames_btn_area) {
+			mouse_area = in_increase_frame_btn;
+		}
+		else if (within_decrease_frames_btn_area) {
+			mouse_area = in_decrease_frame_btn; 
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		tutorial.handle_mouse_move(mouse_area);
+	}
 
 	// buttons for options menu popup
 
@@ -1188,6 +1218,12 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_return_to_main_btn:
 				handleClickMainMenuBtn();
+				break;
+			case in_increase_frame_btn:
+				handleClickIncreaseBtn();
+				break;
+			case in_decrease_frame_btn:
+				handleClickDecreaseBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

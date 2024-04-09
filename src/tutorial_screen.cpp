@@ -36,6 +36,9 @@ void Tutorial::init_parts(TutorialPart part) {
     } else if (tutorial_progress == TutorialPart::CHOOSE_DIFFICULTY) {
         initChooseDifficultyParts();
     }
+    else if (tutorial_progress == TutorialPart::ADJUST_TIMING) {
+        initAdjustNoteTimingParts();
+    }
 
     // vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
     // Entity testing = createHelpImage(renderer, center, vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::PLAYER_WALK_F1, Screen::TUTORIAL);
@@ -63,6 +66,26 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
                 // NOTE: if lag happens, comment this part out
                 if ((text == "easy" && mouse_area == in_easy_btn) || (text == "normal" && mouse_area == in_normal_btn) || (text == "hard" && mouse_area == in_hard_btn)) {
                     text_colour = Colour::white;
+                }
+                createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
+            }
+        }
+    } else  if (tutorial_progress == TutorialPart::ADJUST_TIMING) {
+        // Render all button texts
+        for (Entity entity : registry.boxButtons.entities) {
+            if (registry.screens.get(entity) == Screen::TUTORIAL) {
+                BoxButton btn = registry.boxButtons.get(entity);
+                Motion motion = registry.motions.get(entity);
+                std::string text = registry.boxButtons.get(entity).text;
+                vec3 text_colour = btn.text_colour;
+
+                // Hover effect
+                // NOTE: if lag happens, comment this part out
+                if (text == "-" && mouse_area == in_decrease_frame_btn) {
+                    text_colour = Colour::red;
+                }
+                else if (text == "+" && mouse_area == in_increase_frame_btn) {
+                    text_colour = Colour::green;
                 }
                 createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
             }
@@ -375,6 +398,50 @@ void Tutorial::initChooseDifficultyParts() {
     registry.tutorialParts.emplace(normal_btn);
     registry.tutorialParts.emplace(easy_shadow);
     registry.tutorialParts.emplace(easy_btn);
+}
+
+void Tutorial::initAdjustNoteTimingParts()
+{
+    float currY = gameInfo.height / 8.f;
+    float centerX = gameInfo.width / 2.f;
+    float centerY = gameInfo.height / 2.f;
+    float shift = 300.f;
+
+    // explain difficulty
+    currY += 100.f;
+    Entity text0 = createText("Adjust timing of notes", vec2(centerX, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 50.f;
+    Entity text1 = createText("Timing of notes is measured in portions of frames", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    
+    
+    std::ostringstream frames_str;
+    frames_str.precision(2);
+    frames_str << gameInfo.frames_adjustment;
+    std::ostringstream frames;
+    frames << "Frame Adjustment: " << frames_str.str();
+    Entity curr_timing_text = createText(frames.str(), vec2(centerX, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    registry.tutorialParts.emplace(text0);
+    registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(curr_timing_text);
+
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(contText);
+
+    // Create +/- frames buttons
+    // create buttons
+
+    vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
+    vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
+    //Entity easy_shadow = createBox(shadow_pos, buttonSize);
+    //registry.screens.insert(easy_shadow, Screen::TUTORIAL);
+    //registry.colours.insert(easy_shadow, Colour::theme_blue_3);
+    increase_frames_btn = createButton("+", vec2(centerX + shift, centerY), 1.5f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+    decrease_frames_btn = createButton("-", vec2(centerX - shift, centerY), 1.5, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+    registry.tutorialParts.emplace(increase_frames_btn);
+    registry.tutorialParts.emplace(decrease_frames_btn);
+    
+
 }
 
 bool Tutorial::set_visible(bool isVisible) {

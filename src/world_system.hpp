@@ -99,6 +99,9 @@ private:
 	void handleClickTutorialBtn();
 	void handleClickExitBtn();
 	void handleClickMainMenuBtn();
+	void handleClickIncreaseBtn();
+	void handleClickDecreaseBtn();
+
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);

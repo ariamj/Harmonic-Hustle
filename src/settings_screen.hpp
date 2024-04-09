@@ -4,7 +4,6 @@
 #include "common.hpp"
 
 // stlib
-#include <vector>
 #include <random>
 
 #include "render_system.hpp"
