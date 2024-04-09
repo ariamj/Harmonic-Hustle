@@ -142,7 +142,7 @@ enum MouseArea {
 	in_normal_btn,
 	in_hard_btn,
 	in_resume_btn,
-	in_save_btn,
+	in_adjust_timing_btn,
 	in_new_game_btn,
 	in_difficulty_btn,
 	in_ctrlsOpt_btn,

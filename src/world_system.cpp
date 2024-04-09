@@ -579,10 +579,12 @@ bool WorldSystem::render_set_options_screen() {
 	if (gameInfo.prev_non_option_screen == Screen::START) {
 		optionsMenu.disableButton("DIFFICULTY");
 		optionsMenu.disableButton("TUTORIAL");
+		optionsMenu.disableButton("ADJUST TIMING");
 	} else {
 		// make sure they're enabled
 		optionsMenu.enableButton("DIFFICULTY");
 		optionsMenu.enableButton("TUTORIAL");
+		optionsMenu.enableButton("ADJUST TIMING");
 	}
 
 	// sets the player velocity to 0 once screen switches
@@ -893,6 +895,17 @@ void WorldSystem::handleClickDecreaseBtn()
 	gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
 }
 
+void WorldSystem::handleClickAdjustTimingBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.adjust_timing_btn)) {
+		gameInfo.prev_screen = Screen::OPTIONS;
+		tutorial.tutorial_progress = TutorialPart::ADJUST_TIMING;
+		tutorial.init_parts(TutorialPart::ADJUST_TIMING);
+		render_set_tutorial();
+		//tutorial.tutorial_progress = TutorialPart::INTRO;
+	}
+}
+
 bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
@@ -1136,7 +1149,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 			mouse_area = in_resume_btn;
 		} 
 		else if (within_adjust_timing_btn_area) {
-			mouse_area = in_save_btn;
+			mouse_area = in_adjust_timing_btn;
 		}
 		else if (within_difficulty_btn_area) {
 			mouse_area = in_difficulty_btn;
@@ -1202,8 +1215,8 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 			case in_resume_btn:
 				handleClickResumeBtn();
 				break;
-			case in_save_btn:
-				handleClickSaveBtn();
+			case in_adjust_timing_btn:
+				handleClickAdjustTimingBtn();
 				break;
 			case in_new_game_btn:
 				gameInfo.in_options = false;

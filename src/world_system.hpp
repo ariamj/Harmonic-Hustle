@@ -88,7 +88,6 @@ private:
 
 	void handleBackspaceInput(int action);
 	void handleEscInput(int action);
-	void saveAndExit();
 	void handleClickSettingsBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
@@ -101,6 +100,7 @@ private:
 	void handleClickMainMenuBtn();
 	void handleClickIncreaseBtn();
 	void handleClickDecreaseBtn();
+	void handleClickAdjustTimingBtn();
 
 
 	// Input callback functions

@@ -112,7 +112,7 @@ bool OptionsMenu::handle_step(float elapsed_ms_since_last_update, float current_
             } else {
                // Hover effect
                 // NOTE: if lag happens, comment this part out
-                if ((text == "RESUME GAME" && mouse_area == in_resume_btn) || (text == "CONTROLS" && mouse_area == in_ctrlsOpt_btn) || (text == "ADJUST TIMING" && mouse_area == in_save_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
+                if ((text == "RESUME GAME" && mouse_area == in_resume_btn) || (text == "CONTROLS" && mouse_area == in_ctrlsOpt_btn) || (text == "ADJUST TIMING" && mouse_area == in_adjust_timing_btn) || (text == "NEW GAME" && mouse_area == in_new_game_btn)
                     || (text == "DIFFICULTY" && mouse_area == in_difficulty_btn) || (text == "TUTORIAL" && mouse_area == in_tutorial_btn) || (text == "MAIN MENU" && mouse_area == in_return_to_main_btn) || (text == "SAVE + EXIT" && mouse_area == in_exit_btn)) {
                     text_colour = Colour::white;
                 } 
