@@ -851,6 +851,7 @@ void WorldSystem::handleClickDifficultyBtn()
 		gameInfo.prev_screen = Screen::OPTIONS;
 		tutorial.tutorial_progress = TutorialPart::CHOOSE_DIFFICULTY;
 		tutorial.init_parts(TutorialPart::CHOOSE_DIFFICULTY);
+		gameInfo.in_difficulty = true;
 		render_set_tutorial();
 		//tutorial.tutorial_progress = TutorialPart::INTRO;
 	}

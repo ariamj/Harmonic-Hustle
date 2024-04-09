@@ -197,6 +197,8 @@ struct GameInfo {
 	// set to true if we navigate to diff screens FROM options
 	//  else false
 	bool in_options = false;
+	// set true if clicked on difficulty button, else false
+	bool in_difficulty = false; 
 };
 extern GameInfo gameInfo;
 

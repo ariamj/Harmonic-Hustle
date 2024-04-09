@@ -441,7 +441,6 @@ void Tutorial::initAdjustNoteTimingParts()
     registry.tutorialParts.emplace(contText);
 
     // Create +/- frames buttons
-    // create buttons
 
     vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
     vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
@@ -492,13 +491,24 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
             if (action == GLFW_PRESS) {
                 tutorial_progress++;
                 // if playing tutorial from options, don't play choose difficulty or adjust note timing
-                if (gameInfo.in_options && (tutorial_progress + 2) == tutorial_max_progress_parts) {  
+                if (gameInfo.in_options && (tutorial_progress + 2) == tutorial_max_progress_parts) {
                     tutorial_progress++;
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
-                    init_parts((TutorialPart) tutorial_progress);
+                    init_parts((TutorialPart)tutorial_progress);
                     if (gameInfo.prev_screen == Screen::OPTIONS) {
                         gameInfo.curr_screen = Screen::OPTIONS;
-                    } else {
+                    }
+                    else {
+                        gameInfo.curr_screen = Screen::OVERWORLD;
+                    }
+                    // don't go to adjust timing screen if we set difficulty via difficulty button in settings
+                } else if (gameInfo.in_options && gameInfo.in_difficulty) {
+                    init_parts((TutorialPart)tutorial_progress);
+                    gameInfo.in_difficulty = false;
+                    if (gameInfo.prev_screen == Screen::OPTIONS) {
+                        gameInfo.curr_screen = Screen::OPTIONS;
+                    }
+                    else {
                         gameInfo.curr_screen = Screen::OVERWORLD;
                     }
                 } else {
