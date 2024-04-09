@@ -763,8 +763,8 @@ bool Battle::set_visible(bool isVisible) {
 
 // Return true if won battle (ie. points greater than needed threshold)
 bool Battle::battleWon() {
-	// return (score > score_threshold);
-	return (gameInfo.curr_level < 4) ? true : (score > 0); //test boss
+	return (score > score_threshold);
+	// return (gameInfo.curr_level < 4) ? true : (score > 0); //test boss
 }
 
 bool key_pressed = false;
@@ -810,7 +810,7 @@ void Battle::handle_collisions() {
 	}
 
 	// For each lane, remove at most one note (for this frame)
-	int got_hit = 0; // 0 if didn't hit any notes, 1 otherwise
+	int num_hits = 0; // 0 if didn't hit any notes, 1 otherwise
 	int lane_index = -1;
 	for (auto &hits : lane_hits) {
 
@@ -850,12 +850,12 @@ void Battle::handle_collisions() {
 			}
 		}
 		
-		got_hit = 1;
+		num_hits += 1;
 	}	
 
 	// Play audio only once per key press
 	if (key_pressed) {
-		if (got_hit) {
+		if (num_hits) {
 			switch (standing) {
 				case perfect:
 					audio->playHitPerfect();
@@ -869,8 +869,13 @@ void Battle::handle_collisions() {
 		}
 	}
 
-	if (key_pressed && !got_hit) {
+	if (key_pressed && !num_hits) {
 		max_combo = max_combo > combo ? max_combo : combo;
+		combo = 0;
+	}
+
+	// Pressed more keys than necesary during this frame
+	if (d_key_pressed + f_key_pressed + j_key_pressed + k_key_pressed > num_hits) {
 		combo = 0;
 	}
 
@@ -955,7 +960,8 @@ void Battle::handle_note_hit(Entity entity, Entity entity_other) {
 			createSpark(note_position, duration, entity_other);
 		}
 		else {
-			createSmoke(note_position);
+			float random =  ((rand() % 100) - 30) / 4.f;
+			createSmoke(vec2(note_position.x + random, note_position.y));
 		}
 	}
 
