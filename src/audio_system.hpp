@@ -32,6 +32,7 @@ public:
 	int playCountdownHigh();
 
 	int playModeChange();
+	int playModeCountdown();
 
 	int playApplause();
 
@@ -63,4 +64,5 @@ private:
 	Mix_Chunk* countdown_low_SFX;
 	Mix_Chunk* applause_SFX;
 	Mix_Chunk* mode_change_SFX;
+	Mix_Chunk* mode_countdown_SFX;
 };

@@ -316,15 +316,21 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 				min_mode_alert_counter_ms = 1000.f;
 
 				audio->playModeChange();
+				mode_countdown_text = "";
 
 			} else if (conductor.song_position > countdown_threshold) {
 				// Render countdown leading up to mode change
-				float time_remaining = (mode_change_time - conductor.song_position);
+				float time_remaining = mode_change_time - conductor.song_position;
 				int beats_until_change = abs(floor(time_remaining / conductor.crotchet)) + 1;
-				std::cout << time_remaining << " " << beats_until_change << " " << conductor.crotchet << "\n";
-				std::string mode_countdown_text = std::to_string(beats_until_change);
+				std::string prev_mode_countdown_text = mode_countdown_text;
+				mode_countdown_text = std::to_string(beats_until_change);
 
 				createText(mode_countdown_text, vec2(mode_pos.x, mode_pos.y + 0.2f * gameInfo.height), 2.0f, Colour::white, Screen::BATTLE, true);
+
+				if (prev_mode_countdown_text != mode_countdown_text) {
+					std::cout << "Playing mode countdown\n";
+					audio->playModeCountdown();
+				}
 			}
 		}
 
@@ -676,8 +682,6 @@ void Battle::start() {
 	}
 
 	int additional_particles = floor((BASE_NOTE_TRAVEL_TIME - gameInfo.curr_note_travel_time) / 250.f);
-
-	std::cout << additional_particles << "\n";
 
 	// Create generators for particles that appear in the battle scene
 	// Order matters

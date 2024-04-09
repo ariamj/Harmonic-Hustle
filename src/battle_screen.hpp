@@ -193,6 +193,7 @@ class Battle {
         int mode_index;
         BattleMode current_mode;
         float last_beat;
+        std::string mode_countdown_text;
 
         // held note information
         float NO_DURATION = -1.0f;

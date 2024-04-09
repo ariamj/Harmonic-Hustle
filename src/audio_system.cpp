@@ -173,6 +173,14 @@ bool AudioSystem::LoadFiles() {
 		return false;
 	}
 
+	std::string mode_countdown = "mode_countdown.wav";
+	mode_countdown_SFX = Mix_LoadWAV(audio_path(mode_countdown).c_str());
+	if (mode_countdown_SFX == nullptr) { // add "%s\n" for each sound added
+		fprintf(stderr, "Failed to load sounds\n %s\n make sure the data directory is present",
+			audio_path(mode_countdown).c_str());
+		return false;
+	}
+
 	return true; // Successfully loaded all files
 }
 
@@ -239,6 +247,11 @@ int AudioSystem::playApplause() {
 int AudioSystem::playModeChange() {
 	return Mix_PlayChannel(-1, mode_change_SFX, 0);
 }
+
+int AudioSystem::playModeCountdown() {
+	return Mix_PlayChannel(-1, mode_countdown_SFX, 0);
+}
+
 
 int AudioSystem::musicPlaying() {
 	// return 1 if music still playing, 0 otherwise
