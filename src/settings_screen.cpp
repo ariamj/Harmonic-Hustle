@@ -22,7 +22,7 @@ void Settings::init(GLFWwindow* window, RenderSystem* renderer) {
 };
 
 void Settings::init_screen() {
-    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false, true);
+    createText("<-esc", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false, true);
 }
 
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
