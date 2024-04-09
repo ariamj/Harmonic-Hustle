@@ -255,7 +255,11 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 						audio->playDroppedNote();
 						standing = missed;
 						missed_counter++;
-						score += standing;
+						// Count twice for missing an entire held note (tap, release)
+						if (note.duration > 0.f) {
+							missed_counter++;
+						}
+						score = max(0.f, score + standing);
 						combo = 0;
 						registry.remove_all_components_of(motions_registry.entities[i]);
 					}
@@ -1033,6 +1037,7 @@ void Battle::handle_note_release(int lane_index) {
 		if (note.curr_duration > HOLD_DURATION_LEEWAY) {
 			audio->stopHoldNote(lane_index);
 			audio->playMissedNote();
+			missed_counter++;
 			setJudgmentLineColour(lane_index, MISSED_COLOUR);
 			note.curr_duration = NO_DURATION; // only miss once
 			registry.remove_all_components_of(entity);
