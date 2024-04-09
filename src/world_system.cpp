@@ -688,17 +688,12 @@ void WorldSystem::handleEscInput(int action) {
 			gameInfo.prev_non_option_screen = Screen::GAMEOVER;
 			render_set_options_screen();
 		}
-		// else if (gameInfo.curr_screen == Screen::SETTINGS) {
-		// 	gameInfo.prev_screen = Screen::SETTINGS;
-		// 	gameInfo.prev_non_option_screen = Screen::SETTINGS;
-		// 	render_set_options_screen();
-		// }
 		else if (gameInfo.curr_screen == Screen::OPTIONS) {
 
-			if (gameInfo.prev_screen == Screen::OVERWORLD) {
+			if (gameInfo.prev_non_option_screen == Screen::OVERWORLD) {
 				render_set_overworld_screen();
 			}
-			else if (gameInfo.prev_screen == Screen::BATTLE) {
+			else if (gameInfo.prev_non_option_screen == Screen::BATTLE) {
 				gameInfo.curr_screen = Screen::BATTLE;
 				settings.set_visible(false);
 				optionsMenu.set_visible(false);
@@ -707,14 +702,11 @@ void WorldSystem::handleEscInput(int action) {
 				battle.set_pause(false);
 				std::cout << "current screen: battle" << std::endl;
 			}
-			else if (gameInfo.prev_screen == Screen::START) {
+			else if (gameInfo.prev_non_option_screen == Screen::START) {
 				render_set_start_screen();
 			}
-			else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+			else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
 				render_set_game_over_screen();
-			}
-			else if (gameInfo.prev_screen == Screen::SETTINGS) {
-				render_set_controls_screen();
 			}
 		}
 	}
@@ -825,11 +817,6 @@ void WorldSystem::handleClickResumeBtn()
 		else if (gameInfo.prev_non_option_screen == Screen::SETTINGS) {
 			render_set_controls_screen();
 		}
-		// else if (gameInfo.prev_non_option_screen == Screen::OPTIONS) {
-		// 	gameInfo.prev_screen = gameInfo.prev_non_option_screen;
-		// 	//std::cout << "here in non option" << std::endl;
-		// 	handleClickResumeBtn();
-		// }
 		gameInfo.in_options = false;
 	}
 
