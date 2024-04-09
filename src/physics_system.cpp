@@ -504,7 +504,7 @@ void PhysicsSystem::check_collisions_between_all_motions(float elapsed_ms, Rende
 
 void PhysicsSystem::updateParticles(RenderSystem* renderSystem, float elapsed_ms) {
 	// Update particles
-	int new_particles = 2;
+	int new_particles = BASE_NEW_PARTICLES + floor((MAX_FPS_ON_MAC - FPS) / 30);
 	float dt = elapsed_ms / 1000.f;
 	for (auto generator : renderSystem->particle_generators) {
 		// Generate particles of all types currently allocated

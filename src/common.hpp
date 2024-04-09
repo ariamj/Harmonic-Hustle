@@ -68,6 +68,8 @@ const float K_MONITOR_HEIGHT = 956.f;
 const vec2 DEFAULT_PARTICLE_SCALE = vec2(10.f);
 const vec2 TRAIL_NOTE_OFFSET = vec2(-NOTE_WIDTH / 10, -NOTE_HEIGHT / 3.5f);
 const int MAX_PARTICLE_ENTITIES = 10; // coupled with notes for now
+const int BASE_NEW_PARTICLES = 2;
+const int MAX_FPS_ON_MAC = 125;
 
 // for making notes travel faster on higher-level enemy collision
 const float NOTE_TRAVEL_TIME_MULTIPLER = 0.75f;
