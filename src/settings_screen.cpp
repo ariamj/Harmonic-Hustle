@@ -22,7 +22,15 @@ void Settings::init(GLFWwindow* window, RenderSystem* renderer) {
 };
 
 void Settings::init_screen() {
-    createText("<-backspace", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, Screen::SETTINGS, false, true);
+    renderButtons();
+}
+
+void Settings::renderButtons()
+{
+    //vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
+    vec2 buttonPos = vec2(gameInfo.width- 120.f, gameInfo.height/10.f);
+    vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
+    back_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::SETTINGS);
 }
 
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
@@ -34,6 +42,19 @@ bool Settings::handle_step(float elapsed_ms_since_last_update, float current_spe
     // Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
+
+    for (Entity entity : registry.boxButtons.entities) {
+        if (registry.screens.get(entity) == Screen::SETTINGS) {
+            BoxButton btn = registry.boxButtons.get(entity);
+            Motion motion = registry.motions.get(entity);
+            std::string text = registry.boxButtons.get(entity).text;
+            vec3 text_colour = btn.text_colour;
+            if (text == "X" && mouse_area == in_back_btn) {
+                text_colour = Colour::dark_red;
+            }
+            createText(text, motion.position + vec2(5.f,0.f), btn.text_scale, text_colour, Screen::SETTINGS, true, false);
+        }
+    }
 
     return true;
 }
@@ -71,4 +92,9 @@ void Settings::handle_key(int key, int scancode, int action, int mod) {
 
 void Settings::handle_mouse_move(vec2 pos) {
     
-};
+}
+void Settings::handle_mouse_move(MouseArea mouse_area)
+{
+    this->mouse_area = mouse_area;
+}
+;

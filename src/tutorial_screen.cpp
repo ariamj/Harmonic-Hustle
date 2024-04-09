@@ -4,6 +4,8 @@
 #include <iostream>
 #include "world_init.hpp"
 
+std::string getFramesString();
+
 Tutorial::Tutorial() {
 
 };
@@ -36,6 +38,9 @@ void Tutorial::init_parts(TutorialPart part) {
     } else if (tutorial_progress == TutorialPart::CHOOSE_DIFFICULTY) {
         initChooseDifficultyParts();
     }
+    else if (tutorial_progress == TutorialPart::ADJUST_TIMING) {
+        initAdjustNoteTimingParts();
+    }
 
     // vec2 center = {gameInfo.width / 2.f, gameInfo.height / 2.f};
     // Entity testing = createHelpImage(renderer, center, vec2(PLAYER_WIDTH, PLAYER_HEIGHT), TEXTURE_ASSET_ID::PLAYER_WALK_F1, Screen::TUTORIAL);
@@ -61,12 +66,37 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
 
                 // Hover effect
                 // NOTE: if lag happens, comment this part out
-                if ((text == "easy" && mouse_area == in_easy_btn) || (text == "normal" && mouse_area == in_normal_btn) || (text == "hard" && mouse_area == in_hard_btn)) {
+                int difficulty = gameInfo.curr_difficulty;
+                if ((text == "easy" && mouse_area == in_easy_btn && difficulty != 0) || (text == "normal" && mouse_area == in_normal_btn && difficulty !=1) || (text == "hard" && mouse_area == in_hard_btn && difficulty !=2)) {
                     text_colour = Colour::white;
+                }
+                if (text == "easy" && gameInfo.curr_difficulty == 0) text_colour = Colour::green; 
+                if (text == "normal" && gameInfo.curr_difficulty == 1) text_colour = Colour::dark_blue;
+                if (text == "hard" && gameInfo.curr_difficulty == 2) text_colour = Colour::red;
+                createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
+            }
+        }
+    } else  if (tutorial_progress == TutorialPart::ADJUST_TIMING) {
+        // Render all button texts
+        for (Entity entity : registry.boxButtons.entities) {
+            if (registry.screens.get(entity) == Screen::TUTORIAL) {
+                BoxButton btn = registry.boxButtons.get(entity);
+                Motion motion = registry.motions.get(entity);
+                std::string text = registry.boxButtons.get(entity).text;
+                vec3 text_colour = btn.text_colour;
+                if (text == "-")  motion.position.y += 9.0f; // adjust minus symbol to look centered
+                // Hover effect
+                // NOTE: if lag happens, comment this part out
+                if (text == "-" && mouse_area == in_decrease_frame_btn) {
+                    text_colour = Colour::red;
+                }
+                else if (text == "+" && mouse_area == in_increase_frame_btn) {
+                    text_colour = Colour::green;
                 }
                 createText(text, motion.position, btn.text_scale, text_colour, Screen::TUTORIAL, true, false);
             }
         }
+        registry.texts.get(curr_timing_text).text = getFramesString();
     }
     // createText("Press space to continue", vec2(gameInfo.width/2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL);
     return true;
@@ -365,7 +395,7 @@ void Tutorial::initChooseDifficultyParts() {
 	hard_btn = createButton("hard", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
 	
     currY += 170.f;
-    Entity contText = createText("...or press 'space' to continue with normal difficulty...", vec2(centerX, gameInfo.height*9.5f/10.f), 0.5f, Colour::off_white, Screen::TUTORIAL, true, true);
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
     
     registry.tutorialParts.emplace(contText);
 
@@ -375,6 +405,54 @@ void Tutorial::initChooseDifficultyParts() {
     registry.tutorialParts.emplace(normal_btn);
     registry.tutorialParts.emplace(easy_shadow);
     registry.tutorialParts.emplace(easy_btn);
+}
+
+std::string getFramesString() {
+    std::ostringstream frames_str;
+    frames_str.precision(2);
+    frames_str << gameInfo.frames_adjustment;
+    return frames_str.str();
+}
+
+void Tutorial::initAdjustNoteTimingParts()
+{
+    float currY = gameInfo.height / 8.f;
+    float centerX = gameInfo.width / 2.f;
+    float centerY = gameInfo.height / 2.f;
+    float shift = 320.f;
+
+    // explain difficulty
+    currY += 100.f;
+    Entity text0 = createText("Adjust timing of notes", vec2(centerX, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 50.f;
+    Entity text1 = createText("Timing of notes is measured in portions of frames", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    
+    
+    Entity adjustment_text = curr_timing_text = createText("Frame Adjustment: ", vec2(centerX - 50.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    curr_timing_text = createText(getFramesString(), vec2(centerX + 190.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+
+    registry.tutorialParts.emplace(text0);
+    registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(adjustment_text);
+    registry.tutorialParts.emplace(curr_timing_text);
+
+
+    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+    registry.tutorialParts.emplace(contText);
+
+    // Create +/- frames buttons
+
+    vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
+    vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
+    //Entity easy_shadow = createBox(shadow_pos, buttonSize);
+    //registry.screens.insert(easy_shadow, Screen::TUTORIAL);
+    //registry.colours.insert(easy_shadow, Colour::theme_blue_3);
+    increase_frames_btn = createButton("+", vec2(centerX + shift, centerY), 1.5f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+    decrease_frames_btn = createButton("-", vec2(centerX - shift, centerY), 1.5, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
+    registry.tutorialParts.emplace(increase_frames_btn);
+    registry.tutorialParts.emplace(decrease_frames_btn);
+    
+
 }
 
 bool Tutorial::set_visible(bool isVisible) {
@@ -400,11 +478,11 @@ bool Tutorial::set_visible(bool isVisible) {
 void Tutorial::handle_difficulty_click(int difficulty) {
     gameInfo.curr_difficulty = difficulty;
     std::cout << "set difficulty: " << difficulty << std::endl;
-    if (gameInfo.prev_screen == Screen::OPTIONS) {
-        gameInfo.curr_screen = Screen::OPTIONS;
-    } else {
-        gameInfo.curr_screen = Screen::OVERWORLD;
-    }
+    //if (gameInfo.prev_screen == Screen::OPTIONS) {
+    //    gameInfo.curr_screen = Screen::OPTIONS;
+    //} else {
+    //    gameInfo.curr_screen = Screen::OVERWORLD;
+    //}
 }
 
 void Tutorial::handle_key(int key, int scancode, int action, int mod) {
@@ -412,14 +490,25 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS) {
                 tutorial_progress++;
-                // if playing tutorial from options, don't play choose difficulty
-                if (gameInfo.in_options && (tutorial_progress + 1) == tutorial_max_progress_parts) {  
+                // if playing tutorial from options, don't play choose difficulty or adjust note timing
+                if (gameInfo.in_options && (tutorial_progress + 2) == tutorial_max_progress_parts) {
                     tutorial_progress++;
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
-                    init_parts((TutorialPart) tutorial_progress);
+                    init_parts((TutorialPart)tutorial_progress);
                     if (gameInfo.prev_screen == Screen::OPTIONS) {
                         gameInfo.curr_screen = Screen::OPTIONS;
-                    } else {
+                    }
+                    else {
+                        gameInfo.curr_screen = Screen::OVERWORLD;
+                    }
+                    // don't go to adjust timing screen if we set difficulty via difficulty button in settings
+                } else if (gameInfo.in_options && gameInfo.in_difficulty) {
+                    init_parts((TutorialPart)tutorial_progress);
+                    gameInfo.in_difficulty = false;
+                    if (gameInfo.prev_screen == Screen::OPTIONS) {
+                        gameInfo.curr_screen = Screen::OPTIONS;
+                    }
+                    else {
                         gameInfo.curr_screen = Screen::OVERWORLD;
                     }
                 } else {
@@ -427,7 +516,12 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                     init_parts((TutorialPart) tutorial_progress);
                     if (tutorial_progress == tutorial_max_progress_parts)
-                        handle_difficulty_click(1); // default to normal
+                        if (gameInfo.prev_screen == Screen::OPTIONS) {
+                            gameInfo.curr_screen = Screen::OPTIONS;
+                        }
+                        else {
+                            gameInfo.curr_screen = Screen::OVERWORLD;
+                        }
                     // }
                 }
             }

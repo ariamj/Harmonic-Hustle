@@ -180,7 +180,7 @@ struct GameInfo {
 	Entity curr_enemy;
 	int curr_level = 1;
 	int max_level = 4;
-	int curr_difficulty = 0;
+	int curr_difficulty = 1; // default to normal
 	int curr_lives = 3;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
@@ -197,6 +197,8 @@ struct GameInfo {
 	// set to true if we navigate to diff screens FROM options
 	//  else false
 	bool in_options = false;
+	// set true if clicked on difficulty button, else false
+	bool in_difficulty = false; 
 };
 extern GameInfo gameInfo;
 

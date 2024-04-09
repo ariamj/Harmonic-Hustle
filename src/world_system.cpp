@@ -579,10 +579,12 @@ bool WorldSystem::render_set_options_screen() {
 	if (gameInfo.prev_non_option_screen == Screen::START) {
 		optionsMenu.disableButton("DIFFICULTY");
 		optionsMenu.disableButton("TUTORIAL");
+		optionsMenu.disableButton("ADJUST TIMING");
 	} else {
 		// make sure they're enabled
 		optionsMenu.enableButton("DIFFICULTY");
 		optionsMenu.enableButton("TUTORIAL");
+		optionsMenu.enableButton("ADJUST TIMING");
 	}
 
 	// sets the player velocity to 0 once screen switches
@@ -849,6 +851,7 @@ void WorldSystem::handleClickDifficultyBtn()
 		gameInfo.prev_screen = Screen::OPTIONS;
 		tutorial.tutorial_progress = TutorialPart::CHOOSE_DIFFICULTY;
 		tutorial.init_parts(TutorialPart::CHOOSE_DIFFICULTY);
+		gameInfo.in_difficulty = true;
 		render_set_tutorial();
 		//tutorial.tutorial_progress = TutorialPart::INTRO;
 	}
@@ -878,6 +881,37 @@ void WorldSystem::handleClickMainMenuBtn()
 		optionsMenu.enableButton("DIFFICULTY");
 		optionsMenu.enableButton("TUTORIAL");
 		render_set_start_screen();
+	}
+}
+
+void WorldSystem::handleClickIncreaseBtn()
+{
+	printf("clicked on increase\n");
+	gameInfo.frames_adjustment = min(gameInfo.frames_adjustment + 0.25f, MAX_FRAMES_ADJUSTMENT);
+}
+
+void WorldSystem::handleClickDecreaseBtn()
+{
+	printf("clicked on decrease\n");
+	gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
+}
+
+void WorldSystem::handleClickAdjustTimingBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.adjust_timing_btn)) {
+		gameInfo.prev_screen = Screen::OPTIONS;
+		tutorial.tutorial_progress = TutorialPart::ADJUST_TIMING;
+		tutorial.init_parts(TutorialPart::ADJUST_TIMING);
+		render_set_tutorial();
+		//tutorial.tutorial_progress = TutorialPart::INTRO;
+	}
+}
+
+void WorldSystem::handleClickBackBtn()
+{
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		gameInfo.prev_screen = Screen::SETTINGS;
+		render_set_options_screen();
 	}
 }
 
@@ -1054,6 +1088,40 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		}
 		tutorial.handle_mouse_move(mouse_area);
 	}
+	// Timing buttons in tutorial
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADJUST_TIMING) {
+		// + button
+		BoxAreaBound increase_frame_area = registry.boxAreaBounds.get(tutorial.increase_frames_btn);
+		bool within_increase_frames_btn_area = (xpos >= increase_frame_area.left) && (xpos <= increase_frame_area.right) && (ypos >= increase_frame_area.top - y_padding) && (ypos <= increase_frame_area.bottom - y_padding);
+		// - button
+		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
+		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
+
+		if (within_increase_frames_btn_area) {
+			mouse_area = in_increase_frame_btn;
+		}
+		else if (within_decrease_frames_btn_area) {
+			mouse_area = in_decrease_frame_btn; 
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		tutorial.handle_mouse_move(mouse_area);
+	}
+
+	// back button in help screen
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		BoxAreaBound back_btn_area = registry.boxAreaBounds.get(settings.back_btn);
+		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top - y_padding) && (ypos <= back_btn_area.bottom - y_padding);
+		if (within_back_btn_area) {
+			mouse_area = in_back_btn;
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		settings.handle_mouse_move(mouse_area);
+
+	}
 
 	// buttons for options menu popup
 
@@ -1065,8 +1133,8 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - y_padding) && (ypos <= resume_area.bottom - y_padding);
 
 		// save game button
-		BoxAreaBound save_game_area = registry.boxAreaBounds.get(optionsMenu.save_game_btn);
-		bool within_save_game_btn_area = (xpos >= save_game_area.left) && (xpos <= save_game_area.right) && (ypos >= save_game_area.top - y_padding) && (ypos <= save_game_area.bottom - y_padding);
+		BoxAreaBound timing_area = registry.boxAreaBounds.get(optionsMenu.adjust_timing_btn);
+		bool within_adjust_timing_btn_area = (xpos >= timing_area.left) && (xpos <= timing_area.right) && (ypos >= timing_area.top - y_padding) && (ypos <= timing_area.bottom - y_padding);
 
 		// new game button
 		BoxAreaBound new_game_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
@@ -1103,8 +1171,8 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		else if (within_resume_game_btn_area) {
 			mouse_area = in_resume_btn;
 		} 
-		else if (within_save_game_btn_area) {
-			mouse_area = in_save_btn;
+		else if (within_adjust_timing_btn_area) {
+			mouse_area = in_adjust_timing_btn;
 		}
 		else if (within_difficulty_btn_area) {
 			mouse_area = in_difficulty_btn;
@@ -1145,11 +1213,11 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_easy_btn:
 				tutorial.handle_difficulty_click(0);
-				if (gameInfo.curr_screen == Screen::OVERWORLD) {
-					render_set_overworld_screen();
-				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
-					render_set_options_screen();
-				}
+				//if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				//	render_set_overworld_screen();
+				//} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+				//	render_set_options_screen();
+				//}
 				break;
 			case in_normal_btn:
 				tutorial.handle_difficulty_click(1);
@@ -1170,8 +1238,8 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 			case in_resume_btn:
 				handleClickResumeBtn();
 				break;
-			case in_save_btn:
-				handleClickSaveBtn();
+			case in_adjust_timing_btn:
+				handleClickAdjustTimingBtn();
 				break;
 			case in_new_game_btn:
 				gameInfo.in_options = false;
@@ -1188,6 +1256,15 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_return_to_main_btn:
 				handleClickMainMenuBtn();
+				break;
+			case in_increase_frame_btn:
+				handleClickIncreaseBtn();
+				break;
+			case in_decrease_frame_btn:
+				handleClickDecreaseBtn();
+				break;
+			case in_back_btn:
+				handleClickBackBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

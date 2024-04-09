@@ -144,13 +144,16 @@ enum MouseArea {
 	in_normal_btn,
 	in_hard_btn,
 	in_resume_btn,
-	in_save_btn,
+	in_adjust_timing_btn,
 	in_new_game_btn,
 	in_difficulty_btn,
 	in_ctrlsOpt_btn,
 	in_tutorial_btn,
 	in_exit_btn,
-	in_return_to_main_btn
+	in_return_to_main_btn,
+	in_increase_frame_btn,
+	in_decrease_frame_btn,
+	in_back_btn
 
 };
 
@@ -167,3 +170,7 @@ bool gl_has_errors();
 vec2 getRandomEnemyVelocity();
 
 float lerp(float start, float end, float t);
+
+// for adjusting note timings
+const float MIN_FRAMES_ADJUSTMENT = -5.f;
+const float MAX_FRAMES_ADJUSTMENT = 5.f;

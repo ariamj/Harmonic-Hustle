@@ -5,7 +5,8 @@ enum TutorialPart {
     BATTLE_EXPLAIN = 1, // note explanation, how to win
     ADVANCING_EXPLAIN = 2, // explain levels, boss, difficulty, difficulty buttons
     CHOOSE_DIFFICULTY = 3,
-    NUM_OF_PARTS = 4,
+    ADJUST_TIMING = 4,
+    NUM_OF_PARTS = 5
 };
 
 class Tutorial {
@@ -34,6 +35,13 @@ class Tutorial {
 	    Entity normal_btn;
         Entity hard_btn;
 
+        // frames adjustment buttons
+        Entity increase_frames_btn;
+        Entity decrease_frames_btn;
+
+        // text displaying frame adjustment
+        Entity curr_timing_text;
+
         // mouse area
         MouseArea mouse_area;
 
@@ -43,6 +51,7 @@ class Tutorial {
         void initBattleExplainParts();
         void initAdvancingExplaingParts();
         void initChooseDifficultyParts();
+        void initAdjustNoteTimingParts();
 
         // game state
         RenderSystem* renderer;
