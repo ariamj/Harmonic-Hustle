@@ -94,7 +94,9 @@ void TrailParticleGenerator::updateParticleBehaviours(Particle& p, float dt, Ent
         float random = ((rand() % 100) - 50) * 2.f;
         p.color.a = lerp(1.f, 0.f, progress);
         if (note.pressed) {
-            p.position += vec2(p.velocity.x + random, p.velocity.y) * 2.5f * dt;
+            p.position += vec2(p.velocity.x + random, p.velocity.y) * 2.22f * dt;
+            // Brighter to help with visibility
+            p.color.a += 0.65f;
         }
     }
 
@@ -108,7 +110,7 @@ void TrailParticleGenerator::respawnParticle(Particle& particle, Entity entity, 
         return;
     }
     float random = ((rand() % 100) - 50) / 10.0f;
-    float rColor = 0.5f + ((rand() % 200) / 100.0f);
+    float rColor = 0.5f + ((rand() % 150) / 100.0f);
     Motion& entity_motion = registry.motions.get(entity);
     particle.position = entity_motion.position + random + offset;
 
