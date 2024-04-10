@@ -82,7 +82,11 @@ class RenderSystem {
 		textures_path("Spark-Particle.png"),
 		textures_path("Judgement-Lines-Example.png"),
 		textures_path("Long-Note-Example.png"),
-		textures_path("Tap-Note-Example.png")
+		textures_path("Tap-Note-Example.png"),
+		textures_path("Held-Note-Example-Start.png"),
+		textures_path("Held-Note-Example-Start.png"),
+		textures_path("Held-Note-Example-Start.png"),
+		textures_path("Held-Note-Example-Start.png")
 	};
 
 	std::array<GLuint, effect_count> effects;
