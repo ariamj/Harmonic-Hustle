@@ -578,12 +578,16 @@ bool WorldSystem::render_set_options_screen() {
 	// if navigating to settings from start, disable certain buttons
 	if (gameInfo.prev_non_option_screen == Screen::START) {
 		optionsMenu.disableButton("DIFFICULTY");
-		optionsMenu.disableButton("TUTORIAL");
+		// optionsMenu.disableButton("TUTORIAL");
 		optionsMenu.disableButton("ADJUST TIMING");
+	} else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
+		optionsMenu.disableButton("DIFFICULTY");
+		optionsMenu.disableButton("ADJUST TIMING");
+	
 	} else {
 		// make sure they're enabled
 		optionsMenu.enableButton("DIFFICULTY");
-		optionsMenu.enableButton("TUTORIAL");
+		// optionsMenu.enableButton("TUTORIAL");
 		optionsMenu.enableButton("ADJUST TIMING");
 	}
 
@@ -672,7 +676,8 @@ void WorldSystem::handleBackspaceInput(int action) {
 void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
 		optionsMenu.enableButton("DIFFICULTY");
-		optionsMenu.enableButton("TUTORIAL");
+		optionsMenu.enableButton("ADJUST TIMING");
+		// optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = Screen::OVERWORLD;
 			gameInfo.prev_non_option_screen = Screen::OVERWORLD;
@@ -746,6 +751,8 @@ void WorldSystem::handleClickRestartBtn() {
 
 	// To Start
 	if (gameInfo.curr_screen == Screen::GAMEOVER) {
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST DIFFICULTY");
 		restart_game();
 		render_set_start_screen();
 	}
@@ -793,7 +800,8 @@ void WorldSystem::handleClickResumeBtn()
 	if (gameInfo.curr_screen == Screen::OPTIONS) {
 		gameInfo.in_options = false;
 		optionsMenu.enableButton("DIFFICULTY");
-		optionsMenu.enableButton("TUTORIAL");
+		optionsMenu.enableButton("ADJUST TIMING");
+		// optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.prev_non_option_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = gameInfo.curr_screen;
 			render_set_overworld_screen();
@@ -879,7 +887,8 @@ void WorldSystem::handleClickMainMenuBtn()
 	if (gameInfo.curr_screen == Screen::OPTIONS) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
 		optionsMenu.enableButton("DIFFICULTY");
-		optionsMenu.enableButton("TUTORIAL");
+		// optionsMenu.enableButton("TUTORIAL");
+		optionsMenu.enableButton("ADJUST TIMING");
 		render_set_start_screen();
 	}
 }
