@@ -26,7 +26,7 @@ void Battle::setReminderPopUp() {
 	in_reminder = true;
 
 	// render specific pop up if enemy level > player level
-	if (enemy_level < gameInfo.curr_level) {
+	if (enemy_level > gameInfo.curr_level) {
 		switch(popup_index) {
 			case 0:
 				addReminderPopUpPartsChallengeLevel();
