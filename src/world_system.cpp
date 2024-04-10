@@ -1130,36 +1130,35 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		
 		// resume game button
 		BoxAreaBound resume_area = registry.boxAreaBounds.get(optionsMenu.resume_game_btn);
-		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - y_padding) && (ypos <= resume_area.bottom - y_padding);
-
-		// save game button
-		BoxAreaBound timing_area = registry.boxAreaBounds.get(optionsMenu.adjust_timing_btn);
-		bool within_adjust_timing_btn_area = (xpos >= timing_area.left) && (xpos <= timing_area.right) && (ypos >= timing_area.top - y_padding) && (ypos <= timing_area.bottom - y_padding);
+		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - 40.f) && (ypos <= resume_area.bottom - 40.f);
 
 		// new game button
 		BoxAreaBound new_game_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
-		bool within_new_game_btn_area = (xpos >= new_game_area.left) && (xpos <= new_game_area.right) && (ypos >= new_game_area.top - y_padding) && (ypos <= new_game_area.bottom - y_padding);
+		bool within_new_game_btn_area = (xpos >= new_game_area.left) && (xpos <= new_game_area.right) && (ypos >= new_game_area.top - 60.f) && (ypos <= new_game_area.bottom - 60.f);
+
+		// adjust timing button
+		BoxAreaBound timing_area = registry.boxAreaBounds.get(optionsMenu.adjust_timing_btn);
+		bool within_adjust_timing_btn_area = (xpos >= timing_area.left) && (xpos <= timing_area.right) && (ypos >= timing_area.top - 80.f) && (ypos <= timing_area.bottom - 80.f);
 
 		// game difficulty button
 		BoxAreaBound difficulty_btn_area = registry.boxAreaBounds.get(optionsMenu.difficulty_btn);
-		bool within_difficulty_btn_area = (xpos >= difficulty_btn_area.left) && (xpos <= difficulty_btn_area.right) && (ypos >= difficulty_btn_area.top - y_padding) && (ypos <= difficulty_btn_area.bottom - y_padding);
+		bool within_difficulty_btn_area = (xpos >= difficulty_btn_area.left) && (xpos <= difficulty_btn_area.right) && (ypos >= difficulty_btn_area.top - 100.f) && (ypos <= difficulty_btn_area.bottom - 100.f);
 
 		// help button
 		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(optionsMenu.controls_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - 40.f) && (ypos <= help_btn_area.bottom - 40.f);
 
 		// tutorial button
 		BoxAreaBound tutorial_btn_area = registry.boxAreaBounds.get(optionsMenu.tutorial_btn);
-		bool within_tutorial_btn_area = (xpos >= tutorial_btn_area.left) && (xpos <= tutorial_btn_area.right) && (ypos >= tutorial_btn_area.top - y_padding) && (ypos <= tutorial_btn_area.bottom - y_padding);
-
-		// exit button
-		BoxAreaBound exit_btn_area = registry.boxAreaBounds.get(optionsMenu.exit_btn);
-		bool within_exit_btn_area = (xpos >= exit_btn_area.left) && (xpos <= exit_btn_area.right) && (ypos >= exit_btn_area.top - y_padding) && (ypos <= exit_btn_area.bottom - y_padding);
+		bool within_tutorial_btn_area = (xpos >= tutorial_btn_area.left) && (xpos <= tutorial_btn_area.right) && (ypos >= tutorial_btn_area.top - 60.f) && (ypos <= tutorial_btn_area.bottom - 60.f);
 
 		// main menu button
 		BoxAreaBound return_to_main_btn_area = registry.boxAreaBounds.get(optionsMenu.return_to_main_btn);
-		bool within_return_to_main_btn_btn_area = (xpos >= return_to_main_btn_area.left) && (xpos <= return_to_main_btn_area.right) && (ypos >= return_to_main_btn_area.top - y_padding) && (ypos <= return_to_main_btn_area.bottom - y_padding);
+		bool within_return_to_main_btn_btn_area = (xpos >= return_to_main_btn_area.left) && (xpos <= return_to_main_btn_area.right) && (ypos >= return_to_main_btn_area.top - 80.f) && (ypos <= return_to_main_btn_area.bottom - 80.f);
 
+		// exit button
+		BoxAreaBound exit_btn_area = registry.boxAreaBounds.get(optionsMenu.exit_btn);
+		bool within_exit_btn_area = (xpos >= exit_btn_area.left) && (xpos <= exit_btn_area.right) && (ypos >= exit_btn_area.top - 100.f) && (ypos <= exit_btn_area.bottom - 100.f);
 		if (within_new_game_btn_area) {
 			//std::cout << "in new game button area" << std::endl;
 			mouse_area = in_new_game_btn;
