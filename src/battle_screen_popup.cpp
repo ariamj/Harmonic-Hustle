@@ -79,6 +79,9 @@ void Battle::addReminderPopUpPartsLevelOne() {
 					addExplanationBackAndForth();
 					break;
 				case 1:
+					addExplanationHeldNotes();
+					break;
+				case 2:
 					addDefaultReminderParts();
 					break;
 				default:
@@ -92,6 +95,9 @@ void Battle::addReminderPopUpPartsLevelOne() {
 					addExplanationBackAndForth();
 					break;
 				case 1:
+					addExplanationHeldNotes();
+					break;
+				case 2:
 					addDefaultReminderParts();
 					break;
 				default:
@@ -181,6 +187,7 @@ void Battle::addExplanationBeatRush() {
 	registry.battleReminderPopUpParts.emplace(continue_text);
 }
 
+
 void Battle::addExplanationUnison() {
 	float reminderTextYPos = gameInfo.height / 3.7f;
 	float reminderTextXPos = gameInfo.width / 2.f;
@@ -216,6 +223,39 @@ void Battle::addExplanationUnison() {
 	registry.battleReminderPopUpParts.emplace(text6);
 	registry.battleReminderPopUpParts.emplace(text7);
 	registry.battleReminderPopUpParts.emplace(continue_text);
+}
+
+void Battle::addExplanationHeldNotes() {
+	float reminderTextYPos = gameInfo.height / 3.7f;
+	float reminderTextXPos = gameInfo.width / 2.f;
+
+	Entity text1 = createText("You've challenged an enemy!", vec2(reminderTextXPos, reminderTextYPos), 0.8f, Colour::red, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text2 = createText("Prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 45.f;
+	Entity text3 = createText("In Normal & Hard, \"Held Notes\" will now appear.", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::unison_colour, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text5 = createText("Held Notes have much brighter trails", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	
+	reminderTextYPos += 40.f;
+	Entity text6 = createText("In addition to timing the initial press,", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 60.f;
+	Entity text7 = createText("hold down the key until the trail disappears", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 55.f;
+	Entity continue_text = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
+	registry.battleReminderPopUpParts.emplace(text1);
+	registry.battleReminderPopUpParts.emplace(text2);
+	registry.battleReminderPopUpParts.emplace(text3);
+	registry.battleReminderPopUpParts.emplace(text5);
+	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(text7);
+	registry.battleReminderPopUpParts.emplace(continue_text);	
 }
 
 // render entities as needed depending on difficulty, else use default
@@ -274,17 +314,21 @@ void Battle::addExplanationBoss() {
 	reminderTextYPos += 60.f;
 	Entity text2 = createText("Prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
-	reminderTextYPos += 65.f;
-	Entity text6 = createText("Oh boy, here we go...", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
-
-	reminderTextYPos += 65.f;
-	Entity text3 = createText("This fight will use all three modes!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	reminderTextYPos += 50.f;
+	Entity text3 = createText("Remember everything you've learned...", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 50.f;
-	Entity text4 = createText("Watch out for multiple simultaneous notes!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	Entity text4 = createText("The boss battle will use all three modes", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
-	reminderTextYPos += 200.f;
-	Entity text5 = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 65.f;
+	Entity text5 = createText("Oh... and don't say I didn't warn you...", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 50.f;
+	Entity text6 = createText("Watch out for simultaneous notes at the end!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+
+	reminderTextYPos += 100.f;
+	Entity text7 = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
 	
 	registry.battleReminderPopUpParts.emplace(text1);
 	registry.battleReminderPopUpParts.emplace(text2);
@@ -292,6 +336,7 @@ void Battle::addExplanationBoss() {
 	registry.battleReminderPopUpParts.emplace(text4);
 	registry.battleReminderPopUpParts.emplace(text5);
 	registry.battleReminderPopUpParts.emplace(text6);
+	registry.battleReminderPopUpParts.emplace(text7);
 }
 
 
@@ -325,10 +370,10 @@ void Battle::addDefaultReminderPartsBoss() {
 
 	//// space for help images
 	reminderTextYPos += 170.f;
-	Entity text7 = createText("hold longer notes till the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	Entity text7 = createText("hold longer notes until the end of the trail!", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 40.f;
-	Entity text8 = createText("to pass this level, score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
+	Entity text8 = createText("to pass this level, get a score higher than ", vec2(reminderTextXPos - 30.f, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
 	Entity text9 = createText(std::to_string((int)score_threshold), vec2(reminderTextXPos + 320.f, reminderTextYPos), 0.45f, Colour::red, Screen::BATTLE, true, true);
 
@@ -445,7 +490,6 @@ void Battle::handle_exit_reminder() {
 	audio->pauseMusic();
 	while (registry.battleReminderPopUpParts.entities.size() > 0)
 		registry.remove_all_components_of(registry.battleReminderPopUpParts.entities.back());
-
 };
 
 ///// GAME OVER POP UP METHODS---------------------

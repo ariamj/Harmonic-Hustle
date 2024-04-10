@@ -385,7 +385,7 @@
                     { 
                         "note_timings":
                         [
-                            {"spawn_time": 0.0, "duration": 1.0, "quantity": 2}
+                            {"spawn_time": 0.0, "duration": 1.0, "quantity": 3}
                         ],                    
                         "color":
                         [

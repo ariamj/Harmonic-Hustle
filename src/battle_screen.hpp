@@ -145,6 +145,7 @@ class Battle {
         void addExplanationBeatRush();
         void addExplanationUnison();
         void addExplanationBoss();
+        void addExplanationHeldNotes();
 
         void handle_exit_reminder();
         
