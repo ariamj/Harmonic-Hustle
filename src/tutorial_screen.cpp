@@ -422,17 +422,22 @@ void Tutorial::initAdjustNoteTimingParts()
     float shift = 320.f;
 
     // explain difficulty
-    currY += 100.f;
+    currY += 60.f;
     Entity text0 = createText("Adjust timing of notes", vec2(centerX, currY), 0.7f, Colour::off_white, Screen::TUTORIAL, true, true);
-    currY += 50.f;
-    Entity text1 = createText("Timing of notes is measured in portions of frames", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
-    
+    currY += 100.f;
+    Entity text1 = createText("You can adjust this at any point, via the options menu", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += gameInfo.height / 2.f - 100.f;
+    Entity text2 = createText("Decreasing the value shifts all note positions upwards", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
+    currY += 60.f;
+    Entity text3 = createText("Increasing the value shifts all note positions downwards", vec2(centerX, currY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);  
     
     Entity adjustment_text = curr_timing_text = createText("Frame Adjustment: ", vec2(centerX - 50.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
     curr_timing_text = createText(getFramesString(), vec2(centerX + 190.f, centerY), 0.6f, Colour::off_white, Screen::TUTORIAL, true, true);
 
     registry.tutorialParts.emplace(text0);
     registry.tutorialParts.emplace(text1);
+    registry.tutorialParts.emplace(text2);
+    registry.tutorialParts.emplace(text3);
     registry.tutorialParts.emplace(adjustment_text);
     registry.tutorialParts.emplace(curr_timing_text);
 
@@ -515,14 +520,14 @@ void Tutorial::handle_key(int key, int scancode, int action, int mod) {
                     // if (tutorial_progress != tutorial_max_progress_parts) {
                     std::cout << "space pressed, prev part in 1 index: " << tutorial_progress << std::endl;
                     init_parts((TutorialPart) tutorial_progress);
-                    if (tutorial_progress == tutorial_max_progress_parts)
+                    if (tutorial_progress == tutorial_max_progress_parts) {
                         if (gameInfo.prev_screen == Screen::OPTIONS) {
                             gameInfo.curr_screen = Screen::OPTIONS;
                         }
                         else {
                             gameInfo.curr_screen = Screen::OVERWORLD;
                         }
-                    // }
+                    }
                 }
             }
             break;
