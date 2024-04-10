@@ -32,60 +32,61 @@ void OptionsMenu::init_screen() {
 }
 
 void OptionsMenu::renderButtons() {
-    vec2 options_btn_size = vec2(750.f, gameInfo.height / 9.5f);
+    vec2 options_btn_size = vec2(680.f, gameInfo.height / 9.5f);
+    float text_scale = 1.3f;
     float new_game_y_padding = options_btn_size.y + 30.f;
     float y_padding = options_btn_size.y + 30.f;
     vec2 center_pos = vec2(gameInfo.width / 2.f, gameInfo.height / 3.f);
     vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
-    vec2 shift = vec2(400.f, 0.f);
+    vec2 shift = vec2(370.f, 0.f);
 
     // resume game button
     Entity resume_shadow = createBox(shadow_pos - shift, options_btn_size);
     registry.screens.insert(resume_shadow, Screen::OPTIONS);
     registry.colours.insert(resume_shadow, Colour::theme_blue_3);
-    resume_game_btn = createButton("RESUME GAME", center_pos - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    resume_game_btn = createButton("RESUME GAME", center_pos - shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // new game button
     Entity start_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos - shift, options_btn_size);
     registry.screens.insert(start_shadow, Screen::OPTIONS);
     registry.colours.insert(start_shadow, Colour::theme_blue_3);
-    new_game_btn = createButton("NEW GAME", center_pos + vec2(0, new_game_y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    new_game_btn = createButton("NEW GAME", center_pos + vec2(0, new_game_y_padding) - shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // save game button
     Entity timing_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos - shift, options_btn_size);
     registry.screens.insert(timing_shadow, Screen::OPTIONS);
     registry.colours.insert(timing_shadow, Colour::theme_blue_3);
-    adjust_timing_btn = createButton("ADJUST TIMING", center_pos + vec2(0, y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    adjust_timing_btn = createButton("ADJUST TIMING", center_pos + vec2(0, y_padding + y_padding) - shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // difficulty settings buttons
     Entity difficulty_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos - shift, options_btn_size);
     registry.screens.insert(difficulty_shadow, Screen::OPTIONS);
     registry.colours.insert(difficulty_shadow, Colour::theme_blue_3);
-    difficulty_btn = createButton("DIFFICULTY", center_pos + vec2(0, y_padding + y_padding + y_padding) - shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    difficulty_btn = createButton("DIFFICULTY", center_pos + vec2(0, y_padding + y_padding + y_padding) - shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // controls png button
     Entity controls_shadow = createBox(shadow_pos + shift, options_btn_size);
     registry.screens.insert(controls_shadow, Screen::OPTIONS);
     registry.colours.insert(controls_shadow, Colour::theme_blue_3);
-    controls_btn = createButton("CONTROLS", center_pos + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    controls_btn = createButton("CONTROLS", center_pos + shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // tutorial button
     Entity tutorial_shadow = createBox(vec2(0, new_game_y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(tutorial_shadow, Screen::OPTIONS);
     registry.colours.insert(tutorial_shadow, Colour::theme_blue_3);
-    tutorial_btn = createButton("TUTORIAL", center_pos + vec2(0, new_game_y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    tutorial_btn = createButton("TUTORIAL", center_pos + vec2(0, new_game_y_padding) + shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // Return to main menu button
     Entity menu_shadow = createBox(vec2(0, y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(menu_shadow, Screen::OPTIONS);
     registry.colours.insert(menu_shadow, Colour::theme_blue_3);
-    return_to_main_btn = createButton("MAIN MENU", center_pos + vec2(0, y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    return_to_main_btn = createButton("MAIN MENU", center_pos + vec2(0, y_padding + y_padding) + shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
     // Save and exit button
     Entity exit_shadow = createBox(vec2(0, y_padding + y_padding + y_padding) + shadow_pos + shift, options_btn_size);
     registry.screens.insert(exit_shadow, Screen::OPTIONS);
     registry.colours.insert(exit_shadow, Colour::theme_blue_3);
-    exit_btn = createButton("SAVE + EXIT", center_pos + vec2(0, y_padding + y_padding + y_padding) + shift, 1.5f, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
+    exit_btn = createButton("SAVE + EXIT", center_pos + vec2(0, y_padding + y_padding + y_padding) + shift, text_scale, options_btn_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::OPTIONS);
 
 }
 
