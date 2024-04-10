@@ -100,7 +100,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
 	// render battle mode
 	createText("mode", mode_pos + vec2(0.f, -gameInfo.height * 0.03), 0.6f, Colour::light_gray, Screen::BATTLE);
-	createText(mode_text, mode_pos + vec2(5.f), 0.6f, mode_colour, Screen::BATTLE);
+	createText(mode_text, vec2(mode_pos.x, mode_pos.y + 5.f), 0.6f, mode_colour, Screen::BATTLE);
 
 	if (in_reminder) {
 		// renderReminderText();

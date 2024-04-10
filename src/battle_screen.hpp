@@ -146,6 +146,7 @@ class Battle {
         void addExplanationUnison();
         void addExplanationBoss();
         void addExplanationHeldNotes();
+        void addExplanationModeChange();
 
         void handle_exit_reminder();
         
