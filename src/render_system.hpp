@@ -84,9 +84,9 @@ class RenderSystem {
 		textures_path("Long-Note-Example.png"),
 		textures_path("Tap-Note-Example.png"),
 		textures_path("Held-Note-Example-Start.png"),
-		textures_path("Held-Note-Example-Start.png"),
-		textures_path("Held-Note-Example-Start.png"),
-		textures_path("Held-Note-Example-Start.png")
+		textures_path("Held-Note-Example-Tap.png"),
+		textures_path("Held-Note-Example-Holding.png"),
+		textures_path("Held-Note-Example-Finish.png")
 	};
 
 	std::array<GLuint, effect_count> effects;

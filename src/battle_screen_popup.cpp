@@ -235,18 +235,27 @@ void Battle::addExplanationHeldNotes() {
 	Entity text2 = createText("Prepare for battle", vec2(reminderTextXPos, reminderTextYPos), 0.65f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 45.f;
-	Entity text3 = createText("In Normal & Hard, \"Held Notes\" will now appear.", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::unison_colour, Screen::BATTLE, true, true);
+	Entity text3 = createText("In Normal & Hard, \"Held Notes\" will now appear.", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::dark_purple, Screen::BATTLE, true, true);
 
-	reminderTextYPos += 60.f;
+	reminderTextYPos += 45.f;
 	Entity text5 = createText("Held Notes have much brighter trails", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
-	
-	reminderTextYPos += 40.f;
+
+	reminderTextYPos += 80.f;
+	// help images
+	float imgXPos = gameInfo.width / 2.f;
+	float imgYPos = reminderTextYPos;
+	Entity startImg = createHelpImage(renderer, vec2(imgXPos - 150.f, imgYPos), vec2(80, 100),TEXTURE_ASSET_ID::HELD_NOTE_EXAMPLE_START, Screen::BATTLE);
+	Entity tapImg = createHelpImage(renderer, vec2(imgXPos - 50.f, imgYPos), vec2(80, 100), TEXTURE_ASSET_ID::HELD_NOTE_EXAMPLE_TAP, Screen::BATTLE);
+	Entity midImg = createHelpImage(renderer, vec2(imgXPos + 50.f, imgYPos),vec2(80, 100), TEXTURE_ASSET_ID::HELD_NOTE_EXAMPLE_HOLDING, Screen::BATTLE);
+	Entity finishImg = createHelpImage(renderer, vec2(imgXPos + 150.f, imgYPos),vec2(80, 100), TEXTURE_ASSET_ID::HELD_NOTE_EXAMPLE_FINISH, Screen::BATTLE);
+
+	reminderTextYPos += 95.f;
 	Entity text6 = createText("In addition to timing the initial press,", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
-	reminderTextYPos += 60.f;
+	reminderTextYPos += 45.f;
 	Entity text7 = createText("hold down the key until the trail disappears", vec2(reminderTextXPos, reminderTextYPos), 0.45f, Colour::black, Screen::BATTLE, true, true);
 
-	reminderTextYPos += 55.f;
+	reminderTextYPos += 65.f;
 	Entity continue_text = createText("press space to continue", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
 
 	registry.battleReminderPopUpParts.emplace(text1);
@@ -255,6 +264,10 @@ void Battle::addExplanationHeldNotes() {
 	registry.battleReminderPopUpParts.emplace(text5);
 	registry.battleReminderPopUpParts.emplace(text6);
 	registry.battleReminderPopUpParts.emplace(text7);
+	registry.battleReminderPopUpParts.emplace(startImg);
+	registry.battleReminderPopUpParts.emplace(tapImg);
+	registry.battleReminderPopUpParts.emplace(midImg);
+	registry.battleReminderPopUpParts.emplace(finishImg);
 	registry.battleReminderPopUpParts.emplace(continue_text);	
 }
 
