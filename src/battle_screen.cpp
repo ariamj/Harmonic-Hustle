@@ -100,7 +100,7 @@ bool Battle::handle_step(float elapsed_ms_since_last_update, float current_speed
 	createText(std::to_string((int)score_threshold), threshold_pos, 1.5f, Colour::red * vec3(0.75), Screen::BATTLE);
 	// render battle mode
 	createText("mode", mode_pos + vec2(0.f, -gameInfo.height * 0.03), 0.6f, Colour::light_gray, Screen::BATTLE);
-	createText(mode_text, mode_pos + vec2(5.f), 0.6f, mode_colour, Screen::BATTLE);
+	createText(mode_text, vec2(mode_pos.x, mode_pos.y + 5.f), 0.6f, mode_colour, Screen::BATTLE);
 
 	if (in_reminder) {
 		// renderReminderText();
@@ -655,8 +655,8 @@ void Battle::start() {
 
 	// Mode-related
 	mode_index = 0;
-	mode_text = "";
-	mode_colour = Colour::back_and_forth_colour;
+	mode_text = "---";
+	mode_colour = Colour::off_white;
 	current_mode = back_and_forth;
 
 	// Fine-tuning timing
@@ -711,6 +711,7 @@ void Battle::start() {
 	countdownTimer_ms = COUNTDOWN_TOTAL_BEATS * conductor.crotchet;
 
 	// add the reminder pop up parts to screen
+	popup_index = 0;
 	setReminderPopUp();
 }
 
@@ -1087,9 +1088,9 @@ void handleDebug(int action) {
 void Battle::handle_key(int key, int scancode, int action, int mod) {
 	if (in_reminder) {
 		switch (key) {
-			case GLFW_KEY_SPACE: // remove all reminder pop up parts
+			case GLFW_KEY_SPACE: // set next reminder
 				if (action == GLFW_PRESS)
-					handle_exit_reminder();
+					setReminderPopUp();
 		}
 		
 	} else if (battle_is_over) {

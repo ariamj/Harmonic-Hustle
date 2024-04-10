@@ -82,7 +82,17 @@ class RenderSystem {
 		textures_path("Spark-Particle.png"),
 		textures_path("Judgement-Lines-Example.png"),
 		textures_path("Long-Note-Example.png"),
-		textures_path("Tap-Note-Example.png")
+		textures_path("Tap-Note-Example.png"),
+		textures_path("Held-Note-Example-Start.png"),
+		textures_path("Held-Note-Example-Tap.png"),
+		textures_path("Held-Note-Example-Holding.png"),
+		textures_path("Held-Note-Example-Finish.png"),
+		textures_path("Mode-Back-And-Forth.png"),
+		textures_path("Mode-Beat-Rush.png"),
+		textures_path("Mode-Unison.png"),
+		textures_path("Mode-Change-Start.png"),
+		textures_path("Mode-Change-Mid.png"),
+		textures_path("Mode-Change-Finish.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
