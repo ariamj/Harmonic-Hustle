@@ -489,7 +489,7 @@ void Battle::addReminderPopUpPartsChallengeLevel() {
 	// Entity text5 = createText("hope you know what you're doing", vec2(reminderTextXPos, reminderTextYPos), 0.35f, Colour::theme_blue_3, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 50.f;
-	Entity text6 = createText(" luck!", vec2(reminderTextXPos, reminderTextYPos), 1.f, Colour::black, Screen::BATTLE, true, true);
+	Entity text6 = createText("good luck!", vec2(reminderTextXPos, reminderTextYPos), 1.f, Colour::black, Screen::BATTLE, true, true);
 
 	reminderTextYPos += 140.f;
 	Entity text10 = createText("press space to Start", vec2(reminderTextXPos, reminderTextYPos), 0.7f, Colour::dark_green, Screen::BATTLE, true, true);
