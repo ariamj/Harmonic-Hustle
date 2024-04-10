@@ -357,10 +357,16 @@ void Tutorial::initAdvancingExplaingParts() {
 void Tutorial::initChooseDifficultyParts() {
     // add x button at top right
     if (gameInfo.in_options) {
-        vec2 buttonPos = vec2(gameInfo.width - 120.f, gameInfo.height/10.f);
-        vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
-        x_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::TUTORIAL);
+        vec2 buttonPos = vec2(gameInfo.width - 100.f, 100.f);
+        vec2 buttonSize = vec2(100.f, 100.f);
+        Entity x_btn_shadow = createBox(buttonPos + vec2(10.f, 10.f), buttonSize);
+        registry.screens.insert(x_btn_shadow, Screen::TUTORIAL);
+	    registry.colours.insert(x_btn_shadow, Colour::theme_blue_2 - vec3(0.2));
+    
+
+        x_btn = createButton("X", buttonPos, 1.5f, buttonSize, Colour::red , Colour::theme_blue_1, Screen::TUTORIAL);
         registry.tutorialParts.emplace(x_btn);
+        registry.tutorialParts.emplace(x_btn_shadow);
     }
 
     // Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
@@ -433,10 +439,15 @@ void Tutorial::initAdjustNoteTimingParts()
 {
     // add x button at top right
     if (gameInfo.in_options) {
-        vec2 buttonPos = vec2(gameInfo.width- 120.f, gameInfo.height/10.f);
-        vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
-        x_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::TUTORIAL);
+        vec2 buttonPos = vec2(gameInfo.width - 100.f, 100.f);
+        vec2 buttonSize = vec2(100.f, 100.f);
+        Entity x_btn_shadow = createBox(buttonPos + vec2(10.f, 10.f), buttonSize);
+        registry.screens.insert(x_btn_shadow, Screen::TUTORIAL);
+	    registry.colours.insert(x_btn_shadow, Colour::theme_blue_2 - vec3(0.2));
+    
+        x_btn = createButton("X", buttonPos, 1.5f, buttonSize, Colour::red , Colour::theme_blue_1, Screen::TUTORIAL);
         registry.tutorialParts.emplace(x_btn);
+        registry.tutorialParts.emplace(x_btn_shadow);
     }
     float currY = gameInfo.height / 8.f;
     float centerX = gameInfo.width / 2.f;
@@ -466,7 +477,7 @@ void Tutorial::initAdjustNoteTimingParts()
 
     // Create +/- frames buttons
 
-    vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
+    // vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
     vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
     //Entity easy_shadow = createBox(shadow_pos, buttonSize);
     //registry.screens.insert(easy_shadow, Screen::TUTORIAL);
@@ -475,6 +486,16 @@ void Tutorial::initAdjustNoteTimingParts()
     decrease_frames_btn = createButton("-", vec2(centerX - shift, centerY), 1.5, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
     registry.tutorialParts.emplace(increase_frames_btn);
     registry.tutorialParts.emplace(decrease_frames_btn);
+
+    Entity increase_btn_shadow = createBox(vec2(centerX + shift, centerY) + vec2(10.f, 10.f), buttonSize);
+    registry.screens.insert(increase_btn_shadow, Screen::TUTORIAL);
+    registry.colours.insert(increase_btn_shadow, Colour::theme_blue_3);
+    registry.tutorialParts.emplace(increase_btn_shadow);
+
+    Entity decrease_btn_shadow = createBox(vec2(centerX - shift, centerY) + vec2(10.f, 10.f), buttonSize);
+    registry.screens.insert(decrease_btn_shadow, Screen::TUTORIAL);
+    registry.colours.insert(decrease_btn_shadow, Colour::theme_blue_3);
+    registry.tutorialParts.emplace(decrease_btn_shadow);
     
 
 }

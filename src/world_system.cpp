@@ -1094,7 +1094,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
 		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top) && (ypos <= x_btn_area.bottom);
+		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
 
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;
@@ -1121,7 +1121,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
 
 		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top) && (ypos <= x_btn_area.bottom);
+		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
 
 		if (within_increase_frames_btn_area) {
 			mouse_area = in_increase_frame_btn;
@@ -1141,7 +1141,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	// back button in help screen
 	if (gameInfo.curr_screen == Screen::SETTINGS) {
 		BoxAreaBound back_btn_area = registry.boxAreaBounds.get(settings.back_btn);
-		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top) && (ypos <= back_btn_area.bottom);
+		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top - 10.f) && (ypos <= back_btn_area.bottom - 10.f);
 		if (within_back_btn_area) {
 			mouse_area = in_back_btn;
 		}
