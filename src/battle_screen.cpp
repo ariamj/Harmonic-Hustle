@@ -721,8 +721,13 @@ bool Battle::set_pause(bool isPaused) {
 	if (isPaused && !in_reminder) {
 		audio->pauseMusic();
 	} else {
-		in_countdown = true;
-		countdownTimer_ms = 3000;
+		if (battle_is_over) {
+			in_countdown = false;
+			audio->resumeMusic();
+		} else {
+			in_countdown = true;
+			countdownTimer_ms = 3000;
+		}
 
 		// double prevPosition = audio->getSongPosition();
 		// double newPosition = prevPosition - 3.0;

@@ -37,7 +37,7 @@ void Start::init_screen() {
 
     renderButtons();
 
-    createText("...or press 'space' to continue...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::START, true, true);
+    createText("...or press 'space' for new game...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::START, true, true);
 }
 
 void Start::renderButtons() {
