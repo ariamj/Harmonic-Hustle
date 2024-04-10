@@ -578,16 +578,20 @@ bool WorldSystem::render_set_options_screen() {
 	// if navigating to settings from start, disable certain buttons
 	if (gameInfo.prev_non_option_screen == Screen::START) {
 		optionsMenu.disableButton("DIFFICULTY");
-		// optionsMenu.disableButton("TUTORIAL");
 		optionsMenu.disableButton("ADJUST TIMING");
 	} else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
 		optionsMenu.disableButton("DIFFICULTY");
 		optionsMenu.disableButton("ADJUST TIMING");
+
+	} 
+	else if (gameInfo.prev_non_option_screen == Screen::BATTLE) {
+		optionsMenu.disableButton("DIFFICULTY");
+		// optionsMenu.disableButton("ADJUST TIMING");
 	
-	} else {
+	} 
+	else {
 		// make sure they're enabled
 		optionsMenu.enableButton("DIFFICULTY");
-		// optionsMenu.enableButton("TUTORIAL");
 		optionsMenu.enableButton("ADJUST TIMING");
 	}
 
@@ -801,7 +805,6 @@ void WorldSystem::handleClickResumeBtn()
 		gameInfo.in_options = false;
 		optionsMenu.enableButton("DIFFICULTY");
 		optionsMenu.enableButton("ADJUST TIMING");
-		// optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.prev_non_option_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = gameInfo.curr_screen;
 			render_set_overworld_screen();
@@ -887,7 +890,6 @@ void WorldSystem::handleClickMainMenuBtn()
 	if (gameInfo.curr_screen == Screen::OPTIONS) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
 		optionsMenu.enableButton("DIFFICULTY");
-		// optionsMenu.enableButton("TUTORIAL");
 		optionsMenu.enableButton("ADJUST TIMING");
 		render_set_start_screen();
 	}
@@ -1102,9 +1104,6 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
 		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
-		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
-
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;
 
@@ -1113,10 +1112,16 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 
 		} else if (within_hard_btn_area) {
 			mouse_area = in_hard_btn;
-		} else if (within_x_btn_area && gameInfo.in_difficulty) {
-			mouse_area = in_x_btn;
 		} else {
 			mouse_area = in_unclickable;
+		}
+		// adding in a guard for x button
+		if (gameInfo.in_difficulty) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_difficulty) {
+				mouse_area = in_x_btn;
+			}
 		}
 		tutorial.handle_mouse_move(mouse_area);
 	}
@@ -1129,20 +1134,20 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
 		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
 
-		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
-
 		if (within_increase_frames_btn_area) {
 			mouse_area = in_increase_frame_btn;
 		}
 		else if (within_decrease_frames_btn_area) {
 			mouse_area = in_decrease_frame_btn; 
-		}
-		else if (within_x_btn_area && gameInfo.in_adjust_timing) {
-			mouse_area = in_x_btn;
 		} 
 		else {
 			mouse_area = in_unclickable;
+		}
+		if (gameInfo.in_options) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_adjust_timing) 
+				mouse_area = in_x_btn;
 		}
 		tutorial.handle_mouse_move(mouse_area);
 	}
