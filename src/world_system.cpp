@@ -1102,9 +1102,13 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
 		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
-		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
-
+		// adding in a guard for x button
+		if (gameInfo.in_options) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_difficulty) {
+				mouse_area = in_x_btn;
+		}
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;
 
@@ -1113,8 +1117,6 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 
 		} else if (within_hard_btn_area) {
 			mouse_area = in_hard_btn;
-		} else if (within_x_btn_area && gameInfo.in_difficulty) {
-			mouse_area = in_x_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
@@ -1129,17 +1131,17 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
 		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
 
-		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
-		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
-
+		if (gameInfo.in_options) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_adjust_timing) 
+				mouse_area = in_x_btn;
+		}
 		if (within_increase_frames_btn_area) {
 			mouse_area = in_increase_frame_btn;
 		}
 		else if (within_decrease_frames_btn_area) {
 			mouse_area = in_decrease_frame_btn; 
-		}
-		else if (within_x_btn_area && gameInfo.in_adjust_timing) {
-			mouse_area = in_x_btn;
 		} 
 		else {
 			mouse_area = in_unclickable;
