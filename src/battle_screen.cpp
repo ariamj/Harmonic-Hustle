@@ -711,6 +711,7 @@ void Battle::start() {
 	countdownTimer_ms = COUNTDOWN_TOTAL_BEATS * conductor.crotchet;
 
 	// add the reminder pop up parts to screen
+	popup_index = 0;
 	setReminderPopUp();
 }
 
@@ -1087,9 +1088,9 @@ void handleDebug(int action) {
 void Battle::handle_key(int key, int scancode, int action, int mod) {
 	if (in_reminder) {
 		switch (key) {
-			case GLFW_KEY_SPACE: // remove all reminder pop up parts
+			case GLFW_KEY_SPACE: // set next reminder
 				if (action == GLFW_PRESS)
-					handle_exit_reminder();
+					setReminderPopUp();
 		}
 		
 	} else if (battle_is_over) {

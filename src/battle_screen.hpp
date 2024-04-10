@@ -137,12 +137,14 @@ class Battle {
         void addReminderPopUpPartsLevelThree();
         void addReminderPopUpPartsLevelBoss();
         void addDefaultReminderParts();
+        void addDefaultReminderPartsBoss();
         void addReminderPopUpPartsChallengeLevel();
 
         // more helpers for reminder pop ups
         void addExplanationBackAndForth();
         void addExplanationBeatRush();
         void addExplanationUnison();
+        void addExplanationBoss();
 
         void handle_exit_reminder();
         
@@ -228,4 +230,5 @@ class Battle {
         
     protected:
         int enemy_level;
+        int popup_index = 0;
 };
