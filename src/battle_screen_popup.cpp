@@ -408,10 +408,10 @@ void Battle::renderGameOverText() {
 		if (gameInfo.curr_lives == 0) {
 			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE);
 			createText("And you've run out of lives :(", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.75f, Colour::red, Screen::BATTLE);
-		} else if (registry.enemies.entities.size() == 0) {
+		} else if ((registry.enemies.entities.size() == 0 ) && (gameInfo.curr_lives != 0)) {
 			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 4)), 0.75f, Colour::black, Screen::BATTLE);
 			createText("And you've run out of chances", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3)), 0.73f, Colour::red, Screen::BATTLE);
-			createText("to get to the boss", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 2)), 0.73f, Colour::red, Screen::BATTLE);
+			createText("to advance", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 2)), 0.73f, Colour::red, Screen::BATTLE);
 		} else {
 			createText("You have been defeated!!!", vec2(gameInfo.width/2.f, gameInfo.height/2.f - (spacing * 3.5)), 0.75f, Colour::black, Screen::BATTLE);
 		}
