@@ -86,7 +86,10 @@ class RenderSystem {
 		textures_path("Held-Note-Example-Start.png"),
 		textures_path("Held-Note-Example-Tap.png"),
 		textures_path("Held-Note-Example-Holding.png"),
-		textures_path("Held-Note-Example-Finish.png")
+		textures_path("Held-Note-Example-Finish.png"),
+		textures_path("Mode-Back-And-Forth.png"),
+		textures_path("Mode-Beat-Rush.png"),
+		textures_path("Mode-Unison.png")		
 	};
 
 	std::array<GLuint, effect_count> effects;

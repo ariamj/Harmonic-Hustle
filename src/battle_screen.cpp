@@ -655,8 +655,8 @@ void Battle::start() {
 
 	// Mode-related
 	mode_index = 0;
-	mode_text = "";
-	mode_colour = Colour::back_and_forth_colour;
+	mode_text = "---";
+	mode_colour = Colour::off_white;
 	current_mode = back_and_forth;
 
 	// Fine-tuning timing
