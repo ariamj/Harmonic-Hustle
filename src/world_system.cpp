@@ -900,6 +900,7 @@ void WorldSystem::handleClickAdjustTimingBtn()
 {
 	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.adjust_timing_btn)) {
 		gameInfo.prev_screen = Screen::OPTIONS;
+		gameInfo.in_adjust_timing = true;
 		tutorial.tutorial_progress = TutorialPart::ADJUST_TIMING;
 		tutorial.init_parts(TutorialPart::ADJUST_TIMING);
 		render_set_tutorial();
@@ -912,6 +913,20 @@ void WorldSystem::handleClickBackBtn()
 	if (gameInfo.curr_screen == Screen::SETTINGS) {
 		gameInfo.prev_screen = Screen::SETTINGS;
 		render_set_options_screen();
+	}
+}
+
+void WorldSystem::handleClickXBtn() {
+	if (gameInfo.curr_screen == Screen::TUTORIAL) {
+		// simulate clicking space
+		tutorial.handle_key(GLFW_KEY_SPACE, 0, GLFW_PRESS, 0);
+		if (gameInfo.curr_screen == Screen::OPTIONS) {
+			// reset tutorial upon exit
+			tutorial.tutorial_progress = TutorialPart::INTRO;
+			gameInfo.in_difficulty = false;
+			gameInfo.in_adjust_timing = false;
+			render_set_options_screen();
+		}
 	}
 }
 
@@ -1001,7 +1016,10 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 				cutscene.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
-				tutorial.handle_key(key, scancode, action, mod);
+				// disable keys if in difficulty/adjust from options
+				if (!gameInfo.in_difficulty && !gameInfo.in_adjust_timing) {
+					tutorial.handle_key(key, scancode, action, mod);
+				}
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
 				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
@@ -1075,6 +1093,9 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
 		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
 		
+		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top) && (ypos <= x_btn_area.bottom);
+
 		if (within_easy_btn_area) {
 			mouse_area = in_easy_btn;
 
@@ -1083,6 +1104,8 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 
 		} else if (within_hard_btn_area) {
 			mouse_area = in_hard_btn;
+		} else if (within_x_btn_area && gameInfo.in_difficulty) {
+			mouse_area = in_x_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
@@ -1097,12 +1120,18 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
 		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
 
+		BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+		bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top) && (ypos <= x_btn_area.bottom);
+
 		if (within_increase_frames_btn_area) {
 			mouse_area = in_increase_frame_btn;
 		}
 		else if (within_decrease_frames_btn_area) {
 			mouse_area = in_decrease_frame_btn; 
 		}
+		else if (within_x_btn_area && gameInfo.in_adjust_timing) {
+			mouse_area = in_x_btn;
+		} 
 		else {
 			mouse_area = in_unclickable;
 		}
@@ -1112,7 +1141,7 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	// back button in help screen
 	if (gameInfo.curr_screen == Screen::SETTINGS) {
 		BoxAreaBound back_btn_area = registry.boxAreaBounds.get(settings.back_btn);
-		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top - y_padding) && (ypos <= back_btn_area.bottom - y_padding);
+		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top) && (ypos <= back_btn_area.bottom);
 		if (within_back_btn_area) {
 			mouse_area = in_back_btn;
 		}
@@ -1264,6 +1293,11 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 				break;
 			case in_back_btn:
 				handleClickBackBtn();
+				break;
+
+			// only true if x button is rendered and mouse in correct position
+			case in_x_btn:
+				handleClickXBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

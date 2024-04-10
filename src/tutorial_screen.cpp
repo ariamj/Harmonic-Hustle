@@ -66,6 +66,9 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
 
                 // Hover effect
                 // NOTE: if lag happens, comment this part out
+                if (text == "X" && mouse_area == in_x_btn) {
+                    text_colour = Colour::dark_red;
+                }
                 int difficulty = gameInfo.curr_difficulty;
                 if ((text == "easy" && mouse_area == in_easy_btn && difficulty != 0) || (text == "normal" && mouse_area == in_normal_btn && difficulty !=1) || (text == "hard" && mouse_area == in_hard_btn && difficulty !=2)) {
                     text_colour = Colour::white;
@@ -84,6 +87,9 @@ bool Tutorial::handle_step(float elapsed_ms_since_last_update, float current_spe
                 Motion motion = registry.motions.get(entity);
                 std::string text = registry.boxButtons.get(entity).text;
                 vec3 text_colour = btn.text_colour;
+                if (text == "X" && mouse_area == in_x_btn) {
+                    text_colour = Colour::dark_red;
+                }
                 if (text == "-")  motion.position.y += 9.0f; // adjust minus symbol to look centered
                 // Hover effect
                 // NOTE: if lag happens, comment this part out
@@ -349,7 +355,15 @@ void Tutorial::initAdvancingExplaingParts() {
 }
 
 void Tutorial::initChooseDifficultyParts() {
-// Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
+    // add x button at top right
+    if (gameInfo.in_options) {
+        vec2 buttonPos = vec2(gameInfo.width - 120.f, gameInfo.height/10.f);
+        vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
+        x_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::TUTORIAL);
+        registry.tutorialParts.emplace(x_btn);
+    }
+
+    // Entity text1 = createText("TESTING 3", vec2(gameInfo.width/2.f, gameInfo.height / 2.f), 2.f, Colour::white, Screen::TUTORIAL, true, true);
     // registry.tutorialParts.emplace(text1);
     float currY = gameInfo.height / 15.f;
     float centerX = gameInfo.width / 2.f;
@@ -394,10 +408,11 @@ void Tutorial::initChooseDifficultyParts() {
 	registry.colours.insert(hard_shadow, Colour::theme_blue_3);
 	hard_btn = createButton("hard", vec2(buttonX, currY), 1.0f, buttonSize, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::TUTORIAL);
 	
-    currY += 170.f;
-    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
-    
-    registry.tutorialParts.emplace(contText);
+    if (!gameInfo.in_options) {
+        currY += 170.f;
+        Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+        registry.tutorialParts.emplace(contText);
+    }
 
     registry.tutorialParts.emplace(hard_shadow);
     registry.tutorialParts.emplace(hard_btn);
@@ -416,6 +431,13 @@ std::string getFramesString() {
 
 void Tutorial::initAdjustNoteTimingParts()
 {
+    // add x button at top right
+    if (gameInfo.in_options) {
+        vec2 buttonPos = vec2(gameInfo.width- 120.f, gameInfo.height/10.f);
+        vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
+        x_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::TUTORIAL);
+        registry.tutorialParts.emplace(x_btn);
+    }
     float currY = gameInfo.height / 8.f;
     float centerX = gameInfo.width / 2.f;
     float centerY = gameInfo.height / 2.f;
@@ -437,8 +459,10 @@ void Tutorial::initAdjustNoteTimingParts()
     registry.tutorialParts.emplace(curr_timing_text);
 
 
-    Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
-    registry.tutorialParts.emplace(contText);
+    if (!gameInfo.in_options) {
+        Entity contText = createText("Press space to continue", vec2(gameInfo.width / 2.f, gameInfo.height * 7.5f / 8.f), 0.9f, Colour::white, Screen::TUTORIAL, true, true);
+        registry.tutorialParts.emplace(contText);
+    }
 
     // Create +/- frames buttons
 
