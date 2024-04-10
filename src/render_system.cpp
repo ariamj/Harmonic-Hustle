@@ -406,9 +406,12 @@ void RenderSystem::draw()
 		}
 	}
 
-	// Particle rendering, between foreground and background layers
- 	for (auto generator : particle_generators) {
-			generator->Draw();
+	// Don't render particles in options
+	if (!gameInfo.in_options) {
+		// Particle rendering, between foreground and background layers
+		for (auto generator : particle_generators) {
+				generator->Draw();
+		}
 	}
 	glBindVertexArray(vao);
 
