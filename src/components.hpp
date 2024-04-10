@@ -199,6 +199,7 @@ struct GameInfo {
 	bool in_options = false;
 	// set true if clicked on difficulty button, else false
 	bool in_difficulty = false; 
+	bool in_adjust_timing = false;
 };
 extern GameInfo gameInfo;
 

@@ -34,6 +34,7 @@ class Tutorial {
         Entity easy_btn;
 	    Entity normal_btn;
         Entity hard_btn;
+        Entity x_btn;
 
         // frames adjustment buttons
         Entity increase_frames_btn;

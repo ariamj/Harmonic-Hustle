@@ -153,7 +153,8 @@ enum MouseArea {
 	in_return_to_main_btn,
 	in_increase_frame_btn,
 	in_decrease_frame_btn,
-	in_back_btn
+	in_back_btn,
+	in_x_btn,
 
 };
 

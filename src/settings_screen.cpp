@@ -28,9 +28,13 @@ void Settings::init_screen() {
 void Settings::renderButtons()
 {
     //vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
-    vec2 buttonPos = vec2(gameInfo.width- 120.f, gameInfo.height/10.f);
-    vec2 buttonSize = vec2(gameInfo.height / 10.f, gameInfo.height / 10.f);
-    back_btn = createButton("X", buttonPos, 2.5f, buttonSize, Colour::red, Colour::white + vec3(0.1), Screen::SETTINGS);
+    vec2 buttonPos = vec2(gameInfo.width - 100.f, 100.f);
+    vec2 buttonSize = vec2(100.f, 100.f);
+    Entity settings_shadow = createBox(buttonPos + vec2(10.f, 10.f), buttonSize);
+	registry.screens.insert(settings_shadow, Screen::SETTINGS);
+	registry.colours.insert(settings_shadow, Colour::theme_blue_1);
+    
+    back_btn = createButton("X", buttonPos, 1.5f, buttonSize, Colour::red, Colour::white, Screen::SETTINGS);
 }
 
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
