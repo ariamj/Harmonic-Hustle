@@ -4,9 +4,17 @@
 
 After being forced to listen to a neighbour's outrageous late night parties with terrible music, you decide to take action and battle the musical offenders. 
 
-Our game will have one primary zone resembling a city, with up to three different enemies within functioning as mini-levels. Encounters with higher level enemies will cause the game to reset while encounters with the correct level enemies will result in a rhythmic battle esequence. To advance, the player must time their keyboard inputs against the enemy’s musical notes precisely enough to score above a certain threshold. Losing will cause the current enemy sprite to disappear, exhausted after the battle. The player will then have to find another current level enemy. If there are no more current level enemeis, player loses and game ends. Winning the level battle will increase player level so they can battle higher level enemies.
+Our game will have one primary zone resembling a city, with up to three different enemies within functioning as mini-levels. Encounters with higher level enemies will cause the game to reset while encounters with the correct level enemies will result in a rhythmic battle esequence. To advance, the player must time their keyboard inputs against the enemy’s musical notes precisely enough to score above a certain threshold. Losing will cause the current enemy sprite to disappear, exhausted after the battle. The player will then have to find another current level enemy. Red enemies are higher level and represent challenge battles. Winning these challenges will automaticaly let the player advance and skip levels. Losing will mean losing a life. Player is initially given 3 lives, and once these lives run out, game over.
+
 
 ## Milestone requirements
+
+### M4
+| Requirement  | in game feature |
+| ------------- | ------------- |
+| Tutorial | A tutorial that plays each time a new game starts. Tutorial is also always accessible in the settings, which also includes a controls page as a quick reminder of key bindings |
+| Advanced Creative Component | Numerous sophisticated integrated assets - changing music that plays depending on game state. we also have a wide variety of visually coherent sprites all in the same art style/aesthetic |
+
 
 ### M3
 | Requirement  | in game feature |
@@ -30,5 +38,6 @@ Our game will have one primary zone resembling a city, with up to three differen
 ## Video links:
 * M1 demo: https://www.youtube.com/watch?v=6NH76u7yUXw
 * M2 demo: https://www.youtube.com/watch?v=P_qFtmGFvA4
+* M3 demo: https://www.youtube.com/watch?v=BBwbbgrHsHY
 
 
