@@ -11,6 +11,7 @@
 // const size_t ENEMY_DELAY_MS = 5000 * 3;
 const float PLAYER_SPEED = 200.f;
 
+
 Overworld::Overworld() 
 : next_enemy_spawn(0.f)
 {
@@ -32,7 +33,8 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Overworld";
 	glfwSetWindowTitle(window, title_ss.str().c_str());
-
+	//createText("Options Menu", vec2(gameInfo.width / 2.f, gameInfo.height / 3.6), 1.0f, Colour::theme_blue_3, Screen::OVERWORLD);
+	//opm.displayOptions(Screen::OVERWORLD);
 	// Remove debug info from the last step
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
@@ -54,18 +56,14 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 	Motion& playerMotion = registry.motions.get(*gameInfo.player_sprite);
 
 	std::string levelText = "lvl " + std::to_string(gameInfo.curr_level);
-	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, glm::mat4(1.f), Screen::OVERWORLD, true );
+	createText(levelText, vec2(playerMotion.position[0], playerMotion.position[1] - PLAYER_HEIGHT / 2.f - 10.f), 0.5f, Colour::green, Screen::OVERWORLD, true );
 	
-
-	// // Spawn new enemies
-	// next_enemy_spawn -= elapsed_ms_since_last_update * current_speed;
-	// if (registry.enemies.components.size() <= MAX_ENEMIES && next_enemy_spawn < 0.f) {
-	// 	// reset timer
-	// 	next_enemy_spawn = (ENEMY_DELAY_MS / 2) + uniform_dist(rng) * (ENEMY_DELAY_MS / 2);
+	// render lives text
+	std::string livesText = "lives: " + std::to_string(gameInfo.curr_lives);
+	createText(livesText, vec2(gameInfo.width - 125.f, gameInfo.height - 45.f), 0.7f, Colour::white, Screen::OVERWORLD);
 	// 	// create an enemy
-
-	// 	createEnemy(renderer, vec2(50.f + uniform_dist(rng) * (window_width_px - 100.f), window_height_px / 3), 1);
-	// }
+	// 	// create an enemy
+	// 	// create an enemy
 
     // check if enemies are high level, if yes color red, else remove color if needed
     auto& enemies = registry.enemies.entities;
@@ -76,14 +74,14 @@ bool Overworld::handle_step(float elapsed_ms_since_last_update, float current_sp
 		std::string levelText = "lvl " + std::to_string(enemyLevel);
         if (enemyLevel > playerLevel) {
             if (!registry.colours.has(enemy)) {
-                registry.colours.insert(enemy, {0.95f, 0.6f, 0.6f});
+                registry.colours.insert(enemy, Colour::red_enemy_tint);
             }
-			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::red, glm::mat4(1.f), Screen::OVERWORLD, true);
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::red, Screen::OVERWORLD, true);
         } else {
             if (registry.colours.has(enemy)) {
                 registry.colours.remove(enemy);
             }
-			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, glm::mat4(1.f), Screen::OVERWORLD, true);
+			createText(levelText, vec2(enemyMotion.position[0], enemyMotion.position[1] - ENEMY_HEIGHT / 2.f - 10.f), 0.5f, Colour::white, Screen::OVERWORLD, true);
         }
     }
 
@@ -134,18 +132,12 @@ bool Overworld::handle_collisions() {
             // if collision is between enemy with level <= player level
             //      set curr enemy and switch to battle scene
             // else restart the entire game
-			if (registry.isRunning.has(entity_other)) {
+			if (registry.enemies.has(entity_other)) {
 
 				// Set enemy sprite as enemy for battle
 				gameInfo.curr_enemy = entity_other;
 				gameInfo.curr_screen = Screen::BATTLE;
-
-            } else {
-				// Set enemy sprite as enemy for battle - TEMP, TODO: use one is above if when implemented
-				gameInfo.curr_enemy = entity_other;
-				gameInfo.curr_level = 1;
-				// return true to restart game
-				return true;
+				return false;
             }
         }
     }

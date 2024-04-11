@@ -8,10 +8,15 @@ class TrailParticleGenerator : public ParticleGenerator
 public:
     // subclass constructor
     // const int amount = 500;
-    TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    TrailParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     ~TrailParticleGenerator() {};
-private:
     PARTICLE_TYPE_ID getType() override;
-    void updateParticleBehaviours(Particle& p, float dt) override;
-    void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset) override;
+    void setAdditionalParticles(int num_particles);
+private:
+    // Extend trail to appear longer
+    int additional_particles = 0;
+    const float TRAIL_EXTENSION_MULTIPLIER = 0.05f; // percentage of a beat to extend trail by
+    void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset) override;
+    void updateParticleBehaviours(Particle& p, float dt, Entity entity);
+    void respawnParticle(Particle &particle, Entity entity, glm::vec2 offset);
 };

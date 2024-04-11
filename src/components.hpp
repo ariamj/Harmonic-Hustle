@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "../ext/stb_image/stb_image.h"
 #include "screen.hpp"
+#include "chrono"
 
 // Sets the brightness of the screen
 struct ScreenState
@@ -45,11 +46,31 @@ struct Text
 	bool center_pos;
 };
 
+struct StaticText
+{
+	//text content stays the same (eg. title)
+};
+
+struct DynamicText
+{
+	//text content always changes (eg. score)
+};
+
+struct TextTimer
+{
+	float count_ms = 200.f;
+};
+
 struct BoxButton {
 	Entity button_base;
 	std::string text;
 	float text_scale = 1.f;
 	glm::vec3 text_colour = vec3(0.f);
+};
+
+// disable component for buttons
+struct Disabled {
+
 };
 
 // Mesh datastructure for storing vertex and index buffers
@@ -59,6 +80,16 @@ struct Mesh
 	vec2 original_size = {1,1};
 	std::vector<ColoredVertex> vertices;
 	std::vector<uint16_t> vertex_indices;
+};
+
+struct Foreground
+{
+
+};
+
+struct Background
+{
+
 };
 
 // All data relevant to the shape and motion of entities
@@ -75,6 +106,14 @@ struct Motion {
 struct Note
 {
 	bool pressed = false;
+	float spawn_time;
+	float duration = -1.0f;
+	float curr_duration = -1.0f;
+};
+
+struct NoteDuration
+{
+	float count_ms;
 };
 
 struct Player
@@ -88,6 +127,10 @@ struct Enemy
 };
 
 struct BattleEnemy {
+
+};
+
+struct BattlePlayer {
 
 };
 
@@ -114,9 +157,19 @@ struct JudgementLineTimer
 	float count_ms = 200;
 };
 
+struct ProgressBar
+{
+	//progress bar
+};
+
+struct BattleLanes {
+
+};
+
 struct GameInfo {
 	Screen curr_screen;
 	Screen prev_screen; // to handle resume correct screen after pausing
+	Screen prev_non_option_screen; // to avoid staying suck in options screen
 	std::shared_ptr<Entity> player_sprite;
 	int height;
 	int width;
@@ -127,13 +180,26 @@ struct GameInfo {
 	Entity curr_enemy;
 	int curr_level = 1;
 	int max_level = 4;
+	int curr_difficulty = 1; // default to normal
+	int curr_lives = 3;
 	bool victory = false; // True for testing; should be initialized to false
 	bool is_boss_finished = false;
 	bool is_intro_finished = false;
 	bool is_game_over_finished = false;
+	bool won_boss = false;
 	std::vector<std::vector<float>> existing_enemy_info; // contains vector of <posX, posY, level> of each enemy
 	bool gameIsOver = false;
-	vec4 battleModeColor; 
+	vec4 particle_color_adjustment;
+	float frames_adjustment = 0.f; // player-calibrated adjustment, measured in portions of frames
+	float curr_note_travel_time = 2000.f;
+	float judgment_line_half_height;
+	
+	// set to true if we navigate to diff screens FROM options
+	//  else false
+	bool in_options = false;
+	// set true if clicked on difficulty button, else false
+	bool in_difficulty = false; 
+	bool in_adjust_timing = false;
 };
 extern GameInfo gameInfo;
 
@@ -155,10 +221,14 @@ struct EnemyCS {
 };
 
 struct CSText {
-	int progress = 0;
+
 };
 
 struct CSTextbox {
+
+};
+
+struct BattleCombo {
 
 };
 
@@ -182,6 +252,14 @@ struct PauseEnemyTimer {
 // if part of the battle over popup
 struct BattleOverPopUp {
 	
+};
+
+struct BattleReminderPopUp {
+
+};
+
+struct TutorialParts {
+
 };
 
 struct Collision
@@ -251,10 +329,38 @@ enum class TEXTURE_ASSET_ID {
 	BATTLEBOSS = BOSS_CS + 1,
 	PLAYER_CS = BATTLEBOSS + 1,
 	BOX_CS = PLAYER_CS + 1,
-	SPARK_PARTICLE = BOX_CS + 1,
-	BATTLEENEMY_DRUM = SPARK_PARTICLE + 1,
+	SMOKE_PARTICLE = BOX_CS + 1,
+	BATTLEENEMY_DRUM = SMOKE_PARTICLE + 1,
 	BATTLEENEMY_MIC = BATTLEENEMY_DRUM + 1,
-	TEXTURE_COUNT = BATTLEENEMY_MIC +1 // keep as last variable
+	BATTLEENEMY_DRUM_WIN = BATTLEENEMY_MIC + 1,
+	BATTLEENEMY_MIC_WIN = BATTLEENEMY_DRUM_WIN + 1,
+	BATTLEENEMY_GUITAR_WIN = BATTLEENEMY_MIC_WIN + 1,
+	BATTLEBOSS_WIN = BATTLEENEMY_GUITAR_WIN + 1,
+	BATTLEPLAYER_WIN = BATTLEBOSS_WIN + 1,
+	BATTLEENEMY_DRUM_LOSE = BATTLEPLAYER_WIN + 1,
+	BATTLEENEMY_MIC_LOSE = BATTLEENEMY_DRUM_LOSE + 1,
+	BATTLEENEMY_GUITAR_LOSE = BATTLEENEMY_MIC_LOSE + 1,
+	BATTLEBOSS_LOSE = BATTLEENEMY_GUITAR_LOSE + 1,
+	BATTLEPLAYER_LOSE = BATTLEBOSS_LOSE + 1,
+	NOTE_EXAMPLE_ABOVE = BATTLEPLAYER_LOSE + 1,
+	NOTE_EXAMPLE_ON = NOTE_EXAMPLE_ABOVE + 1,
+	NOTE_EXAMPLE_HIT = NOTE_EXAMPLE_ON + 1,
+	FLAME_PARTICLE = NOTE_EXAMPLE_HIT + 1,
+	SPARK_PARTICLE = FLAME_PARTICLE + 1,
+	JUDGEMENT_LINES_EXAMPLE = SPARK_PARTICLE + 1,
+	HOLD_NOTE_EXAMPLE = JUDGEMENT_LINES_EXAMPLE + 1,
+	TAP_NOTE_EXAMPLE = HOLD_NOTE_EXAMPLE + 1,
+	HELD_NOTE_EXAMPLE_START = TAP_NOTE_EXAMPLE + 1,
+	HELD_NOTE_EXAMPLE_TAP = HELD_NOTE_EXAMPLE_START + 1,
+	HELD_NOTE_EXAMPLE_HOLDING = HELD_NOTE_EXAMPLE_TAP + 1,
+	HELD_NOTE_EXAMPLE_FINISH = HELD_NOTE_EXAMPLE_HOLDING + 1,
+	MODE_BACK_AND_FORTH = HELD_NOTE_EXAMPLE_FINISH + 1,
+	MODE_BEAT_RUSH = MODE_BACK_AND_FORTH + 1,
+	MODE_UNISON = MODE_BEAT_RUSH + 1,
+	MODE_CHANGE_START = MODE_UNISON + 1,
+	MODE_CHANGE_MID = MODE_CHANGE_START + 1,
+	MODE_CHANGE_FINISH = MODE_CHANGE_MID + 1,
+	TEXTURE_COUNT = MODE_CHANGE_FINISH + 1 // keep as last variable
 };
 const int texture_count = (int)TEXTURE_ASSET_ID::TEXTURE_COUNT;
 
@@ -271,7 +377,9 @@ enum class EFFECT_ASSET_ID {
 	NOTE = JUDGEMENT + 1,
 	FONT = NOTE + 1,
 	TRAIL_PARTICLE = FONT + 1,
-	SPARK_PARTICLE = TRAIL_PARTICLE + 1,
+	SMOKE_PARTICLE = TRAIL_PARTICLE + 1,
+	FLAME_PARTICLE = SMOKE_PARTICLE + 1,
+	SPARK_PARTICLE = FLAME_PARTICLE + 1,
 	EFFECT_COUNT = SPARK_PARTICLE + 1 // keep as last variable
 };
 const int effect_count = (int)EFFECT_ASSET_ID::EFFECT_COUNT;
@@ -292,7 +400,9 @@ const int geometry_count = (int)GEOMETRY_BUFFER_ID::GEOMETRY_COUNT;
 
 enum class PARTICLE_TYPE_ID {
 	TRAIL = 0,
-	SPARK = TRAIL + 1,
+	SMOKE = TRAIL + 1,
+	FLAME = SMOKE + 1,
+	SPARK = FLAME + 1,
 	PARTICLE_TYPE_COUNT = SPARK + 1
 };
 const int particle_type_count = (int)PARTICLE_TYPE_ID::PARTICLE_TYPE_COUNT;
@@ -312,6 +422,7 @@ struct ParticleEffect
 struct ParticleTimer
 {
 	float count_ms = 1500.f;
+	Entity entity_to_observe;
 };
 
 struct RenderRequest {

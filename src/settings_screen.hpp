@@ -4,7 +4,6 @@
 #include "common.hpp"
 
 // stlib
-#include <vector>
 #include <random>
 
 #include "render_system.hpp"
@@ -18,6 +17,10 @@ class Settings {
 
         // Releases all associated resources
         ~Settings();
+
+        void init_screen();
+
+        void renderButtons();
 
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);
@@ -38,4 +41,12 @@ class Settings {
          // game state
         RenderSystem* renderer;
         GLFWwindow* window;
+
+        // mouse area
+        MouseArea mouse_area;
+
+        // Back to settings button
+        Entity back_btn;
+
+        void handle_mouse_move(MouseArea mouse_area);
 };

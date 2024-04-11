@@ -34,7 +34,9 @@ Entity createCSTextbox(RenderSystem* renderer, vec2 pos);
 // judgement line
 Entity createJudgementLine(RenderSystem* renderer, vec2 pos);
 // notes
-Entity createNote(RenderSystem* renderer, vec2 pos);
+Entity createNote(RenderSystem* renderer, vec2 pos, float spawn_time, float duration);
+// note duration
+Entity createNoteDuration(RenderSystem* renderer, vec2 pos, float duration);
 // a red line for debugging purposes
 Entity createLine(vec2 position, vec2 size, Screen screen = Screen::OVERWORLD);
 // an empty white box
@@ -44,8 +46,12 @@ Entity createCircleOutline(vec2 pos, float radius);
 // a filled in circle for debugging purposes
 Entity createDot(vec2 pos, vec2 size);
 // // creates a text to be rendered
-Entity createText(std::string text, vec2 pos, float scale, vec3 colour, glm::mat4 trans = glm::mat4(1.f), Screen screen = Screen::OVERWORLD, bool center_pos = true);
+Entity createText(std::string text, vec2 pos, float scale, vec3 colour, Screen screen = Screen::OVERWORLD, bool center_pos = true, bool static_text = false, glm::mat4 trans = glm::mat4(1.f));
 // creates a button - need to add text separately
 Entity createButton(const std::string text, vec2 pos, float text_scale, vec2 size, vec3 text_colour, vec3 box_colour, Screen screen);
+// creates an empty entity that has smoke particles
+Entity createSmoke(vec2 pos);
 // creates an empty entity that has spark particles
-Entity createSparks(vec2 pos);
+Entity createSpark(vec2 pos, float max_duration, Entity entity_to_observe);
+// create a simple png object to show some example images
+Entity createHelpImage(RenderSystem* renderer, vec2 pos, vec2 scale, TEXTURE_ASSET_ID helpImgId, Screen screen);

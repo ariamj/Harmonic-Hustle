@@ -49,7 +49,7 @@ class ParticleGenerator
 {
 public:
     // constructor
-    ParticleGenerator(GLuint shaderProgram, GLuint used_texture);
+    ParticleGenerator(GLuint shaderProgram, GLuint used_texture, int amount, int max_entities);
     // update all particles
     void Update(float dt, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
     // render all particles
@@ -70,18 +70,16 @@ private:
 
 protected: 
     // state
-    static const int amount = 500; // hard-coded for now.
-    static const int max_particles = amount * MAX_PARTICLE_ENTITIES;
-    Entity blocks[MAX_PARTICLE_ENTITIES];
+    int amount;
+    int max_entities;
+    int max_particles;
+    std::vector<Entity> blocks;
     Entity initialized_entity_id;
-    Particle particles[max_particles];
+    std::vector<Particle> particles;
     int findUnusedBlock();
     unsigned int firstUnusedParticle(int lastUsedParticle, int begin, int end);
 
-    // updates particles to achieve desired effects
-    virtual void updateParticleBehaviours(Particle& p, float dt);
-    // respawns particle
-    virtual void respawnParticle(Particle& particle, Entity entity, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
+    virtual void updateParticles(float dt, unsigned int newParticles, glm::vec2 offset);
 };
 
 #endif

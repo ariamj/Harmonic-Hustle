@@ -11,6 +11,9 @@ class PhysicsSystem
 {
 public:
 	void step(float elapsed_ms, RenderSystem* renderSystem);
+	void check_collisions_between_notes_and_judgments(float elapsed_ms, RenderSystem* renderSystem);
+	void check_collisions_between_player_and_enemies(float elapsed_ms, RenderSystem* renderSystem);
+	void check_collisions_between_all_motions(float elapsed_ms, RenderSystem* renderSystem);
 	void updateParticles(RenderSystem* renderSystem, float elapsed_ms);
 
 	PhysicsSystem()

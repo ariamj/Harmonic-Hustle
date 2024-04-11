@@ -13,7 +13,8 @@ class Cutscene {
     public:
         int boss_dialogue_progress = 0;
         int intro_dialogue_progress = 0;
-       int game_over_dialogue_progress = 0;
+        int game_over_dialogue_progress = 0;
+        int lose_boss_dialogue_progress = 0;
 
         const std::vector<std::string> BOSS_DIALOGUE = {
             "you're gonna regret not turning off that music",
@@ -39,6 +40,13 @@ class Cutscene {
             "See you tomorrow :)"
         };
 
+        const std::vector<std::string> LOSE_BOSS_DIALOGUE = {
+            "...",
+            "HA! Did you think you could defeat me?! Think again!",
+            "This isn't over! I demand a rematch!!",
+            "...seriously?...fine..."
+        };
+
         const std::string CONT_TEXT = "PRESS SPACE TO CONTINUE";
 
         Cutscene();
@@ -50,6 +58,8 @@ class Cutscene {
 
         // Releases all associated resources
         ~Cutscene();
+
+        void init_screen();
 
         // Steps the game ahead by ms milliseconds
         bool handle_step(float elapsed_ms_since_last_update, float current_speed);

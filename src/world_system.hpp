@@ -19,6 +19,8 @@
 #include "game_over_screen.hpp"
 #include "audio_system.hpp"
 #include "cutscene.hpp"
+#include "tutorial_screen.hpp"
+#include <options_screen.hpp>
 // #include "screen.hpp"
 
 // Container for all our entities and game logic. Individual rendering / update is
@@ -35,6 +37,8 @@ public:
 	GameOver gameOver;
 	AudioSystem audioSystem;
 	Cutscene cutscene;
+	Tutorial tutorial;
+	OptionsMenu optionsMenu;
 	
 	// Creates a window
 	GLFWwindow* create_window();
@@ -61,7 +65,7 @@ private:
 	bool render_set_battle_screen();
 
 	// sets the current scene to settings/help
-	bool render_set_settings_screen();
+	bool render_set_controls_screen();
 
 	// sets the current scene to start screen
 	bool render_set_start_screen();
@@ -69,20 +73,37 @@ private:
 	// sets the current scene to game over screen
 	bool render_set_game_over_screen();
 
-  // sets to cut scene
+  	// sets to cut scene
 	bool render_set_cutscene();
+
+	// sets the curr scene to tutorial
+	bool render_set_tutorial();
+
+	// sets to options/ settings screen
+	bool render_set_options_screen();
 
 	void checkEnemyPositions();
 
 	vec2 getRamdomEnemyPosition();
 
-	void handleEscInput(int action);
-	void handleHInput(int action);
 	void handleBackspaceInput(int action);
-	void handleClickStartBtn();
-	void handleClickHelpBtn();
+	void handleEscInput(int action);
+	void handleClickSettingsBtn();
 	void handleClickRestartBtn();
 	void handleClickLoadBtn();
+	void handleClickResumeBtn();
+	void handleClickSaveBtn();
+	void handleClickNewGameBtn();
+	void handleClickDifficultyBtn();
+	void handleClickTutorialBtn();
+	void handleClickExitBtn();
+	void handleClickMainMenuBtn();
+	void handleClickIncreaseBtn();
+	void handleClickDecreaseBtn();
+	void handleClickAdjustTimingBtn();
+	void handleClickBackBtn();
+	void handleClickXBtn();
+
 
 	// Input callback functions
 	void on_key(int key, int scancode, int action, int mod);
@@ -105,11 +126,6 @@ private:
 	Entity judgement_line_sprite;
 
 	// buttons
-	// enum MouseArea {
-	// 	in_unclickable,
-	// 	in_start_btn,
-	// 	in_help_btn,
-	// };
 	MouseArea mouse_area = in_unclickable;
 
 

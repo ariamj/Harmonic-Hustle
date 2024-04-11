@@ -21,6 +21,22 @@ void Settings::init(GLFWwindow* window, RenderSystem* renderer) {
     this->renderer = renderer;
 };
 
+void Settings::init_screen() {
+    renderButtons();
+}
+
+void Settings::renderButtons()
+{
+    //vec2 shadow_pos = vec2(centerX - shift, centerY) + vec2(10.f, 10.f);
+    vec2 buttonPos = vec2(gameInfo.width - 100.f, 100.f);
+    vec2 buttonSize = vec2(100.f, 100.f);
+    Entity settings_shadow = createBox(buttonPos + vec2(10.f, 10.f), buttonSize);
+	registry.screens.insert(settings_shadow, Screen::SETTINGS);
+	registry.colours.insert(settings_shadow, Colour::theme_blue_1);
+    
+    back_btn = createButton("X", buttonPos, 1.5f, buttonSize, Colour::red, Colour::white, Screen::SETTINGS);
+}
+
 bool Settings::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
 	title_ss << "Harmonic Hustle --- Settings/Help";
@@ -31,7 +47,18 @@ bool Settings::handle_step(float elapsed_ms_since_last_update, float current_spe
 	while (registry.debugComponents.entities.size() > 0)
 		registry.remove_all_components_of(registry.debugComponents.entities.back());
 
-    createText(":H", vec2(10.f, 35.f), 0.75f, Colour::theme_blue_3, glm::mat4(1.f), Screen::SETTINGS, false);
+    for (Entity entity : registry.boxButtons.entities) {
+        if (registry.screens.get(entity) == Screen::SETTINGS) {
+            BoxButton btn = registry.boxButtons.get(entity);
+            Motion motion = registry.motions.get(entity);
+            std::string text = registry.boxButtons.get(entity).text;
+            vec3 text_colour = btn.text_colour;
+            if (text == "X" && mouse_area == in_back_btn) {
+                text_colour = Colour::dark_red;
+            }
+            createText(text, motion.position + vec2(5.f,0.f), btn.text_scale, text_colour, Screen::SETTINGS, true, false);
+        }
+    }
 
     return true;
 }
@@ -69,4 +96,9 @@ void Settings::handle_key(int key, int scancode, int action, int mod) {
 
 void Settings::handle_mouse_move(vec2 pos) {
     
-};
+}
+void Settings::handle_mouse_move(MouseArea mouse_area)
+{
+    this->mouse_area = mouse_area;
+}
+;

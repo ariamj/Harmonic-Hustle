@@ -86,7 +86,8 @@ bool RenderSystem::init(GLFWwindow* window_arg)
 
 	// setup fonts
 	// std::string font_filename = "../data/fonts/Kenney_Future.ttf";
-	std::string font_filename = data_path() + "/fonts/Kenney_Future.ttf";
+	// std::string font_filename = data_path() + "/fonts/Kenney_Future.ttf";
+	std::string font_filename = data_path() + "/fonts/infinium-guardian.ttf";
 	unsigned int font_default_size = 48;
 	fontInit(*window, font_filename, font_default_size);
 
@@ -351,22 +352,22 @@ void RenderSystem::initializeGlGeometryBuffers()
 
 	 //////////////////////////////////
 	// Initialize box
-	std::vector<ColoredVertex> box_vertices;
-	std::vector<uint16_t> box_indices;
+	 std::vector<ColoredVertex> box_vertices;
+	 std::vector<uint16_t> box_indices;
 
-	constexpr vec3 white = { 1.0,1.0,1.0 };
+	 constexpr vec3 white = { 1.0,1.0,1.0 };
 
-	// Corner points
-	box_vertices = {
-		{{-0.5,-0.5, 0.f}, white},
-		{{-0.5, 0.5, 0.f}, white},
-		{{ 0.5, 0.5, 0.f}, white},
-		{{ 0.5,-0.5, 0.f}, white},
-	};
+	 // Corner points
+	 box_vertices = {
+		 {{-0.5,-0.5, 0.f}, white},
+		 {{-0.5, 0.5, 0.f}, white},
+		 {{ 0.5, 0.5, 0.f}, white},
+		 {{ 0.5,-0.5, 0.f}, white},
+	 };
 
-	// Two triangles
-	box_indices = {0, 1, 3, 1, 2, 3};
-	
+	 // Two triangles
+	 box_indices = { 0, 1, 3, 1, 2, 3 };
+
 	 int box_geom_index = (int)GEOMETRY_BUFFER_ID::BOX;
 	 meshes[box_geom_index].vertices = box_vertices;
 	 meshes[box_geom_index].vertex_indices = box_indices;
@@ -514,6 +515,20 @@ void RenderSystem::initializeParticleGenerators()
 	
 	// Trail
 	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// Smoke
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
+	glUseProgram(shaderProgram);
+	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
+	// assert(projection_uloc > -1);
+	glUniformMatrix4fv(projection_uloc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	// Flame
+	shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
 	glUseProgram(shaderProgram);
 	projection_uloc = glGetUniformLocation(shaderProgram, "projection");
 	// assert(projection_uloc > -1);

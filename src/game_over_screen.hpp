@@ -24,7 +24,6 @@ class GameOver {
 
         // buttons
         Entity restart_btn;
-	    Entity help_btn;
 
         // mouse area
         MouseArea mouse_area;
@@ -35,5 +34,5 @@ class GameOver {
         GLFWwindow* window;
 
         vec2 title_1_pos;
-        vec2 title_2_pos;
+        // vec2 title_2_pos;
 };

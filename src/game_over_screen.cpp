@@ -23,36 +23,34 @@ void GameOver::init_screen() {
     registry.screens.insert(banner_1, Screen::GAMEOVER);
     registry.colours.insert(banner_1, Colour::white);
 
-    createCSPlayer(renderer, vec2(gameInfo.width/16.f, gameInfo.height/2.f), Screen::GAMEOVER);
-    createCSEnemy(renderer, vec2(gameInfo.width*7/8.f, gameInfo.height/2.f), Screen::GAMEOVER);
+    Entity csPlayer = createCSPlayer(renderer, vec2(gameInfo.width/16.f, gameInfo.height/2.f), Screen::GAMEOVER);
+    Entity csEnemy = createCSEnemy(renderer, vec2(gameInfo.width*7/8.f, gameInfo.height/2.f), Screen::GAMEOVER);
+    Motion& csPlayer_motion = registry.motions.get(csPlayer);
+    csPlayer_motion.scale = csPlayer_motion.scale * 1.5f;
+    Motion& csEnemy_motion = registry.motions.get(csEnemy);
+    csEnemy_motion.scale = csEnemy_motion.scale * 1.5f;
 
     renderButtons();
+
+    createText("...or press 'space' for Main Menu...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, Screen::GAMEOVER, true, true);
 }
 
 void GameOver::renderButtons() {
-	vec2 main_menu_size = vec2(450.f, gameInfo.height/12.f);
+	vec2 main_menu_size = vec2(550.f, gameInfo.height/12.f);
 	float y_padding = main_menu_size.y + 15.f;
 	vec2 center_pos = vec2(gameInfo.width/2.f, gameInfo.height/2.f);
 	vec2 shadow_pos = center_pos + vec2(10.f, 10.f);
 
-	// Restart button
+	// Main menu button
 	Entity start_shadow = createBox(shadow_pos, main_menu_size);
 	registry.screens.insert(start_shadow, Screen::GAMEOVER);
 	registry.colours.insert(start_shadow, Colour::theme_blue_3);
-	restart_btn = createButton("RESTART", center_pos, 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::GAMEOVER);
-	
-	// Help button
-	Entity help_shadow = createBox(vec2(0, y_padding) + shadow_pos, main_menu_size);
-	registry.screens.insert(help_shadow, Screen::GAMEOVER);
-	registry.colours.insert(help_shadow, Colour::theme_blue_3);
-	help_btn = createButton("HELP", center_pos + vec2(0, y_padding), 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::GAMEOVER);
-	
+	restart_btn = createButton("MAIN MENU", center_pos, 1.5f, main_menu_size, Colour::theme_blue_1, Colour::theme_blue_2 + vec3(0.1), Screen::GAMEOVER);
 }
 
 bool GameOver::handle_step(float elapsed_ms_since_last_update, float current_speed) {
     std::stringstream title_ss;
     title_ss << "Harmonic Hustle";
-    title_ss << " --- FPS: " << FPS;
     glfwSetWindowTitle(window, title_ss.str().c_str());
 
     // Remove debug info from the last step
@@ -61,10 +59,16 @@ bool GameOver::handle_step(float elapsed_ms_since_last_update, float current_spe
     
 
     vec2 shadow_offset = vec2(10.f);
+    std::string game_over_title;
+    if (gameInfo.won_boss) {
+        game_over_title = "VICTORY!!";
+    } else {
+        game_over_title = "GAME OVER";
+    }
     // title - shadow
-    createText("GAME OVER", title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, glm::mat4(1.f), Screen::GAMEOVER, true);
+    createText(game_over_title, title_1_pos + shadow_offset, 2.5f, Colour::theme_blue_3, Screen::GAMEOVER, true);
     // title
-    createText("GAME OVER", title_1_pos, 2.5f, Colour::theme_blue_1, glm::mat4(1.f), Screen::GAMEOVER, true);
+    createText(game_over_title, title_1_pos, 2.5f, Colour::theme_blue_1, Screen::GAMEOVER, true);
     
     // Render all button texts
     for (Entity entity : registry.boxButtons.entities) {
@@ -76,14 +80,12 @@ bool GameOver::handle_step(float elapsed_ms_since_last_update, float current_spe
 
             // Hover effect
             // NOTE: if lag happens, comment this part out
-            if ((text == "RESTART" && mouse_area == in_restart_btn) || (text == "HELP" && mouse_area == in_help_btn)) {
+            if ((text == "MAIN MENU" && mouse_area == in_restart_btn)) {
                 text_colour = Colour::white;
             }
-            createText(text, motion.position, btn.text_scale, text_colour, glm::mat4(1.f), Screen::GAMEOVER, true);
+            createText(text, motion.position, btn.text_scale, text_colour, Screen::GAMEOVER, true);
         }
     }
-
-    createText("...or press 'space' to restart game...", vec2(gameInfo.width/2.f, gameInfo.height*7/8.f), 0.5f, Colour::theme_blue_2, glm::mat4(1.f), Screen::GAMEOVER, true);
 
     // Debug
     if (debugging.in_debug_mode) {

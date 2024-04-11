@@ -184,8 +184,7 @@ void RenderSystem::drawToScreen()
 	glActiveTexture(GL_TEXTURE0);
 
 	Screen curr_screen = registry.screens.get(screen_state_entity);
-
-	if (curr_screen == OVERWORLD || curr_screen == START) {
+ 	if (curr_screen == OVERWORLD || curr_screen == START || curr_screen == OPTIONS) {
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -194,7 +193,12 @@ void RenderSystem::drawToScreen()
 		GLuint texture_id =
 			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::HELP_BG];
 		glBindTexture(GL_TEXTURE_2D, texture_id);
-	} else{
+	} else if (curr_screen == TUTORIAL) {
+		GLuint texture_id =
+			texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::OVERWORLD_BG];
+		glBindTexture(GL_TEXTURE_2D, texture_id);
+		
+	} else {
 		glBindTexture(GL_TEXTURE_2D, off_screen_render_buffer_color);
 	}
 	
@@ -234,6 +238,8 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 
 	glBindVertexArray(m_font_VAO);
 
+	scale = scale * 0.85;
+
 	float textWidth = 0.f;
 	float textHeight = 0.f;
 	std::string::const_iterator text_c;
@@ -248,11 +254,18 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 	}
 	y = gameInfo.height - y - ((textHeight / 2.f) * scale);
 
+	// Build an array of character-specific data
+	CharacterRequest character_requests[MAX_TEXT_LENGTH];
+
 	// iterate through all characters
 	std::string::const_iterator c;
+	int i = 0;
 	for (c = text.begin(); c != text.end(); c++)
 	{
+		CharacterRequest character_request;
+
 		Character ch = m_ftCharacters[*c];
+		character_request.TextureID = ch.TextureID;
 
 		float xpos = x + ch.Bearing.x * scale;
 		float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
@@ -261,32 +274,63 @@ void RenderSystem::renderText(const std::string& text, float x, float y,
 		float h = ch.Size.y * scale;
 
 		// update VBO for each character
-		float vertices[6][4] = {
-			{ xpos,     ypos + h,   0.0f, 0.0f },
-			{ xpos,     ypos,       0.0f, 1.0f },
-			{ xpos + w, ypos,       1.0f, 1.0f },
+		// float vertices[6][4] = {
+		// 	{ xpos,     ypos + h,   0.0f, 0.0f },
+		// 	{ xpos,     ypos,       0.0f, 1.0f },
+		// 	{ xpos + w, ypos,       1.0f, 1.0f },
 
-			{ xpos,     ypos + h,   0.0f, 0.0f },
-			{ xpos + w, ypos,       1.0f, 1.0f },
-			{ xpos + w, ypos + h,   1.0f, 0.0f }
-		};
+		// 	{ xpos,     ypos + h,   0.0f, 0.0f },
+		// 	{ xpos + w, ypos,       1.0f, 1.0f },
+		// 	{ xpos + w, ypos + h,   1.0f, 0.0f }
+		// };
 
-		// render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-		// std::cout << "binding texture: " << ch.character << " = " << ch.TextureID << std::endl;
+		// Assignment operator didn't work... there must be a better way to do this
+		character_request.vertices[0][0] = xpos;
+		character_request.vertices[0][1] = ypos + h;
+		character_request.vertices[0][2] = 0.0f;
+		character_request.vertices[0][3] = 0.0f;
+		character_request.vertices[1][0] = xpos;
+		character_request.vertices[1][1] = ypos;
+		character_request.vertices[1][2] = 0.0f;
+		character_request.vertices[1][3] = 1.0f;
+		character_request.vertices[2][0] = xpos + w;
+		character_request.vertices[2][1] = ypos;
+		character_request.vertices[2][2] = 1.0f;
+		character_request.vertices[2][3] = 1.0f;
+		character_request.vertices[3][0] = xpos;
+		character_request.vertices[3][1] = ypos + h;
+		character_request.vertices[3][2] = 0.0f;
+		character_request.vertices[3][3] = 0.0f;
+		character_request.vertices[4][0] = xpos + w;
+		character_request.vertices[4][1] = ypos;
+		character_request.vertices[4][2] = 1.0f;
+		character_request.vertices[4][3] = 1.0f;
+		character_request.vertices[5][0] = xpos + w;
+		character_request.vertices[5][1] = ypos + h;
+		character_request.vertices[5][2] = 1.0f;
+		character_request.vertices[5][3] = 0.0f;
 
-		// update content of VBO memory
-		glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		// render quad
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-		x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+		character_requests[i] = character_request;
+		
+		i += 1;
+		x += (ch.Advance >> 6) * scale;
 	}
 
+	glBindBuffer(GL_ARRAY_BUFFER, m_font_VBO);
+	glBufferData(GL_ARRAY_BUFFER, text.size() * sizeof(CharacterRequest), character_requests, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+
+	for (int i = 0; i < text.size(); i++) {
+		// Manage a pointer instead of calling glSubBufferData repeatedly
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)(i * sizeof(CharacterRequest)));
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, character_requests[i].TextureID);
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
+	// Cleanup
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -335,22 +379,47 @@ void RenderSystem::draw()
 
 	glBindVertexArray(vao);
 
-	auto t1 = Clock::now();
-
 	drawToScreen();
 
-	auto t2 = Clock::now();
-	float to_screen_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1)).count() / 1000;
-
-
-
-	auto t3 = Clock::now();
+	// Mesh rendering - background entities
 	Screen curr_screen = registry.screens.get(screen_state_entity);
-
 	for (Entity entity : registry.renderRequests.entities)
 	{
 		// render entity only if belongs to same screen as screen_state_entity
 		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && registry.backgrounds.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+	// Mesh rendering
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity)) {
+			Screen entity_screen = registry.screens.get(entity);
+			if (entity_screen == curr_screen && !registry.backgrounds.has(entity) && !registry.foregrounds.has(entity)) {
+				drawTexturedMesh(entity, projection_2D);
+			}
+		}
+	}
+
+	// Don't render particles in options
+	if (!gameInfo.in_options) {
+		// Particle rendering, between foreground and background layers
+		for (auto generator : particle_generators) {
+				generator->Draw();
+		}
+	}
+	glBindVertexArray(vao);
+
+	// Mesh rendering - foreground entities
+	for (Entity entity : registry.renderRequests.entities)
+	{
+		// render entity only if belongs to same screen as screen_state_entity
+		if (registry.screens.has(entity) && registry.foregrounds.has(entity)) {
 			Screen entity_screen = registry.screens.get(entity);
 			if (entity_screen == curr_screen) {
 				drawTexturedMesh(entity, projection_2D);
@@ -358,22 +427,6 @@ void RenderSystem::draw()
 		}
 	}
 
-	auto t4 = Clock::now();
-	float mesh_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3)).count() / 1000;
-
-
-
-	auto t5 = Clock::now();
-	// Particle rendering, behind associated entities. Updates happen in world_system step
- 	for (auto generator : particle_generators) {
-		generator->Draw();
-	}
-	glBindVertexArray(vao);
-
-	auto t6 = Clock::now();
-	float particle_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t6 - t5)).count() / 1000;
-
-	// Text-rendering
 
 	// Font matrix transformation
 	// glm::mat4 trans = glm::mat4(1.0f);
@@ -385,23 +438,18 @@ void RenderSystem::draw()
 	// trans = glm::rotate(trans, glm::radians(window.rotation), glm::vec3(0.0, 0.0, 1.0));
 	// trans = glm::scale(trans, glm::vec3(0.5, 0.5, 1.0));
 
-	auto t7 = Clock::now();
+	// Text-rendering
 	for (Entity entity : registry.texts.entities) {
 		Text text_e = registry.texts.get(entity);
 		if (text_e.screen == curr_screen) {
 			renderText(text_e.text, text_e.position.x, text_e.position.y, text_e.scale, text_e.colour, text_e.trans, text_e.center_pos);
 		}
 	}
-	auto t8 = Clock::now();
-	float text_ms = (float)(std::chrono::duration_cast<std::chrono::microseconds>(t8 - t7)).count() / 1000;
-
-	// std::cout << "screen:" << to_screen_ms << ", meshes:" << mesh_ms 
-	// 	<< ", particles:" << particle_ms << ", text:" << text_ms << "\n";
 
 	// Truely render to the screen
-
 	// flicker-free display with a double buffer
-	glfwSwapBuffers(window);
+	// glfwSwapInterval(0) // Disable VSync which improved FPS-based profiling, but didn't actually improve performance
+	glfwSwapBuffers(window); // 
 	gl_has_errors();
 }
 
@@ -424,24 +472,51 @@ mat3 RenderSystem::createProjectionMatrix()
 	return {{sx, 0.f, 0.f}, {0.f, sy, 0.f}, {tx, ty, 1.f}};
 }
 
-void RenderSystem::createParticleGenerator(int particle_type_id) {
-	// int amount = 0;
+void RenderSystem::createParticleGenerator(int particle_type_id, int additional_particles) {
 	switch (particle_type_id) {
 		case (int)PARTICLE_TYPE_ID::TRAIL:
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::TRAIL_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::TRAIL_PARTICLE];
+			int amount = 400;
+			int max_entities = 10;
 			std::shared_ptr<TrailParticleGenerator> generator =
-				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture));
+				std::make_shared<TrailParticleGenerator>(TrailParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
 			particle_generators.push_back(generator);
+			generator->setAdditionalParticles(additional_particles);
+			return;
+		}
+		case (int)PARTICLE_TYPE_ID::SMOKE:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SMOKE_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SMOKE_PARTICLE];
+			int amount = 120;
+			int max_entities = 30;
+			std::shared_ptr<SmokeParticleGenerator> generator =
+				std::make_shared<SmokeParticleGenerator>(SmokeParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
+			particle_generators.push_back(generator);
+			return;
+		}
+		case (int)PARTICLE_TYPE_ID::FLAME:
+		{
+			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::FLAME_PARTICLE];
+			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::FLAME_PARTICLE];
+			int amount = 400;
+			int max_entities = 15;
+			std::shared_ptr<FlameParticleGenerator> generator =
+				std::make_shared<FlameParticleGenerator>(FlameParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
+			particle_generators.push_back(generator);
+			generator->setAdditionalParticles(additional_particles);
 			return;
 		}
 		case (int)PARTICLE_TYPE_ID::SPARK:
 		{
 			GLuint shaderProgram = effects[(GLuint)EFFECT_ASSET_ID::SPARK_PARTICLE];
 			GLuint usedTexture = texture_gl_handles[(GLuint)TEXTURE_ASSET_ID::SPARK_PARTICLE];
+			int amount = 150;
+			int max_entities = 4;
 			std::shared_ptr<SparkParticleGenerator> generator =
-				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture));
+				std::make_shared<SparkParticleGenerator>(SparkParticleGenerator(shaderProgram, usedTexture, amount, max_entities));
 			particle_generators.push_back(generator);
 			return;
 		}

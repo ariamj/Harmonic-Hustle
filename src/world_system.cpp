@@ -63,6 +63,9 @@ GLFWwindow* WorldSystem::create_window() {
 	gameInfo.width = mode->width;
 	gameInfo.height = mode->height;
 
+	std::cout << gameInfo.width << '\n';
+	std::cout << gameInfo.height << '\n';
+
 	window = glfwCreateWindow(mode->width, mode->height, "Harmonic Hustle", nullptr, nullptr);
 	// window = glfwCreateWindow(window_width_px, window_height_px, "Harmonic Hustle", nullptr, nullptr);
 	if (window == nullptr) {
@@ -102,6 +105,8 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 	start.init(window, renderer_arg);
 	gameOver.init(window, renderer_arg);
 	cutscene.init(window, renderer_arg);
+	tutorial.init(window, renderer_arg);
+	optionsMenu.init(window, renderer_arg);
 
 	// Moved into here from main
 	audioSystem.init();
@@ -115,23 +120,30 @@ void WorldSystem::init(RenderSystem* renderer_arg) {
 // Update our game world
 bool WorldSystem::step(float elapsed_ms_since_last_update) {
 
-	while (registry.texts.entities.size() > 0)
-		registry.remove_all_components_of(registry.texts.entities.back());
+	// while (registry.texts.entities.size() > 0)
+	// 	registry.remove_all_components_of(registry.texts.entities.back());
+	
+	// Remove all dynamic texts -> to be rendered again with new values
+	for (Entity text : registry.texts.entities) {
+		if (registry.dynamicTexts.has(text)) {
+			registry.remove_all_components_of(text);
+		}
+	}
 
 	// add FPS to screen
 
 	if (show_fps) {
 		std::string fpsString = "FPS: " + std::to_string(FPS);
-		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, glm::mat4(1.f), gameInfo.curr_screen, true);
+		createText(fpsString, vec2(gameInfo.width - 70.f, 20.f), 0.4f, Colour::white, gameInfo.curr_screen, true);
 	}
 
-	if (gameInfo.curr_screen != Screen::START && gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE) {
+	if (gameInfo.curr_screen != Screen::SETTINGS && gameInfo.curr_screen != Screen::CUTSCENE && gameInfo.curr_screen != Screen::TUTORIAL) {
 		// Help binding instruction
 		vec3 text_colour = Colour::theme_blue_1;
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			text_colour = Colour::theme_blue_3;
 		}
-		createText("(?)[H]", vec2(10.f, 35.f), 0.75f, text_colour, glm::mat4(1.f), gameInfo.curr_screen, false);
+		createText("(?)[ESC]", vec2(10.f, 25.f), 0.75f, Colour::white, gameInfo.curr_screen, false);
 	}
 
 	if (gameInfo.curr_screen == Screen::OVERWORLD) {
@@ -150,7 +162,7 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		// once song ends, display battle over overlay
 		// 		curr screen is set to overworld when battle is over and user presses SPACE
 		if (!song_playing) {
-			std::cout << "HEREEE" << std::endl;
+			// std::cout << "HEREEE" << std::endl;
 			battle.handle_battle_end();
 		} else {
 			toReturn = battle.handle_step(elapsed_ms_since_last_update, current_speed);
@@ -176,7 +188,16 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 			gameInfo.is_game_over_finished = true;
 			// overwrite prev save data since game is now finished	
 			saver.save_game();
-      render_set_game_over_screen();
+			render_set_game_over_screen();
+		}
+		else if (cutscene.lose_boss_dialogue_progress >= cutscene.LOSE_BOSS_DIALOGUE.size()) {
+			std::cout << "LOST TO BOSS" << std::endl;
+			gameInfo.is_game_over_finished = false;
+			cutscene.lose_boss_dialogue_progress = 0;
+			saver.save_game();
+			battle.start();
+			render_set_battle_screen(); //go to overworld instead(?)
+			return battle.handle_step(elapsed_ms_since_last_update, current_speed);
 		}
 		else if (cutscene.boss_dialogue_progress >= cutscene.BOSS_DIALOGUE.size() && !gameInfo.gameIsOver) {
 			std::cout << "GO TO BOSS BATTLE" << std::endl;
@@ -192,7 +213,13 @@ bool WorldSystem::step(float elapsed_ms_since_last_update) {
 		return cutscene.handle_step(elapsed_ms_since_last_update, current_speed);
 	} else if (gameInfo.curr_screen == Screen::START) {
 		return start.handle_step(elapsed_ms_since_last_update, current_speed);
-	} else {
+	} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
+		return tutorial.handle_step(elapsed_ms_since_last_update, current_speed);
+	}
+	else if (gameInfo.curr_screen == Screen::OPTIONS) {
+		return optionsMenu.handle_step(elapsed_ms_since_last_update, current_speed);
+	}
+	else {
 		return gameOver.handle_step(elapsed_ms_since_last_update, current_speed);
 	}
 }
@@ -218,7 +245,7 @@ void WorldSystem::restart_game() {
 
 	// Title
 	// TODO: put onto some sort of splash screen
-	// createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::OVERWORLD);
+	// createText("~ HARMONIC HUSTLE ~", vec2((gameInfo.width/2.f), gameInfo.height * 5.f/6.f), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::OVERWORLD);
 
 	// Create a new Player
 	player_sprite = createPlayer(renderer, { gameInfo.width/2, gameInfo.height/2 });
@@ -246,36 +273,74 @@ void WorldSystem::restart_game() {
 		registry.pauseEnemyTimers.emplace(player_sprite);
 	}
 
-	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), glm::mat4(1.f), Screen::BATTLE);
+	// createText("~ BATTLE TIME ~", vec2((gameInfo.width/2.f), (gameInfo.height/8.f)), 2.0f, glm::vec3(1.0, 0.0, 1.0), Screen::BATTLE);
 
-	float xDisplacement = PORTRAIT_WIDTH * 3.f / 7.f;
-	float yDisplacement = PORTRAIT_HEIGHT / 2;
-
-	battle_player_sprite = createBattlePlayer(renderer, { xDisplacement + 20.f, yDisplacement + 20.f });
-    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - yDisplacement - 20.f, gameInfo.height - xDisplacement - 20.f });
+	battle_player_sprite = createBattlePlayer(renderer, { X_DISPLACEMENT_PORTRAIT + 20.f, Y_DISPLACEMENT_PORTRAIT + 20.f });
+    battle_enemy_sprite = createBattleEnemy(renderer, { gameInfo.width - X_DISPLACEMENT_PORTRAIT - 20.f, gameInfo.height - Y_DISPLACEMENT_PORTRAIT - 20.f });
 
 	registry.battleEnemy.emplace(battle_enemy_sprite);
+	registry.battlePlayer.emplace(battle_player_sprite);
+
+	// renders lanes
+	vec2 lane_size = vec2(150.f, gameInfo.height);
+	vec3 lane_colour = Colour::lane_color;
+	Entity lane1_box = createBox(vec2(gameInfo.lane_1, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane1_box, Screen::BATTLE);
+	registry.colours.insert(lane1_box, lane_colour);
+	registry.battleLanes.emplace(lane1_box);
+	registry.backgrounds.emplace(lane1_box);
+
+	Entity lane2_box = createBox(vec2(gameInfo.lane_2, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane2_box, Screen::BATTLE);
+	registry.colours.insert(lane2_box, lane_colour);
+	registry.battleLanes.emplace(lane2_box);
+	registry.backgrounds.emplace(lane2_box);
+
+	Entity lane3_box = createBox(vec2(gameInfo.lane_3, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane3_box, Screen::BATTLE);
+	registry.colours.insert(lane3_box, lane_colour);
+	registry.battleLanes.emplace(lane3_box);
+	registry.backgrounds.emplace(lane3_box);
+
+	Entity lane4_box = createBox(vec2(gameInfo.lane_4, gameInfo.height / 2.f), lane_size);
+	registry.screens.insert(lane4_box, Screen::BATTLE);
+	registry.colours.insert(lane4_box, lane_colour);
+	registry.battleLanes.emplace(lane4_box);
+	registry.backgrounds.emplace(lane4_box);
 
 	// hard coded values for now
 	float judgement_line_y_pos = gameInfo.height / 1.2;
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
-	judgement_line_sprite = createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_1, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_2, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_3, judgement_line_y_pos });
+	createJudgementLine(renderer, { gameInfo.lane_4, judgement_line_y_pos });
 	
 	// reset cut scene info
 	gameInfo.gameIsOver = false;
 	cutscene.boss_dialogue_progress = 0;
 	cutscene.intro_dialogue_progress = 0;
 	cutscene.game_over_dialogue_progress = 0;
+	cutscene.lose_boss_dialogue_progress = 0;
 	gameInfo.is_boss_finished = false;
 	gameInfo.is_game_over_finished = false;
 	gameInfo.is_intro_finished = false;
+	gameInfo.in_options = false;
 
+	// reset screen state info
+	gameInfo.prev_screen = Screen::START;
+	gameInfo.prev_non_option_screen = Screen::START;
+
+	gameInfo.curr_lives = 3;
 	gameInfo.curr_level = 1;
 
 	start.init_screen();
+	settings.init_screen();
+	cutscene.init_screen();
+	battle.init_screen();
 	gameOver.init_screen();
+	optionsMenu.init_screen();
+	tutorial.tutorial_progress = TutorialPart::INTRO;
+	tutorial.init_parts(TutorialPart::INTRO);
 
 	// set current screen to start screen on every restart
 	// render_set_overworld_screen();
@@ -295,8 +360,8 @@ void WorldSystem::handle_collisions() {
 				restart_game();
 				render_set_game_over_screen();
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
-				battle.start();
 				render_set_battle_screen();
+				battle.start();
 			}
 			break;
 		default:
@@ -314,12 +379,15 @@ bool WorldSystem::is_over() const {
 // switch to overworld scene
 bool WorldSystem::render_set_overworld_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_non_option_screen = prevScreen;
 	gameInfo.curr_screen = Screen::OVERWORLD;
 	start.set_visible(false);
 	gameOver.set_visible(false);
 	settings.set_visible(false);
 	battle.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	overworld.set_visible(true);
 	// don't restart the overworld music if coming from settings or start screen
 	if (prevScreen != Screen::SETTINGS && prevScreen != Screen::START)
@@ -331,12 +399,15 @@ bool WorldSystem::render_set_overworld_screen() {
 // REQUIRES current scene NOT be battle
 // switch to battle scene
 bool WorldSystem::render_set_battle_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::BATTLE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	battle.set_visible(true);
 	// sets the player velocity to 0 once screen switches
 	if (registry.motions.has(player_sprite)) {
@@ -352,13 +423,16 @@ bool WorldSystem::render_set_battle_screen() {
 
 // REQUIRES current scene to NOT be settings
 // switch to battle scene
-bool WorldSystem::render_set_settings_screen() {
+bool WorldSystem::render_set_controls_screen() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::SETTINGS;
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	start.set_visible(false);
 	gameOver.set_visible(false);
 	cutscene.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	settings.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -378,13 +452,16 @@ bool WorldSystem::render_set_settings_screen() {
 // REQUIRES current scene to NOT be start screen
 // switch to start screen
 bool WorldSystem::render_set_start_screen() {
-	Screen prevScreen = gameInfo.curr_screen;
+	// Screen prevScreen = gameInfo.curr_screen;
+	// gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::START;
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	settings.set_visible(false);
   	cutscene.set_visible(false);
 	gameOver.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	start.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -392,9 +469,8 @@ bool WorldSystem::render_set_start_screen() {
 		registry.motions.get(player_sprite).velocity = {0, 0};
 	}
   
-  	// don't restart the music if coming from help screen
-	if (prevScreen != Screen::SETTINGS)
-		audioSystem.playOverworld();
+  	// restart music
+	audioSystem.playOverworld();
 
 	std::cout << "current screen: start" << std::endl;
   	return true; // added to prevent error
@@ -404,12 +480,15 @@ bool WorldSystem::render_set_start_screen() {
 // switch to game over screen
 bool WorldSystem::render_set_game_over_screen() {
 	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
 	gameInfo.curr_screen = Screen::GAMEOVER;
 	overworld.set_visible(false);
 	battle.set_visible(false);
 	settings.set_visible(false);
   	cutscene.set_visible(false);
 	start.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	gameOver.set_visible(true);
 
 	// sets the player velocity to 0 once screen switches
@@ -428,12 +507,15 @@ bool WorldSystem::render_set_game_over_screen() {
 // REQUIRES current scene NOT be cutscene
 // switch to cutscene
 bool WorldSystem::render_set_cutscene() {
+	gameInfo.prev_screen = gameInfo.curr_screen;
 	gameInfo.curr_screen = Screen::CUTSCENE;
 	start.set_visible(false);
 	gameOver.set_visible(false);
 	settings.set_visible(false);
 	overworld.set_visible(false);
 	battle.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(false);
 	cutscene.set_visible(true);
   
 	// sets the player velocity to 0 once screen switches
@@ -450,6 +532,82 @@ bool WorldSystem::render_set_cutscene() {
 	std::cout << "current screen: cutscene" << std::endl;
 	return true; // added to prevent error
 };
+
+// REQUIRES current scene NOT be tutorial
+// switch to tutorial
+bool WorldSystem::render_set_tutorial() {
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = gameInfo.prev_screen;
+	gameInfo.curr_screen = Screen::TUTORIAL;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+  	cutscene.set_visible(false);
+	gameOver.set_visible(false);
+	start.set_visible(false);
+	optionsMenu.set_visible(false);
+	tutorial.set_visible(true);
+	
+	
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = {0, 0};
+	}
+
+	std::cout << "current screen: tutorial" << std::endl;
+  	return true; // added to prevent error
+};
+
+// REQUIRES current scene to NOT be options menu
+// switch to options screen
+bool WorldSystem::render_set_options_screen() {
+	gameInfo.in_options = true;
+	Screen prevScreen = gameInfo.curr_screen;
+	gameInfo.prev_screen = prevScreen;
+	gameInfo.curr_screen = Screen::OPTIONS;
+	overworld.set_visible(false);
+	battle.set_visible(false);
+	settings.set_visible(false);
+	cutscene.set_visible(false);
+	gameOver.set_visible(false);
+	start.set_visible(false);
+	tutorial.set_visible(false);
+	optionsMenu.set_visible(true);
+
+	// if navigating to settings from start, disable certain buttons
+	if (gameInfo.prev_non_option_screen == Screen::START) {
+		optionsMenu.disableButton("DIFFICULTY");
+		optionsMenu.disableButton("ADJUST TIMING");
+	} else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
+		optionsMenu.disableButton("DIFFICULTY");
+		optionsMenu.disableButton("ADJUST TIMING");
+
+	} 
+	else if (gameInfo.prev_non_option_screen == Screen::BATTLE) {
+		optionsMenu.disableButton("DIFFICULTY");
+		// optionsMenu.disableButton("ADJUST TIMING");
+	
+	} 
+	else {
+		// make sure they're enabled
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST TIMING");
+	}
+
+	// sets the player velocity to 0 once screen switches
+	if (registry.motions.has(player_sprite)) {
+		registry.motions.get(player_sprite).velocity = { 0, 0 };
+	}
+
+	// add a timer so every time it switches enemies pause for a bit
+	if (!registry.pauseEnemyTimers.has(player_sprite)) {
+		registry.pauseEnemyTimers.emplace(player_sprite);
+	}
+
+	std::cout << "current screen: options menu" << std::endl;
+	return true;
+}
 
 void WorldSystem::checkEnemyPositions() {
 	vec2 playerPos = registry.motions.get(player_sprite).position;
@@ -506,67 +664,66 @@ void testButton(Entity& btn) {
 	}
 }
 
-// exit game key
-// 	-> on exit, saves game and closes window
-void WorldSystem::handleEscInput(int action) {
+// temp for controls to options
+void WorldSystem::handleBackspaceInput(int action) {
 	if (action == GLFW_PRESS) {
-		std::cout << "esc press" << std::endl;
-		//only save if exit in overworld
-		if (gameInfo.curr_screen == Screen::OVERWORLD) {
-			saver.save_game();
+		if (gameInfo.curr_screen == Screen::SETTINGS) {
+			gameInfo.prev_screen = Screen::SETTINGS;
+			render_set_options_screen();
 		}
-		glfwSetWindowShouldClose(window, 1);
 	}
 }
 
-// help key
-void WorldSystem::handleHInput(int action) {
+// options menu key
+// accessible in the following screens:
+// overworld, battle, start (main menu), game over, help 
+void WorldSystem::handleEscInput(int action) {
 	if (action == GLFW_PRESS) {
-		std::cout << "H key press" << std::endl;
-
-		// if curr screen is overworld, switch to settings
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST TIMING");
+		// optionsMenu.enableButton("TUTORIAL");
 		if (gameInfo.curr_screen == Screen::OVERWORLD) {
 			gameInfo.prev_screen = Screen::OVERWORLD;
-			render_set_settings_screen();
-
-		// if curr screen is battle, pause the battle and then switch to settings
-		} else if (gameInfo.curr_screen == Screen::BATTLE) {
+			gameInfo.prev_non_option_screen = Screen::OVERWORLD;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::BATTLE) {
 			gameInfo.prev_screen = Screen::BATTLE;
+			gameInfo.prev_non_option_screen = Screen::BATTLE;
 			battle.set_pause(true);
-			render_set_settings_screen();
-
-		} else if (gameInfo.curr_screen == Screen::START) {
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::START) {
 			gameInfo.prev_screen = Screen::START;
-			render_set_settings_screen();
-		} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+			gameInfo.prev_non_option_screen = Screen::START;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 			gameInfo.prev_screen = Screen::GAMEOVER;
-			render_set_settings_screen();
-		} else if (gameInfo.curr_screen == Screen::SETTINGS) {
-			// if curr screen is settings,
-			//		-> prev screen is overworld, just switch back
-			//      -> prev screen is battle, update screen visabilities and SET PAUSE for battle NOT set visible
-			//				(set visible restarts the battle, set pause just unpausees it)
-			if (gameInfo.prev_screen == Screen::OVERWORLD) {
+			gameInfo.prev_non_option_screen = Screen::GAMEOVER;
+			render_set_options_screen();
+		}
+		else if (gameInfo.curr_screen == Screen::OPTIONS) {
+
+			if (gameInfo.prev_non_option_screen == Screen::OVERWORLD) {
 				render_set_overworld_screen();
-			} else if (gameInfo.prev_screen == Screen::BATTLE) {
+			}
+			else if (gameInfo.prev_non_option_screen == Screen::BATTLE) {
 				gameInfo.curr_screen = Screen::BATTLE;
 				settings.set_visible(false);
+				optionsMenu.set_visible(false);
 				overworld.set_visible(false);
 				cutscene.set_visible(false);
 				battle.set_pause(false);
 				std::cout << "current screen: battle" << std::endl;
-			} else if (gameInfo.prev_screen == Screen::START) {
+			}
+			else if (gameInfo.prev_non_option_screen == Screen::START) {
 				render_set_start_screen();
-			} else if (gameInfo.prev_screen == Screen::GAMEOVER) {
+			}
+			else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
 				render_set_game_over_screen();
 			}
-
 		}
-		// disable help/settings during cutscenes
-		// else if (gameInfo.curr_screen == Screen::CUTSCENE) {
-		// 	battle.start();
-		// 	render_set_battle_screen();
-		// }
 	}
 }
 
@@ -577,50 +734,36 @@ void handleEnterInput(int action) {
 	}
 }
 
-// temp - testing start screen
-void WorldSystem::handleBackspaceInput(int action) {
-	if (action == GLFW_PRESS) {
-		std::cout << "space pressed" << std::endl;
-		if (gameInfo.curr_screen == Screen::OVERWORLD || gameInfo.curr_screen == Screen::SETTINGS) {
-			render_set_start_screen();
-		}
-	}
-}
-
-void WorldSystem::handleClickStartBtn() {
-	std::cout << "Clicked on 'START'" << std::endl;
-	// test button clicks
-	// testButton(start.start_btn);
-
-	// To overworld
-	if (gameInfo.curr_screen == Screen::START) {
-		render_set_overworld_screen();
-	}
-}
-
-void WorldSystem::handleClickHelpBtn() {
-	std::cout << "Clicked on 'HELP'" << std::endl;
+void WorldSystem::handleClickSettingsBtn() {
+	std::cout << "Clicked on 'SETTINGS'" << std::endl;
 	// test button clicks
 	// testButton(start.help_btn);
 
 	// To settings
-	if (gameInfo.curr_screen == Screen::START || gameInfo.curr_screen == Screen::GAMEOVER) {
+	if (gameInfo.curr_screen == Screen::START ) {
 		gameInfo.prev_screen = gameInfo.curr_screen;
-		render_set_settings_screen();
+		gameInfo.prev_non_option_screen = gameInfo.curr_screen;
+		// render_set_controls_screen();
+		render_set_options_screen();
+	} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+		render_set_controls_screen();
 	}
 }
 
 void WorldSystem::handleClickRestartBtn() {
-	std::cout << "Clicked on 'RESTART" << std::endl;
+	std::cout << "Clicked on 'MAIN MENU" << std::endl;
 
 	// To Start
 	if (gameInfo.curr_screen == Screen::GAMEOVER) {
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST DIFFICULTY");
 		restart_game();
 		render_set_start_screen();
 	}
 }
 
 void WorldSystem::handleClickLoadBtn() {
+	std::cout << "Clicked on 'LOAD'" << std::endl;
 	// Load button is only located on start screen
 	if (gameInfo.curr_screen != Screen::START) {
 		return;
@@ -640,8 +783,10 @@ void WorldSystem::handleClickLoadBtn() {
 		}
 	}
 
-	if (gameInfo.gameIsOver) {
+	if (gameInfo.gameIsOver || gameInfo.curr_lives == 0) {
 		restart_game();
+		// if loaded game was already finished, simulate clicking the start new game button
+		handleClickNewGameBtn();
 	}
 	// if there are no enemies and game is not over, switch to boss battle
 	else if (gameInfo.existing_enemy_info.size() == 0) {
@@ -652,8 +797,151 @@ void WorldSystem::handleClickLoadBtn() {
 	if (gameInfo.curr_screen == Screen::START) {
 		render_set_overworld_screen();
 	}
-}	
+}
 
+void WorldSystem::handleClickResumeBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		gameInfo.in_options = false;
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST TIMING");
+		if (gameInfo.prev_non_option_screen == Screen::OVERWORLD) {
+			gameInfo.prev_screen = gameInfo.curr_screen;
+			render_set_overworld_screen();
+		}
+		else if (gameInfo.prev_non_option_screen == Screen::BATTLE) {
+			gameInfo.curr_screen = Screen::BATTLE;
+			settings.set_visible(false);
+			overworld.set_visible(false);
+			cutscene.set_visible(false);
+			optionsMenu.set_visible(false);
+			battle.set_pause(false);
+		}
+		else if (gameInfo.prev_non_option_screen == Screen::START) {
+			render_set_start_screen();
+		}
+		else if (gameInfo.prev_non_option_screen == Screen::GAMEOVER) {
+			render_set_game_over_screen();
+		}
+		else if (gameInfo.prev_non_option_screen == Screen::SETTINGS) {
+			render_set_controls_screen();
+		}
+		gameInfo.in_options = false;
+	}
+
+}
+
+void WorldSystem::handleClickSaveBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		saver.save_game();
+		printf("Clicked save button, game saved.\n");
+		
+	}
+}
+
+void WorldSystem::handleClickNewGameBtn()
+{
+	// transition to tutorial after clicking new game start button, reset tutorial as needed
+	if (gameInfo.curr_screen == Screen::START) {
+		restart_game();
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
+		render_set_tutorial();
+	} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+		restart_game();
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
+		render_set_tutorial();
+	}
+}
+
+void WorldSystem::handleClickDifficultyBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.difficulty_btn)) {
+		gameInfo.prev_screen = Screen::OPTIONS;
+		tutorial.tutorial_progress = TutorialPart::CHOOSE_DIFFICULTY;
+		tutorial.init_parts(TutorialPart::CHOOSE_DIFFICULTY);
+		gameInfo.in_difficulty = true;
+		render_set_tutorial();
+		//tutorial.tutorial_progress = TutorialPart::INTRO;
+	}
+}
+
+void WorldSystem::handleClickTutorialBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.tutorial_btn)) {
+		gameInfo.prev_screen = Screen::OPTIONS;
+		tutorial.tutorial_progress = TutorialPart::INTRO;
+		tutorial.init_parts(TutorialPart::INTRO);
+		render_set_tutorial();
+	}
+}
+
+void WorldSystem::handleClickExitBtn()
+{
+	std::cout << "Saving and exiting..." << std::endl;
+	saver.save_game();
+	glfwSetWindowShouldClose(window, 1);
+}
+
+void WorldSystem::handleClickMainMenuBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS) {
+		gameInfo.prev_screen = gameInfo.curr_screen;
+		optionsMenu.enableButton("DIFFICULTY");
+		optionsMenu.enableButton("ADJUST TIMING");
+		render_set_start_screen();
+	}
+}
+
+void WorldSystem::handleClickIncreaseBtn()
+{
+	printf("clicked on increase\n");
+	gameInfo.frames_adjustment = min(gameInfo.frames_adjustment + 0.25f, MAX_FRAMES_ADJUSTMENT);
+}
+
+void WorldSystem::handleClickDecreaseBtn()
+{
+	printf("clicked on decrease\n");
+	gameInfo.frames_adjustment = max(gameInfo.frames_adjustment - 0.25f, MIN_FRAMES_ADJUSTMENT);
+}
+
+void WorldSystem::handleClickAdjustTimingBtn()
+{
+	if (gameInfo.curr_screen == Screen::OPTIONS && !registry.disabled.has(optionsMenu.adjust_timing_btn)) {
+		gameInfo.prev_screen = Screen::OPTIONS;
+		gameInfo.in_adjust_timing = true;
+		tutorial.tutorial_progress = TutorialPart::ADJUST_TIMING;
+		tutorial.init_parts(TutorialPart::ADJUST_TIMING);
+		render_set_tutorial();
+		//tutorial.tutorial_progress = TutorialPart::INTRO;
+	}
+}
+
+void WorldSystem::handleClickBackBtn()
+{
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		gameInfo.prev_screen = Screen::SETTINGS;
+		render_set_options_screen();
+	}
+}
+
+void WorldSystem::handleClickXBtn() {
+	if (gameInfo.curr_screen == Screen::TUTORIAL) {
+		// simulate clicking space
+		tutorial.handle_key(GLFW_KEY_SPACE, 0, GLFW_PRESS, 0);
+		if (gameInfo.curr_screen == Screen::OPTIONS) {
+			// reset tutorial upon exit
+			tutorial.tutorial_progress = TutorialPart::INTRO;
+			gameInfo.in_difficulty = false;
+			gameInfo.in_adjust_timing = false;
+			render_set_options_screen();
+		}
+	}
+}
+
+bool esc_pressed = false;
 // On key callback
 void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 
@@ -673,28 +961,22 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 			if (action == GLFW_PRESS) {
 				switch (gameInfo.curr_screen) {
 					case Screen::OVERWORLD:
-						battle.start();
 						render_set_battle_screen();
+						battle.start();
 						break;
 					case Screen::BATTLE:
-					default:
 						// pressing 'C' during battle immedidately ends battle, for testing
 						// added guard to prevent pressing when battle is already over
 						if (!battle.battle_is_over) {
+							// battle.score = 9999; // auto-win
 							battle.handle_battle_end();
 						}
-
-						// render_set_overworld_screen();
+						break;
+					default:
 						break;
 				};
 			}
 			
-			break;
-		case GLFW_KEY_V:
-			// for testing purposes
-			if (action == GLFW_PRESS) {
-				render_set_cutscene();
-			}
 			break;
 		case GLFW_KEY_TAB:
 			// toggle show FPS on TAB key
@@ -702,71 +984,92 @@ void WorldSystem::on_key(int key, int scancode, int action, int mod) {
 				show_fps = !show_fps;
 			}
 			break;
-		case GLFW_KEY_ESCAPE:
-			handleEscInput(action);
+		case GLFW_KEY_BACKSPACE:
+			// temp for controls menu back to prev screen
+			handleBackspaceInput(action);
 			break;
-		case GLFW_KEY_H: 
-			handleHInput(action);
+		case GLFW_KEY_ESCAPE:
+			esc_pressed = true;
+			handleEscInput(action);
 			break;
 		case GLFW_KEY_ENTER:
 			handleEnterInput(action);
-			break;
-		case GLFW_KEY_BACKSPACE:
-			handleBackspaceInput(action);
 			break;
 		default:
 			if (gameInfo.curr_screen == Screen::OVERWORLD) {
 				overworld.handle_key(key, scancode, action, mod);
 			} else if (gameInfo.curr_screen == Screen::BATTLE) {
-				if (action == GLFW_PRESS) {
-					battle.handle_key(key, scancode, action, mod);
-				}
+				battle.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::OVERWORLD) {
 					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
+					render_set_game_over_screen();
+					// if going from battle to game over -> it means game has ended, so set game = over and save
+					gameInfo.gameIsOver = true;
+					saver.save_game();
 				}
 			} else if (gameInfo.curr_screen == Screen::START) {
 				start.handle_key(key, scancode, action, mod);
-				if (gameInfo.curr_screen == Screen::OVERWORLD) {
-					render_set_overworld_screen();
+				// if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				// 	render_set_overworld_screen();
+				// }
+				// switch to tutorial after start screen
+				if (gameInfo.curr_screen == Screen::TUTORIAL) {
+					render_set_tutorial();
 				}
 			} else if (gameInfo.curr_screen == Screen::GAMEOVER) {
 				gameOver.handle_key(key, scancode, action, mod);
 				if (gameInfo.curr_screen == Screen::START) {
+					restart_game();
 					render_set_start_screen();
 				}
 			}
 			else if (gameInfo.curr_screen == Screen::CUTSCENE) {
 				cutscene.handle_key(key, scancode, action, mod);
+			} else if (gameInfo.curr_screen == Screen::TUTORIAL) {
+				// disable keys if in difficulty/adjust from options
+				if (!gameInfo.in_difficulty && !gameInfo.in_adjust_timing) {
+					tutorial.handle_key(key, scancode, action, mod);
+				}
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+					// reset tutorial upon exit
+					tutorial.tutorial_progress = TutorialPart::INTRO;
+					render_set_options_screen();
+				}
 			}
 			break;
 	}
 }
 
+
+
 void WorldSystem::on_mouse_move(vec2 mouse_position) {
 	double xpos = mouse_position.x;
     double ypos = mouse_position.y;
-
+	
 	float y_padding = 50.f; // for some reason y coords a bit off...
 
 	/* Start screen buttons*/
 	if (gameInfo.curr_screen == Screen::START) {
 		// START button
 		BoxAreaBound start_btn_area = registry.boxAreaBounds.get(start.start_btn);
-		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding) && (ypos <= start_btn_area.bottom - y_padding);
+		bool within_start_btn_area = (xpos >= start_btn_area.left) && (xpos <= start_btn_area.right) && (ypos >= start_btn_area.top - y_padding - 10.f) && (ypos <= start_btn_area.bottom - y_padding - 10.f);
 		// HELP button
-		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.help_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
+		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(start.settings_btn);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - 90.f) && (ypos <= help_btn_area.bottom - 90.f);
 		
 		// LOAD button
 		BoxAreaBound load_btn_area = registry.boxAreaBounds.get(start.load_from_save_btn);
-		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - y_padding) && (ypos <= load_btn_area.bottom - y_padding);
+		bool within_load_btn_area = (xpos >= load_btn_area.left) && (xpos <= load_btn_area.right) && (ypos >= load_btn_area.top - 80.f) && (ypos <= load_btn_area.bottom - 80.f);
 		
 		if (within_start_btn_area) {
 			// std::cout << "in start button area" << std::endl;
 			mouse_area = in_start_btn;
 		} else if (within_help_btn_area) {
 			// std::cout << "in help button area" << std::endl;
-			mouse_area = in_help_btn;
+			mouse_area = in_settings_btn;
 		} else if (within_load_btn_area) {
 			mouse_area = in_load_btn;
 		} else {
@@ -780,19 +1083,156 @@ void WorldSystem::on_mouse_move(vec2 mouse_position) {
 		// START button
 		BoxAreaBound restart_btn_area = registry.boxAreaBounds.get(gameOver.restart_btn);
 		bool within_restart_btn_area = (xpos >= restart_btn_area.left) && (xpos <= restart_btn_area.right) && (ypos >= restart_btn_area.top - y_padding) && (ypos <= restart_btn_area.bottom - y_padding);
-		// HELP button
-		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(gameOver.help_btn);
-		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - y_padding) && (ypos <= help_btn_area.bottom - y_padding);
 		if (within_restart_btn_area) {
 			// std::cout << "in start button area" << std::endl;
 			mouse_area = in_restart_btn;
-		} else if (within_help_btn_area) {
-			// std::cout << "in help button area" << std::endl;
-			mouse_area = in_help_btn;
 		} else {
 			mouse_area = in_unclickable;
 		}
 		gameOver.handle_mouse_move(mouse_area);
+	}
+
+	// Difficulty buttons in tutorial -> only if in last part of tutorial
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::CHOOSE_DIFFICULTY) {
+		// EASY button
+		BoxAreaBound easy_btn_area = registry.boxAreaBounds.get(tutorial.easy_btn);
+		bool within_easy_btn_area = (xpos >= easy_btn_area.left) && (xpos <= easy_btn_area.right) && (ypos >= easy_btn_area.top - 50.f) && (ypos <= easy_btn_area.bottom - 50.f);
+		// HELP button
+		BoxAreaBound normal_btn_area = registry.boxAreaBounds.get(tutorial.normal_btn);
+		bool within_normal_btn_area = (xpos >= normal_btn_area.left) && (xpos <= normal_btn_area.right) && (ypos >= normal_btn_area.top - 75.f) && (ypos <= normal_btn_area.bottom - 75.f);
+		
+		BoxAreaBound hard_btn_area = registry.boxAreaBounds.get(tutorial.hard_btn);
+		bool within_hard_btn_area = (xpos >= hard_btn_area.left) && (xpos <= hard_btn_area.right) && (ypos >= hard_btn_area.top - 90.f) && (ypos <= hard_btn_area.bottom - 90.f);
+		
+		if (within_easy_btn_area) {
+			mouse_area = in_easy_btn;
+
+		} else if (within_normal_btn_area) {
+			mouse_area = in_normal_btn;
+
+		} else if (within_hard_btn_area) {
+			mouse_area = in_hard_btn;
+		} else {
+			mouse_area = in_unclickable;
+		}
+		// adding in a guard for x button
+		if (gameInfo.in_difficulty) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_difficulty) {
+				mouse_area = in_x_btn;
+			}
+		}
+		tutorial.handle_mouse_move(mouse_area);
+	}
+	// Timing buttons in tutorial
+	if (gameInfo.curr_screen == Screen::TUTORIAL && tutorial.tutorial_progress == TutorialPart::ADJUST_TIMING) {
+		// + button
+		BoxAreaBound increase_frame_area = registry.boxAreaBounds.get(tutorial.increase_frames_btn);
+		bool within_increase_frames_btn_area = (xpos >= increase_frame_area.left) && (xpos <= increase_frame_area.right) && (ypos >= increase_frame_area.top - y_padding) && (ypos <= increase_frame_area.bottom - y_padding);
+		// - button
+		BoxAreaBound decrease_frame_area = registry.boxAreaBounds.get(tutorial.decrease_frames_btn);
+		bool within_decrease_frames_btn_area = (xpos >= decrease_frame_area.left) && (xpos <= decrease_frame_area.right) && (ypos >= decrease_frame_area.top - y_padding) && (ypos <= decrease_frame_area.bottom - y_padding);
+
+		if (within_increase_frames_btn_area) {
+			mouse_area = in_increase_frame_btn;
+		}
+		else if (within_decrease_frames_btn_area) {
+			mouse_area = in_decrease_frame_btn; 
+		} 
+		else {
+			mouse_area = in_unclickable;
+		}
+		if (gameInfo.in_options) {
+			BoxAreaBound x_btn_area = registry.boxAreaBounds.get(tutorial.x_btn);
+			bool within_x_btn_area = (xpos >= x_btn_area.left) && (xpos <= x_btn_area.right) && (ypos >= x_btn_area.top - 10.f) && (ypos <= x_btn_area.bottom - 10.f);
+			if (within_x_btn_area && gameInfo.in_adjust_timing) 
+				mouse_area = in_x_btn;
+		}
+		tutorial.handle_mouse_move(mouse_area);
+	}
+
+	// back button in help screen
+	if (gameInfo.curr_screen == Screen::SETTINGS) {
+		BoxAreaBound back_btn_area = registry.boxAreaBounds.get(settings.back_btn);
+		bool within_back_btn_area = (xpos >= back_btn_area.left) && (xpos <= back_btn_area.right) && (ypos >= back_btn_area.top - 10.f) && (ypos <= back_btn_area.bottom - 10.f);
+		if (within_back_btn_area) {
+			mouse_area = in_back_btn;
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		settings.handle_mouse_move(mouse_area);
+
+	}
+
+	// buttons for options menu popup
+
+	if (gameInfo.curr_screen == OPTIONS) {
+		//printf("Current screen is in OPTIONS\n");
+		
+		// resume game button
+		BoxAreaBound resume_area = registry.boxAreaBounds.get(optionsMenu.resume_game_btn);
+		bool within_resume_game_btn_area = (xpos >= resume_area.left) && (xpos <= resume_area.right) && (ypos >= resume_area.top - 40.f) && (ypos <= resume_area.bottom - 40.f);
+
+		// new game button
+		BoxAreaBound new_game_area = registry.boxAreaBounds.get(optionsMenu.new_game_btn);
+		bool within_new_game_btn_area = (xpos >= new_game_area.left) && (xpos <= new_game_area.right) && (ypos >= new_game_area.top - 60.f) && (ypos <= new_game_area.bottom - 60.f);
+
+		// adjust timing button
+		BoxAreaBound timing_area = registry.boxAreaBounds.get(optionsMenu.adjust_timing_btn);
+		bool within_adjust_timing_btn_area = (xpos >= timing_area.left) && (xpos <= timing_area.right) && (ypos >= timing_area.top - 80.f) && (ypos <= timing_area.bottom - 80.f);
+
+		// game difficulty button
+		BoxAreaBound difficulty_btn_area = registry.boxAreaBounds.get(optionsMenu.difficulty_btn);
+		bool within_difficulty_btn_area = (xpos >= difficulty_btn_area.left) && (xpos <= difficulty_btn_area.right) && (ypos >= difficulty_btn_area.top - 100.f) && (ypos <= difficulty_btn_area.bottom - 100.f);
+
+		// help button
+		BoxAreaBound help_btn_area = registry.boxAreaBounds.get(optionsMenu.controls_btn);
+		bool within_help_btn_area = (xpos >= help_btn_area.left) && (xpos <= help_btn_area.right) && (ypos >= help_btn_area.top - 40.f) && (ypos <= help_btn_area.bottom - 40.f);
+
+		// tutorial button
+		BoxAreaBound tutorial_btn_area = registry.boxAreaBounds.get(optionsMenu.tutorial_btn);
+		bool within_tutorial_btn_area = (xpos >= tutorial_btn_area.left) && (xpos <= tutorial_btn_area.right) && (ypos >= tutorial_btn_area.top - 60.f) && (ypos <= tutorial_btn_area.bottom - 60.f);
+
+		// main menu button
+		BoxAreaBound return_to_main_btn_area = registry.boxAreaBounds.get(optionsMenu.return_to_main_btn);
+		bool within_return_to_main_btn_btn_area = (xpos >= return_to_main_btn_area.left) && (xpos <= return_to_main_btn_area.right) && (ypos >= return_to_main_btn_area.top - 80.f) && (ypos <= return_to_main_btn_area.bottom - 80.f);
+
+		// exit button
+		BoxAreaBound exit_btn_area = registry.boxAreaBounds.get(optionsMenu.exit_btn);
+		bool within_exit_btn_area = (xpos >= exit_btn_area.left) && (xpos <= exit_btn_area.right) && (ypos >= exit_btn_area.top - 100.f) && (ypos <= exit_btn_area.bottom - 100.f);
+		if (within_new_game_btn_area) {
+			//std::cout << "in new game button area" << std::endl;
+			mouse_area = in_new_game_btn;
+		}
+		else if (within_help_btn_area) {
+			// std::cout << "in help button area" << std::endl;
+			mouse_area = in_ctrlsOpt_btn;
+		}
+		else if (within_resume_game_btn_area) {
+			mouse_area = in_resume_btn;
+		} 
+		else if (within_adjust_timing_btn_area) {
+			mouse_area = in_adjust_timing_btn;
+		}
+		else if (within_difficulty_btn_area) {
+			mouse_area = in_difficulty_btn;
+		}
+		else if (within_tutorial_btn_area) {
+			mouse_area = in_tutorial_btn;
+		}
+		else if (within_exit_btn_area) {
+			mouse_area = in_exit_btn;
+		}
+		else if (within_return_to_main_btn_btn_area) {
+			mouse_area = in_return_to_main_btn;
+		}
+		else {
+			mouse_area = in_unclickable;
+		}
+		optionsMenu.handle_mouse_move(mouse_area);
+
 	}
 }
 
@@ -801,16 +1241,77 @@ void WorldSystem::on_mouse_button(int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		switch(mouse_area) {
 			case in_start_btn:
-				handleClickStartBtn();
+				handleClickNewGameBtn();
 				break;
-			case in_help_btn:
-				handleClickHelpBtn();
+			case in_settings_btn:
+			case in_ctrlsOpt_btn:
+				handleClickSettingsBtn();
 				break;
 			case in_restart_btn:
 				handleClickRestartBtn();
-        break;
+        		break;
 			case in_load_btn:
 				handleClickLoadBtn();
+				break;
+			case in_easy_btn:
+				tutorial.handle_difficulty_click(0);
+				//if (gameInfo.curr_screen == Screen::OVERWORLD) {
+				//	render_set_overworld_screen();
+				//} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+				//	render_set_options_screen();
+				//}
+				break;
+			case in_normal_btn:
+				tutorial.handle_difficulty_click(1);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+					render_set_options_screen();
+				}
+				break;
+			case in_hard_btn:
+				tutorial.handle_difficulty_click(2);
+				if (gameInfo.curr_screen == Screen::OVERWORLD) {
+					render_set_overworld_screen();
+				} else if (gameInfo.curr_screen == Screen::OPTIONS) {
+					render_set_options_screen();
+				}
+				break;
+			case in_resume_btn:
+				handleClickResumeBtn();
+				break;
+			case in_adjust_timing_btn:
+				handleClickAdjustTimingBtn();
+				break;
+			case in_new_game_btn:
+				gameInfo.in_options = false;
+				handleClickNewGameBtn();
+				break;
+			case in_difficulty_btn:
+				handleClickDifficultyBtn();
+				break;
+			case in_tutorial_btn:
+				handleClickTutorialBtn();
+				break;
+			case in_exit_btn:
+				handleClickExitBtn();
+				break;
+			case in_return_to_main_btn:
+				handleClickMainMenuBtn();
+				break;
+			case in_increase_frame_btn:
+				handleClickIncreaseBtn();
+				break;
+			case in_decrease_frame_btn:
+				handleClickDecreaseBtn();
+				break;
+			case in_back_btn:
+				handleClickBackBtn();
+				break;
+
+			// only true if x button is rendered and mouse in correct position
+			case in_x_btn:
+				handleClickXBtn();
 				break;
 			default:
 				std::cout << "not in clickable area" << std::endl;

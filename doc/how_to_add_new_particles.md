@@ -15,8 +15,8 @@ Create a new `xxxxx_particle_generator.hpp` and `.cpp` file. Use trail_particle_
 INITIALIZING  
 In `render_system.hpp`:  
 Add an #include for the new `xxxxx_particle_generator.hpp` file.  
-Add a texture_path(.png file name) to `textures_paths` (array starts around line 40)  
-Add a shader_path(.vs/.fs file name, without extensions) to `effect_paths` (array starts around line 60)  
+Add a texture_path(.png file name) to `textures_paths`
+Add a shader_path(.vs/.fs file name, without extensions) to `effect_paths`
   
 In `render_system_init.cpp`:  
 In `initializeParticleGenerators`: Set the particle shader program's projection matrix (the same for all particle shaders)   

@@ -8,9 +8,16 @@
 #include "tiny_ecs.hpp"
 
 #include "trail_particle_generator.hpp"
+#include "smoke_particle_generator.hpp"
+#include "flame_particle_generator.hpp"
 #include "spark_particle_generator.hpp"
 
 #include <map>
+
+struct CharacterRequest {
+	float vertices[6][4];
+	unsigned int TextureID;
+};
 
 // System responsible for setting up OpenGL and for rendering all the
 // visual entities in the game
@@ -45,7 +52,7 @@ class RenderSystem {
 		textures_path("Enemy-Drum.png"),
 		textures_path("Enemy-Mic.png"),
 		textures_path("Player-Portrait-Neutral.png"),
-		textures_path("Enemy-Portrait-Neutral.png"),
+		textures_path("Enemy-Guitar-Portrait.png"),
 		textures_path("Judgement.png"),
 		textures_path("Note.png"),
 		textures_path("Overworld-Background.png"),
@@ -55,9 +62,37 @@ class RenderSystem {
 		textures_path("Boss-Portrait-Neutral.png"),
 		textures_path("Player-CS-Neutral.png"),
 		textures_path("CS-Text-Box.png"),
-		textures_path("Spark-Particle.png"),
+		textures_path("Smoke-Particle.png"),
 		textures_path("Enemy-Drum-Portrait.png"),
-		textures_path("Enemy-Mic-Portrait.png")
+		textures_path("Enemy-Mic-Portrait.png"),
+		textures_path("Enemy-Drum-Portrait-Win.png"),
+		textures_path("Enemy-Mic-Portrait-Win.png"),
+		textures_path("Enemy-Guitar-Portrait-Win.png"),
+		textures_path("Boss-Portrait-Win.png"),
+		textures_path("Player-Portrait-Win.png"),
+		textures_path("Enemy-Drum-Portrait-Lose.png"),
+		textures_path("Enemy-Mic-Portrait-Lose.png"),
+		textures_path("Enemy-Guitar-Portrait-Lose.png"),
+		textures_path("Boss-Portrait-Lose.png"),
+		textures_path("Player-Portrait-Lose.png"),
+		textures_path("Note-Example-Above.png"),
+		textures_path("Note-Example-On.png"),
+		textures_path("Note-Example-Hit.png"),
+		textures_path("Flame-Particle.png"),
+		textures_path("Spark-Particle.png"),
+		textures_path("Judgement-Lines-Example.png"),
+		textures_path("Long-Note-Example.png"),
+		textures_path("Tap-Note-Example.png"),
+		textures_path("Held-Note-Example-Start.png"),
+		textures_path("Held-Note-Example-Tap.png"),
+		textures_path("Held-Note-Example-Holding.png"),
+		textures_path("Held-Note-Example-Finish.png"),
+		textures_path("Mode-Back-And-Forth.png"),
+		textures_path("Mode-Beat-Rush.png"),
+		textures_path("Mode-Unison.png"),
+		textures_path("Mode-Change-Start.png"),
+		textures_path("Mode-Change-Mid.png"),
+		textures_path("Mode-Change-Finish.png"),
 	};
 
 	std::array<GLuint, effect_count> effects;
@@ -74,6 +109,8 @@ class RenderSystem {
 		shader_path("note"),
 		shader_path("font"),
 		shader_path("trailParticle"),
+		shader_path("smokeParticle"),
+		shader_path("flameParticle"),
 		shader_path("sparkParticle")
 	};
 
@@ -120,7 +157,7 @@ public:
 	// Particles
 	std::vector<std::shared_ptr<ParticleGenerator>> particle_generators;
 
-	void createParticleGenerator(int particle_type_id);
+	void createParticleGenerator(int particle_type_id, int additional_particles = 0);
 
 
 private:
